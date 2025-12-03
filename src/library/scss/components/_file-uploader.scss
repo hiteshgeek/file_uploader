@@ -235,11 +235,12 @@ $component-prefix: $file-uploader-prefix !default;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 100%;
   background-color: rgba(66, 153, 225, 0.15);
   border-radius: 0 0 var(--fu-radius-sm) var(--fu-radius-sm);
   overflow: hidden;
   z-index: 1;
+  opacity: 0.5;
 }
 
 .#{$component-prefix}-limit-progress-bar {
@@ -597,7 +598,7 @@ $component-prefix: $file-uploader-prefix !default;
   line-height: 1.4;
   z-index: 6;
   pointer-events: none;
-  font-family: var(--fu-font-family-mono, 'Courier New', monospace);
+  font-family: var(--fu-font-family-mono, "Courier New", monospace);
   letter-spacing: 0.5px;
 
   @if $file-uploader-enable-animations {

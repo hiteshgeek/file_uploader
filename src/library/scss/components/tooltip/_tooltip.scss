@@ -1,35 +1,42 @@
+// ============================================================================
+// Modern Tooltip System - Adapted for File Uploader
+// ============================================================================
+
+@use "../../variables" as *;
 @use "../../mixins" as *;
+
+$component-prefix: $file-uploader-prefix !default;
 
 /* ============================================
    Modern Tooltip System - Theme Variables
    ============================================ */
 :root {
   /* Default (Dark Theme) values */
-  --tooltip-bg: rgba(28, 28, 28, 0.65);
-  --tooltip-text: #ffffff;
-  --tooltip-border: rgba(255, 255, 255, 0.1);
-  --tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --tooltip-arrow-color: rgba(28, 28, 28, 0.95);
+  --#{$component-prefix}-modern-tooltip-bg: rgba(28, 28, 28, 0.65);
+  --#{$component-prefix}-modern-tooltip-text: #ffffff;
+  --#{$component-prefix}-modern-tooltip-border: rgba(255, 255, 255, 0.1);
+  --#{$component-prefix}-modern-tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --#{$component-prefix}-modern-tooltip-arrow-color: rgba(28, 28, 28, 0.95);
 
   /* Shortcut badge specific */
-  --tooltip-shortcut-bg: rgba(255, 255, 255, 0.35);
-  --tooltip-shortcut-text: #ffffff;
-  --tooltip-shortcut-border: rgba(255, 255, 255, 0.15);
+  --#{$component-prefix}-modern-tooltip-shortcut-bg: rgba(255, 255, 255, 0.35);
+  --#{$component-prefix}-modern-tooltip-shortcut-text: #ffffff;
+  --#{$component-prefix}-modern-tooltip-shortcut-border: rgba(255, 255, 255, 0.15);
 }
 
-/* Light Theme Overrides 
-   Applied when inside .toolbar--light or [data-theme="light"] */
-.toolbar--light,
-[data-theme="light"] {
-  --tooltip-bg: rgba(255, 255, 255, 0.75);
-  --tooltip-text: #1a1a1a;
-  --tooltip-border: rgba(0, 0, 0, 0.1);
-  --tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --tooltip-arrow-color: rgba(255, 255, 255, 0.95);
+/* Light Theme Overrides */
+@if $file-uploader-enable-dark-mode {
+  [data-theme="light"] {
+    --#{$component-prefix}-modern-tooltip-bg: rgba(255, 255, 255, 0.75);
+    --#{$component-prefix}-modern-tooltip-text: #1a1a1a;
+    --#{$component-prefix}-modern-tooltip-border: rgba(0, 0, 0, 0.1);
+    --#{$component-prefix}-modern-tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --#{$component-prefix}-modern-tooltip-arrow-color: rgba(255, 255, 255, 0.95);
 
-  --tooltip-shortcut-bg: rgba(0, 0, 0, 0.15);
-  --tooltip-shortcut-text: #333333;
-  --tooltip-shortcut-border: rgba(0, 0, 0, 0.1);
+    --#{$component-prefix}-modern-tooltip-shortcut-bg: rgba(0, 0, 0, 0.15);
+    --#{$component-prefix}-modern-tooltip-shortcut-text: #333333;
+    --#{$component-prefix}-modern-tooltip-shortcut-border: rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* ============================================
@@ -47,14 +54,16 @@
   position: absolute;
 
   /* Theming */
-  background: var(--tooltip-bg);
-  color: var(--tooltip-text);
-  border: 1px solid var(--tooltip-border);
-  box-shadow: var(--tooltip-shadow);
+  background: var(--#{$component-prefix}-modern-tooltip-bg);
+  color: var(--#{$component-prefix}-modern-tooltip-text);
+  border: 1px solid var(--#{$component-prefix}-modern-tooltip-border);
+  box-shadow: var(--#{$component-prefix}-modern-tooltip-shadow);
 
-  backdrop-filter: blur(10px);
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(10px);
+  }
   padding: 5px 10px;
-  border-radius: 6px;
+  border-radius: var(--fu-radius-md);
   font-size: 0.813rem;
   font-weight: 500;
   white-space: nowrap;
@@ -62,7 +71,7 @@
   visibility: hidden;
   pointer-events: none;
   @include transition(opacity, transform, visibility);
-  z-index: 10000;
+  z-index: var(--fu-z-tooltip);
 }
 
 /* Tooltip arrow - Base styles */
@@ -75,7 +84,7 @@
   visibility: hidden;
   pointer-events: none;
   @include transition(opacity, visibility);
-  z-index: 10000;
+  z-index: var(--fu-z-tooltip);
 }
 
 /* Show tooltip on hover */
@@ -106,7 +115,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 4px solid transparent;
-  border-top-color: var(--tooltip-arrow-color);
+  border-top-color: var(--#{$component-prefix}-modern-tooltip-arrow-color);
 }
 
 /* Bottom position */
@@ -125,7 +134,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 4px solid transparent;
-  border-bottom-color: var(--tooltip-arrow-color);
+  border-bottom-color: var(--#{$component-prefix}-modern-tooltip-arrow-color);
   border-top-color: transparent;
 }
 
@@ -148,7 +157,7 @@
   bottom: auto;
   transform: translateY(-50%);
   border: 4px solid transparent;
-  border-left-color: var(--tooltip-arrow-color);
+  border-left-color: var(--#{$component-prefix}-modern-tooltip-arrow-color);
   border-top-color: transparent;
 }
 
@@ -171,7 +180,7 @@
   bottom: auto;
   transform: translateY(-50%);
   border: 4px solid transparent;
-  border-right-color: var(--tooltip-arrow-color);
+  border-right-color: var(--#{$component-prefix}-modern-tooltip-arrow-color);
   border-top-color: transparent;
 }
 
@@ -182,25 +191,26 @@
 .tooltip-wrapper {
   position: absolute;
 
-  /* Theming (Complex gradients handled via bg mixin if needed, keeping simple vars here) */
-  background: var(--tooltip-bg);
-  color: var(--tooltip-text);
-  border: 1px solid var(--tooltip-border);
-  box-shadow: var(--tooltip-shadow);
+  /* Theming */
+  background: var(--#{$component-prefix}-modern-tooltip-bg);
+  color: var(--#{$component-prefix}-modern-tooltip-text);
+  border: 1px solid var(--#{$component-prefix}-modern-tooltip-border);
+  box-shadow: var(--#{$component-prefix}-modern-tooltip-shadow);
 
-  backdrop-filter: blur(10px);
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(10px);
+  }
   padding: 5px 10px;
-  border-radius: 6px;
+  border-radius: var(--fu-radius-md);
   font-size: 0.813rem;
   font-weight: 500;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: var(--fu-font-family-base);
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   @include transition(opacity, transform, visibility);
-  z-index: 10000;
+  z-index: var(--fu-z-tooltip);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -264,21 +274,20 @@
 }
 
 .tooltip-text {
-  color: var(--tooltip-text);
+  color: var(--#{$component-prefix}-modern-tooltip-text);
   opacity: 0.95;
 }
 
 .tooltip-shortcut {
-  background: var(--tooltip-shortcut-bg);
-  color: var(--tooltip-shortcut-text);
-  border: 1px solid var(--tooltip-shortcut-border);
+  background: var(--#{$component-prefix}-modern-tooltip-shortcut-bg);
+  color: var(--#{$component-prefix}-modern-tooltip-shortcut-text);
+  border: 1px solid var(--#{$component-prefix}-modern-tooltip-shortcut-border);
 
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--fu-radius-sm);
   font-size: 0.7rem;
   font-weight: 600;
-  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas",
-    monospace;
+  font-family: var(--fu-font-family-mono, 'Courier New', monospace);
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }

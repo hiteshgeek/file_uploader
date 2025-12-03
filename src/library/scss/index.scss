@@ -5,5 +5,6 @@
 
 // Components
 @use "components/recording";
-@use "components/tooltip";
+@use "components/tooltip"; // Old info icon tooltip
+@use "components/tooltip/tooltip" as modern-tooltip; // Modern tooltip system
 @use "components/file-uploader";

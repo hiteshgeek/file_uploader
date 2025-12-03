@@ -9,6 +9,7 @@ import ScreenCapture from "../utils/ScreenCapture.js";
 import VideoRecorder from "../utils/VideoRecorder.js";
 import AudioWorkletRecorder from "../utils/AudioWorkletRecorder.js";
 import RecordingUI from "../utils/RecordingUI.js";
+import Tooltip from "./tooltip/index.js";
 
 export default class FileUploader {
   constructor(element, options = {}) {
@@ -327,7 +328,8 @@ export default class FileUploader {
       this.screenshotBtn = document.createElement("button");
       this.screenshotBtn.type = "button";
       this.screenshotBtn.className = "file-uploader-capture-btn";
-      this.screenshotBtn.title = "Capture Screenshot";
+      this.screenshotBtn.setAttribute("data-tooltip-text", "Capture Screenshot");
+      this.screenshotBtn.setAttribute("data-tooltip-position", "top");
       this.screenshotBtn.innerHTML = getIcon("camera");
       this.screenshotBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -341,7 +343,8 @@ export default class FileUploader {
       this.videoRecordBtn = document.createElement("button");
       this.videoRecordBtn.type = "button";
       this.videoRecordBtn.className = "file-uploader-capture-btn";
-      this.videoRecordBtn.title = "Record Video";
+      this.videoRecordBtn.setAttribute("data-tooltip-text", "Record Video");
+      this.videoRecordBtn.setAttribute("data-tooltip-position", "top");
       this.videoRecordBtn.innerHTML = getIcon("video");
       this.videoRecordBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -368,7 +371,8 @@ export default class FileUploader {
       );
       if (timeElement) {
         timeElement.style.cursor = "pointer";
-        timeElement.title = "Click to toggle time display";
+        timeElement.setAttribute("data-tooltip-text", "Click to toggle time display");
+        timeElement.setAttribute("data-tooltip-position", "top");
         timeElement.dataset.showRemaining = "false";
         timeElement.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -385,7 +389,8 @@ export default class FileUploader {
       this.audioRecordBtn = document.createElement("button");
       this.audioRecordBtn.type = "button";
       this.audioRecordBtn.className = "file-uploader-capture-btn";
-      this.audioRecordBtn.title = "Record Audio";
+      this.audioRecordBtn.setAttribute("data-tooltip-text", "Record Audio");
+      this.audioRecordBtn.setAttribute("data-tooltip-position", "top");
       this.audioRecordBtn.innerHTML = getIcon("audio");
       this.audioRecordBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -411,7 +416,8 @@ export default class FileUploader {
         );
         if (timeElement) {
           timeElement.style.cursor = "pointer";
-          timeElement.title = "Click to toggle time display";
+          timeElement.setAttribute("data-tooltip-text", "Click to toggle time display");
+          timeElement.setAttribute("data-tooltip-position", "top");
           timeElement.dataset.showRemaining = "false";
           timeElement.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -427,6 +433,8 @@ export default class FileUploader {
     // Append capture buttons to dropzone
     if (this.captureButtonContainer.children.length > 0) {
       this.dropZone.appendChild(this.captureButtonContainer);
+      // Initialize tooltips for capture buttons
+      Tooltip.initAll(this.captureButtonContainer);
     }
   }
 
@@ -750,19 +758,6 @@ export default class FileUploader {
             ? `Allowed: ${allowedExtensions.map((ext) => `.${ext}`).join(", ")}`
             : "";
 
-        const tooltip = `${
-          tooltipText
-            ? `
-                                <span class="file-uploader-tooltip-wrapper">
-                                    ${getIcon("info", {
-                                      class: "file-uploader-info-icon",
-                                    })}
-                                    <span class="file-uploader-tooltip">${tooltipText}</span>
-                                </span>
-                            `
-            : ""
-        }`;
-
         // Calculate file count for this type if enabled
         let typeCountHtml = "";
         if (this.options.showFileTypeCount) {
@@ -773,13 +768,14 @@ export default class FileUploader {
         }
 
         limitsHTML += `
-                    <div class="file-uploader-limit-item file-uploader-limit-stacked">
+                    <div class="file-uploader-limit-item file-uploader-limit-stacked" ${
+                      tooltipText ? `data-tooltip-text="${tooltipText}" data-tooltip-position="top"` : ""
+                    }>
                         <span class="file-uploader-limit-label">
                             ${this.capitalizeFirst(type)}
                         </span>
                         <span class="file-uploader-limit-value">${limit}</span>
                         ${typeCountHtml}
-                        ${tooltip}
                     </div>
                 `;
       }
@@ -802,7 +798,7 @@ export default class FileUploader {
               this.options.showProgressBar
                 ? "file-uploader-limit-with-progress"
                 : ""
-            }">
+            }" data-tooltip-text="Combined size of all uploaded files" data-tooltip-position="top">
                 <span class="file-uploader-limit-label">Total Size</span>
                 <span class="file-uploader-limit-value">${totalSizeFormatted} / ${
       this.options.totalSizeLimitDisplay
@@ -826,7 +822,7 @@ export default class FileUploader {
               this.options.showProgressBar
                 ? "file-uploader-limit-with-progress"
                 : ""
-            }">
+            }" data-tooltip-text="Number of files uploaded" data-tooltip-position="top">
                 <span class="file-uploader-limit-label">Files</span>
                 <span class="file-uploader-limit-value">${fileCount} / ${
       this.options.maxFiles
@@ -838,6 +834,9 @@ export default class FileUploader {
     limitsHTML += "</div>";
 
     this.limitsContainer.innerHTML = limitsHTML;
+
+    // Initialize tooltips for limits grid items
+    Tooltip.initAll(this.limitsContainer);
 
     // Show/hide button container based on file count
     const hasFiles = fileCount > 0;
