@@ -1,0 +1,259 @@
+// ============================================================================
+// Base Styles for File Uploader Library
+// ============================================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+// ============================================================================
+// Global Keyframes & Animations
+// ============================================================================
+
+@if $file-uploader-enable-animations {
+  @keyframes #{$file-uploader-prefix}-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes #{$file-uploader-prefix}-slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes #{$file-uploader-prefix}-fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes #{$file-uploader-prefix}-fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes #{$file-uploader-prefix}-scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes #{$file-uploader-prefix}-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes #{$file-uploader-prefix}-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+}
+
+// ============================================================================
+// Base Reset & Normalization
+// ============================================================================
+
+.#{$file-uploader-prefix}-wrapper {
+  // Box sizing
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Font smoothing
+  @include font-smooth;
+
+  // Base properties
+  width: 100%;
+  font-family: var(--fu-font-family);
+  color: var(--fu-color-text);
+
+  // Reset margins for elements
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  // Button reset
+  button {
+    @include button-reset;
+  }
+
+  // Image optimization
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  // SVG optimization
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    fill: #fff;
+  }
+
+  // Link reset
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  // List reset
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+// ============================================================================
+// Utility Classes (if needed)
+// ============================================================================
+
+// Hide elements (accessible)
+.#{$file-uploader-prefix}-sr-only {
+  @include visually-hidden;
+}
+
+// Text utilities
+.#{$file-uploader-prefix}-text-center {
+  text-align: center;
+}
+
+.#{$file-uploader-prefix}-text-truncate {
+  @include text-truncate;
+}
+
+// Spacing utilities (using loop)
+@each $name,
+  $size
+    in (
+      "xs": var(--fu-spacing-xs),
+      "sm": var(--fu-spacing-sm),
+      "md": var(--fu-spacing-md),
+      "lg": var(--fu-spacing-lg),
+      "xl": var(--fu-spacing-xl)
+    )
+{
+  .#{$file-uploader-prefix}-mt-#{$name} {
+    margin-top: $size;
+  }
+
+  .#{$file-uploader-prefix}-mb-#{$name} {
+    margin-bottom: $size;
+  }
+
+  .#{$file-uploader-prefix}-my-#{$name} {
+    margin-top: $size;
+    margin-bottom: $size;
+  }
+
+  .#{$file-uploader-prefix}-pt-#{$name} {
+    padding-top: $size;
+  }
+
+  .#{$file-uploader-prefix}-pb-#{$name} {
+    padding-bottom: $size;
+  }
+
+  .#{$file-uploader-prefix}-py-#{$name} {
+    padding-top: $size;
+    padding-bottom: $size;
+  }
+}
+
+// Display utilities
+.#{$file-uploader-prefix}-hidden {
+  display: none !important;
+}
+
+.#{$file-uploader-prefix}-flex {
+  display: flex;
+}
+
+.#{$file-uploader-prefix}-flex-center {
+  @include flex-center;
+}
+
+.#{$file-uploader-prefix}-flex-between {
+  @include flex-between;
+}
+
+// ============================================================================
+// Accessibility Improvements
+// ============================================================================
+
+// Focus visible support
+.#{$file-uploader-prefix}-wrapper {
+  button,
+  a,
+  input {
+    &:focus {
+      outline: none;
+    }
+
+    @include focus-visible;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .#{$file-uploader-prefix}-wrapper {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .#{$file-uploader-prefix}-wrapper {
+    border-width: 2px;
+
+    button {
+      border: 2px solid currentColor;
+    }
+  }
+}

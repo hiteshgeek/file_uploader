@@ -45,17 +45,17 @@ A flexible, feature-rich file uploader that works standalone or integrates seaml
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="file-uploader.css">
-</head>
-<body>
+  <head>
+    <link rel="stylesheet" href="file-uploader.css" />
+  </head>
+  <body>
     <div id="myUploader"></div>
 
     <script src="file-uploader.js"></script>
     <script>
-        const uploader = new FileUploader('#myUploader');
+      const uploader = new FileUploader("#myUploader");
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -64,28 +64,31 @@ A flexible, feature-rich file uploader that works standalone or integrates seaml
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="file-uploader.css">
-</head>
-<body>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="file-uploader.css" />
+  </head>
+  <body>
     <div class="container">
-        <form>
-            <div class="mb-3">
-                <label class="form-label">Upload Files</label>
-                <div id="fileUploader"></div>
-            </div>
-        </form>
+      <form>
+        <div class="mb-3">
+          <label class="form-label">Upload Files</label>
+          <div id="fileUploader"></div>
+        </div>
+      </form>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="file-uploader.js"></script>
     <script>
-        const uploader = new FileUploader('#fileUploader', {
-            multiple: true
-        });
+      const uploader = new FileUploader("#fileUploader", {
+        multiple: true,
+      });
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -106,37 +109,38 @@ return [
 ### JavaScript Options
 
 ```javascript
-const uploader = new FileUploader('#element', {
-    // Upload endpoints
-    uploadUrl: 'upload.php',
-    deleteUrl: 'delete.php',
-    configUrl: 'get-config.php',
+const uploader = new FileUploader("#element", {
+  // Upload endpoints
+  uploadUrl: "upload.php",
+  deleteUrl: "delete.php",
+  configUrl: "get-config.php",
 
-    // File restrictions
-    allowedExtensions: ['jpg', 'png', 'pdf'],
-    maxFileSize: 10 * 1024 * 1024,
-    maxFileSizeDisplay: '10MB',
+  // File restrictions
+  allowedExtensions: ["jpg", "png", "pdf"],
+  maxFileSize: 10 * 1024 * 1024,
+  maxFileSizeDisplay: "10MB",
 
-    // File type detection
-    imageExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-    videoExtensions: ['mp4', 'mpeg', 'mov', 'avi', 'webm'],
+  // File type detection
+  imageExtensions: ["jpg", "jpeg", "png", "gif", "webp"],
+  videoExtensions: ["mp4", "mpeg", "mov", "avi", "webm"],
 
-    // Upload settings
-    multiple: true,
-    autoFetchConfig: true, // Fetch config from server
+  // Upload settings
+  multiple: true,
+  autoFetchConfig: true, // Fetch config from server
 
-    // Callbacks
-    onUploadStart: (fileObj) => {},
-    onUploadSuccess: (fileObj, result) => {},
-    onUploadError: (fileObj, error) => {},
-    onDeleteSuccess: (fileObj, result) => {},
-    onDeleteError: (fileObj, error) => {}
+  // Callbacks
+  onUploadStart: (fileObj) => {},
+  onUploadSuccess: (fileObj, result) => {},
+  onUploadError: (fileObj, error) => {},
+  onDeleteSuccess: (fileObj, result) => {},
+  onDeleteError: (fileObj, error) => {},
 });
 ```
 
 ## API Methods
 
 ### getFiles()
+
 Returns all files (uploaded and uploading).
 
 ```javascript
@@ -144,6 +148,7 @@ const allFiles = uploader.getFiles();
 ```
 
 ### getUploadedFiles()
+
 Returns only successfully uploaded files with full details.
 
 ```javascript
@@ -151,6 +156,7 @@ const uploadedFiles = uploader.getUploadedFiles();
 ```
 
 ### getUploadedFileNames()
+
 **For form submission:** Returns array of server filenames only - perfect for storing in database.
 
 ```javascript
@@ -159,13 +165,14 @@ const fileNames = uploader.getUploadedFileNames();
 
 // Use in form submission
 const formData = {
-    name: 'John Doe',
-    email: 'john@example.com',
-    attachments: uploader.getUploadedFileNames()
+  name: "John Doe",
+  email: "john@example.com",
+  attachments: uploader.getUploadedFileNames(),
 };
 ```
 
 ### getUploadedFilesData()
+
 Returns detailed data about uploaded files for form submission.
 
 ```javascript
@@ -183,6 +190,7 @@ const filesData = uploader.getUploadedFilesData();
 ```
 
 ### clear()
+
 Removes all files and deletes them from the server.
 
 ```javascript
@@ -190,6 +198,7 @@ uploader.clear();
 ```
 
 ### destroy()
+
 Removes the uploader from the DOM.
 
 ```javascript
@@ -206,10 +215,10 @@ file_uploader/
 ├── get-config.php          # Config API endpoint
 ├── file-uploader.js        # JavaScript class
 ├── file-uploader.css       # Styles
-├── index.html              # Standalone demo
-├── demo-bootstrap3.html    # Bootstrap 3 demo
-├── demo-bootstrap4.html    # Bootstrap 4 demo
-├── demo-bootstrap5.html    # Bootstrap 5 demo
+├── index.php              # Standalone demo
+├── demo-bootstrap3.php    # Bootstrap 3 demo
+├── demo-bootstrap4.php    # Bootstrap 4 demo
+├── demo-bootstrap5.php    # Bootstrap 5 demo
 ├── uploads/                # Upload directory (auto-created)
 └── README.md               # This file
 ```
@@ -238,19 +247,19 @@ You can override the default styles by adding your own CSS:
 
 ```css
 .file-uploader-dropzone {
-    border-color: #your-color;
-    background-color: #your-bg;
+  border-color: #your-color;
+  background-color: #your-bg;
 }
 ```
 
 ### Custom Error Handling
 
 ```javascript
-const uploader = new FileUploader('#element', {
-    onUploadError: (fileObj, error) => {
-        // Custom error handling
-        alert(`Failed to upload ${fileObj.name}: ${error.message}`);
-    }
+const uploader = new FileUploader("#element", {
+  onUploadError: (fileObj, error) => {
+    // Custom error handling
+    alert(`Failed to upload ${fileObj.name}: ${error.message}`);
+  },
 });
 ```
 
@@ -266,4 +275,4 @@ Free to use for personal and commercial projects.
 
 ## Demo
 
-Open `index.html` in your browser to see the standalone demo, or check out the Bootstrap demos for framework integration examples.
+Open `index.php` in your browser to see the standalone demo, or check out the Bootstrap demos for framework integration examples.

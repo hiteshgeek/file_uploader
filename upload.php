@@ -30,30 +30,23 @@ if (!isset($_FILES['file']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) 
 }
 
 $file = $_FILES['file'];
+$originalName = basename($file['name']);
 
 // Check for upload errors
 if ($file['error'] !== UPLOAD_ERR_OK) {
     $errorMessages = [
-        UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize directive in php.ini',
-        UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE directive in HTML form',
-        UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
-        UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder',
-        UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-        UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload'
+        UPLOAD_ERR_INI_SIZE => 'exceeds upload_max_filesize directive in php.ini',
+        UPLOAD_ERR_FORM_SIZE => 'exceeds MAX_FILE_SIZE directive in HTML form',
+        UPLOAD_ERR_PARTIAL => 'was only partially uploaded',
+        UPLOAD_ERR_NO_TMP_DIR => 'upload failed - missing temporary folder',
+        UPLOAD_ERR_CANT_WRITE => 'upload failed - cannot write file to disk',
+        UPLOAD_ERR_EXTENSION => 'upload was stopped by a PHP extension'
     ];
 
+    $errorMsg = $errorMessages[$file['error']] ?? 'unknown upload error';
     echo json_encode([
         'success' => false,
-        'error' => $errorMessages[$file['error']] ?? 'Unknown upload error'
-    ]);
-    exit;
-}
-
-// Validate file size
-if ($file['size'] > $config['max_file_size']) {
-    echo json_encode([
-        'success' => false,
-        'error' => 'File size exceeds maximum allowed size of ' . $config['max_file_size_display']
+        'error' => "\"{$originalName}\" {$errorMsg}"
     ]);
     exit;
 }
@@ -62,20 +55,53 @@ if ($file['size'] > $config['max_file_size']) {
 if ($file['size'] === 0) {
     echo json_encode([
         'success' => false,
-        'error' => 'File is empty'
+        'error' => "\"{$originalName}\" is empty"
     ]);
     exit;
 }
 
 // Get file extension
-$originalName = basename($file['name']);
 $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
 // Validate file extension
 if (!in_array($extension, $config['allowed_extensions'])) {
     echo json_encode([
         'success' => false,
-        'error' => 'File type not allowed. Allowed types: ' . implode(', ', $config['allowed_extensions'])
+        'error' => "\"{$originalName}\" file type is not allowed. Allowed types: " . implode(', ', $config['allowed_extensions'])
+    ]);
+    exit;
+}
+
+// Determine file type for per-type size limit validation
+$fileType = 'other';
+if (in_array($extension, $config['image_extensions'])) {
+    $fileType = 'image';
+} elseif (in_array($extension, $config['video_extensions'])) {
+    $fileType = 'video';
+} elseif (in_array($extension, $config['document_extensions'])) {
+    $fileType = 'document';
+} elseif (in_array($extension, $config['archive_extensions'])) {
+    $fileType = 'archive';
+}
+
+// Validate per-file-type size limit
+if (isset($config['file_type_size_limits'][$fileType])) {
+    $typeLimit = $config['file_type_size_limits'][$fileType];
+    if ($file['size'] > $typeLimit) {
+        $limitDisplay = $config['file_type_size_limits_display'][$fileType] ?? 'unknown';
+        echo json_encode([
+            'success' => false,
+            'error' => "\"{$originalName}\" exceeds the {$fileType} file size limit of {$limitDisplay}"
+        ]);
+        exit;
+    }
+}
+
+// Validate general file size
+if ($file['size'] > $config['max_file_size']) {
+    echo json_encode([
+        'success' => false,
+        'error' => "\"{$originalName}\" exceeds maximum file size of " . $config['max_file_size_display']
     ]);
     exit;
 }
@@ -88,7 +114,7 @@ finfo_close($finfo);
 if (!in_array($mimeType, $config['allowed_types'])) {
     echo json_encode([
         'success' => false,
-        'error' => 'File MIME type not allowed'
+        'error' => "\"{$originalName}\" file type not allowed (MIME type: {$mimeType})"
     ]);
     exit;
 }

@@ -1,12 +1,18 @@
+<?php
+include_once __DIR__ . '/includes/functions.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Uploader - Bootstrap 3 Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="file-uploader.css">
+    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
 </head>
+
 <body>
     <div class="container" style="margin-top: 40px;">
         <div class="page-header">
@@ -53,7 +59,7 @@
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Submit</button>
-                        <button type="button" class="btn btn-default" onclick="window.location.href='index.html'">Back to Standalone Demo</button>
+                        <button type="button" class="btn btn-default" onclick="window.location.href='index.php'">Back to Standalone Demo</button>
                     </div>
                 </form>
             </div>
@@ -64,48 +70,22 @@
                 <h3 class="panel-title">Other Demos</h3>
             </div>
             <div class="panel-body">
-                <a href="index.html" class="btn btn-default btn-sm">Standalone</a>
-                <a href="demo-bootstrap4.html" class="btn btn-default btn-sm">Bootstrap 4</a>
-                <a href="demo-bootstrap5.html" class="btn btn-default btn-sm">Bootstrap 5</a>
+                <a href="index.php" class="btn btn-default btn-sm">Standalone</a>
+                <a href="demo-bootstrap4.php" class="btn btn-default btn-sm">Bootstrap 4</a>
+                <a href="demo-bootstrap5.php" class="btn btn-default btn-sm">Bootstrap 5</a>
             </div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="file-uploader.js"></script>
-    <script>
-        // Initialize profile picture uploader (single image only)
-        const profileUploader = new FileUploader('#profilePicture', {
-            multiple: false,
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Profile picture uploaded:', result);
-            }
-        });
 
-        // Initialize documents uploader (multiple files)
-        const documentsUploader = new FileUploader('#documents', {
-            multiple: true,
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Document uploaded:', result);
-            }
-        });
+    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
+    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
 
-        // Handle form submission
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+    <script type="module" src="<?= asset('bootstrap_3.js') ?>"></script>
+    <script nomodule src="<?php echo asset('bootstrap_3.js', 'nomodule'); ?>"></script>
 
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                profilePicture: profileUploader.getUploadedFiles(),
-                documents: documentsUploader.getUploadedFiles()
-            };
-
-            console.log('Form submitted with data:', formData);
-
-            alert('Form submitted successfully! Check console for details.');
-        });
-    </script>
 </body>
+
 </html>

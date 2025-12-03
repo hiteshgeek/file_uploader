@@ -1,12 +1,17 @@
+<?php
+include_once __DIR__ . '/includes/functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Uploader - Bootstrap 4 Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="file-uploader.css">
+    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="jumbotron">
@@ -53,7 +58,7 @@
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Submit Project</button>
                         <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-                        <a href="index.html" class="btn btn-outline-secondary">Back to Standalone Demo</a>
+                        <a href="index.php" class="btn btn-outline-secondary">Back to Standalone Demo</a>
                     </div>
                 </form>
             </div>
@@ -64,9 +69,9 @@
                 Other Demos
             </div>
             <div class="card-body">
-                <a href="index.html" class="btn btn-sm btn-outline-primary">Standalone</a>
-                <a href="demo-bootstrap3.html" class="btn btn-sm btn-outline-primary">Bootstrap 3</a>
-                <a href="demo-bootstrap5.html" class="btn btn-sm btn-outline-primary">Bootstrap 5</a>
+                <a href="index.php" class="btn btn-sm btn-outline-primary">Standalone</a>
+                <a href="demo-bootstrap3.php" class="btn btn-sm btn-outline-primary">Bootstrap 3</a>
+                <a href="demo-bootstrap5.php" class="btn btn-sm btn-outline-primary">Bootstrap 5</a>
             </div>
         </div>
     </div>
@@ -74,55 +79,12 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="file-uploader.js"></script>
-    <script>
-        // Initialize uploaders
-        const imagesUploader = new FileUploader('#projectImages', {
-            multiple: true,
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Image uploaded:', result);
-            }
-        });
 
-        const videosUploader = new FileUploader('#projectVideos', {
-            multiple: true,
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Video uploaded:', result);
-            }
-        });
+    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
+    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
 
-        const filesUploader = new FileUploader('#additionalFiles', {
-            multiple: true,
-            onUploadSuccess: (fileObj, result) => {
-                console.log('File uploaded:', result);
-            }
-        });
-
-        // Handle form submission
-        document.getElementById('submissionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = {
-                projectName: document.getElementById('projectName').value,
-                description: document.getElementById('description').value,
-                images: imagesUploader.getUploadedFiles(),
-                videos: videosUploader.getUploadedFiles(),
-                files: filesUploader.getUploadedFiles()
-            };
-
-            console.log('Form submitted with data:', formData);
-
-            alert('Project submitted successfully! Check console for details.');
-        });
-
-        function resetForm() {
-            if (confirm('Are you sure you want to reset the form and clear all uploaded files?')) {
-                document.getElementById('submissionForm').reset();
-                imagesUploader.clear();
-                videosUploader.clear();
-                filesUploader.clear();
-            }
-        }
-    </script>
+    <script type="module" src="<?= asset('bootstrap_4.js') ?>"></script>
+    <script nomodule src="<?php echo asset('bootstrap_4.js', 'nomodule'); ?>"></script>
 </body>
+
 </html>

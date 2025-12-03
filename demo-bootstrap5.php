@@ -1,12 +1,17 @@
+<?php
+include_once __DIR__ . '/includes/functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Uploader - Bootstrap 5 Demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="file-uploader.css">
+    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="bg-light p-5 rounded">
@@ -86,7 +91,7 @@
                     <div class="d-grid gap-2 d-md-flex">
                         <button type="submit" class="btn btn-primary">Submit Application</button>
                         <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-                        <a href="index.html" class="btn btn-outline-secondary">Back to Standalone Demo</a>
+                        <a href="index.php" class="btn btn-outline-secondary">Back to Standalone Demo</a>
                     </div>
                 </form>
             </div>
@@ -95,97 +100,18 @@
         <div class="alert alert-info" role="alert">
             <h5 class="alert-heading">Other Demos</h5>
             <hr>
-            <a href="index.html" class="btn btn-sm btn-outline-info">Standalone</a>
-            <a href="demo-bootstrap3.html" class="btn btn-sm btn-outline-info">Bootstrap 3</a>
-            <a href="demo-bootstrap4.html" class="btn btn-sm btn-outline-info">Bootstrap 4</a>
+            <a href="index.php" class="btn btn-sm btn-outline-info">Standalone</a>
+            <a href="demo-bootstrap3.php" class="btn btn-sm btn-outline-info">Bootstrap 3</a>
+            <a href="demo-bootstrap4.php" class="btn btn-sm btn-outline-info">Bootstrap 4</a>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="file-uploader.js"></script>
-    <script>
-        // Initialize uploaders
-        const resumeUploader = new FileUploader('#resume', {
-            multiple: false, // Only one resume
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Resume uploaded:', result);
-            }
-        });
+    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
+    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
 
-        const coverLetterUploader = new FileUploader('#coverLetter', {
-            multiple: false, // Only one cover letter
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Cover letter uploaded:', result);
-            }
-        });
-
-        const portfolioUploader = new FileUploader('#portfolio', {
-            multiple: true, // Multiple portfolio items
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Portfolio item uploaded:', result);
-            }
-        });
-
-        // Bootstrap 5 form validation
-        const form = document.getElementById('applicationForm');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (form.checkValidity()) {
-                // Prepare form data for backend
-                const formData = {
-                    fullName: document.getElementById('fullName').value,
-                    email: document.getElementById('email').value,
-                    position: document.getElementById('position').value,
-                    // Just send server filenames for database storage
-                    resumeFiles: resumeUploader.getUploadedFileNames(),
-                    coverLetterFiles: coverLetterUploader.getUploadedFileNames(),
-                    portfolioFiles: portfolioUploader.getUploadedFileNames(),
-                    terms: document.getElementById('terms').checked
-                };
-
-                console.log('Form data to send to backend:', formData);
-                console.log('Resume filenames:', formData.resumeFiles);
-                console.log('Portfolio filenames:', formData.portfolioFiles);
-
-                // Example: Send to backend
-                // fetch('/api/submit-application', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(formData)
-                // });
-
-                // Show success message
-                const alert = document.createElement('div');
-                alert.className = 'alert alert-success alert-dismissible fade show mt-3';
-                alert.innerHTML = `
-                    <strong>Success!</strong> Your application has been submitted.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                form.insertAdjacentElement('beforebegin', alert);
-
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            form.classList.add('was-validated');
-        });
-
-        function resetForm() {
-            if (confirm('Are you sure you want to reset the form and clear all uploaded files?')) {
-                form.reset();
-                form.classList.remove('was-validated');
-                resumeUploader.clear();
-                coverLetterUploader.clear();
-                portfolioUploader.clear();
-
-                // Remove any success alerts
-                const alerts = form.querySelectorAll('.alert-success');
-                alerts.forEach(alert => alert.remove());
-            }
-        }
-    </script>
+    <script type="module" src="<?= asset('bootstrap_5.js') ?>"></script>
+    <script nomodule src="<?php echo asset('bootstrap_5.js', 'nomodule'); ?>"></script>
 </body>
+
 </html>

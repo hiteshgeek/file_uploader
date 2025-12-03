@@ -1,0 +1,689 @@
+// ============================================================================
+// File Uploader Component
+// ============================================================================
+
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ============================================================================
+// Component Variables (can be overridden)
+// ============================================================================
+
+$component-prefix: $file-uploader-prefix !default;
+
+// ============================================================================
+// Main Wrapper
+// ============================================================================
+
+.#{$component-prefix}-wrapper {
+  width: 100%;
+  font-family: var(--fu-font-family);
+}
+
+// ============================================================================
+// Drop Zone Section
+// ============================================================================
+
+.#{$component-prefix}-dropzone {
+  position: relative;
+  border: var(--fu-dropzone-border-width) dashed var(--fu-color-border);
+  border-radius: var(--fu-radius-lg);
+  padding: var(--fu-dropzone-padding);
+  background-color: var(--fu-color-bg-light);
+  cursor: pointer;
+  @include transition((border-color, background-color));
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+
+  // Hover state
+  &:hover {
+    border-color: var(--fu-color-border-hover);
+    background-color: var(--fu-color-bg-hover);
+  }
+
+  // Drag over state
+  &.#{$component-prefix}-dragover {
+    border-color: var(--fu-color-border-hover);
+    background-color: var(--fu-color-bg-hover);
+    border-style: solid;
+
+    @if $file-uploader-enable-animations {
+      animation: #{$component-prefix}-pulse 1s ease-in-out infinite;
+    }
+  }
+
+  // Disabled state
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // When files are uploaded, reduce top padding
+  &:has(.#{$component-prefix}-preview) {
+    padding-top: var(--fu-spacing-xl);
+    padding-bottom: var(--fu-spacing-xl);
+  }
+}
+
+.#{$component-prefix}-dropzone-content {
+  pointer-events: none;
+  text-align: center;
+  margin-bottom: var(--fu-spacing-lg);
+
+  // Hide dropzone header when files exist (using :has selector)
+  &:has(+ .#{$component-prefix}-preview-container:not(:empty)) {
+    display: none;
+  }
+}
+
+// ============================================================================
+// Drop Zone Icon & Text
+// ============================================================================
+
+.#{$component-prefix}-icon {
+  width: var(--fu-icon-size-xl);
+  height: var(--fu-icon-size-xl);
+  margin: 0 auto var(--fu-spacing-lg);
+  color: var(--fu-color-primary);
+  @include transition((color, transform));
+
+  .#{$component-prefix}-dropzone:hover & {
+    color: var(--fu-color-primary-hover);
+
+    @if $file-uploader-enable-animations {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.#{$component-prefix}-text {
+  margin: 0 0 var(--fu-spacing-sm);
+  font-size: var(--fu-font-size-md);
+  font-weight: var(--fu-font-weight-medium);
+  color: var(--fu-color-text);
+}
+
+.#{$component-prefix}-subtext {
+  margin: 0;
+  font-size: var(--fu-font-size-base);
+  color: var(--fu-color-text-muted);
+}
+
+// ============================================================================
+// Hidden File Input
+// ============================================================================
+
+.#{$component-prefix}-input {
+  @include visually-hidden;
+}
+
+// ============================================================================
+// Error Message Section
+// ============================================================================
+
+.#{$component-prefix}-error {
+  @include flex(row, flex-start, center);
+  gap: var(--fu-spacing-md);
+  margin: var(--fu-spacing-lg) 0;
+  padding: var(--fu-spacing-md) var(--fu-spacing-lg);
+  background-color: var(--fu-color-error-bg);
+  color: var(--fu-color-error-text);
+  border-radius: var(--fu-radius-md);
+  font-size: var(--fu-font-size-base);
+  border-left: 4px solid var(--fu-color-error-text);
+  opacity: 1;
+  transition: opacity $animation-duration-slow ease;
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-slideInDown $animation-duration-slow ease;
+  }
+
+  @include shadow("sm");
+
+  // Error icon
+  &-icon {
+    width: var(--fu-icon-size-md);
+    height: var(--fu-icon-size-md);
+    flex-shrink: 0;
+  }
+
+  // Fade out state (for JavaScript removal)
+  &.is-fading {
+    opacity: 0;
+  }
+}
+
+// ============================================================================
+// Limits Display Section
+// ============================================================================
+
+.#{$component-prefix}-limits {
+  margin: var(--fu-spacing-lg) 0;
+  padding: var(--fu-spacing-md) var(--fu-spacing-lg);
+  background-color: var(--fu-color-bg-light);
+  border: 1px solid var(--fu-color-border-light);
+  border-radius: var(--fu-radius-md);
+}
+
+.#{$component-prefix}-limits-grid {
+  @include grid-auto-fit($grid-min-column-width, var(--fu-spacing-md));
+}
+
+.#{$component-prefix}-limit-item {
+  @include flex-between;
+  padding: var(--fu-spacing-sm) var(--fu-spacing-md);
+  background-color: var(--fu-color-bg);
+  border-radius: var(--fu-radius-sm);
+  font-size: var(--fu-font-size-sm);
+  @include transition((background-color, transform));
+
+  // Highlight variant
+  &.#{$component-prefix}-limit-highlight {
+    background-color: var(--fu-color-bg-hover);
+    border: 1px solid var(--fu-primary-100);
+    font-weight: var(--fu-font-weight-medium);
+  }
+
+  // Hover effect
+  &:hover {
+    @if $file-uploader-enable-animations {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.#{$component-prefix}-limit-label {
+  color: var(--fu-color-text-light);
+  font-weight: var(--fu-font-weight-medium);
+}
+
+.#{$component-prefix}-limit-value {
+  color: var(--fu-color-text);
+  font-weight: var(--fu-font-weight-semibold);
+}
+
+// ============================================================================
+// Download All Button (now inside dropzone)
+// ============================================================================
+
+.#{$component-prefix}-download-all {
+  @include flex-center;
+  gap: var(--fu-spacing-sm);
+  margin: var(--fu-spacing-lg) 0 0 0; // No bottom margin since inside dropzone
+  padding: var(--fu-spacing-sm) var(--fu-spacing-lg);
+  background-color: var(--fu-color-primary) !important;
+  color: white;
+  border: none;
+  border-radius: var(--fu-radius-md);
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-semibold);
+  cursor: pointer;
+  pointer-events: auto; // Allow clicks even though dropzone has pointer-events
+  @include transition((background-color, transform, box-shadow));
+  align-self: flex-start; // Don't take full width
+  width: auto; // Explicit auto width
+  margin-top: 15px !important;
+  padding: 10px 15px !important;
+
+  // Hover state
+  &:hover:not(:disabled) {
+    background-color: var(--fu-color-primary-hover);
+    @if $file-uploader-enable-animations {
+      @include hover-lift;
+    }
+  }
+
+  // Active state
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  // Disabled state
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Icon inside button
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  // Override Bootstrap full-width button classes
+  &.btn-block {
+    width: auto !important;
+    display: inline-flex !important;
+  }
+
+  // Override w-100 utility class
+  &.w-100 {
+    width: auto !important;
+  }
+}
+
+// ============================================================================
+// Preview Container (Grid Layout) - Now inside dropzone
+// ============================================================================
+
+.#{$component-prefix}-preview-container {
+  @include grid-auto-fill($grid-min-column-width, var(--fu-spacing-lg));
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  align-content: start;
+
+  // Empty state - when no previews, hide completely
+  &:empty {
+    display: none;
+  }
+
+  // When not empty, show with proper spacing
+  // &:not(:empty) {
+  //   margin-top: var(--fu-spacing-lg);
+  // }
+
+  // Responsive adjustments
+  @include respond-below("sm") {
+    @include grid-auto-fill(
+      $grid-min-column-width-mobile,
+      var(--fu-spacing-md)
+    );
+  }
+}
+
+// ============================================================================
+// Single Preview Item
+// ============================================================================
+
+.#{$component-prefix}-preview {
+  position: relative;
+  border: 1px solid var(--fu-color-border-light);
+  border-radius: var(--fu-radius-lg);
+  overflow: hidden;
+  background-color: var(--fu-color-bg);
+  @include transition((box-shadow, transform, opacity, border-color));
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-scaleIn $animation-duration-slow $ease-out;
+  }
+
+  // Hover state
+  &:hover {
+    @include shadow("md");
+
+    @if $file-uploader-enable-animations {
+      transform: translateY(-2px);
+    }
+  }
+
+  // States
+  &.uploading {
+    opacity: 0.7;
+  }
+
+  &.success {
+    border-color: var(--fu-color-success);
+  }
+
+  &.error {
+    border-color: var(--fu-color-error);
+    background-color: var(--fu-error-50);
+  }
+}
+
+// ============================================================================
+// Preview Inner (Image/Video/File Container)
+// ============================================================================
+
+.#{$component-prefix}-preview-inner {
+  position: relative;
+  width: 100%;
+  height: var(--fu-preview-height);
+  @include flex-center;
+  background-color: var(--fu-color-bg-light);
+  overflow: hidden;
+
+  // Responsive
+  @include respond-below("sm") {
+    height: var(--fu-preview-height-mobile);
+  }
+}
+
+// ============================================================================
+// Preview Media Types
+// ============================================================================
+
+// Image preview
+.#{$component-prefix}-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  @include transition((transform, filter));
+
+  .#{$component-prefix}-preview:hover & {
+    @if $file-uploader-enable-animations {
+      transform: scale(1.05);
+    }
+  }
+}
+
+// Video preview
+.#{$component-prefix}-preview-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// File icon preview (for non-image/video files)
+.#{$component-prefix}-preview-file {
+  @include flex(column, center, center);
+  color: var(--fu-color-text-light);
+
+  svg {
+    width: var(--fu-icon-size-xl);
+    height: var(--fu-icon-size-xl);
+    margin-bottom: var(--fu-spacing-sm);
+    @include transition((transform, color));
+
+    .#{$component-prefix}-preview:hover & {
+      @if $file-uploader-enable-animations {
+        transform: scale(1.1);
+      }
+      color: var(--fu-color-primary);
+    }
+  }
+}
+
+.#{$component-prefix}-extension {
+  font-size: var(--fu-font-size-base);
+  font-weight: var(--fu-font-weight-semibold);
+  text-transform: uppercase;
+}
+
+// ============================================================================
+// Upload Overlay (Loading Spinner)
+// ============================================================================
+
+.#{$component-prefix}-preview-overlay {
+  @include cover;
+  @include flex-center;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: var(--fu-z-overlay);
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(5px);
+  }
+
+  // Show overlay when uploading
+  .#{$component-prefix}-preview.uploading & {
+    display: flex;
+  }
+}
+
+// ============================================================================
+// Loading Spinner
+// ============================================================================
+
+.#{$component-prefix}-spinner {
+  width: var(--fu-spinner-size);
+  height: var(--fu-spinner-size);
+  border: var(--fu-spinner-border-width) solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: var(--fu-radius-round);
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-spin 0.8s linear infinite;
+  }
+
+  // Small variant (for buttons)
+  &--sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+// ============================================================================
+// File Info Section
+// ============================================================================
+
+.#{$component-prefix}-info {
+  @include flex(row, space-between, center);
+  gap: var(--fu-spacing-sm);
+  padding: var(--fu-spacing-md);
+}
+
+.#{$component-prefix}-info-text {
+  flex: 1;
+  min-width: 0; // Allows text truncation to work
+}
+
+.#{$component-prefix}-filename {
+  @include text-truncate;
+  font-size: var(--fu-font-size-base);
+  font-weight: var(--fu-font-weight-medium);
+  color: var(--fu-color-text);
+  margin-bottom: var(--fu-spacing-xs);
+}
+
+.#{$component-prefix}-meta {
+  @include flex(row, flex-start, center);
+  gap: var(--fu-spacing-sm);
+  font-size: var(--fu-font-size-xs);
+  color: var(--fu-color-text-muted);
+}
+
+.#{$component-prefix}-type {
+  font-weight: var(--fu-font-weight-semibold);
+}
+
+// ============================================================================
+// Action Buttons Container
+// ============================================================================
+
+.#{$component-prefix}-actions {
+  @include flex(row, flex-end, center);
+  gap: var(--fu-spacing-xs);
+  flex-shrink: 0;
+}
+
+// ============================================================================
+// Action Buttons (Download & Delete)
+// ============================================================================
+
+// Shared button styles using mixin
+%action-button {
+  @include flex-center;
+  flex-shrink: 0;
+  width: var(--fu-button-size);
+  height: var(--fu-button-size);
+  padding: var(--fu-spacing-sm);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--fu-radius-sm);
+  cursor: pointer;
+  color: var(--fu-color-text-muted);
+  @include transition((background-color, color, transform));
+
+  svg {
+    width: var(--fu-icon-size-md);
+    height: var(--fu-icon-size-md);
+  }
+
+  // Active state
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Download button
+.#{$component-prefix}-download {
+  @extend %action-button;
+
+  &:hover {
+    background-color: var(--fu-success-100);
+    color: var(--fu-success-700);
+  }
+}
+
+// Delete button
+.#{$component-prefix}-delete {
+  @extend %action-button;
+
+  &:hover {
+    background-color: var(--fu-color-error-bg);
+    color: var(--fu-color-error-text);
+  }
+}
+
+// ============================================================================
+// Responsive Adjustments
+// ============================================================================
+
+@include respond-below("sm") {
+  .#{$component-prefix}-dropzone {
+    padding: var(--fu-spacing-3xl) var(--fu-spacing-lg);
+  }
+
+  .#{$component-prefix}-icon {
+    width: var(--fu-icon-size-lg);
+    height: var(--fu-icon-size-lg);
+  }
+
+  .#{$component-prefix}-text {
+    font-size: var(--fu-font-size-base);
+  }
+
+  .#{$component-prefix}-subtext {
+    font-size: var(--fu-font-size-xs);
+  }
+}
+
+// ============================================================================
+// Bootstrap Form Integration
+// ============================================================================
+
+@if $file-uploader-enable-bootstrap-compat {
+  // Bootstrap 3-5 compatibility
+  .form-group .#{$component-prefix}-wrapper,
+  .mb-3 .#{$component-prefix}-wrapper {
+    margin-top: 0;
+  }
+
+  // Bootstrap 3 compatibility
+  .form-group .#{$component-prefix}-error {
+    margin-top: 0;
+  }
+
+  // Bootstrap 4/5 validation states
+  .was-validated
+    .#{$component-prefix}-wrapper
+    .#{$component-prefix}-preview.error,
+  .is-invalid
+    ~ .#{$component-prefix}-wrapper
+    .#{$component-prefix}-preview.error {
+    border-color: #dc3545;
+  }
+}
+
+// ============================================================================
+// Dark Mode Support
+// ============================================================================
+
+@if $file-uploader-enable-dark-mode {
+  @media (prefers-color-scheme: dark) {
+    .#{$component-prefix}-dropzone {
+      background-color: var(--fu-color-bg-light);
+      border-color: var(--fu-color-border);
+
+      &:hover,
+      &.#{$component-prefix}-dragover {
+        background-color: var(--fu-color-bg-hover);
+        border-color: var(--fu-color-border-hover);
+      }
+    }
+
+    .#{$component-prefix}-text {
+      color: var(--fu-color-text);
+    }
+
+    .#{$component-prefix}-subtext {
+      color: var(--fu-color-text-muted);
+    }
+
+    .#{$component-prefix}-preview {
+      background-color: var(--fu-color-bg);
+      border-color: var(--fu-color-border);
+    }
+
+    .#{$component-prefix}-preview-inner {
+      background-color: var(--fu-color-bg-light);
+    }
+
+    .#{$component-prefix}-filename {
+      color: var(--fu-color-text);
+    }
+
+    .#{$component-prefix}-meta {
+      color: var(--fu-color-text-muted);
+    }
+
+    .#{$component-prefix}-preview-file {
+      color: var(--fu-color-text-light);
+    }
+  }
+}
+
+// ============================================================================
+// Print Styles
+// ============================================================================
+
+@media print {
+  .#{$component-prefix}-dropzone,
+  .#{$component-prefix}-actions {
+    display: none;
+  }
+
+  .#{$component-prefix}-preview {
+    break-inside: avoid;
+  }
+}
+
+// ============================================================================
+// Utility Classes for Component
+// ============================================================================
+
+// Compact mode (smaller spacing)
+.#{$component-prefix}-wrapper--compact {
+  .#{$component-prefix}-dropzone {
+    padding: var(--fu-spacing-xl) var(--fu-spacing-md);
+  }
+
+  .#{$component-prefix}-preview-inner {
+    height: 100px;
+  }
+}
+
+// Inline mode (horizontal layout)
+.#{$component-prefix}-wrapper--inline {
+  .#{$component-prefix}-preview-container {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+  }
+
+  .#{$component-prefix}-preview {
+    width: 150px;
+  }
+}
+
+// Large mode (bigger preview)
+.#{$component-prefix}-wrapper--large {
+  .#{$component-prefix}-preview-inner {
+    height: 250px;
+  }
+}
