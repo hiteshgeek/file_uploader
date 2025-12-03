@@ -24,6 +24,18 @@ return [
         'video/quicktime',
         'video/x-msvideo',
         'video/webm',
+        // Audio
+        'audio/mpeg',
+        'audio/mp3',
+        'audio/wav',
+        'audio/wave',
+        'audio/x-wav',
+        'audio/ogg',
+        'audio/webm',
+        'audio/aac',
+        'audio/x-m4a',
+        'audio/mp4',
+        'audio/flac',
         // Documents
         'application/pdf',
         'application/msword',
@@ -53,6 +65,12 @@ return [
         'mov',
         'avi',
         'webm',
+        'mp3',
+        'wav',
+        'ogg',
+        'aac',
+        'm4a',
+        'flac',
         'pdf',
         'doc',
         'docx',
@@ -76,7 +94,8 @@ return [
     // Per file type size limits (in bytes)
     'file_type_size_limits' => [
         'image' => 5 * 1024 * 1024,      // 5MB for images
-        'video' => 500 * 1024 * 1024,     // 50MB for videos
+        'video' => 500 * 1024 * 1024,     // 500MB for videos
+        'audio' => 50 * 1024 * 1024,     // 50MB for audio
         'document' => 10 * 1024 * 1024,  // 10MB for documents
         'archive' => 20 * 1024 * 1024,   // 20MB for archives
     ],
@@ -85,6 +104,7 @@ return [
     'file_type_size_limits_display' => [
         'image' => '5MB',
         'video' => '500MB',
+        'audio' => '50MB',
         'document' => '10MB',
         'archive' => '20MB',
     ],
@@ -106,6 +126,9 @@ return [
 
     // Video file extensions for preview
     'video_extensions' => ['mp4', 'mpeg', 'mov', 'avi', 'webm'],
+
+    // Audio file extensions for preview
+    'audio_extensions' => ['mp3', 'wav', 'ogg', 'webm', 'aac', 'm4a', 'flac'],
 
     // Document file extensions
     'document_extensions' => ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'],

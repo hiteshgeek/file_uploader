@@ -1,0 +1,163 @@
+// ============================================================================
+// Recording Components
+// ============================================================================
+// This file contains all styles related to video recording functionality
+// including countdown overlay, recording indicator, and toolbar buttons
+
+// Note: This file is imported into _file-uploader.scss and inherits its variables
+
+// ============================================================================
+// Capture Button States (Recording-specific)
+// ============================================================================
+
+.file-uploader-capture-btn {
+  // Stop button styling
+  &-stop {
+    background-color: var(--fu-error-600) !important;
+    transition: var(--fu-transition-base);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-error-700) !important;
+      box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4), 0 4px 6px -2px rgba(220, 38, 38, 0.2);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--fu-error-800) !important;
+      transform: translateY(0);
+    }
+  }
+
+  // Paused state (for pause button when recording is paused)
+  &.paused {
+    background-color: var(--fu-warning-500) !important;
+    animation: pulse-warning 2s ease-in-out infinite;
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-warning-600) !important;
+      animation: none;
+    }
+  }
+
+  // Muted state (for audio toggles)
+  &.muted {
+    background-color: var(--fu-color-text-muted);
+    opacity: 0.7;
+
+    &:hover:not(:disabled) {
+      opacity: 0.8;
+    }
+  }
+}
+
+// ============================================================================
+// Recording Indicator
+// ============================================================================
+
+.file-uploader-recording-indicator {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(--fu-spacing-sm);
+  padding: var(--fu-spacing-sm) var(--fu-spacing-md);
+  background-color: var(--fu-error-600);
+  color: white;
+  border-radius: var(--fu-radius-lg);
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-medium);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.file-uploader-recording-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+  animation: file-uploader-blink 1s ease-in-out infinite;
+}
+
+.file-uploader-recording-time {
+  font-variant-numeric: tabular-nums;
+}
+
+// ============================================================================
+// Countdown Overlay (Full Screen)
+// ============================================================================
+
+.file-uploader-countdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.file-uploader-countdown-content {
+  text-align: center;
+}
+
+.file-uploader-countdown-number {
+  font-size: 120px;
+  font-weight: 700;
+  color: var(--fu-color-primary);
+  line-height: 1;
+  margin-bottom: var(--fu-spacing-lg);
+
+  &.pulse {
+    animation: file-uploader-countdown-pulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.file-uploader-countdown-text {
+  font-size: var(--fu-font-size-xl);
+  font-weight: var(--fu-font-weight-medium);
+  color: white;
+}
+
+@keyframes file-uploader-countdown-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Pulse animation for paused button
+@keyframes pulse-warning {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+// ============================================================================
+// Recording Toolbar (Inside Dropzone)
+// ============================================================================
+
+.file-uploader-recording-toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(--fu-spacing-sm);
+  margin-top: var(--fu-spacing-md);
+  padding: var(--fu-spacing-sm) 0;
+}

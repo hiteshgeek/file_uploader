@@ -21,6 +21,7 @@ $jsConfig = [
     'maxFiles' => $config['max_files'],
     'imageExtensions' => $config['image_extensions'],
     'videoExtensions' => $config['video_extensions'],
+    'audioExtensions' => $config['audio_extensions'],
     'documentExtensions' => $config['document_extensions'],
     'archiveExtensions' => $config['archive_extensions'],
     'uploadUrl' => 'upload.php',

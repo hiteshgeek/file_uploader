@@ -53,6 +53,10 @@ include_once __DIR__ . '/includes/functions.php';
         </div>
     </div>
 
+    <!-- IMPORTANT: Load webm-duration-fix BEFORE the file uploader script -->
+    <!-- This enables WebM duration metadata fixing for recorded videos and audio -->
+    <script src="https://cdn.jsdelivr.net/npm/webm-duration-fix@1.0.3/dist/fix-webm-duration.min.js"></script>
+
     <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
     <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
 

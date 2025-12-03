@@ -552,6 +552,30 @@ $component-prefix: $file-uploader-prefix !default;
   margin-left: 3px; // Slight offset to center the triangle visually
 }
 
+// Audio preview
+.#{$component-prefix}-preview-audio {
+  @include flex(column, center, center);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fu-color-primary-light) 0%, var(--fu-color-primary) 100%);
+  position: relative;
+}
+
+.#{$component-prefix}-audio-icon {
+  width: 64px;
+  height: 64px;
+  color: white;
+  opacity: 0.9;
+  @include transition((transform, opacity));
+
+  .#{$component-prefix}-preview:hover & {
+    @if $file-uploader-enable-animations {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+}
+
 // File icon preview (for non-image/video files)
 .#{$component-prefix}-preview-file {
   @include flex(column, center, center);
@@ -887,125 +911,6 @@ $component-prefix: $file-uploader-prefix !default;
   }
 
   // Stop button variant (red background)
-  &-stop {
-    background-color: var(--fu-error-600) !important;
-
-    &:hover:not(:disabled) {
-      background-color: var(--fu-error-900) !important;
-      @include shadow("lg");
-    }
-  }
-
-  // Paused state
-  &.paused {
-    background-color: var(--fu-warning-500);
-
-    &:hover:not(:disabled) {
-      background-color: var(--fu-warning-600);
-    }
-  }
-
-  // Muted state
-  &.muted {
-    background-color: var(--fu-color-text-muted);
-    opacity: 0.7;
-
-    &:hover:not(:disabled) {
-      opacity: 0.8;
-    }
-  }
-}
-
-// ============================================================================
-// Recording Indicator
-// ============================================================================
-
-.#{$component-prefix}-recording-indicator {
-  @include flex(row, center, center);
-  gap: var(--fu-spacing-sm);
-  padding: var(--fu-spacing-sm) var(--fu-spacing-md);
-  background-color: var(--fu-error-600);
-  color: white;
-  border-radius: var(--fu-radius-lg);
-  font-size: var(--fu-font-size-sm);
-  font-weight: var(--fu-font-weight-medium);
-  @include shadow("md");
-}
-
-.#{$component-prefix}-recording-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: white;
-  animation: #{$component-prefix}-blink 1s ease-in-out infinite;
-}
-
-.#{$component-prefix}-recording-time {
-  font-variant-numeric: tabular-nums;
-}
-
-// ============================================================================
-// Countdown Overlay (Full Screen)
-// ============================================================================
-
-.#{$component-prefix}-countdown-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999999;
-  @include flex-center;
-  background-color: rgba(0, 0, 0, 0.95);
-  @include backdrop-blur(10px);
-}
-
-.#{$component-prefix}-countdown-content {
-  text-align: center;
-}
-
-.#{$component-prefix}-countdown-number {
-  font-size: 120px;
-  font-weight: 700;
-  color: var(--fu-color-primary);
-  line-height: 1;
-  margin-bottom: var(--fu-spacing-lg);
-
-  &.pulse {
-    animation: #{$component-prefix}-countdown-pulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-}
-
-.#{$component-prefix}-countdown-text {
-  font-size: var(--fu-font-size-xl);
-  font-weight: var(--fu-font-weight-medium);
-  color: white;
-}
-
-@keyframes #{$component-prefix}-countdown-pulse {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-// ============================================================================
-// Recording Toolbar (Inside Dropzone)
-// ============================================================================
-
-.#{$component-prefix}-recording-toolbar {
-  @include flex(row, center, center);
-  gap: var(--fu-spacing-sm);
-  margin-top: var(--fu-spacing-md);
-  padding: var(--fu-spacing-sm) 0;
 }
 
 .#{$component-prefix}-toolbar-btn {

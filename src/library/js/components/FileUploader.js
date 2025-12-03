@@ -7,6 +7,8 @@
 import { getIcon } from "../utils/icons.js";
 import ScreenCapture from "../utils/ScreenCapture.js";
 import VideoRecorder from "../utils/VideoRecorder.js";
+import AudioRecorder from "../utils/AudioRecorder.js";
+import RecordingUI from "../utils/RecordingUI.js";
 
 export default class FileUploader {
   constructor(element, options = {}) {
@@ -35,6 +37,7 @@ export default class FileUploader {
       maxFiles: 10,
       imageExtensions: ["jpg", "jpeg", "png", "gif", "webp", "svg"],
       videoExtensions: ["mp4", "mpeg", "mov", "avi", "webm"],
+      audioExtensions: ["mp3", "wav", "ogg", "webm", "aac", "m4a", "flac"],
       documentExtensions: [
         "pdf",
         "doc",
@@ -65,7 +68,9 @@ export default class FileUploader {
       cleanupOnUnload: true, // Automatically delete uploaded files from server when leaving the page
       enableScreenCapture: true, // Enable screenshot capture button
       enableVideoRecording: true, // Enable video recording button
+      enableAudioRecording: true, // Enable audio recording button
       maxVideoRecordingDuration: 300, // Max video recording duration in seconds (default 5 minutes)
+      maxAudioRecordingDuration: 300, // Max audio recording duration in seconds (default 5 minutes)
       recordingCountdownDuration: 3, // Countdown duration before recording starts in seconds (default 3)
       enableMicrophoneAudio: false, // Enable microphone audio recording
       enableSystemAudio: false, // Enable system audio recording
@@ -100,6 +105,8 @@ export default class FileUploader {
     this.files = [];
     this.screenCapture = null;
     this.videoRecorder = null;
+    this.audioRecorder = null;
+    this.recordingUI = new RecordingUI(this);
     this.init();
   }
 
@@ -355,15 +362,72 @@ export default class FileUploader {
         e.stopPropagation();
       });
 
-      // Time element is clickable but no longer needed for toggle
+      // Make time element clickable for pause/resume toggle
       const timeElement = this.recordingIndicator.querySelector(
         ".file-uploader-recording-time"
       );
       if (timeElement) {
-        timeElement.style.cursor = "default";
+        timeElement.style.cursor = "pointer";
+        timeElement.title = "Click to pause/resume";
+        timeElement.addEventListener("click", (e) => {
+          e.stopPropagation();
+          // Determine which recording type is active and toggle pause
+          if (this.videoRecorder && this.videoRecorder.getRecordingStatus().isRecording) {
+            this.recordingUI.togglePauseRecording();
+          } else if (this.audioRecorder && this.audioRecorder.getRecordingStatus().isRecording) {
+            this.recordingUI.togglePauseAudioRecording();
+          }
+        });
       }
 
       this.captureButtonContainer.appendChild(this.recordingIndicator);
+    }
+
+    // Audio recording button
+    if (this.options.enableAudioRecording && AudioRecorder.isSupported()) {
+      this.audioRecordBtn = document.createElement("button");
+      this.audioRecordBtn.type = "button";
+      this.audioRecordBtn.className = "file-uploader-capture-btn";
+      this.audioRecordBtn.title = "Record Audio";
+      this.audioRecordBtn.innerHTML = getIcon("audio");
+      this.audioRecordBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggleAudioRecording();
+      });
+      this.captureButtonContainer.appendChild(this.audioRecordBtn);
+
+      // Create recording indicator if not already created by video button
+      if (!this.recordingIndicator) {
+        this.recordingIndicator = document.createElement("div");
+        this.recordingIndicator.className = "file-uploader-recording-indicator";
+        this.recordingIndicator.style.display = "none";
+        this.recordingIndicator.innerHTML = `
+          <span class="file-uploader-recording-dot"></span>
+          <span class="file-uploader-recording-time">00:00 / 05:00</span>
+        `;
+        this.recordingIndicator.addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
+
+        const timeElement = this.recordingIndicator.querySelector(
+          ".file-uploader-recording-time"
+        );
+        if (timeElement) {
+          timeElement.style.cursor = "pointer";
+          timeElement.title = "Click to pause/resume";
+          timeElement.addEventListener("click", (e) => {
+            e.stopPropagation();
+            // Determine which recording type is active and toggle pause
+            if (this.videoRecorder && this.videoRecorder.getRecordingStatus().isRecording) {
+              this.recordingUI.togglePauseRecording();
+            } else if (this.audioRecorder && this.audioRecorder.getRecordingStatus().isRecording) {
+              this.recordingUI.togglePauseAudioRecording();
+            }
+          });
+        }
+
+        this.captureButtonContainer.appendChild(this.recordingIndicator);
+      }
     }
 
     // Append capture buttons to dropzone
@@ -400,191 +464,15 @@ export default class FileUploader {
   }
 
   async toggleVideoRecording() {
-    if (this.videoRecorder && this.videoRecorder.getRecordingStatus().isRecording) {
+    if (
+      this.videoRecorder &&
+      this.videoRecorder.getRecordingStatus().isRecording
+    ) {
       // Stop recording
       await this.stopVideoRecording();
     } else {
       // Start recording
       await this.startVideoRecording();
-    }
-  }
-
-  /**
-   * Show countdown before recording starts
-   * @returns {Promise<void>}
-   */
-  async showCountdown() {
-    return new Promise((resolve) => {
-      const countdown = document.createElement("div");
-      countdown.className = "file-uploader-countdown-overlay";
-      countdown.innerHTML = `
-        <div class="file-uploader-countdown-content">
-          <div class="file-uploader-countdown-number">${this.options.recordingCountdownDuration}</div>
-          <div class="file-uploader-countdown-text">Get ready to record...</div>
-        </div>
-      `;
-      document.body.appendChild(countdown);
-
-      const numberElement = countdown.querySelector(".file-uploader-countdown-number");
-      let remaining = this.options.recordingCountdownDuration;
-
-      const interval = setInterval(() => {
-        remaining--;
-        if (remaining > 0) {
-          numberElement.textContent = remaining;
-          // Add animation class
-          numberElement.classList.remove("pulse");
-          void numberElement.offsetWidth; // Force reflow
-          numberElement.classList.add("pulse");
-        } else {
-          clearInterval(interval);
-          countdown.remove();
-          resolve();
-        }
-      }, 1000);
-    });
-  }
-
-  /**
-   * Create and show recording toolbar
-   */
-  createRecordingToolbar() {
-    if (this.recordingToolbar) {
-      this.recordingToolbar.remove();
-    }
-
-    // Create pause button
-    const pauseBtn = document.createElement("button");
-    pauseBtn.type = "button";
-    pauseBtn.className = "file-uploader-capture-btn";
-    pauseBtn.setAttribute("data-action", "pause");
-    pauseBtn.title = "Pause Recording";
-    pauseBtn.innerHTML = getIcon("pause");
-    pauseBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      this.togglePauseRecording();
-    });
-
-    // Create system audio button if enabled
-    let systemAudioBtn = null;
-    if (this.options.enableSystemAudio) {
-      systemAudioBtn = document.createElement("button");
-      systemAudioBtn.type = "button";
-      systemAudioBtn.className = "file-uploader-capture-btn";
-      systemAudioBtn.setAttribute("data-action", "system-audio");
-      systemAudioBtn.title = "Toggle System Audio";
-      systemAudioBtn.innerHTML = getIcon("system_sound");
-      systemAudioBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.toggleSystemAudio();
-      });
-    }
-
-    // Create microphone button if enabled
-    let micBtn = null;
-    if (this.options.enableMicrophoneAudio) {
-      micBtn = document.createElement("button");
-      micBtn.type = "button";
-      micBtn.className = "file-uploader-capture-btn";
-      micBtn.setAttribute("data-action", "microphone");
-
-      // Check if microphone is available
-      const hasMic = this.videoRecorder && this.videoRecorder.microphoneStream;
-      if (!hasMic) {
-        micBtn.disabled = true;
-        micBtn.classList.add("muted");
-        micBtn.title = "No Microphone Available";
-        micBtn.innerHTML = getIcon("mic_mute");
-      } else {
-        micBtn.title = "Toggle Microphone";
-        micBtn.innerHTML = getIcon("mic");
-      }
-
-      micBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.toggleMicrophone();
-      });
-    }
-
-    // Create stop button
-    const stopBtn = document.createElement("button");
-    stopBtn.type = "button";
-    stopBtn.className = "file-uploader-capture-btn file-uploader-capture-btn-stop";
-    stopBtn.setAttribute("data-action", "stop");
-    stopBtn.title = "Stop Recording";
-    stopBtn.innerHTML = getIcon("stop");
-    stopBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      this.stopVideoRecording();
-    });
-
-    // Append buttons to capture button container in order
-    this.captureButtonContainer.appendChild(pauseBtn);
-    if (systemAudioBtn) this.captureButtonContainer.appendChild(systemAudioBtn);
-    if (micBtn) this.captureButtonContainer.appendChild(micBtn);
-    this.captureButtonContainer.appendChild(stopBtn);
-
-    // Store references for cleanup
-    this.recordingToolbarButtons = [pauseBtn, systemAudioBtn, micBtn, stopBtn].filter(Boolean);
-  }
-
-  /**
-   * Toggle pause/resume recording
-   */
-  togglePauseRecording() {
-    if (!this.videoRecorder) return;
-
-    const status = this.videoRecorder.getRecordingStatus();
-    const pauseBtn = this.captureButtonContainer?.querySelector('[data-action="pause"]');
-
-    if (status.isPaused) {
-      this.videoRecorder.resumeRecording();
-      if (pauseBtn) {
-        pauseBtn.innerHTML = getIcon("pause");
-        pauseBtn.title = "Pause Recording";
-        pauseBtn.classList.remove("paused");
-      }
-    } else {
-      this.videoRecorder.pauseRecording();
-      if (pauseBtn) {
-        pauseBtn.innerHTML = getIcon("play");
-        pauseBtn.title = "Resume Recording";
-        pauseBtn.classList.add("paused");
-      }
-    }
-  }
-
-  /**
-   * Toggle system audio
-   */
-  toggleSystemAudio() {
-    if (!this.videoRecorder) return;
-
-    const enabled = this.videoRecorder.toggleSystemAudio();
-    const btn = this.captureButtonContainer?.querySelector('[data-action="system-audio"]');
-
-    if (btn) {
-      const iconName = enabled ? "system_sound" : "system_sound_mute";
-      btn.innerHTML = getIcon(iconName);
-      btn.classList.toggle("muted", !enabled);
-      btn.title = enabled ? "Mute System Audio" : "Unmute System Audio";
-    }
-  }
-
-  /**
-   * Toggle microphone
-   */
-  toggleMicrophone() {
-    if (!this.videoRecorder) return;
-
-    const enabled = this.videoRecorder.toggleMicrophoneAudio();
-    const btn = this.captureButtonContainer?.querySelector('[data-action="microphone"]');
-
-    if (btn) {
-      const iconName = enabled ? "mic" : "mic_mute";
-      btn.innerHTML = getIcon(iconName);
-      btn.classList.toggle("muted", !enabled);
-      btn.title = enabled ? "Mute Microphone" : "Unmute Microphone";
     }
   }
 
@@ -608,7 +496,7 @@ export default class FileUploader {
       await this.videoRecorder.startRecording();
 
       // Set up handler for when user stops sharing from system button
-      this.setupStreamEndedHandler();
+      this.recordingUI.setupStreamEndedHandler();
 
       // Hide screenshot button during recording
       if (this.screenshotBtn) {
@@ -616,18 +504,15 @@ export default class FileUploader {
       }
 
       // Create recording toolbar
-      this.createRecordingToolbar();
+      this.recordingUI.createRecordingToolbar();
 
       // Hide video record button during recording (stop button is in toolbar)
       if (this.videoRecordBtn) {
         this.videoRecordBtn.style.display = "none";
       }
 
-      // Show recording indicator
-      if (this.recordingIndicator) {
-        this.recordingIndicator.style.display = "flex";
-        this.startRecordingTimer();
-      }
+      // Show recording indicator and start timer
+      this.recordingUI.showRecordingIndicator();
     } catch (error) {
       this.showError(error.message);
 
@@ -642,23 +527,6 @@ export default class FileUploader {
     }
   }
 
-  /**
-   * Setup handler for when user stops screen sharing from system button
-   */
-  setupStreamEndedHandler() {
-    if (!this.videoRecorder || !this.videoRecorder.stream) return;
-
-    // Listen for when user clicks "Stop sharing" from browser/system
-    this.videoRecorder.stream.getTracks().forEach((track) => {
-      track.onended = async () => {
-        if (this.videoRecorder && this.videoRecorder.isRecording) {
-          // User stopped sharing from system button, gracefully stop recording
-          await this.stopVideoRecording();
-        }
-      };
-    });
-  }
-
   async stopVideoRecording() {
     try {
       // Disable button during processing
@@ -667,16 +535,8 @@ export default class FileUploader {
         this.videoRecordBtn.innerHTML = getIcon("video");
       }
 
-      // Stop recording indicator
-      this.stopRecordingTimer();
-
-      // Remove recording toolbar buttons
-      if (this.recordingToolbarButtons) {
-        this.recordingToolbarButtons.forEach(btn => {
-          if (btn) btn.remove();
-        });
-        this.recordingToolbarButtons = null;
-      }
+      // Stop recording indicator and remove toolbar
+      this.recordingUI.cleanup();
 
       // Stop recording and get file
       const file = await this.videoRecorder.stopRecording();
@@ -695,21 +555,11 @@ export default class FileUploader {
       if (this.screenshotBtn) {
         this.screenshotBtn.style.display = "";
       }
-
-      // Hide recording indicator
-      if (this.recordingIndicator) {
-        this.recordingIndicator.style.display = "none";
-      }
     } catch (error) {
       this.showError(error.message);
 
-      // Clean up toolbar buttons on error
-      if (this.recordingToolbarButtons) {
-        this.recordingToolbarButtons.forEach(btn => {
-          if (btn) btn.remove();
-        });
-        this.recordingToolbarButtons = null;
-      }
+      // Clean up UI on error
+      this.recordingUI.cleanup();
 
       // Show buttons again on error
       if (this.videoRecordBtn) {
@@ -722,34 +572,125 @@ export default class FileUploader {
     }
   }
 
-  startRecordingTimer() {
-    this.recordingTimerInterval = setInterval(() => {
-      if (this.videoRecorder) {
-        const timeElement = this.recordingIndicator?.querySelector(
-          ".file-uploader-recording-time"
-        );
-        if (timeElement) {
-          // Show elapsed / total format
-          const elapsed = this.videoRecorder.getRecordingDuration();
-          const maxSeconds = Math.floor(this.options.maxVideoRecordingDuration);
-
-          const elapsedMinutes = Math.floor(elapsed / 60);
-          const elapsedSeconds = elapsed % 60;
-          const totalMinutes = Math.floor(maxSeconds / 60);
-          const totalSeconds = maxSeconds % 60;
-
-          const timeText = `${String(elapsedMinutes).padStart(2, "0")}:${String(elapsedSeconds).padStart(2, "0")} / ${String(totalMinutes).padStart(2, "0")}:${String(totalSeconds).padStart(2, "0")}`;
-
-          timeElement.textContent = timeText;
-        }
-      }
-    }, 1000);
+  async toggleAudioRecording() {
+    if (
+      this.audioRecorder &&
+      this.audioRecorder.getRecordingStatus().isRecording
+    ) {
+      // Stop recording
+      await this.stopAudioRecording();
+    } else {
+      // Start recording
+      await this.startAudioRecording();
+    }
   }
 
-  stopRecordingTimer() {
-    if (this.recordingTimerInterval) {
-      clearInterval(this.recordingTimerInterval);
-      this.recordingTimerInterval = null;
+  async startAudioRecording() {
+    try {
+      // Disable button during setup
+      if (this.audioRecordBtn) {
+        this.audioRecordBtn.disabled = true;
+      }
+
+      // Initialize audio recorder with options
+      if (!this.audioRecorder) {
+        this.audioRecorder = new AudioRecorder({
+          enableMicrophoneAudio: this.options.enableMicrophoneAudio,
+          enableSystemAudio: this.options.enableSystemAudio,
+          maxRecordingDuration: this.options.maxAudioRecordingDuration,
+        });
+      }
+
+      // Start recording
+      await this.audioRecorder.startRecording();
+
+      // Set up handler for when user stops sharing from system button
+      this.recordingUI.setupStreamEndedHandler();
+
+      // Hide other capture buttons during recording
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "none";
+      }
+      if (this.videoRecordBtn) {
+        this.videoRecordBtn.style.display = "none";
+      }
+
+      // Create audio recording toolbar
+      this.recordingUI.createAudioRecordingToolbar();
+
+      // Hide audio record button during recording (stop button is in toolbar)
+      if (this.audioRecordBtn) {
+        this.audioRecordBtn.style.display = "none";
+      }
+
+      // Show recording indicator and start timer
+      this.recordingUI.showRecordingIndicator();
+    } catch (error) {
+      this.showError(error.message);
+
+      // Show buttons again on error
+      if (this.audioRecordBtn) {
+        this.audioRecordBtn.style.display = "";
+        this.audioRecordBtn.disabled = false;
+      }
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "";
+      }
+      if (this.videoRecordBtn) {
+        this.videoRecordBtn.style.display = "";
+      }
+    }
+  }
+
+  async stopAudioRecording() {
+    try {
+      // Disable button during processing
+      if (this.audioRecordBtn) {
+        this.audioRecordBtn.disabled = true;
+        this.audioRecordBtn.innerHTML = getIcon("audio");
+      }
+
+      // Stop recording indicator and remove toolbar
+      this.recordingUI.cleanup();
+
+      // Stop recording and get file
+      const file = await this.audioRecorder.stopRecording();
+
+      // Add recorded file with metadata
+      this.handleCapturedFile(file, "audio_recording");
+
+      // Show all capture buttons again
+      if (this.audioRecordBtn) {
+        this.audioRecordBtn.classList.remove("recording");
+        this.audioRecordBtn.style.display = "";
+        this.audioRecordBtn.title = "Record Audio";
+        this.audioRecordBtn.disabled = false;
+      }
+
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "";
+      }
+
+      if (this.videoRecordBtn) {
+        this.videoRecordBtn.style.display = "";
+      }
+    } catch (error) {
+      this.showError(error.message);
+
+      // Clean up UI on error
+      this.recordingUI.cleanup();
+
+      // Show buttons again on error
+      if (this.audioRecordBtn) {
+        this.audioRecordBtn.style.display = "";
+        this.audioRecordBtn.disabled = false;
+      }
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "";
+      }
+      if (this.videoRecordBtn) {
+        this.videoRecordBtn.style.display = "";
+      }
     }
   }
 
@@ -838,9 +779,10 @@ export default class FileUploader {
     }
 
     // Total size limit with optional progress bar
-    const sizePercentage = this.options.totalSizeLimit > 0
-      ? (totalSize / this.options.totalSizeLimit) * 100
-      : 0;
+    const sizePercentage =
+      this.options.totalSizeLimit > 0
+        ? (totalSize / this.options.totalSizeLimit) * 100
+        : 0;
     const sizeProgressBar = this.options.showProgressBar
       ? `<div class="file-uploader-limit-progress"><div class="file-uploader-limit-progress-bar" style="width: ${Math.min(
           100,
@@ -849,8 +791,10 @@ export default class FileUploader {
       : "";
 
     limitsHTML += `
-            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked ${
-              this.options.showProgressBar ? "file-uploader-limit-with-progress" : ""
+            <div class="file-uploader-limit-item file-uploader-total-size-limit-item file-uploader-limit-highlight file-uploader-limit-stacked ${
+              this.options.showProgressBar
+                ? "file-uploader-limit-with-progress"
+                : ""
             }">
                 <span class="file-uploader-limit-label">Total Size</span>
                 <span class="file-uploader-limit-value">${totalSizeFormatted} / ${
@@ -861,9 +805,8 @@ export default class FileUploader {
         `;
 
     // Max files limit with optional progress bar
-    const filePercentage = this.options.maxFiles > 0
-      ? (fileCount / this.options.maxFiles) * 100
-      : 0;
+    const filePercentage =
+      this.options.maxFiles > 0 ? (fileCount / this.options.maxFiles) * 100 : 0;
     const fileProgressBar = this.options.showProgressBar
       ? `<div class="file-uploader-limit-progress"><div class="file-uploader-limit-progress-bar" style="width: ${Math.min(
           100,
@@ -872,11 +815,15 @@ export default class FileUploader {
       : "";
 
     limitsHTML += `
-            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked ${
-              this.options.showProgressBar ? "file-uploader-limit-with-progress" : ""
+            <div class="file-uploader-limit-item file-uploader-file-count-limit-item file-uploader-limit-highlight file-uploader-limit-stacked ${
+              this.options.showProgressBar
+                ? "file-uploader-limit-with-progress"
+                : ""
             }">
                 <span class="file-uploader-limit-label">Files</span>
-                <span class="file-uploader-limit-value">${fileCount} / ${this.options.maxFiles}</span>
+                <span class="file-uploader-limit-value">${fileCount} / ${
+      this.options.maxFiles
+    }</span>
                 ${fileProgressBar}
             </div>
         `;
@@ -920,6 +867,7 @@ export default class FileUploader {
     const typeMap = {
       image: this.options.imageExtensions,
       video: this.options.videoExtensions,
+      audio: this.options.audioExtensions,
       document: this.options.documentExtensions,
       archive: this.options.archiveExtensions,
     };
@@ -1169,6 +1117,8 @@ export default class FileUploader {
       return "image";
     } else if (this.options.videoExtensions.includes(extension)) {
       return "video";
+    } else if (this.options.audioExtensions.includes(extension)) {
+      return "audio";
     } else if (this.options.documentExtensions.includes(extension)) {
       return "document";
     } else if (this.options.archiveExtensions.includes(extension)) {
@@ -1186,7 +1136,12 @@ export default class FileUploader {
   }
 
   createPreview(fileObj) {
-    const fileType = this.getFileType(fileObj.extension);
+    let fileType = this.getFileType(fileObj.extension);
+
+    // Override file type for captured audio recordings (webm can be both audio/video)
+    if (fileObj.captureType === "audio_recording") {
+      fileType = "audio";
+    }
 
     const preview = document.createElement("div");
     preview.className = "file-uploader-preview";
@@ -1205,10 +1160,21 @@ export default class FileUploader {
       const objectUrl = URL.createObjectURL(fileObj.file);
       // Create video element with thumbnail extraction
       previewContent = `
-        <video src="${objectUrl}" class="file-uploader-preview-video" data-file-id="${fileObj.id}"></video>
-        <canvas class="file-uploader-video-thumbnail" data-file-id="${fileObj.id}" style="display: none;"></canvas>
+        <video src="${objectUrl}" class="file-uploader-preview-video" data-file-id="${
+        fileObj.id
+      }"></video>
+        <canvas class="file-uploader-video-thumbnail" data-file-id="${
+          fileObj.id
+        }" style="display: none;"></canvas>
         <div class="file-uploader-video-play-overlay">
           ${getIcon("play", { class: "file-uploader-video-play-icon" })}
+        </div>
+      `;
+    } else if (fileType === "audio") {
+      // Audio file preview with icon only (no audio element needed)
+      previewContent = `
+        <div class="file-uploader-preview-audio">
+          ${getIcon("audio", { class: "file-uploader-audio-icon" })}
         </div>
       `;
     } else {
@@ -1232,6 +1198,10 @@ export default class FileUploader {
         : fileObj.captureType === "recording"
         ? `<div class="file-uploader-capture-indicator" title="Recorded Video">
               ${getIcon("video")}
+           </div>`
+        : fileObj.captureType === "audio_recording"
+        ? `<div class="file-uploader-capture-indicator" title="Recorded Audio">
+              ${getIcon("audio")}
            </div>`
         : "";
 
@@ -1259,7 +1229,9 @@ export default class FileUploader {
                 <div class="file-uploader-progress-text">0%</div>
             </div>
             <div class="file-uploader-success-overlay">
-                ${getIcon("check_circle", { class: "file-uploader-success-icon" })}
+                ${getIcon("check_circle", {
+                  class: "file-uploader-success-icon",
+                })}
             </div>
         `;
 
@@ -1321,42 +1293,51 @@ export default class FileUploader {
     });
 
     // Capture frame when seeked
-    video.addEventListener("seeked", () => {
-      try {
-        // Set canvas dimensions to match video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+    video.addEventListener(
+      "seeked",
+      () => {
+        try {
+          // Set canvas dimensions to match video
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
 
-        // Draw video frame to canvas
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          // Draw video frame to canvas
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Convert canvas to image and replace video element
-        const thumbnailUrl = canvas.toDataURL("image/jpeg", 0.8);
+          // Convert canvas to image and replace video element
+          const thumbnailUrl = canvas.toDataURL("image/jpeg", 0.8);
 
-        // Create thumbnail image
-        const thumbnailImg = document.createElement("img");
-        thumbnailImg.src = thumbnailUrl;
-        thumbnailImg.className = "file-uploader-preview-image file-uploader-video-thumbnail-img";
-        thumbnailImg.alt = "Video thumbnail";
+          // Create thumbnail image
+          const thumbnailImg = document.createElement("img");
+          thumbnailImg.src = thumbnailUrl;
+          thumbnailImg.className =
+            "file-uploader-preview-image file-uploader-video-thumbnail-img";
+          thumbnailImg.alt = "Video thumbnail";
 
-        // Replace video with thumbnail
-        video.style.display = "none";
-        video.parentNode.insertBefore(thumbnailImg, video);
+          // Replace video with thumbnail
+          video.style.display = "none";
+          video.parentNode.insertBefore(thumbnailImg, video);
 
-        // Clean up
-        canvas.remove();
-      } catch (error) {
-        console.warn("Failed to extract video thumbnail:", error);
-        // Keep video element visible if thumbnail extraction fails
-      }
-    }, { once: true });
+          // Clean up
+          canvas.remove();
+        } catch (error) {
+          console.warn("Failed to extract video thumbnail:", error);
+          // Keep video element visible if thumbnail extraction fails
+        }
+      },
+      { once: true }
+    );
 
     // Handle load errors
-    video.addEventListener("error", () => {
-      console.warn("Failed to load video for thumbnail extraction");
-      canvas.remove();
-    }, { once: true });
+    video.addEventListener(
+      "error",
+      () => {
+        console.warn("Failed to load video for thumbnail extraction");
+        canvas.remove();
+      },
+      { once: true }
+    );
   }
 
   async uploadFile(fileObj) {
