@@ -3,6 +3,8 @@
  * Handles audio-only recording with microphone and/or system audio
  */
 
+import { fixWebmDuration } from "@fix-webm-duration/fix";
+
 export default class AudioRecorder {
   constructor(options = {}) {
     this.options = {
@@ -266,29 +268,10 @@ export default class AudioRecorder {
 
           console.log("Audio recording stopped:", { mimeType, durationMs });
 
-          // Helper to find a fixer function (works for global CDN or ESM import)
-          const getFixer = () => {
-            if (typeof window !== "undefined") {
-              // Try different possible function names
-              if (typeof window.fixWebmDuration === "function") {
-                return window.fixWebmDuration;
-              }
-              if (typeof window.ysFixWebmDuration === "function") {
-                return window.ysFixWebmDuration;
-              }
-            }
-            // If you used an ESM import, you can reference it directly in scope
-            if (typeof fixWebmDuration === "function") return fixWebmDuration;
-            if (typeof ysFixWebmDuration === "function") return ysFixWebmDuration;
-            return null;
-          };
-
-          const fixer = getFixer();
-
           // Fix WebM duration if needed
-          if (mimeType.includes("webm") && fixer && durationMs > 0) {
+          if (mimeType.includes("webm") && fixWebmDuration && durationMs > 0) {
             try {
-              const fixed = await fixer(blob, durationMs, {
+              const fixed = await fixWebmDuration(blob, durationMs, {
                 logger: console.debug,
               });
               if (fixed instanceof Blob) {
@@ -305,8 +288,8 @@ export default class AudioRecorder {
             console.warn("⚠️ Audio WebM duration fix skipped:", {
               reason: !mimeType.includes("webm")
                 ? "Not WebM format"
-                : !fixer
-                ? "fixer not available"
+                : !fixWebmDuration
+                ? "fixWebmDuration not available"
                 : !(durationMs > 0)
                 ? "No duration recorded"
                 : "Unknown",
