@@ -80,7 +80,8 @@
   --fu-spacing-4xl: 40px;
 
   // Typography
-  --fu-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fu-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --fu-font-size-xs: 12px;
   --fu-font-size-sm: 13px;
   --fu-font-size-base: 14px;
@@ -102,9 +103,12 @@
 
   // Shadows
   --fu-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --fu-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --fu-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --fu-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --fu-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --fu-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --fu-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   // Transitions
   --fu-transition-base: all 0.2s ease;
@@ -155,18 +159,18 @@
 
 // Breakpoints
 $breakpoints: (
-  'xs': 0,
-  'sm': 576px,
-  'md': 768px,
-  'lg': 992px,
-  'xl': 1200px,
-  'xxl': 1400px
+  "xs": 0,
+  "sm": 576px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px,
+  "xxl": 1400px,
 ) !default;
 
 // Grid
 $grid-columns: 12 !default;
 $grid-gap: 16px !default;
-$grid-min-column-width: 150px !default;
+$grid-min-column-width: 80px !default;
 $grid-min-column-width-mobile: 150px !default;
 
 // Animation Durations
@@ -182,7 +186,7 @@ $ease-in-out: cubic-bezier(0.4, 0, 0.2, 1) !default;
 $ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55) !default;
 
 // Component Specific SCSS Variables
-$file-uploader-prefix: 'file-uploader' !default;
+$file-uploader-prefix: "file-uploader" !default;
 $file-uploader-enable-dark-mode: true !default;
 $file-uploader-enable-animations: true !default;
 $file-uploader-enable-bootstrap-compat: true !default;

@@ -187,6 +187,12 @@ $component-prefix: $file-uploader-prefix !default;
     font-weight: var(--fu-font-weight-medium);
   }
 
+  // Stacked variant (for two-line layout)
+  &.#{$component-prefix}-limit-stacked {
+    @include flex(column, flex-start, flex-start);
+    gap: var(--fu-spacing-xs);
+  }
+
   // Hover effect
   &:hover {
     @if $file-uploader-enable-animations {

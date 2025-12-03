@@ -307,10 +307,10 @@ export default class FileUploader {
     if (typeLimits && Object.keys(typeLimits).length > 0) {
       for (const [type, limit] of Object.entries(typeLimits)) {
         limitsHTML += `
-                    <div class="file-uploader-limit-item">
+                    <div class="file-uploader-limit-item file-uploader-limit-stacked">
                         <span class="file-uploader-limit-label">${this.capitalizeFirst(
                           type
-                        )}:</span>
+                        )}</span>
                         <span class="file-uploader-limit-value">${limit}</span>
                     </div>
                 `;
@@ -319,16 +319,16 @@ export default class FileUploader {
 
     // Total size limit
     limitsHTML += `
-            <div class="file-uploader-limit-item file-uploader-limit-highlight">
-                <span class="file-uploader-limit-label">Total Size:</span>
+            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked">
+                <span class="file-uploader-limit-label">Total Size</span>
                 <span class="file-uploader-limit-value">${totalSizeFormatted} / ${this.options.totalSizeLimitDisplay}</span>
             </div>
         `;
 
     // Max files limit
     limitsHTML += `
-            <div class="file-uploader-limit-item file-uploader-limit-highlight">
-                <span class="file-uploader-limit-label">Files:</span>
+            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked">
+                <span class="file-uploader-limit-label">Files</span>
                 <span class="file-uploader-limit-value">${fileCount} / ${this.options.maxFiles}</span>
             </div>
         `;
