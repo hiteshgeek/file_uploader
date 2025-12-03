@@ -93,9 +93,9 @@ $component-prefix: $file-uploader-prefix !default;
   .#{$component-prefix}-dropzone:hover & {
     color: var(--fu-color-primary-hover);
 
-    @if $file-uploader-enable-animations {
-      transform: translateY(-2px);
-    }
+    // @if $file-uploader-enable-animations {
+    //   transform: translateY(-2px);
+    // }
   }
 }
 
@@ -200,11 +200,11 @@ $component-prefix: $file-uploader-prefix !default;
   }
 
   // Hover effect
-  &:hover {
-    @if $file-uploader-enable-animations {
-      transform: translateY(-1px);
-    }
-  }
+  // &:hover {
+  //   @if $file-uploader-enable-animations {
+  //     transform: translateY(-1px);
+  //   }
+  // }
 }
 
 .#{$component-prefix}-limit-label {
@@ -218,6 +218,42 @@ $component-prefix: $file-uploader-prefix !default;
 .#{$component-prefix}-limit-value {
   color: var(--fu-color-text);
   font-weight: var(--fu-font-weight-semibold);
+}
+
+.#{$component-prefix}-limit-count {
+  color: var(--fu-color-text-muted);
+  font-size: var(--fu-font-size-xs);
+  font-weight: var(--fu-font-weight-normal);
+  margin-top: 2px;
+}
+
+// Progress bar for limit items (Total Size and Files)
+.#{$component-prefix}-limit-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background-color: rgba(66, 153, 225, 0.15);
+  border-radius: 0 0 var(--fu-radius-sm) var(--fu-radius-sm);
+  overflow: hidden;
+}
+
+.#{$component-prefix}-limit-progress-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--fu-color-primary) 0%,
+    var(--fu-success-500) 100%
+  );
+  @include transition((width));
+  transition-duration: 0.5s;
+  border-radius: 0; // Remove border-radius to prevent height inconsistency
+}
+
+// Adjust padding for items with progress bars
+.#{$component-prefix}-limit-item.#{$component-prefix}-limit-with-progress {
+  padding-bottom: calc(var(--fu-spacing-sm) + 5px);
 }
 
 // ============================================================================
@@ -266,12 +302,12 @@ $component-prefix: $file-uploader-prefix !default;
   }
 
   // Hover state
-  &:hover:not(:disabled) {
-    @if $file-uploader-enable-animations {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-  }
+  // &:hover:not(:disabled) {
+  //   @if $file-uploader-enable-animations {
+  //     transform: translateY(-1px);
+  //     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  //   }
+  // }
 
   // Active state
   &:active:not(:disabled) {
@@ -410,9 +446,9 @@ $component-prefix: $file-uploader-prefix !default;
       visibility: hidden;
     }
 
-    @if $file-uploader-enable-animations {
-      transform: translateY(-2px);
-    }
+    // @if $file-uploader-enable-animations {
+    //   transform: translateY(-2px);
+    // }
   }
 
   // States
@@ -473,6 +509,49 @@ $component-prefix: $file-uploader-prefix !default;
   object-fit: cover;
 }
 
+// Video thumbnail (extracted from video)
+.#{$component-prefix}-video-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// Video play overlay (centered play icon)
+.#{$component-prefix}-video-play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  @include flex-center;
+  width: 60px;
+  height: 60px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: var(--fu-radius-round);
+  z-index: 5;
+  pointer-events: none;
+  @include transition((background-color, transform));
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(5px);
+  }
+
+  // Hover effect on preview item
+  .#{$component-prefix}-preview:hover & {
+    background-color: rgba(0, 0, 0, 0.85);
+
+    @if $file-uploader-enable-animations {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+  }
+}
+
+.#{$component-prefix}-video-play-icon {
+  width: 28px;
+  height: 28px;
+  color: white;
+  margin-left: 3px; // Slight offset to center the triangle visually
+}
+
 // File icon preview (for non-image/video files)
 .#{$component-prefix}-preview-file {
   @include flex(column, center, center);
@@ -505,8 +584,9 @@ $component-prefix: $file-uploader-prefix !default;
 
 .#{$component-prefix}-preview-overlay {
   @include cover;
-  @include flex-center;
-  background-color: rgba(0, 0, 0, 0.5);
+  @include flex(column, center, center);
+  gap: var(--fu-spacing-md);
+  background-color: rgba(0, 0, 0, 0.7);
   display: none;
   z-index: var(--fu-z-overlay);
 
@@ -517,6 +597,99 @@ $component-prefix: $file-uploader-prefix !default;
   // Show overlay when uploading
   .#{$component-prefix}-preview.uploading & {
     display: flex;
+  }
+}
+
+// ============================================================================
+// Progress Bar
+// ============================================================================
+
+.#{$component-prefix}-progress-container {
+  width: 80%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+}
+
+.#{$component-prefix}-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4299e1 0%, #48bb78 100%);
+  width: 0%;
+  @include transition((width));
+  transition-duration: 0.3s;
+  border-radius: 0; // Remove border-radius to prevent height inconsistency
+
+  @if $file-uploader-enable-animations {
+    // Animated shimmer effect
+    background-size: 200% 100%;
+    animation: #{$component-prefix}-progress-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+.#{$component-prefix}-progress-text {
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-semibold);
+  color: white;
+  display: none;
+}
+
+// ============================================================================
+// Success Overlay (Checkmark)
+// ============================================================================
+
+.#{$component-prefix}-success-overlay {
+  @include cover;
+  @include flex-center;
+  background-color: rgba(72, 187, 120, 0.95);
+  z-index: calc(var(--fu-z-overlay) + 1);
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+  display: flex !important;
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(8px);
+  }
+
+  // Slide in from bottom
+  &.slide-in {
+    pointer-events: auto;
+    animation: #{$component-prefix}-slide-in-bottom 0.4s cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      ) forwards;
+  }
+
+  // Slide out to top
+  &.slide-out {
+    pointer-events: none;
+    animation: #{$component-prefix}-slide-out-top 0.4s cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      ) forwards;
+  }
+}
+
+.#{$component-prefix}-success-icon {
+  width: var(--fu-icon-size-2xl);
+  height: var(--fu-icon-size-2xl);
+  color: white;
+  transform: scale(0);
+
+  .#{$component-prefix}-success-overlay.slide-in & {
+    @if $file-uploader-enable-animations {
+      animation: #{$component-prefix}-checkmark-pop
+        0.5s
+        cubic-bezier(0.175, 0.885, 0.32, 1.275)
+        0.2s
+        forwards;
+    }
   }
 }
 
@@ -689,9 +862,9 @@ $component-prefix: $file-uploader-prefix !default;
     background-color: var(--fu-color-primary-hover);
     @include shadow("lg");
 
-    @if $file-uploader-enable-animations {
-      transform: translateY(-2px);
-    }
+    // @if $file-uploader-enable-animations {
+    //   transform: translateY(-2px);
+    // }
   }
 
   &:active:not(:disabled) {

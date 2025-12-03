@@ -50,6 +50,8 @@ export default class FileUploader {
       multiple: true,
       autoFetchConfig: true,
       showLimits: true,
+      showFileTypeCount: false, // Show count of files per type (image, video, document)
+      showProgressBar: false, // Show progress bar background for Total Size and File Count
       preventDuplicates: false, // Prevent uploading the same file again
       duplicateCheckBy: "name-size", // How to check duplicates: 'name', 'size', 'name-size', 'hash'
       showDownloadAllButton: true, // Show internal download-all button
@@ -559,31 +561,69 @@ export default class FileUploader {
             : ""
         }`;
 
+        // Calculate file count for this type if enabled
+        let typeCountHtml = "";
+        if (this.options.showFileTypeCount) {
+          const typeCount = this.getFileTypeCount(type);
+          typeCountHtml = `<span class="file-uploader-limit-count">${typeCount} file${
+            typeCount !== 1 ? "s" : ""
+          }</span>`;
+        }
+
         limitsHTML += `
                     <div class="file-uploader-limit-item file-uploader-limit-stacked">
                         <span class="file-uploader-limit-label">
                             ${this.capitalizeFirst(type)}
                         </span>
                         <span class="file-uploader-limit-value">${limit}</span>
+                        ${typeCountHtml}
                         ${tooltip}
                     </div>
                 `;
       }
     }
 
-    // Total size limit
+    // Total size limit with optional progress bar
+    const sizePercentage = this.options.totalSizeLimit > 0
+      ? (totalSize / this.options.totalSizeLimit) * 100
+      : 0;
+    const sizeProgressBar = this.options.showProgressBar
+      ? `<div class="file-uploader-limit-progress"><div class="file-uploader-limit-progress-bar" style="width: ${Math.min(
+          100,
+          sizePercentage
+        )}%"></div></div>`
+      : "";
+
     limitsHTML += `
-            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked">
+            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked ${
+              this.options.showProgressBar ? "file-uploader-limit-with-progress" : ""
+            }">
                 <span class="file-uploader-limit-label">Total Size</span>
-                <span class="file-uploader-limit-value">${totalSizeFormatted} / ${this.options.totalSizeLimitDisplay}</span>
+                <span class="file-uploader-limit-value">${totalSizeFormatted} / ${
+      this.options.totalSizeLimitDisplay
+    }</span>
+                ${sizeProgressBar}
             </div>
         `;
 
-    // Max files limit
+    // Max files limit with optional progress bar
+    const filePercentage = this.options.maxFiles > 0
+      ? (fileCount / this.options.maxFiles) * 100
+      : 0;
+    const fileProgressBar = this.options.showProgressBar
+      ? `<div class="file-uploader-limit-progress"><div class="file-uploader-limit-progress-bar" style="width: ${Math.min(
+          100,
+          filePercentage
+        )}%"></div></div>`
+      : "";
+
     limitsHTML += `
-            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked">
+            <div class="file-uploader-limit-item file-uploader-limit-highlight file-uploader-limit-stacked ${
+              this.options.showProgressBar ? "file-uploader-limit-with-progress" : ""
+            }">
                 <span class="file-uploader-limit-label">Files</span>
                 <span class="file-uploader-limit-value">${fileCount} / ${this.options.maxFiles}</span>
+                ${fileProgressBar}
             </div>
         `;
 
@@ -606,6 +646,15 @@ export default class FileUploader {
     if (this.clearAllBtn && this.options.clearAllButtonElement) {
       this.clearAllBtn.disabled = !hasFiles;
     }
+  }
+
+  getFileTypeCount(type) {
+    // Count uploaded files by type
+    return this.files.filter((f) => {
+      if (!f.uploaded) return false;
+      const fileType = this.getFileType(f.extension);
+      return fileType === type.toLowerCase();
+    }).length;
   }
 
   capitalizeFirst(str) {
@@ -900,7 +949,14 @@ export default class FileUploader {
       previewContent = `<img src="${objectUrl}" alt="${fileObj.name}" class="file-uploader-preview-image">`;
     } else if (fileType === "video") {
       const objectUrl = URL.createObjectURL(fileObj.file);
-      previewContent = `<video src="${objectUrl}" class="file-uploader-preview-video"></video>`;
+      // Create video element with thumbnail extraction
+      previewContent = `
+        <video src="${objectUrl}" class="file-uploader-preview-video" data-file-id="${fileObj.id}"></video>
+        <canvas class="file-uploader-video-thumbnail" data-file-id="${fileObj.id}" style="display: none;"></canvas>
+        <div class="file-uploader-video-play-overlay">
+          ${getIcon("play", { class: "file-uploader-video-play-icon" })}
+        </div>
+      `;
     } else {
       previewContent = `
                 <div class="file-uploader-preview-file">
@@ -943,6 +999,13 @@ export default class FileUploader {
             ${captureIndicator}
             <div class="file-uploader-preview-overlay">
                 <div class="file-uploader-spinner"></div>
+                <div class="file-uploader-progress-container">
+                    <div class="file-uploader-progress-bar"></div>
+                </div>
+                <div class="file-uploader-progress-text">0%</div>
+            </div>
+            <div class="file-uploader-success-overlay">
+                ${getIcon("check_circle", { class: "file-uploader-success-icon" })}
             </div>
         `;
 
@@ -978,6 +1041,68 @@ export default class FileUploader {
 
     fileObj.previewElement = preview;
     fileObj.downloadBtn = downloadBtn;
+
+    // Extract video thumbnail if this is a video file
+    if (fileType === "video") {
+      this.extractVideoThumbnail(fileObj.id);
+    }
+  }
+
+  extractVideoThumbnail(fileId) {
+    const preview = this.previewContainer.querySelector(
+      `[data-file-id="${fileId}"]`
+    );
+    if (!preview) return;
+
+    const video = preview.querySelector(".file-uploader-preview-video");
+    const canvas = preview.querySelector(".file-uploader-video-thumbnail");
+
+    if (!video || !canvas) return;
+
+    // Wait for video metadata to load
+    video.addEventListener("loadedmetadata", () => {
+      // Seek to 1 second (or 10% of duration, whichever is smaller)
+      const seekTime = Math.min(1, video.duration * 0.1);
+      video.currentTime = seekTime;
+    });
+
+    // Capture frame when seeked
+    video.addEventListener("seeked", () => {
+      try {
+        // Set canvas dimensions to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Draw video frame to canvas
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert canvas to image and replace video element
+        const thumbnailUrl = canvas.toDataURL("image/jpeg", 0.8);
+
+        // Create thumbnail image
+        const thumbnailImg = document.createElement("img");
+        thumbnailImg.src = thumbnailUrl;
+        thumbnailImg.className = "file-uploader-preview-image file-uploader-video-thumbnail-img";
+        thumbnailImg.alt = "Video thumbnail";
+
+        // Replace video with thumbnail
+        video.style.display = "none";
+        video.parentNode.insertBefore(thumbnailImg, video);
+
+        // Clean up
+        canvas.remove();
+      } catch (error) {
+        console.warn("Failed to extract video thumbnail:", error);
+        // Keep video element visible if thumbnail extraction fails
+      }
+    }, { once: true });
+
+    // Handle load errors
+    video.addEventListener("error", () => {
+      console.warn("Failed to load video for thumbnail extraction");
+      canvas.remove();
+    }, { once: true });
   }
 
   async uploadFile(fileObj) {
@@ -992,12 +1117,45 @@ export default class FileUploader {
     formData.append("file", fileObj.file);
 
     try {
-      const response = await fetch(this.options.uploadUrl, {
-        method: "POST",
-        body: formData,
+      const xhr = new XMLHttpRequest();
+
+      // Track upload progress
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = (e.loaded / e.total) * 100;
+          this.updateProgress(fileObj, percentComplete);
+        }
       });
 
-      const result = await response.json();
+      // Handle completion
+      const uploadPromise = new Promise((resolve, reject) => {
+        xhr.addEventListener("load", () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              resolve(result);
+            } catch (e) {
+              reject(new Error("Invalid JSON response"));
+            }
+          } else {
+            reject(new Error(`Upload failed with status ${xhr.status}`));
+          }
+        });
+
+        xhr.addEventListener("error", () => {
+          reject(new Error("Network error during upload"));
+        });
+
+        xhr.addEventListener("abort", () => {
+          reject(new Error("Upload cancelled"));
+        });
+      });
+
+      // Send request
+      xhr.open("POST", this.options.uploadUrl);
+      xhr.send(formData);
+
+      const result = await uploadPromise;
 
       if (result.success) {
         fileObj.uploaded = true;
@@ -1005,6 +1163,10 @@ export default class FileUploader {
         fileObj.serverFilename = result.file.filename;
         fileObj.serverData = result.file;
 
+        // Ensure progress reaches 100%
+        this.updateProgress(fileObj, 100);
+
+        // Show success state with checkmark
         this.updatePreviewState(fileObj, "success");
 
         // Show download button after successful upload
@@ -1042,11 +1204,42 @@ export default class FileUploader {
     }
   }
 
+  updateProgress(fileObj, percent) {
+    if (!fileObj.previewElement) return;
+
+    const progressBar = fileObj.previewElement.querySelector(
+      ".file-uploader-progress-bar"
+    );
+    const progressText = fileObj.previewElement.querySelector(
+      ".file-uploader-progress-text"
+    );
+
+    if (progressBar) {
+      progressBar.style.width = `${percent}%`;
+    }
+
+    if (progressText) {
+      progressText.textContent = `${Math.round(percent)}%`;
+    }
+  }
+
   updatePreviewState(fileObj, state) {
     if (!fileObj.previewElement) return;
 
     const overlay = fileObj.previewElement.querySelector(
       ".file-uploader-preview-overlay"
+    );
+    const successOverlay = fileObj.previewElement.querySelector(
+      ".file-uploader-success-overlay"
+    );
+    const spinner = fileObj.previewElement.querySelector(
+      ".file-uploader-spinner"
+    );
+    const progressContainer = fileObj.previewElement.querySelector(
+      ".file-uploader-progress-container"
+    );
+    const progressText = fileObj.previewElement.querySelector(
+      ".file-uploader-progress-text"
     );
 
     fileObj.previewElement.classList.remove("uploading", "success", "error");
@@ -1054,12 +1247,50 @@ export default class FileUploader {
     if (state === "uploading") {
       fileObj.previewElement.classList.add("uploading");
       overlay.style.display = "flex";
+      if (spinner) spinner.style.display = "none";
+      if (progressContainer) progressContainer.style.display = "block";
+      if (progressText) progressText.style.display = "block";
+      if (successOverlay) {
+        successOverlay.classList.remove("slide-in", "slide-out");
+      }
     } else if (state === "success") {
       fileObj.previewElement.classList.add("success");
+
+      // Hide upload overlay
       overlay.style.display = "none";
+
+      // Show success checkmark with slide-in animation
+      if (successOverlay) {
+        // Remove any existing animation classes and force reflow
+        successOverlay.classList.remove("slide-in", "slide-out");
+
+        // Force reflow to restart animation
+        void successOverlay.offsetWidth;
+
+        // Trigger slide-in animation
+        successOverlay.classList.add("slide-in");
+
+        // After 2.5 seconds, start slide-out animation
+        setTimeout(() => {
+          if (successOverlay) {
+            successOverlay.classList.remove("slide-in");
+            successOverlay.classList.add("slide-out");
+
+            // After slide-out animation completes (400ms), remove class
+            setTimeout(() => {
+              if (successOverlay) {
+                successOverlay.classList.remove("slide-out");
+              }
+            }, 400);
+          }
+        }, 2500);
+      }
     } else if (state === "error") {
       fileObj.previewElement.classList.add("error");
       overlay.style.display = "none";
+      if (successOverlay) {
+        successOverlay.classList.remove("slide-in", "slide-out");
+      }
     }
   }
 

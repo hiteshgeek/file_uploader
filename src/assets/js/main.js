@@ -4,6 +4,8 @@ if (typeof window !== "undefined") {
     duplicateCheckBy: "name-size",
     enableScreenCapture: true,
     enableVideoRecording: true,
+    showFileTypeCount: true, // Show file type counts
+    showProgressBar: true, // Show progress bars for Total Size and Files
     multiple: true,
     onUploadSuccess: (fileObj, result) => {
       console.log("Upload success:", fileObj, result);

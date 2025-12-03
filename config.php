@@ -17,27 +17,27 @@ return [
         'image/png',
         'image/gif',
         'image/webp',
-        // 'image/svg+xml',
-        // // Videos
+        'image/svg+xml',
+        // Videos
         'video/mp4',
         'video/mpeg',
         'video/quicktime',
         'video/x-msvideo',
         'video/webm',
-        // // Documents
-        // 'application/pdf',
-        // 'application/msword',
-        // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        // 'application/vnd.ms-excel',
-        // 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        // 'application/vnd.ms-powerpoint',
-        // 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        // 'text/plain',
-        // 'text/csv',
-        // // Archives
-        // 'application/zip',
-        // 'application/x-rar-compressed',
-        // 'application/x-7z-compressed',
+        // Documents
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain',
+        'text/csv',
+        // Archives
+        'application/zip',
+        'application/x-rar-compressed',
+        'application/x-7z-compressed',
     ],
 
     // Allowed file extensions
@@ -68,15 +68,15 @@ return [
     ],
 
     // Maximum file size in bytes (10MB default)
-    'max_file_size' => 10 * 1024 * 1024,
+    'max_file_size' => 1000 * 1024 * 1024,
 
     // Maximum file size for display (human readable)
-    'max_file_size_display' => '10MB',
+    'max_file_size_display' => '1000MB',
 
     // Per file type size limits (in bytes)
     'file_type_size_limits' => [
         'image' => 5 * 1024 * 1024,      // 5MB for images
-        'video' => 50 * 1024 * 1024,     // 50MB for videos
+        'video' => 500 * 1024 * 1024,     // 50MB for videos
         'document' => 10 * 1024 * 1024,  // 10MB for documents
         'archive' => 20 * 1024 * 1024,   // 20MB for archives
     ],
@@ -84,16 +84,16 @@ return [
     // Per file type size limits display (human readable)
     'file_type_size_limits_display' => [
         'image' => '5MB',
-        'video' => '50MB',
+        'video' => '500MB',
         'document' => '10MB',
         'archive' => '20MB',
     ],
 
     // Total upload size limit across all files (in bytes)
-    'total_size_limit' => 100 * 1024 * 1024,
+    'total_size_limit' => 1000 * 1024 * 1024,
 
     // Total upload size limit display (human readable)
-    'total_size_limit_display' => '100MB',
+    'total_size_limit_display' => '1000MB',
 
     // Maximum number of files
     'max_files' => 10,

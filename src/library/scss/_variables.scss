@@ -131,6 +131,7 @@
   --fu-icon-size-md: 20px;
   --fu-icon-size-lg: 40px;
   --fu-icon-size-xl: 48px;
+  --fu-icon-size-2xl: 64px;
   --fu-button-size: 40px;
   --fu-spinner-size: 40px;
   --fu-spinner-border-width: 4px;
@@ -190,5 +191,5 @@ $ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55) !default;
 // Component Specific SCSS Variables
 $file-uploader-prefix: "file-uploader" !default;
 $file-uploader-enable-dark-mode: true !default;
-$file-uploader-enable-animations: false !default;
+$file-uploader-enable-animations: true !default;
 $file-uploader-enable-bootstrap-compat: true !default;
