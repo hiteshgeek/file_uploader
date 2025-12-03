@@ -65,6 +65,10 @@ export default class FileUploader {
       cleanupOnUnload: true, // Automatically delete uploaded files from server when leaving the page
       enableScreenCapture: true, // Enable screenshot capture button
       enableVideoRecording: true, // Enable video recording button
+      maxVideoRecordingDuration: 300, // Max video recording duration in seconds (default 5 minutes)
+      recordingCountdownDuration: 3, // Countdown duration before recording starts in seconds (default 3)
+      enableMicrophoneAudio: false, // Enable microphone audio recording
+      enableSystemAudio: false, // Enable system audio recording
       onUploadStart: null,
       onUploadSuccess: null,
       onUploadError: null,
@@ -344,12 +348,21 @@ export default class FileUploader {
       this.recordingIndicator.style.display = "none";
       this.recordingIndicator.innerHTML = `
         <span class="file-uploader-recording-dot"></span>
-        <span class="file-uploader-recording-time">00:00</span>
+        <span class="file-uploader-recording-time">00:00 / 05:00</span>
       `;
       // Prevent recording indicator from triggering file upload
       this.recordingIndicator.addEventListener("click", (e) => {
         e.stopPropagation();
       });
+
+      // Time element is clickable but no longer needed for toggle
+      const timeElement = this.recordingIndicator.querySelector(
+        ".file-uploader-recording-time"
+      );
+      if (timeElement) {
+        timeElement.style.cursor = "default";
+      }
+
       this.captureButtonContainer.appendChild(this.recordingIndicator);
     }
 
@@ -387,12 +400,191 @@ export default class FileUploader {
   }
 
   async toggleVideoRecording() {
-    if (this.videoRecorder && this.videoRecorder.getRecordingStatus()) {
+    if (this.videoRecorder && this.videoRecorder.getRecordingStatus().isRecording) {
       // Stop recording
       await this.stopVideoRecording();
     } else {
       // Start recording
       await this.startVideoRecording();
+    }
+  }
+
+  /**
+   * Show countdown before recording starts
+   * @returns {Promise<void>}
+   */
+  async showCountdown() {
+    return new Promise((resolve) => {
+      const countdown = document.createElement("div");
+      countdown.className = "file-uploader-countdown-overlay";
+      countdown.innerHTML = `
+        <div class="file-uploader-countdown-content">
+          <div class="file-uploader-countdown-number">${this.options.recordingCountdownDuration}</div>
+          <div class="file-uploader-countdown-text">Get ready to record...</div>
+        </div>
+      `;
+      document.body.appendChild(countdown);
+
+      const numberElement = countdown.querySelector(".file-uploader-countdown-number");
+      let remaining = this.options.recordingCountdownDuration;
+
+      const interval = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          numberElement.textContent = remaining;
+          // Add animation class
+          numberElement.classList.remove("pulse");
+          void numberElement.offsetWidth; // Force reflow
+          numberElement.classList.add("pulse");
+        } else {
+          clearInterval(interval);
+          countdown.remove();
+          resolve();
+        }
+      }, 1000);
+    });
+  }
+
+  /**
+   * Create and show recording toolbar
+   */
+  createRecordingToolbar() {
+    if (this.recordingToolbar) {
+      this.recordingToolbar.remove();
+    }
+
+    // Create pause button
+    const pauseBtn = document.createElement("button");
+    pauseBtn.type = "button";
+    pauseBtn.className = "file-uploader-capture-btn";
+    pauseBtn.setAttribute("data-action", "pause");
+    pauseBtn.title = "Pause Recording";
+    pauseBtn.innerHTML = getIcon("pause");
+    pauseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.togglePauseRecording();
+    });
+
+    // Create system audio button if enabled
+    let systemAudioBtn = null;
+    if (this.options.enableSystemAudio) {
+      systemAudioBtn = document.createElement("button");
+      systemAudioBtn.type = "button";
+      systemAudioBtn.className = "file-uploader-capture-btn";
+      systemAudioBtn.setAttribute("data-action", "system-audio");
+      systemAudioBtn.title = "Toggle System Audio";
+      systemAudioBtn.innerHTML = getIcon("system_sound");
+      systemAudioBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggleSystemAudio();
+      });
+    }
+
+    // Create microphone button if enabled
+    let micBtn = null;
+    if (this.options.enableMicrophoneAudio) {
+      micBtn = document.createElement("button");
+      micBtn.type = "button";
+      micBtn.className = "file-uploader-capture-btn";
+      micBtn.setAttribute("data-action", "microphone");
+
+      // Check if microphone is available
+      const hasMic = this.videoRecorder && this.videoRecorder.microphoneStream;
+      if (!hasMic) {
+        micBtn.disabled = true;
+        micBtn.classList.add("muted");
+        micBtn.title = "No Microphone Available";
+        micBtn.innerHTML = getIcon("mic_mute");
+      } else {
+        micBtn.title = "Toggle Microphone";
+        micBtn.innerHTML = getIcon("mic");
+      }
+
+      micBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggleMicrophone();
+      });
+    }
+
+    // Create stop button
+    const stopBtn = document.createElement("button");
+    stopBtn.type = "button";
+    stopBtn.className = "file-uploader-capture-btn file-uploader-capture-btn-stop";
+    stopBtn.setAttribute("data-action", "stop");
+    stopBtn.title = "Stop Recording";
+    stopBtn.innerHTML = getIcon("stop");
+    stopBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.stopVideoRecording();
+    });
+
+    // Append buttons to capture button container in order
+    this.captureButtonContainer.appendChild(pauseBtn);
+    if (systemAudioBtn) this.captureButtonContainer.appendChild(systemAudioBtn);
+    if (micBtn) this.captureButtonContainer.appendChild(micBtn);
+    this.captureButtonContainer.appendChild(stopBtn);
+
+    // Store references for cleanup
+    this.recordingToolbarButtons = [pauseBtn, systemAudioBtn, micBtn, stopBtn].filter(Boolean);
+  }
+
+  /**
+   * Toggle pause/resume recording
+   */
+  togglePauseRecording() {
+    if (!this.videoRecorder) return;
+
+    const status = this.videoRecorder.getRecordingStatus();
+    const pauseBtn = this.captureButtonContainer?.querySelector('[data-action="pause"]');
+
+    if (status.isPaused) {
+      this.videoRecorder.resumeRecording();
+      if (pauseBtn) {
+        pauseBtn.innerHTML = getIcon("pause");
+        pauseBtn.title = "Pause Recording";
+        pauseBtn.classList.remove("paused");
+      }
+    } else {
+      this.videoRecorder.pauseRecording();
+      if (pauseBtn) {
+        pauseBtn.innerHTML = getIcon("play");
+        pauseBtn.title = "Resume Recording";
+        pauseBtn.classList.add("paused");
+      }
+    }
+  }
+
+  /**
+   * Toggle system audio
+   */
+  toggleSystemAudio() {
+    if (!this.videoRecorder) return;
+
+    const enabled = this.videoRecorder.toggleSystemAudio();
+    const btn = this.captureButtonContainer?.querySelector('[data-action="system-audio"]');
+
+    if (btn) {
+      const iconName = enabled ? "system_sound" : "system_sound_mute";
+      btn.innerHTML = getIcon(iconName);
+      btn.classList.toggle("muted", !enabled);
+      btn.title = enabled ? "Mute System Audio" : "Unmute System Audio";
+    }
+  }
+
+  /**
+   * Toggle microphone
+   */
+  toggleMicrophone() {
+    if (!this.videoRecorder) return;
+
+    const enabled = this.videoRecorder.toggleMicrophoneAudio();
+    const btn = this.captureButtonContainer?.querySelector('[data-action="microphone"]');
+
+    if (btn) {
+      const iconName = enabled ? "mic" : "mic_mute";
+      btn.innerHTML = getIcon(iconName);
+      btn.classList.toggle("muted", !enabled);
+      btn.title = enabled ? "Mute Microphone" : "Unmute Microphone";
     }
   }
 
@@ -403,20 +595,32 @@ export default class FileUploader {
         this.videoRecordBtn.disabled = true;
       }
 
-      // Initialize video recorder if not already done
+      // Initialize video recorder with options
       if (!this.videoRecorder) {
-        this.videoRecorder = new VideoRecorder();
+        this.videoRecorder = new VideoRecorder({
+          maxDuration: this.options.maxVideoRecordingDuration * 1000, // Convert to ms
+          systemAudioConstraints: this.options.enableSystemAudio,
+          microphoneAudioConstraints: this.options.enableMicrophoneAudio,
+        });
       }
 
       // Start recording
       await this.videoRecorder.startRecording();
 
-      // Update UI
+      // Set up handler for when user stops sharing from system button
+      this.setupStreamEndedHandler();
+
+      // Hide screenshot button during recording
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "none";
+      }
+
+      // Create recording toolbar
+      this.createRecordingToolbar();
+
+      // Hide video record button during recording (stop button is in toolbar)
       if (this.videoRecordBtn) {
-        this.videoRecordBtn.classList.add("recording");
-        this.videoRecordBtn.innerHTML = getIcon("stop");
-        this.videoRecordBtn.title = "Stop Recording";
-        this.videoRecordBtn.disabled = false;
+        this.videoRecordBtn.style.display = "none";
       }
 
       // Show recording indicator
@@ -427,11 +631,32 @@ export default class FileUploader {
     } catch (error) {
       this.showError(error.message);
 
-      // Re-enable button
+      // Show buttons again on error
       if (this.videoRecordBtn) {
+        this.videoRecordBtn.style.display = "";
         this.videoRecordBtn.disabled = false;
       }
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "";
+      }
     }
+  }
+
+  /**
+   * Setup handler for when user stops screen sharing from system button
+   */
+  setupStreamEndedHandler() {
+    if (!this.videoRecorder || !this.videoRecorder.stream) return;
+
+    // Listen for when user clicks "Stop sharing" from browser/system
+    this.videoRecorder.stream.getTracks().forEach((track) => {
+      track.onended = async () => {
+        if (this.videoRecorder && this.videoRecorder.isRecording) {
+          // User stopped sharing from system button, gracefully stop recording
+          await this.stopVideoRecording();
+        }
+      };
+    });
   }
 
   async stopVideoRecording() {
@@ -445,17 +670,30 @@ export default class FileUploader {
       // Stop recording indicator
       this.stopRecordingTimer();
 
+      // Remove recording toolbar buttons
+      if (this.recordingToolbarButtons) {
+        this.recordingToolbarButtons.forEach(btn => {
+          if (btn) btn.remove();
+        });
+        this.recordingToolbarButtons = null;
+      }
+
       // Stop recording and get file
       const file = await this.videoRecorder.stopRecording();
 
       // Add recorded file with metadata
       this.handleCapturedFile(file, "recording");
 
-      // Update UI
+      // Show video record button and screenshot button again
       if (this.videoRecordBtn) {
         this.videoRecordBtn.classList.remove("recording");
+        this.videoRecordBtn.style.display = "";
         this.videoRecordBtn.title = "Record Video";
         this.videoRecordBtn.disabled = false;
+      }
+
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "";
       }
 
       // Hide recording indicator
@@ -465,9 +703,21 @@ export default class FileUploader {
     } catch (error) {
       this.showError(error.message);
 
-      // Re-enable button
+      // Clean up toolbar buttons on error
+      if (this.recordingToolbarButtons) {
+        this.recordingToolbarButtons.forEach(btn => {
+          if (btn) btn.remove();
+        });
+        this.recordingToolbarButtons = null;
+      }
+
+      // Show buttons again on error
       if (this.videoRecordBtn) {
+        this.videoRecordBtn.style.display = "";
         this.videoRecordBtn.disabled = false;
+      }
+      if (this.screenshotBtn) {
+        this.screenshotBtn.style.display = "";
       }
     }
   }
@@ -475,17 +725,21 @@ export default class FileUploader {
   startRecordingTimer() {
     this.recordingTimerInterval = setInterval(() => {
       if (this.videoRecorder) {
-        const duration = this.videoRecorder.getRecordingDuration();
-        const minutes = Math.floor(duration / 60);
-        const seconds = duration % 60;
-        const timeText = `${String(minutes).padStart(2, "0")}:${String(
-          seconds
-        ).padStart(2, "0")}`;
-
-        const timeElement = this.recordingIndicator.querySelector(
+        const timeElement = this.recordingIndicator?.querySelector(
           ".file-uploader-recording-time"
         );
         if (timeElement) {
+          // Show elapsed / total format
+          const elapsed = this.videoRecorder.getRecordingDuration();
+          const maxSeconds = Math.floor(this.options.maxVideoRecordingDuration);
+
+          const elapsedMinutes = Math.floor(elapsed / 60);
+          const elapsedSeconds = elapsed % 60;
+          const totalMinutes = Math.floor(maxSeconds / 60);
+          const totalSeconds = maxSeconds % 60;
+
+          const timeText = `${String(elapsedMinutes).padStart(2, "0")}:${String(elapsedSeconds).padStart(2, "0")} / ${String(totalMinutes).padStart(2, "0")}:${String(totalSeconds).padStart(2, "0")}`;
+
           timeElement.textContent = timeText;
         }
       }

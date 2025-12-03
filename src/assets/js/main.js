@@ -4,6 +4,8 @@ if (typeof window !== "undefined") {
     duplicateCheckBy: "name-size",
     enableScreenCapture: true,
     enableVideoRecording: true,
+    enableMicrophoneAudio: true, // Enable microphone audio recording
+    enableSystemAudio: true, // Enable system audio recording
     showFileTypeCount: true, // Show file type counts
     showProgressBar: true, // Show progress bars for Total Size and Files
     multiple: true,
