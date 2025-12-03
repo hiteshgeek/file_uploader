@@ -31,13 +31,17 @@
   --fu-success-50: #f0fff4;
   --fu-success-100: #c6f6d5;
   --fu-success-500: #48bb78;
+  --fu-success-600: #38a169;
   --fu-success-700: #2f855a;
+  --fu-success-800: #276749;
 
   // Color Palette - Error/Danger
   --fu-error-50: #fff5f5;
   --fu-error-100: #fed7d7;
   --fu-error-500: #fc8181;
+  --fu-error-600: #e53e3e;
   --fu-error-700: #c53030;
+  --fu-error-800: #9b2c2c;
 
   // Semantic Colors
   --fu-color-primary: var(--fu-primary-400);
@@ -63,6 +67,7 @@
   --fu-color-error: var(--fu-error-500);
   --fu-color-error-bg: var(--fu-error-100);
   --fu-color-error-text: var(--fu-error-700);
+  --fu-color-error-hover: var(--fu-error-800);
 
   // Spacing Scale
   --fu-spacing-xs: 4px;

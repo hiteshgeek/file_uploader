@@ -13,44 +13,40 @@ if (typeof window !== "undefined") {
       console.log("Delete success:", fileObj, result);
     },
   });
-}
 
-function getUploadedFiles() {
-  const files = uploader.getUploadedFiles();
-  document.getElementById("fileInfo").textContent =
-    "Uploaded Files:\n" +
-    JSON.stringify(
-      files.map((f) => ({
-        name: f.name,
-        serverFilename: f.serverFilename,
-        size: f.size,
-        type: f.type,
-      })),
-      null,
-      2
-    );
-}
+  window.uploader = uploader;
 
-function getAllFiles() {
-  const files = uploader.getFiles();
-  document.getElementById("fileInfo").textContent =
-    "All Files:\n" +
-    JSON.stringify(
-      files.map((f) => ({
-        name: f.name,
-        uploaded: f.uploaded,
-        uploading: f.uploading,
-        size: f.size,
-        type: f.type,
-      })),
-      null,
-      2
-    );
-}
+  // Expose functions to global scope
+  window.getUploadedFiles = function getUploadedFiles() {
+    const files = uploader.getUploadedFiles();
+    document.getElementById("fileInfo").textContent =
+      "Uploaded Files:\n" +
+      JSON.stringify(
+        files.map((f) => ({
+          name: f.name,
+          serverFilename: f.serverFilename,
+          size: f.size,
+          type: f.type,
+        })),
+        null,
+        2
+      );
+  };
 
-function clearFiles() {
-  if (confirm("Are you sure you want to clear all files?")) {
-    uploader.clear();
-    document.getElementById("fileInfo").textContent = "";
-  }
+  window.getAllFiles = function getAllFiles() {
+    const files = uploader.getFiles();
+    document.getElementById("fileInfo").textContent =
+      "All Files:\n" +
+      JSON.stringify(
+        files.map((f) => ({
+          name: f.name,
+          uploaded: f.uploaded,
+          uploading: f.uploading,
+          size: f.size,
+          type: f.type,
+        })),
+        null,
+        2
+      );
+  };
 }

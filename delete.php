@@ -1,7 +1,7 @@
 <?php
 /**
  * File Delete Handler
- * Handles AJAX file deletion
+ * Handles AJAX file deletion (single or bulk)
  */
 
 header('Content-Type: application/json');
@@ -12,6 +12,58 @@ $config = require_once 'config.php';
 // Get JSON input
 $input = json_decode(file_get_contents('php://input'), true);
 
+// Check if it's a bulk delete request (array of files)
+if (isset($input['files']) && is_array($input['files'])) {
+    $results = [];
+    $successCount = 0;
+    $failCount = 0;
+
+    foreach ($input['files'] as $fileData) {
+        if (!isset($fileData['filename']) || empty($fileData['filename'])) {
+            $failCount++;
+            continue;
+        }
+
+        $filename = basename($fileData['filename']); // Security: prevent directory traversal
+        $filePath = $config['upload_dir'] . $filename;
+
+        // Check if file exists and is a file
+        if (file_exists($filePath) && is_file($filePath)) {
+            if (unlink($filePath)) {
+                $successCount++;
+                $results[] = [
+                    'filename' => $filename,
+                    'success' => true
+                ];
+            } else {
+                $failCount++;
+                $results[] = [
+                    'filename' => $filename,
+                    'success' => false,
+                    'error' => 'Failed to delete'
+                ];
+            }
+        } else {
+            $failCount++;
+            $results[] = [
+                'filename' => $filename,
+                'success' => false,
+                'error' => 'File not found'
+            ];
+        }
+    }
+
+    echo json_encode([
+        'success' => $failCount === 0,
+        'message' => "Deleted $successCount file(s), $failCount failed",
+        'deleted' => $successCount,
+        'failed' => $failCount,
+        'results' => $results
+    ]);
+    exit;
+}
+
+// Single file delete
 // Validate input
 if (!isset($input['filename']) || empty($input['filename'])) {
     echo json_encode([

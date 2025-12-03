@@ -4,7 +4,7 @@
  * Compatible with Bootstrap 3-5 and standalone usage
  */
 
-import { icons } from "../utils/icons.js";
+import { getIcon } from "../utils/icons.js";
 
 export default class FileUploader {
   constructor(element, options = {}) {
@@ -54,6 +54,11 @@ export default class FileUploader {
       downloadAllButtonText: "Download All", // Text for download-all button
       downloadAllButtonClasses: [], // Custom classes for download-all button (Bootstrap, etc.)
       downloadAllButtonElement: null, // External element selector for download-all (cannot be used with showDownloadAllButton)
+      showClearAllButton: true, // Show internal clear-all button
+      clearAllButtonText: "Clear All", // Text for clear-all button
+      clearAllButtonClasses: [], // Custom classes for clear-all button (Bootstrap, etc.)
+      clearAllButtonElement: null, // External element selector for clear-all (cannot be used with showClearAllButton)
+      cleanupOnUnload: true, // Automatically delete uploaded files from server when leaving the page
       onUploadStart: null,
       onUploadSuccess: null,
       onUploadError: null,
@@ -74,6 +79,14 @@ export default class FileUploader {
       this.options.downloadAllButtonElement = null;
     }
 
+    // Validate clear-all button configuration
+    if (this.options.showClearAllButton && this.options.clearAllButtonElement) {
+      console.error(
+        "FileUploader: Cannot use both showClearAllButton and clearAllButtonElement. Using internal button."
+      );
+      this.options.clearAllButtonElement = null;
+    }
+
     this.files = [];
     this.init();
   }
@@ -86,6 +99,7 @@ export default class FileUploader {
 
     this.createStructure();
     this.attachEvents();
+    this.attachBeforeUnloadHandler();
   }
 
   async fetchConfig() {
@@ -118,19 +132,8 @@ export default class FileUploader {
     this.dropZoneHeader = document.createElement("div");
     this.dropZoneHeader.className = "file-uploader-dropzone-content";
 
-    //file-uploader-icon
-
-    let upload_icon = icons.utils.upload;
-
-    //add class to upload_icon file-uploader-icon
-
-    upload_icon = upload_icon.replace(
-      "<svg ",
-      '<svg class="file-uploader-icon" '
-    );
-
     this.dropZoneHeader.innerHTML = `
-                ${upload_icon}
+                ${getIcon("upload", { class: "file-uploader-icon" })}
                 <p class="file-uploader-text">Drag & drop files here or click to browse</p>
                 <p class="file-uploader-subtext">Maximum file size: ${this.options.maxFileSizeDisplay}</p>
         `;
@@ -161,14 +164,31 @@ export default class FileUploader {
     // Setup download all button (internal or external)
     this.setupDownloadAllButton();
 
+    // Setup clear all button (internal or external)
+    this.setupClearAllButton();
+
     // Append elements to dropzone
     this.dropZone.appendChild(this.fileInput);
     this.dropZone.appendChild(this.dropZoneHeader);
     this.dropZone.appendChild(this.previewContainer);
 
-    // Append download button inside dropzone (only if internal button)
-    if (this.downloadAllBtn && this.options.showDownloadAllButton) {
-      this.dropZone.appendChild(this.downloadAllBtn);
+    // Create button container for both buttons inside dropzone
+    if (
+      (this.downloadAllBtn && this.options.showDownloadAllButton) ||
+      (this.clearAllBtn && this.options.showClearAllButton)
+    ) {
+      this.buttonContainer = document.createElement("div");
+      this.buttonContainer.className = "file-uploader-button-container";
+      this.buttonContainer.style.display = "none"; // Initially hidden
+
+      if (this.downloadAllBtn && this.options.showDownloadAllButton) {
+        this.buttonContainer.appendChild(this.downloadAllBtn);
+      }
+      if (this.clearAllBtn && this.options.showClearAllButton) {
+        this.buttonContainer.appendChild(this.clearAllBtn);
+      }
+
+      this.dropZone.appendChild(this.buttonContainer);
     }
 
     // Append dropzone and other elements to wrapper
@@ -217,12 +237,59 @@ export default class FileUploader {
       }
       this.downloadAllBtn.className = classes.join(" ");
 
-      this.downloadAllBtn.style.display = "none";
+      // Don't set display:none here, let updateLimitsDisplay handle it via container
       this.downloadAllBtn.innerHTML = `
-            ${icons.utils.download}
+            ${getIcon("download")}
             <span>${this.options.downloadAllButtonText}</span>
         `;
       this.downloadAllBtn.addEventListener("click", () => this.downloadAll());
+    }
+  }
+
+  setupClearAllButton() {
+    // Use external element if provided
+    if (this.options.clearAllButtonElement) {
+      const selector = this.options.clearAllButtonElement;
+      this.clearAllBtn =
+        typeof selector === "string"
+          ? document.querySelector(selector)
+          : selector;
+
+      if (!this.clearAllBtn) {
+        console.error(
+          `FileUploader: Clear button element not found: ${selector}`
+        );
+        return;
+      }
+
+      // Set initial state
+      this.clearAllBtn.style.display = "none";
+      this.clearAllBtn.disabled = true;
+
+      // Attach click handler
+      this.clearAllBtn.addEventListener("click", () => this.clearAll());
+    }
+    // Create internal button
+    else if (this.options.showClearAllButton) {
+      this.clearAllBtn = document.createElement("button");
+      this.clearAllBtn.type = "button";
+
+      // Build class list
+      const classes = ["file-uploader-clear-all"];
+      if (
+        this.options.clearAllButtonClasses &&
+        this.options.clearAllButtonClasses.length > 0
+      ) {
+        classes.push(...this.options.clearAllButtonClasses);
+      }
+      this.clearAllBtn.className = classes.join(" ");
+
+      // Don't set display:none here, let updateLimitsDisplay handle it via container
+      this.clearAllBtn.innerHTML = `
+            ${getIcon("trash")}
+            <span>${this.options.clearAllButtonText}</span>
+        `;
+      this.clearAllBtn.addEventListener("click", () => this.clearAll());
     }
   }
 
@@ -270,17 +337,20 @@ export default class FileUploader {
 
     this.limitsContainer.innerHTML = limitsHTML;
 
-    // Show/hide and enable/disable download all button
-    if (this.downloadAllBtn) {
-      const hasFiles = fileCount > 0;
+    // Show/hide button container based on file count
+    const hasFiles = fileCount > 0;
 
-      // For external buttons, use disabled state instead of display
-      if (this.options.downloadAllButtonElement) {
-        this.downloadAllBtn.disabled = !hasFiles;
-      } else {
-        // For internal button, control visibility
-        this.downloadAllBtn.style.display = hasFiles ? "flex" : "none";
-      }
+    // For internal button container
+    if (this.buttonContainer) {
+      this.buttonContainer.style.display = hasFiles ? "flex" : "none";
+    }
+
+    // For external buttons, use disabled state
+    if (this.downloadAllBtn && this.options.downloadAllButtonElement) {
+      this.downloadAllBtn.disabled = !hasFiles;
+    }
+    if (this.clearAllBtn && this.options.clearAllButtonElement) {
+      this.clearAllBtn.disabled = !hasFiles;
     }
   }
 
@@ -291,12 +361,22 @@ export default class FileUploader {
   attachEvents() {
     // Click to browse - only on dropzone or header, not on previews or buttons
     this.dropZone.addEventListener("click", (e) => {
-      // Don't trigger if clicking on file input, preview items, download button, or their children
+      // Don't trigger if clicking on file input, preview items, buttons, or their children
       const isPreview = e.target.closest(".file-uploader-preview");
       const isDownloadBtn = e.target.closest(".file-uploader-download-all");
+      const isClearBtn = e.target.closest(".file-uploader-clear-all");
+      const isButtonContainer = e.target.closest(
+        ".file-uploader-button-container"
+      );
       const isInput = e.target === this.fileInput;
 
-      if (!isPreview && !isDownloadBtn && !isInput) {
+      if (
+        !isPreview &&
+        !isDownloadBtn &&
+        !isClearBtn &&
+        !isButtonContainer &&
+        !isInput
+      ) {
         this.fileInput.click();
       }
     });
@@ -583,19 +663,12 @@ export default class FileUploader {
                 <button type="button" class="file-uploader-download" data-file-id="${
                   fileObj.id
                 }" title="Download file" style="display: none;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
+                    ${getIcon("download")}
                 </button>
                 <button type="button" class="file-uploader-delete" data-file-id="${
                   fileObj.id
                 }" title="Delete file">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
+                    ${getIcon("trash")}
                 </button>
             </div>
         `;
@@ -910,7 +983,68 @@ export default class FileUploader {
     this.previewContainer.innerHTML = "";
   }
 
+  async clearAll() {
+    const uploadedFiles = this.files.filter((f) => f.uploaded);
+
+    if (uploadedFiles.length === 0) {
+      this.showError("No files to clear");
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = confirm(
+      `Are you sure you want to delete all ${uploadedFiles.length} file(s)?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    // Delete all files
+    const deletePromises = uploadedFiles.map((fileObj) =>
+      this.deleteFile(fileObj.id)
+    );
+
+    await Promise.all(deletePromises);
+  }
+
+  attachBeforeUnloadHandler() {
+    // Only attach if cleanupOnUnload is enabled
+    if (!this.options.cleanupOnUnload) {
+      return;
+    }
+
+    // Store bound handler so we can remove it later
+    this.beforeUnloadHandler = () => {
+      const uploadedFiles = this.files.filter((f) => f.uploaded);
+
+      if (uploadedFiles.length > 0) {
+        // Prepare file data for deletion
+        const fileData = uploadedFiles.map((f) => ({
+          filename: f.serverFilename,
+        }));
+
+        // Use sendBeacon for reliable cleanup even when page is unloading
+        // This is a fire-and-forget request that will complete even if page closes
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify({ files: fileData })], {
+            type: "application/json",
+          });
+          navigator.sendBeacon(this.options.deleteUrl, blob);
+        }
+      }
+    };
+
+    // Attach the handler
+    window.addEventListener("beforeunload", this.beforeUnloadHandler);
+  }
+
   destroy() {
+    // Remove event listeners
+    if (this.beforeUnloadHandler) {
+      window.removeEventListener("beforeunload", this.beforeUnloadHandler);
+    }
+
     this.wrapper.remove();
     this.files = [];
   }

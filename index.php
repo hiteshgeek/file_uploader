@@ -40,7 +40,6 @@ include_once __DIR__ . '/includes/functions.php';
             <div class="button-group">
                 <button class="btn btn-primary" onclick="getUploadedFiles()">Get Uploaded Files</button>
                 <button class="btn btn-secondary" onclick="getAllFiles()">Get All Files</button>
-                <button class="btn btn-danger" onclick="clearFiles()">Clear All</button>
             </div>
 
             <div id="fileInfo"></div>
