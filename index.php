@@ -11,6 +11,8 @@ include_once __DIR__ . '/includes/functions.php';
     <title>File Uploader - Standalone Demo</title>
     <link rel="stylesheet" href="<?php echo asset('main.css'); ?>" />
     <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="icon" type="image/svg+xml" href="src/assets/images/download.svg">
+
 </head>
 
 <body>

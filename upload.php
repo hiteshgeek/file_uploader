@@ -78,30 +78,32 @@ if (in_array($extension, $config['image_extensions'])) {
     $fileType = 'image';
 } elseif (in_array($extension, $config['video_extensions'])) {
     $fileType = 'video';
+} elseif (in_array($extension, $config['audio_extensions'])) {
+    $fileType = 'audio';
 } elseif (in_array($extension, $config['document_extensions'])) {
     $fileType = 'document';
 } elseif (in_array($extension, $config['archive_extensions'])) {
     $fileType = 'archive';
 }
 
-// Validate per-file-type size limit
-if (isset($config['file_type_size_limits'][$fileType])) {
-    $typeLimit = $config['file_type_size_limits'][$fileType];
-    if ($file['size'] > $typeLimit) {
-        $limitDisplay = $config['file_type_size_limits_display'][$fileType] ?? 'unknown';
+// Validate per-file max size per type (for a SINGLE file)
+if (isset($config['per_file_max_size_per_type'][$fileType])) {
+    $perFileLimit = $config['per_file_max_size_per_type'][$fileType];
+    if ($file['size'] > $perFileLimit) {
+        $limitDisplay = $config['per_file_max_size_per_type_display'][$fileType] ?? 'unknown';
         echo json_encode([
             'success' => false,
-            'error' => "\"{$originalName}\" exceeds the {$fileType} file size limit of {$limitDisplay}"
+            'error' => "\"{$originalName}\" exceeds the maximum {$fileType} file size of {$limitDisplay}"
         ]);
         exit;
     }
 }
 
-// Validate general file size
-if ($file['size'] > $config['max_file_size']) {
+// Validate general per-file max size (fallback)
+if ($file['size'] > $config['per_file_max_size']) {
     echo json_encode([
         'success' => false,
-        'error' => "\"{$originalName}\" exceeds maximum file size of " . $config['max_file_size_display']
+        'error' => "\"{$originalName}\" exceeds maximum file size of " . $config['per_file_max_size_display']
     ]);
     exit;
 }

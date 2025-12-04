@@ -132,15 +132,6 @@ export default class VideoRecorder {
           this.stopRecording();
         }
       }, this.options.maxDuration);
-
-      // Handle stream ending (user stops sharing)
-      this.stream.getTracks().forEach((track) => {
-        track.onended = () => {
-          if (this.isRecording) {
-            this.stopRecording();
-          }
-        };
-      });
     } catch (error) {
       this.cleanup();
 

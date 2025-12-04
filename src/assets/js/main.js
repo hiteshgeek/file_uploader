@@ -1,5 +1,8 @@
 if (typeof window !== "undefined") {
   const uploader = new FileUploader("#fileUploader", {
+    showLimitsToggle: true, // Show the toggle button (default: true)
+    defaultLimitsVisible: false, // Start with limits hidden (default: true)
+
     preventDuplicates: true,
     duplicateCheckBy: "name-size",
     enableScreenCapture: true,

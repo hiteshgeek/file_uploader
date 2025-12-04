@@ -5,6 +5,74 @@
  * This configuration is shared between PHP and JavaScript
  */
 
+/**
+ * Convert bytes to human-readable file size
+ * @param int $bytes File size in bytes
+ * @return string Human-readable file size (e.g., "5MB", "1.5GB")
+ */
+function formatFileSize($bytes)
+{
+    if ($bytes === 0) return '0 Bytes';
+
+    $k = 1024;
+    $sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    $i = floor(log($bytes) / log($k));
+
+    $value = round($bytes / pow($k, $i), 2);
+
+    // Remove unnecessary decimals (e.g., 5.00 becomes 5)
+    if ($value == floor($value)) {
+        $value = floor($value);
+    }
+
+    return $value . $sizes[$i];
+}
+
+// Define file size limits in bytes
+$perFileMaxSize = 5 * 1024 * 1024;  // 5MB (fallback for types without specific limit)
+$totalMaxSize = 100 * 1024 * 1024;  // 100MB (total for all files combined)
+
+// Per file max size limit - maximum size for a SINGLE file of each type
+$perFileMaxSizePerType = [
+    'image' => 10 * 1024 * 1024,      // 10MB per image file
+    'video' => 100 * 1024 * 1024,      // 50MB per video file
+    'audio' => 25 * 1024 * 1024,      // 25MB per audio file
+    'document' => 10 * 1024 * 1024,   // 10MB per document file
+    'archive' => 20 * 1024 * 1024,    // 20MB per archive file
+];
+
+// Per type max total size limit - maximum TOTAL size for all files of that type combined
+$perTypeMaxTotalSize = [
+    'image' => 50 * 1024 * 1024,      // 50MB total for all images
+    'video' => 200 * 1024 * 1024,     // 200MB total for all videos
+    'audio' => 100 * 1024 * 1024,     // 100MB total for all audio files
+    'document' => 50 * 1024 * 1024,   // 50MB total for all documents
+    'archive' => 100 * 1024 * 1024,   // 100MB total for all archives
+];
+
+// Per type max file count - maximum number of files allowed for each type
+$perTypeMaxFileCount = [
+    'image' => 5,
+    'video' => 3,
+    'audio' => 3,
+    'document' => 5,
+    'archive' => 2,
+];
+
+// Auto-generate human-readable display values
+$perFileMaxSizeDisplay = formatFileSize($perFileMaxSize);
+$totalMaxSizeDisplay = formatFileSize($totalMaxSize);
+
+$perFileMaxSizePerTypeDisplay = [];
+foreach ($perFileMaxSizePerType as $type => $size) {
+    $perFileMaxSizePerTypeDisplay[$type] = formatFileSize($size);
+}
+
+$perTypeMaxTotalSizeDisplay = [];
+foreach ($perTypeMaxTotalSize as $type => $size) {
+    $perTypeMaxTotalSizeDisplay[$type] = formatFileSize($size);
+}
+
 return [
     // Upload directory (relative to this file)
     'upload_dir' => __DIR__ . '/uploads/',
@@ -37,7 +105,7 @@ return [
         'audio/mp4',
         'audio/flac',
         // Documents
-        'application/pdf',
+        // 'application/pdf',
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.ms-excel',
@@ -59,6 +127,11 @@ return [
         'application/x-gzip',
         'application/gzip',
         'application/x-tar',
+
+        'application/json',
+        'text/json',
+        'application/xml',
+        'text/xml',
     ],
 
     // Allowed file extensions
@@ -93,47 +166,29 @@ return [
         'rar',
         '7z',
         'tar',
-        'gz'
+        'gz',
+        'json',
+        'xml'
     ],
 
-    // Maximum file size in bytes (10MB default)
-    'max_file_size' => 1000 * 1024 * 1024,
+    // Per file max size (fallback for types without specific limit)
+    'per_file_max_size' => $perFileMaxSize,
+    'per_file_max_size_display' => $perFileMaxSizeDisplay,  // auto-generated
 
-    // Maximum file size for display (human readable)
-    'max_file_size_display' => '1000MB',
+    // Per file max size per type - maximum size for a SINGLE file of each type
+    'per_file_max_size_per_type' => $perFileMaxSizePerType,
+    'per_file_max_size_per_type_display' => $perFileMaxSizePerTypeDisplay,  // auto-generated
 
-    // Per file type size limits (in bytes)
-    'file_type_size_limits' => [
-        'image' => 5 * 1024 * 1024,      // 5MB for images
-        'video' => 500 * 1024 * 1024,     // 500MB for videos
-        'audio' => 50 * 1024 * 1024,     // 50MB for audio
-        'document' => 10 * 1024 * 1024,  // 10MB for documents
-        'archive' => 20 * 1024 * 1024,   // 20MB for archives
-    ],
+    // Per type max total size - maximum TOTAL size for all files of that type combined
+    'per_type_max_total_size' => $perTypeMaxTotalSize,
+    'per_type_max_total_size_display' => $perTypeMaxTotalSizeDisplay,  // auto-generated
 
-    // Per file type size limits display (human readable)
-    'file_type_size_limits_display' => [
-        'image' => '5MB',
-        'video' => '500MB',
-        'audio' => '50MB',
-        'document' => '10MB',
-        'archive' => '20MB',
-    ],
+    // Per type max file count - maximum number of files allowed for each type
+    'per_type_max_file_count' => $perTypeMaxFileCount,
 
-    // Maximum number of files allowed per type
-    'file_type_count_limits' => [
-        'image' => 5,
-        'video' => 3,
-        'audio' => 3,
-        'document' => 5,
-        'archive' => 2,
-    ],
-
-    // Total upload size limit across all files (in bytes)
-    'total_size_limit' => 1000 * 1024 * 1024,
-
-    // Total upload size limit display (human readable)
-    'total_size_limit_display' => '1000MB',
+    // Total max size - maximum size across all files combined
+    'total_max_size' => $totalMaxSize,
+    'total_max_size_display' => $totalMaxSizeDisplay,  // auto-generated
 
     // Maximum number of files
     'max_files' => 10,

@@ -418,9 +418,17 @@ export default class RecordingUI {
       // Listen for when user clicks "Stop sharing" from browser/system
       this.uploader.videoRecorder.stream.getTracks().forEach((track) => {
         track.onended = async () => {
+          // Check if recording is still in progress before stopping
           if (this.uploader.videoRecorder && this.uploader.videoRecorder.isRecording) {
             // User stopped sharing from system button, gracefully stop recording
-            await this.uploader.stopVideoRecording();
+            try {
+              await this.uploader.stopVideoRecording();
+            } catch (error) {
+              // Ignore "no recording in progress" errors
+              if (!error.message.includes('No recording in progress')) {
+                console.error('Error stopping video recording:', error);
+              }
+            }
           }
         };
       });
@@ -433,9 +441,17 @@ export default class RecordingUI {
         if (!stream) return;
         stream.getTracks().forEach((track) => {
           track.onended = async () => {
+            // Check if recording is still in progress before stopping
             if (audioRecorder && audioRecorder.isRecording) {
               // User stopped sharing from system button, gracefully stop recording
-              await stopFn();
+              try {
+                await stopFn();
+              } catch (error) {
+                // Ignore "no recording in progress" errors
+                if (!error.message.includes('No recording in progress')) {
+                  console.error('Error stopping audio recording:', error);
+                }
+              }
             }
           };
         });
@@ -467,6 +483,24 @@ export default class RecordingUI {
     this.stopRecordingTimer();
     if (this.uploader.recordingIndicator) {
       this.uploader.recordingIndicator.style.display = "none";
+
+      // Reset timer display to initial state
+      const timeElement = this.uploader.recordingIndicator.querySelector(
+        ".file-uploader-recording-time"
+      );
+      if (timeElement) {
+        // Reset to 00:00 / max duration format
+        const maxSeconds = this.recordingType === 'audio'
+          ? Math.floor(this.uploader.options.maxAudioRecordingDuration)
+          : Math.floor(this.uploader.options.maxVideoRecordingDuration);
+
+        const totalMinutes = Math.floor(maxSeconds / 60);
+        const totalSeconds = maxSeconds % 60;
+        timeElement.textContent = `00:00 / ${String(totalMinutes).padStart(2, "0")}:${String(totalSeconds).padStart(2, "0")}`;
+
+        // Reset the display mode preference
+        timeElement.dataset.showRemaining = "false";
+      }
     }
   }
 
