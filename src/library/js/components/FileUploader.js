@@ -558,6 +558,19 @@ export default class FileUploader {
     this.limitsToggleBtn = document.createElement("button");
     this.limitsToggleBtn.type = "button";
     this.limitsToggleBtn.className = "file-uploader-limits-toggle-btn";
+
+    // Create icon element once (will be rotated via CSS)
+    const iconWrapper = document.createElement("span");
+    iconWrapper.className = "file-uploader-toggle-icon-wrapper";
+    iconWrapper.innerHTML = getIcon("chevron_up", { class: "file-uploader-toggle-icon" });
+    this.limitsToggleBtn.appendChild(iconWrapper);
+
+    // Create text element
+    this.limitsToggleBtnText = document.createElement("span");
+    this.limitsToggleBtnText.textContent = "Size Limits";
+    this.limitsToggleBtn.appendChild(this.limitsToggleBtnText);
+
+    // Set initial state
     this.updateLimitsToggleButton();
 
     this.limitsToggleBtn.addEventListener("click", (e) => {
@@ -576,15 +589,7 @@ export default class FileUploader {
   updateLimitsToggleButton() {
     if (!this.limitsToggleBtn) return;
 
-    // Use chevron icon directly (no container) - matches Download All/Clear All style
-    const icon = getIcon("chevron_up", { class: "file-uploader-toggle-icon" });
-
-    this.limitsToggleBtn.innerHTML = `
-      ${icon}
-      <span>${this.limitsVisible ? "Limits" : "Limits"}</span>
-    `;
-
-    // Toggle expanded class for CSS animation
+    // Toggle expanded class for CSS animation (rotates the chevron)
     if (this.limitsVisible) {
       this.limitsToggleBtn.classList.add("is-expanded");
     } else {
@@ -939,7 +944,7 @@ export default class FileUploader {
     // Check if there are any type-level limits to display
     const hasTypeLimits = typeLimits && Object.keys(typeLimits).length > 0;
 
-    // View mode toggle button (concise/detailed) - styled like download button with circular chevron
+    // View mode toggle button (concise/detailed) - uses grid_view and list_view icons
     const viewModeToggleButton =
       this.options.allowLimitsViewToggle && hasTypeLimits
         ? `
@@ -948,9 +953,7 @@ export default class FileUploader {
       }" data-tooltip-text="${
             isDetailed ? "Switch to concise view" : "Switch to detailed view"
           }" data-tooltip-position="top">
-        <span class="file-uploader-limits-toggle-chevron">
-          ${getIcon("chevron_up", { class: "file-uploader-toggle-icon" })}
-        </span>
+        ${getIcon(isDetailed ? "grid_view" : "list_view", { class: "file-uploader-toggle-icon" })}
         <span>${isDetailed ? "Concise" : "Details"}</span>
       </button>
     `
