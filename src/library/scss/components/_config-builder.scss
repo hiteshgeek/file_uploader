@@ -929,12 +929,23 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-slider-labels {
   display: flex;
   justify-content: space-between;
-  // Offset to align with slider: 32px button + 8px gap on left, same + 70px input + 8px + dropdown on right
-  margin-left: 40px; // 32px button + 8px gap
-  margin-right: calc(
-    40px + 70px + 8px + 70px
-  ); // button + input + gap + dropdown
+  // Offset to align with slider track:
+  // Left: 32px button + 8px gap = 40px
+  margin-left: 40px;
   padding: 0;
+  margin-top: 4px;
+}
+
+// Size slider labels: Right offset for button + input + dropdown
+// 8px gap + 32px button + 8px gap + 70px input + 8px gap + 70px dropdown = 196px
+.#{$builder-prefix}-size-slider .#{$builder-prefix}-slider-labels {
+  margin-right: 196px;
+}
+
+// Count slider labels: Right offset for button + input + "files" label
+// 8px gap + 32px button + 8px gap + 70px input + 8px gap + ~35px label = ~161px
+.#{$builder-prefix}-count-slider .#{$builder-prefix}-slider-labels {
+  margin-right: 150px;
 }
 
 .#{$builder-prefix}-slider-label {
@@ -1055,12 +1066,19 @@ $builder-prefix: "fu-config-builder";
 }
 
 // Type slider labels - aligned with full-size controls
+// These are used within type-slider-block for per-type limits
 .#{$builder-prefix}-slider-labels-sm {
-  // Adjust margins for full-size buttons (32px) and inputs (70px + 70px dropdown)
   margin-left: 40px; // 32px button + 8px gap
-  margin-right: calc(
-    40px + 70px + 8px + 70px
-  ); // button + input + gap + dropdown
+  // Default: assume dropdown is present (size type)
+  // 8px gap + 32px button + 8px gap + 70px input + 8px gap + 70px dropdown = 196px
+  margin-right: 196px;
+}
+
+// Type count sliders have "files" label instead of dropdown
+// 8px gap + 32px button + 8px gap + 70px input + 8px gap + ~35px label = ~161px
+.#{$builder-prefix}-type-slider-block:not([data-unit])
+  .#{$builder-prefix}-slider-labels-sm {
+  margin-right: 150px;
 }
 
 // Multi-select Tags
