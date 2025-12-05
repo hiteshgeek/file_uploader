@@ -23,6 +23,7 @@ export default class VideoRecorder {
       mimeType: "video/webm", // Default video format
       videoBitsPerSecond: 2500000, // 2.5 Mbps
       maxDuration: 300000, // 5 minutes max (in milliseconds)
+      onAutoStop: null, // Callback when recording auto-stops due to max duration
       ...options,
     };
 
@@ -65,13 +66,8 @@ export default class VideoRecorder {
     }
 
     try {
-      // Request screen capture with system audio if enabled
-      this.stream = await navigator.mediaDevices.getDisplayMedia({
-        video: this.options.videoConstraints,
-        audio: this.options.systemAudioConstraints,
-      });
-
-      // Get microphone stream if enabled
+      // Request microphone permission FIRST if enabled
+      // This ensures the mic permission dialog shows before screen capture
       if (this.options.microphoneAudioConstraints) {
         try {
           const constraints = {
@@ -88,6 +84,21 @@ export default class VideoRecorder {
           this.microphoneStream = null;
         }
       }
+
+      // Request screen capture with system audio if enabled
+      // For system audio, we need to pass proper constraints
+      const displayMediaOptions = {
+        video: this.options.videoConstraints,
+        audio: this.options.systemAudioConstraints
+          ? {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false,
+            }
+          : false,
+      };
+
+      this.stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
 
       // Initialize audio states based on available streams
       const systemAudioTracks = this.stream.getAudioTracks();
@@ -127,9 +138,17 @@ export default class VideoRecorder {
       this.pausedTime = 0;
 
       // Auto-stop after max duration
-      this.recordingTimer = setTimeout(() => {
+      this.recordingTimer = setTimeout(async () => {
         if (this.isRecording) {
-          this.stopRecording();
+          try {
+            const file = await this.stopRecording();
+            // Call the onAutoStop callback with the file
+            if (this.options.onAutoStop && typeof this.options.onAutoStop === 'function') {
+              this.options.onAutoStop(file);
+            }
+          } catch (error) {
+            console.error("Auto-stop recording failed:", error);
+          }
         }
       }, this.options.maxDuration);
     } catch (error) {

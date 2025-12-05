@@ -100,8 +100,8 @@ export default class FileUploader {
       maxVideoRecordingDuration: 300, // Max video recording duration in seconds (default 5 minutes)
       maxAudioRecordingDuration: 300, // Max audio recording duration in seconds (default 5 minutes)
       recordingCountdownDuration: 3, // Countdown duration before recording starts in seconds (default 3)
-      enableMicrophoneAudio: false, // Enable microphone audio recording
-      enableSystemAudio: false, // Enable system audio recording
+      enableMicrophoneAudio: true, // Enable microphone audio recording
+      enableSystemAudio: true, // Enable system audio recording
       // Carousel preview options
       enableCarouselPreview: true, // Enable carousel preview modal on file click
       carouselAutoPreload: true, // Auto-preload files in carousel (true, false, or array of types like ['image', 'video'])
@@ -714,13 +714,13 @@ export default class FileUploader {
       }
 
       // Initialize video recorder with options
-      if (!this.videoRecorder) {
-        this.videoRecorder = new VideoRecorder({
-          maxDuration: this.options.maxVideoRecordingDuration * 1000, // Convert to ms
-          systemAudioConstraints: this.options.enableSystemAudio,
-          microphoneAudioConstraints: this.options.enableMicrophoneAudio,
-        });
-      }
+      // Always create a new recorder to ensure options are fresh
+      this.videoRecorder = new VideoRecorder({
+        maxDuration: this.options.maxVideoRecordingDuration * 1000, // Convert to ms
+        systemAudioConstraints: this.options.enableSystemAudio,
+        microphoneAudioConstraints: this.options.enableMicrophoneAudio,
+        onAutoStop: (file) => this.handleVideoAutoStop(file),
+      });
 
       // Set recording type BEFORE starting recording
       this.recordingUI.recordingType = "video";
@@ -815,6 +815,34 @@ export default class FileUploader {
     }
   }
 
+  /**
+   * Handle video recording auto-stop (when max duration is reached)
+   * @param {File} file - The recorded video file
+   */
+  handleVideoAutoStop(file) {
+    // Clean up recording UI
+    this.recordingUI.cleanup();
+
+    // Add recorded file with metadata
+    this.handleCapturedFile(file, "recording");
+
+    // Show video record button and screenshot button again
+    if (this.videoRecordBtn) {
+      this.videoRecordBtn.classList.remove("recording");
+      this.videoRecordBtn.style.display = "";
+      this.videoRecordBtn.title = "Record Video";
+      this.videoRecordBtn.disabled = false;
+    }
+
+    if (this.screenshotBtn) {
+      this.screenshotBtn.style.display = "";
+    }
+
+    if (this.audioRecordBtn) {
+      this.audioRecordBtn.style.display = "";
+    }
+  }
+
   async toggleAudioRecording() {
     if (
       this.audioRecorder &&
@@ -842,16 +870,16 @@ export default class FileUploader {
         (!this.options.enableMicrophoneAudio &&
           !this.options.enableSystemAudio);
 
-      if (!this.audioRecorder) {
-        this.audioRecorder = new AudioWorkletRecorder({
-          enableMicrophoneAudio: enableMic,
-          enableSystemAudio: this.options.enableSystemAudio,
-          maxRecordingDuration: this.options.maxAudioRecordingDuration,
-          sampleRate: 48000, // High quality audio
-          bitDepth: 16,
-          numberOfChannels: 2, // Stereo
-        });
-      }
+      // Always create a new recorder to ensure options are fresh
+      this.audioRecorder = new AudioWorkletRecorder({
+        enableMicrophoneAudio: enableMic,
+        enableSystemAudio: this.options.enableSystemAudio,
+        maxRecordingDuration: this.options.maxAudioRecordingDuration,
+        sampleRate: 48000, // High quality audio
+        bitDepth: 16,
+        numberOfChannels: 2, // Stereo
+        onAutoStop: (file) => this.handleAudioAutoStop(file),
+      });
 
       // Set recording type BEFORE starting recording
       this.recordingUI.recordingType = "audio";
@@ -946,6 +974,34 @@ export default class FileUploader {
       if (this.videoRecordBtn) {
         this.videoRecordBtn.style.display = "";
       }
+    }
+  }
+
+  /**
+   * Handle audio recording auto-stop (when max duration is reached)
+   * @param {File} file - The recorded audio file
+   */
+  handleAudioAutoStop(file) {
+    // Clean up recording UI
+    this.recordingUI.cleanup();
+
+    // Add recorded file with metadata
+    this.handleCapturedFile(file, "audio_recording");
+
+    // Show all capture buttons again
+    if (this.audioRecordBtn) {
+      this.audioRecordBtn.classList.remove("recording");
+      this.audioRecordBtn.style.display = "";
+      this.audioRecordBtn.title = "Record Audio";
+      this.audioRecordBtn.disabled = false;
+    }
+
+    if (this.screenshotBtn) {
+      this.screenshotBtn.style.display = "";
+    }
+
+    if (this.videoRecordBtn) {
+      this.videoRecordBtn.style.display = "";
     }
   }
 

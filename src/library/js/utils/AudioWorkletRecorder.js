@@ -15,6 +15,7 @@ export default class AudioWorkletRecorder {
       sampleRate: options.sampleRate || 48000, // 48kHz default
       bitDepth: options.bitDepth || 16, // 16-bit default
       numberOfChannels: options.numberOfChannels || 2, // Stereo default
+      onAutoStop: null, // Callback when recording auto-stops due to max duration
       ...options,
     };
 
@@ -144,9 +145,17 @@ export default class AudioWorkletRecorder {
       this.startTime = Date.now();
 
       // Auto-stop at max duration
-      setTimeout(() => {
+      this.recordingTimer = setTimeout(async () => {
         if (this.isRecording) {
-          this.stopRecording();
+          try {
+            const file = await this.stopRecording();
+            // Call the onAutoStop callback with the file
+            if (this.options.onAutoStop && typeof this.options.onAutoStop === 'function') {
+              this.options.onAutoStop(file);
+            }
+          } catch (error) {
+            console.error("Auto-stop audio recording failed:", error);
+          }
         }
       }, this.options.maxRecordingDuration * 1000);
     } catch (error) {
@@ -502,6 +511,11 @@ export default class AudioWorkletRecorder {
    * Cleanup all resources
    */
   cleanup() {
+    if (this.recordingTimer) {
+      clearTimeout(this.recordingTimer);
+      this.recordingTimer = null;
+    }
+
     if (this.workletNode) {
       this.workletNode.disconnect();
       this.workletNode = null;

@@ -1665,7 +1665,7 @@ $component-prefix: $file-uploader-prefix !default;
   border: none;
   border-radius: var(--fu-radius-sm);
   cursor: pointer;
-  color: var(--fu-color-text-muted);
+  color: #ffffff;
   border-radius: 50%;
   @include transition((background-color, color, transform));
   box-shadow: 0 0 3px #fff;
@@ -1673,6 +1673,7 @@ $component-prefix: $file-uploader-prefix !default;
   svg {
     width: var(--fu-icon-size-md);
     height: var(--fu-icon-size-md);
+    fill: #ffffff;
   }
 
   // Active state
