@@ -7,63 +7,77 @@
 
 $builder-prefix: "fu-config-builder";
 
-// Main Container
+// Main Container - Full width with resizable panels
 .#{$builder-prefix} {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 24px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden; // Prevent page scrolling
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #1f2937;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 // Header
 .#{$builder-prefix}-header {
-  grid-column: 1 / -1;
   text-align: center;
-  margin-bottom: 16px;
+  padding: 20px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0; // Don't shrink header
 
   h1 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     color: #111827;
-    margin: 0 0 8px 0;
+    margin: 0 0 4px 0;
   }
 
   p {
-    font-size: 16px;
+    font-size: 14px;
     color: #6b7280;
     margin: 0;
   }
 }
 
+// Main Layout Container
+.#{$builder-prefix}-main {
+  display: flex;
+  flex: 1;
+  min-height: 0; // Critical for flex child scrolling
+  overflow: hidden;
+}
+
+// Panels Container (holds options and preview with resizer)
+.#{$builder-prefix}-panels {
+  display: flex;
+  flex: 1;
+  min-height: 0; // Critical for flex child scrolling
+  overflow: hidden;
+}
+
 // Panels
 .#{$builder-prefix}-panel {
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .#{$builder-prefix}-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 12px 16px;
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
 
   h2 {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 600;
     color: #111827;
     margin: 0;
@@ -71,31 +85,209 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-panel-content {
-  padding: 20px;
-  max-height: calc(100vh - 200px);
+  flex: 1;
   overflow-y: auto;
+  padding: 16px;
 }
 
-// Options Panel (Left side)
+// Options Panel (Left side) - with vertical tabs
 .#{$builder-prefix}-options {
-  @media (max-width: 1200px) {
-    order: 2;
+  width: 480px;
+  min-width: 400px;
+  max-width: 700px;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  .#{$builder-prefix}-panel-content {
+    display: flex;
+    padding: 0;
+    gap: 0;
+    flex: 1;
+    min-height: 0; // Critical for nested flex scrolling
+    overflow: hidden;
   }
+}
+
+// Vertical Tabs Container
+.#{$builder-prefix}-vertical-tabs {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start; // Don't stretch to full height
+  width: 44px;
+  min-width: 44px;
+  background: #f3f4f6;
+  border-right: 1px solid #e5e7eb;
+  border-radius: 0 0 8px 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.#{$builder-prefix}-vertical-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #9ca3af;
+
+  &:hover {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  &.active {
+    background: #6366f1;
+    border-left-color: #4f46e5;
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+
+    svg {
+      fill: #ffffff;
+    }
+
+    .#{$builder-prefix}-vertical-tab-label {
+      font-weight: 600;
+    }
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+}
+
+.#{$builder-prefix}-vertical-tab-label {
+  font-size: 7px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 36px;
+  word-wrap: break-word;
+}
+
+// Options Content Area - Independently scrollable
+.#{$builder-prefix}-options-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  min-height: 0; // Critical for flex child scrolling
+
+  // Custom scrollbar for options content
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+
+    &:hover {
+      background: #a1a1a1;
+    }
+  }
+}
+
+// Category Content (shown when vertical tab is active)
+.#{$builder-prefix}-category-panel {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.#{$builder-prefix}-category-panel-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+.#{$builder-prefix}-category-options {
+  display: grid;
+  gap: 14px;
 }
 
 // Preview Panel (Right side)
 .#{$builder-prefix}-preview {
-  position: sticky;
-  top: 24px;
-  align-self: start;
+  flex: 1;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
 
-  @media (max-width: 1200px) {
-    position: static;
-    order: 1;
+// Resizer Handle
+.#{$builder-prefix}-resizer {
+  width: 6px;
+  background: #e5e7eb;
+  cursor: col-resize;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+  position: relative;
+
+  &:hover,
+  &.active {
+    background: #6366f1;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 40px;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 3px,
+      currentColor 3px,
+      currentColor 6px
+    );
+    color: #9ca3af;
+    opacity: 0.5;
+  }
+
+  &:hover::before,
+  &.active::before {
+    color: #ffffff;
+    opacity: 1;
   }
 }
 
-// Category Sections
+// ============================================================================
+// Legacy Category Sections (keeping for compatibility, but hidden in new layout)
+// ============================================================================
+
 .#{$builder-prefix}-category {
   margin-bottom: 24px;
 
@@ -157,7 +349,46 @@ $builder-prefix: "fu-config-builder";
   }
 }
 
+// ============================================================================
+// Presets
+// ============================================================================
+
+.#{$builder-prefix}-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.#{$builder-prefix}-preset {
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+
+  &.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+  }
+}
+
+// ============================================================================
 // Form Groups
+// ============================================================================
+
 .#{$builder-prefix}-group {
   display: grid;
   gap: 6px;
@@ -166,23 +397,24 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
   font-size: 13px;
   font-weight: 500;
   color: #374151;
 
   code {
     font-family: "SF Mono", Monaco, monospace;
-    font-size: 11px;
-    padding: 2px 6px;
+    font-size: 10px;
+    padding: 2px 5px;
     background: #f3f4f6;
-    border-radius: 4px;
+    border-radius: 3px;
     color: #6366f1;
   }
 }
 
 .#{$builder-prefix}-hint {
-  font-size: 12px;
+  font-size: 11px;
   color: #6b7280;
   margin-top: 2px;
 }
@@ -191,10 +423,10 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-input,
 .#{$builder-prefix}-select {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 14px;
+  padding: 8px 10px;
+  font-size: 13px;
   border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #ffffff;
   color: #1f2937;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -202,7 +434,7 @@ $builder-prefix: "fu-config-builder";
   &:focus {
     outline: none;
     border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
   }
 
   &:disabled {
@@ -217,19 +449,19 @@ $builder-prefix: "fu-config-builder";
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 40px;
+  background-position: right 10px center;
+  padding-right: 36px;
 }
 
 // Checkbox/Toggle Styles
 .#{$builder-prefix}-toggle {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 10px;
+  padding: 10px 12px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 
@@ -246,10 +478,10 @@ $builder-prefix: "fu-config-builder";
 
 .#{$builder-prefix}-toggle-switch {
   position: relative;
-  width: 44px;
-  height: 24px;
+  width: 36px;
+  height: 20px;
   background: #d1d5db;
-  border-radius: 12px;
+  border-radius: 10px;
   transition: background 0.2s ease;
   flex-shrink: 0;
 
@@ -258,11 +490,11 @@ $builder-prefix: "fu-config-builder";
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     background: #ffffff;
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease;
   }
 
@@ -270,7 +502,7 @@ $builder-prefix: "fu-config-builder";
     background: #6366f1;
 
     &::after {
-      transform: translateX(20px);
+      transform: translateX(16px);
     }
   }
 }
@@ -281,25 +513,26 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-toggle-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #1f2937;
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
 
   code {
     font-family: "SF Mono", Monaco, monospace;
-    font-size: 11px;
-    padding: 2px 6px;
+    font-size: 10px;
+    padding: 2px 5px;
     background: #e5e7eb;
-    border-radius: 4px;
+    border-radius: 3px;
     color: #6366f1;
   }
 }
 
 .#{$builder-prefix}-toggle-hint {
-  font-size: 12px;
+  font-size: 11px;
   color: #6b7280;
   margin-top: 2px;
 }
@@ -307,7 +540,7 @@ $builder-prefix: "fu-config-builder";
 // Number Input with Unit
 .#{$builder-prefix}-number-group {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .#{$builder-prefix}-number-input {
@@ -315,31 +548,394 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-unit-select {
-  width: 80px;
+  width: 70px;
   flex-shrink: 0;
+}
+
+// ============================================================================
+// Size Slider Component
+// ============================================================================
+
+// Slider Configuration Panel
+.#{$builder-prefix}-slider-config {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.#{$builder-prefix}-slider-config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  input {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #1f2937;
+    text-align: center;
+
+    &:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+  }
+}
+
+// Size Slider Container - Card Style
+.#{$builder-prefix}-size-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+// Count Slider Container - Card Style (same as size slider)
+.#{$builder-prefix}-count-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+// Slider Row with +/- buttons
+.#{$builder-prefix}-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// +/- Step Buttons
+.#{$builder-prefix}-slider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    fill: #6b7280;
+  }
+
+  &:hover {
+    border-color: #6366f1;
+    background: #eef2ff;
+
+    svg {
+      fill: #6366f1;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      border-color: #d1d5db;
+      background: #ffffff;
+
+      svg {
+        fill: #6b7280;
+      }
+    }
+  }
+}
+
+// The Slider Input
+.#{$builder-prefix}-slider-input {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-top: -6px; // Center thumb on track: (thumb height - track height) / 2 = (20 - 8) / 2 = 6
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 3px 6px rgba(99, 102, 241, 0.4);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #6366f1;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: #e5e7eb;
+  }
+
+  &::-moz-range-track {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Value Input (inline with slider)
+.#{$builder-prefix}-slider-value-input {
+  width: 70px;
+  min-width: 70px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+  text-align: center;
+  font-weight: 500;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  &:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  // Hide number input spinners
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+.#{$builder-prefix}-slider-value-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+// Slider Range Labels - align under the slider only (between +/- buttons)
+.#{$builder-prefix}-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  // Offset to align with slider: 32px button + 8px gap on left, same + 70px input + 8px + dropdown on right
+  margin-left: 40px; // 32px button + 8px gap
+  margin-right: calc(
+    40px + 70px + 8px + 70px
+  ); // button + input + gap + dropdown
+  padding: 0;
+}
+
+.#{$builder-prefix}-slider-label {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+// Unit Dropdown
+.#{$builder-prefix}-unit-dropdown {
+  width: 70px;
+  min-width: 70px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 14px;
+  padding-right: 24px;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  &:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+// Type slider unit dropdown - same size as main sliders
+.#{$builder-prefix}-unit-dropdown-sm {
+  width: 70px;
+  min-width: 70px;
+  padding: 6px 8px;
+  font-size: 12px;
+  padding-right: 24px;
+  background-size: 14px;
+}
+
+// ============================================================================
+// Per-Type Size/Count Sliders
+// ============================================================================
+
+.#{$builder-prefix}-type-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Block layout with title on separate row
+.#{$builder-prefix}-type-slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.#{$builder-prefix}-type-slider-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: capitalize;
+}
+
+.#{$builder-prefix}-type-slider-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Legacy row layout (kept for backwards compatibility)
+.#{$builder-prefix}-type-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.#{$builder-prefix}-type-label {
+  width: 70px;
+  min-width: 70px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-transform: capitalize;
+}
+
+// Type slider button - same size as main sliders
+.#{$builder-prefix}-slider-btn-sm {
+  width: 32px;
+  height: 32px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Type slider value input - same size as main sliders
+.#{$builder-prefix}-slider-value-input-sm {
+  width: 70px;
+  min-width: 70px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+// Type slider labels - aligned with full-size controls
+.#{$builder-prefix}-slider-labels-sm {
+  // Adjust margins for full-size buttons (32px) and inputs (70px + 70px dropdown)
+  margin-left: 40px; // 32px button + 8px gap
+  margin-right: calc(
+    40px + 70px + 8px + 70px
+  ); // button + input + gap + dropdown
 }
 
 // Multi-select Tags
 .#{$builder-prefix}-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px;
+  gap: 6px;
+  padding: 10px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  min-height: 48px;
+  border-radius: 6px;
+  min-height: 44px;
 }
 
 .#{$builder-prefix}-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 4px;
+  padding: 4px 8px;
   background: #ffffff;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 4px;
+  font-size: 12px;
   color: #374151;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -356,8 +952,8 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-tag-remove {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,19 +967,19 @@ $builder-prefix: "fu-config-builder";
 // Extensions Grid
 .#{$builder-prefix}-extensions {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 6px;
 }
 
 .#{$builder-prefix}-ext {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 6px 8px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 500;
   color: #6b7280;
   cursor: pointer;
@@ -403,7 +999,7 @@ $builder-prefix: "fu-config-builder";
 
 // Type group extensions
 .#{$builder-prefix}-ext-group {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
   &:last-child {
     margin-bottom: 0;
@@ -414,11 +1010,11 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .#{$builder-prefix}-ext-group-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
@@ -426,7 +1022,7 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-ext-group-toggle {
-  font-size: 11px;
+  font-size: 10px;
   color: #6366f1;
   cursor: pointer;
 
@@ -438,9 +1034,9 @@ $builder-prefix: "fu-config-builder";
 // MIME Types Grid (PHP validation)
 .#{$builder-prefix}-mimes {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .#{$builder-prefix}-mime {
@@ -448,26 +1044,26 @@ $builder-prefix: "fu-config-builder";
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 10px;
+  padding: 6px 8px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
-  min-width: 120px;
+  min-width: 100px;
 
   &:hover {
-    border-color: #10b981;
+    border-color: #6366f1;
 
     .#{$builder-prefix}-mime-label {
-      color: #10b981;
+      color: #6366f1;
     }
   }
 
   &.selected {
-    background: #10b981;
-    border-color: #10b981;
+    background: #6366f1;
+    border-color: #6366f1;
 
     .#{$builder-prefix}-mime-label,
     .#{$builder-prefix}-mime-value {
@@ -481,14 +1077,14 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-mime-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #374151;
   line-height: 1.2;
 }
 
 .#{$builder-prefix}-mime-value {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 400;
   color: #9ca3af;
   line-height: 1.2;
@@ -498,8 +1094,8 @@ $builder-prefix: "fu-config-builder";
 
 // MIME type group
 .#{$builder-prefix}-mime-group {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #f3f4f6;
 
   &:last-child {
@@ -513,11 +1109,11 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .#{$builder-prefix}-mime-group-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
@@ -525,8 +1121,8 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-mime-group-toggle {
-  font-size: 11px;
-  color: #10b981;
+  font-size: 10px;
+  color: #6366f1;
   cursor: pointer;
 
   &:hover {
@@ -534,7 +1130,10 @@ $builder-prefix: "fu-config-builder";
   }
 }
 
+// ============================================================================
 // Code Output
+// ============================================================================
+
 .#{$builder-prefix}-code-container {
   position: relative;
 }
@@ -549,31 +1148,31 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: #111827;
   border-bottom: 1px solid #374151;
 }
 
 .#{$builder-prefix}-code-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #9ca3af;
 }
 
 .#{$builder-prefix}-code-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .#{$builder-prefix}-code-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 5px 10px;
   background: #374151;
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 500;
   color: #d1d5db;
   cursor: pointer;
@@ -584,21 +1183,21 @@ $builder-prefix: "fu-config-builder";
   }
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
   }
 }
 
 .#{$builder-prefix}-code-content {
-  padding: 16px;
-  max-height: 300px;
+  padding: 14px;
+  max-height: 280px;
   overflow: auto;
 
   pre {
     margin: 0;
     font-family: "SF Mono", Monaco, "Courier New", monospace;
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 12px;
+    line-height: 1.5;
     color: #e5e7eb;
     white-space: pre-wrap;
     word-break: break-word;
@@ -628,7 +1227,7 @@ $builder-prefix: "fu-config-builder";
 
 // Preview Area
 .#{$builder-prefix}-preview-area {
-  padding: 20px;
+  padding: 16px;
   background: #f9fafb;
   border-radius: 8px;
   min-height: 200px;
@@ -640,17 +1239,18 @@ $builder-prefix: "fu-config-builder";
   gap: 4px;
   padding: 4px;
   background: #f3f4f6;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  width: 300px;
 }
 
 .#{$builder-prefix}-tab {
   flex: 1;
-  padding: 10px 16px;
+  padding: 8px 12px;
   background: transparent;
   border: none;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 4px;
+  font-size: 12px;
   font-weight: 500;
   color: #6b7280;
   cursor: pointer;
@@ -663,7 +1263,7 @@ $builder-prefix: "fu-config-builder";
   &.active {
     background: #ffffff;
     color: #1f2937;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -678,66 +1278,82 @@ $builder-prefix: "fu-config-builder";
 // Limit Config Grid
 .#{$builder-prefix}-limits-grid {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .#{$builder-prefix}-limit-row {
   display: grid;
-  grid-template-columns: 120px 1fr 100px;
-  gap: 12px;
+  grid-template-columns: 100px 1fr 80px;
+  gap: 10px;
   align-items: center;
-  padding: 12px;
+  padding: 10px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .#{$builder-prefix}-limit-type {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #374151;
 }
 
-// Presets
-.#{$builder-prefix}-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.#{$builder-prefix}-preset {
-  padding: 8px 16px;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    border-color: #6366f1;
-    color: #6366f1;
-  }
-
-  &.active {
-    background: #6366f1;
-    border-color: #6366f1;
-    color: #ffffff;
-  }
-}
-
+// ============================================================================
 // Responsive adjustments
-@media (max-width: 768px) {
-  .#{$builder-prefix} {
-    padding: 16px;
+// ============================================================================
+
+@media (max-width: 900px) {
+  .#{$builder-prefix}-main {
+    flex-direction: column;
+  }
+
+  .#{$builder-prefix}-panels {
+    flex-direction: column;
+  }
+
+  .#{$builder-prefix}-options {
+    width: 100%;
+    max-width: none;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .#{$builder-prefix}-vertical-tabs {
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .#{$builder-prefix}-vertical-tab {
+    flex-direction: row;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: 8px 12px;
+
+    &.active {
+      border-left-color: transparent;
+      border-bottom-color: #6366f1;
+    }
+  }
+
+  .#{$builder-prefix}-vertical-tab-label {
+    font-size: 10px;
+    max-width: none;
+  }
+
+  .#{$builder-prefix}-resizer {
+    display: none;
+  }
+
+  .#{$builder-prefix}-preview {
+    min-width: 0;
   }
 
   .#{$builder-prefix}-limit-row {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
   }
 
   .#{$builder-prefix}-number-group {
@@ -769,8 +1385,8 @@ $builder-prefix: "fu-config-builder";
 
 // Tooltip for options
 .#{$builder-prefix}-info {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -791,16 +1407,16 @@ $builder-prefix: "fu-config-builder";
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   color: #9ca3af;
   margin-left: 4px;
   cursor: help;
   vertical-align: middle;
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
   }
 }
 
@@ -844,18 +1460,18 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-affects-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
+  gap: 3px;
+  padding: 2px 6px;
   background: #dbeafe;
   color: #1d4ed8;
-  border-radius: 4px;
-  font-size: 10px;
+  border-radius: 3px;
+  font-size: 9px;
   font-weight: 500;
-  margin-left: 8px;
+  margin-left: 6px;
 
   svg {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
 }
 
@@ -867,27 +1483,27 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .#{$builder-prefix}-uploader-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
 }
 
 .#{$builder-prefix}-uploader-tab {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 4px;
+  padding: 6px 10px;
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 4px;
+  font-size: 12px;
   font-weight: 500;
   color: #6b7280;
   cursor: pointer;
@@ -916,18 +1532,18 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-uploader-tab-name {
-  max-width: 150px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .#{$builder-prefix}-uploader-tab-input {
-  width: 120px;
+  width: 100px;
   padding: 2px 6px;
   border: 1px solid #6366f1;
-  border-radius: 4px;
-  font-size: 13px;
+  border-radius: 3px;
+  font-size: 12px;
   font-weight: 500;
   outline: none;
 
@@ -942,12 +1558,12 @@ $builder-prefix: "fu-config-builder";
   top: 100%;
   left: 0;
   margin-top: 4px;
-  padding: 4px 8px;
+  padding: 3px 6px;
   background: #ef4444;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  border-radius: 4px;
+  border-radius: 3px;
   white-space: nowrap;
   z-index: 10;
 }
@@ -956,7 +1572,7 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   gap: 2px;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 .#{$builder-prefix}-uploader-tab-close,
@@ -964,19 +1580,19 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   padding: 0;
   border: none;
   background: transparent;
-  border-radius: 4px;
+  border-radius: 3px;
   color: #9ca3af;
   cursor: pointer;
   transition: all 0.15s ease;
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
   }
 }
 
@@ -998,12 +1614,12 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 2px dashed #d1d5db;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 4px;
   color: #9ca3af;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1015,8 +1631,8 @@ $builder-prefix: "fu-config-builder";
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -1025,9 +1641,9 @@ $builder-prefix: "fu-config-builder";
 // ============================================================================
 
 .#{$builder-prefix}-uploader-wrapper {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
@@ -1049,7 +1665,7 @@ $builder-prefix: "fu-config-builder";
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 8px 14px;
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
 
@@ -1060,7 +1676,7 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-uploader-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #374151;
 
@@ -1072,22 +1688,22 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-uploader-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 3px 8px;
   background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  border-radius: 20px;
-  font-size: 11px;
+  border-radius: 16px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .#{$builder-prefix}-uploader-edit-btn {
-  padding: 6px 14px;
+  padding: 5px 12px;
   background: #ffffff;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 500;
   color: #6b7280;
   cursor: pointer;
@@ -1101,7 +1717,7 @@ $builder-prefix: "fu-config-builder";
 }
 
 .#{$builder-prefix}-uploader-container {
-  padding: 16px;
+  padding: 14px;
   background: #ffffff;
 }
 
@@ -1112,12 +1728,12 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-code-cards {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .#{$builder-prefix}-code-card {
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
@@ -1147,12 +1763,12 @@ $builder-prefix: "fu-config-builder";
 .#{$builder-prefix}-code-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  margin-left: 8px;
+  padding: 2px 6px;
+  margin-left: 6px;
   background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  border-radius: 10px;
-  font-size: 10px;
+  border-radius: 8px;
+  font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
