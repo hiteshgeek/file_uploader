@@ -1726,6 +1726,11 @@ export default class ConfigBuilder {
         break;
     }
 
+    // Update the current uploader instance's preset immediately
+    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+      this.uploaderInstances[this.activeUploaderId].preset = preset;
+    }
+
     // Re-render and update
     this.render();
     this.attachEvents();
