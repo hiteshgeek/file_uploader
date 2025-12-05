@@ -1779,6 +1779,89 @@ export default class FileUploader {
   }
 
   /**
+   * Show a confirmation dialog
+   * @param {Object} options - Dialog options
+   * @param {string} options.title - Dialog title
+   * @param {string} options.message - Dialog message (can include HTML)
+   * @param {string} options.confirmText - Text for confirm button (default: "Delete")
+   * @param {string} options.cancelText - Text for cancel button (default: "Cancel")
+   * @param {string} options.confirmClass - CSS class for confirm button (default: "danger")
+   * @returns {Promise<boolean>} - Resolves to true if confirmed, false if cancelled
+   */
+  showConfirmDialog(options = {}) {
+    const {
+      title = "Confirm",
+      message = "Are you sure?",
+      confirmText = "Delete",
+      cancelText = "Cancel",
+      confirmClass = "danger",
+    } = options;
+
+    return new Promise((resolve) => {
+      // Create dialog overlay
+      const overlay = document.createElement("div");
+      overlay.className = "file-uploader-dialog-overlay";
+
+      const dialog = document.createElement("div");
+      dialog.className = "file-uploader-dialog file-uploader-dialog-confirm";
+
+      dialog.innerHTML = `
+        <div class="file-uploader-dialog-header">
+          <h4>${title}</h4>
+        </div>
+        <div class="file-uploader-dialog-body">
+          <p>${message}</p>
+        </div>
+        <div class="file-uploader-dialog-footer">
+          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-secondary" data-action="cancel">
+            ${cancelText}
+          </button>
+          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-${confirmClass}" data-action="confirm">
+            ${getIcon("trash")} ${confirmText}
+          </button>
+        </div>
+      `;
+
+      overlay.appendChild(dialog);
+      document.body.appendChild(overlay);
+
+      // Focus the cancel button (safer default)
+      dialog.querySelector("button[data-action='cancel']").focus();
+
+      // Handle button clicks
+      const handleClick = (e) => {
+        const action = e.target.closest("button")?.dataset.action;
+        if (action) {
+          overlay.remove();
+          document.removeEventListener("keydown", handleKeydown);
+          resolve(action === "confirm");
+        }
+      };
+
+      // Handle escape key
+      const handleKeydown = (e) => {
+        if (e.key === "Escape") {
+          overlay.remove();
+          document.removeEventListener("keydown", handleKeydown);
+          resolve(false);
+        }
+      };
+
+      dialog.addEventListener("click", handleClick);
+      document.addEventListener("keydown", handleKeydown);
+
+      // Handle click outside dialog
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+          overlay.remove();
+          document.removeEventListener("keydown", handleKeydown);
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  /**
    * Copy a file from another uploader to this one
    */
   async copyFileFromUploader(sourceFileObj, sourceUploader) {
@@ -2211,9 +2294,14 @@ export default class FileUploader {
 
     // Attach delete event
     const deleteBtn = preview.querySelector(".file-uploader-delete");
-    deleteBtn.addEventListener("click", () => {
+    deleteBtn.addEventListener("click", async () => {
       if (this.options.confirmBeforeDelete) {
-        if (confirm(`Are you sure you want to delete "${fileObj.name}"?`)) {
+        const confirmed = await this.showConfirmDialog({
+          title: "Delete File",
+          message: `Are you sure you want to delete "<strong>${fileObj.name}</strong>"?`,
+          confirmText: "Delete",
+        });
+        if (confirmed) {
           this.deleteFile(fileObj.id);
         }
       } else {
@@ -2853,9 +2941,11 @@ export default class FileUploader {
 
     // Show confirmation dialog if enabled
     if (this.options.confirmBeforeDelete) {
-      const confirmed = confirm(
-        `Are you sure you want to delete all ${uploadedFiles.length} file(s)?`
-      );
+      const confirmed = await this.showConfirmDialog({
+        title: "Clear All Files",
+        message: `Are you sure you want to delete all <strong>${uploadedFiles.length}</strong> file(s)?`,
+        confirmText: "Delete All",
+      });
 
       if (!confirmed) {
         return;
@@ -3045,7 +3135,12 @@ export default class FileUploader {
 
     // Confirm deletion if enabled
     if (this.options.confirmBeforeDelete) {
-      if (!confirm(`Delete ${selectedFileIds.length} selected file(s)?`)) {
+      const confirmed = await this.showConfirmDialog({
+        title: "Delete Selected",
+        message: `Are you sure you want to delete <strong>${selectedFileIds.length}</strong> selected file(s)?`,
+        confirmText: "Delete",
+      });
+      if (!confirmed) {
         return;
       }
     }

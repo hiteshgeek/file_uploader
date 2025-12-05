@@ -22,6 +22,7 @@ if (
     showTypeGroupSize: true, // Show total uploaded size per type group
     showTypeGroupCount: true, // Show file count per type group
     multiple: true,
+    confirmBeforeDelete: true,
     // defaultLimitsView: "detailed",
     // allowLimitsViewToggle: true, // Duplicate removed - already set on line 6
 

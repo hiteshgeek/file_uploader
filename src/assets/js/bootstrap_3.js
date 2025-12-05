@@ -1,4 +1,7 @@
-if (typeof window !== "undefined" && typeof window.FileUploader !== "undefined") {
+if (
+  typeof window !== "undefined" &&
+  typeof window.FileUploader !== "undefined"
+) {
   //bootstrap 3 example
 
   // Initialize profile picture uploader (single image only)
@@ -9,6 +12,7 @@ if (typeof window !== "undefined" && typeof window.FileUploader !== "undefined")
     downloadAllUrl: "/file_uploader/download-all.php",
     cleanupZipUrl: "/file_uploader/cleanup-zip.php",
     configUrl: "/file_uploader/get-config.php",
+    confirmBeforeDelete: true,
     onUploadSuccess: (fileObj, result) => {
       console.log("Profile picture uploaded:", result);
     },
