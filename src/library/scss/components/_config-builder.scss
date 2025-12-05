@@ -1375,8 +1375,8 @@ $builder-prefix: "fu-config-builder";
 
 // Preview Area
 .#{$builder-prefix}-preview-area {
-  padding: 16px;
-  background: #f9fafb;
+  // padding: 16px;
+  // background: #f9fafb;
   border-radius: 8px;
   min-height: 200px;
 }
@@ -2039,17 +2039,59 @@ $builder-prefix: "fu-config-builder";
   color: #6b7280;
 }
 
+.#{$builder-prefix}-css-var-name {
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 10px;
+  padding: 2px 5px;
+  background: #e0e7ff;
+  border-radius: 3px;
+  color: #4f46e5;
+  margin-left: auto;
+}
+
+// Source variable reference (shows which palette variable is used)
+.#{$builder-prefix}-css-var-source {
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 9px;
+  padding: 2px 5px;
+  background: #fef3c7;
+  border-radius: 3px;
+  color: #92400e;
+  margin-left: 4px;
+  white-space: nowrap;
+
+  &:hover {
+    background: #fde68a;
+    color: #78350f;
+  }
+}
+
+// Items with source variable get special styling
+.#{$builder-prefix}-css-var-item.has-source {
+  flex-wrap: wrap;
+
+  .#{$builder-prefix}-css-var-name {
+    margin-left: 0;
+  }
+
+  .#{$builder-prefix}-css-var-source {
+    margin-left: auto;
+  }
+}
+
 // Highlight animation for style variable when navigated to
 .#{$builder-prefix}-style-var-highlight {
   animation: style-var-highlight 2s ease;
 }
 
 @keyframes style-var-highlight {
-  0%, 100% {
+  0%,
+  100% {
     background: #f9fafb;
     border-color: #e5e7eb;
   }
-  25%, 75% {
+  25%,
+  75% {
     background: #eef2ff;
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
@@ -2248,7 +2290,8 @@ $builder-prefix: "fu-config-builder";
 }
 
 @keyframes pulse-indicator {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -2307,7 +2350,9 @@ $builder-prefix: "fu-config-builder";
   }
 }
 
-.#{$builder-prefix}-highlight-toggle input:checked + .#{$builder-prefix}-highlight-toggle-slider {
+.#{$builder-prefix}-highlight-toggle
+  input:checked
+  + .#{$builder-prefix}-highlight-toggle-slider {
   background: #6366f1;
 
   &::after {
@@ -2330,7 +2375,9 @@ $builder-prefix: "fu-config-builder";
   }
 }
 
-.#{$builder-prefix}-highlight-toggle input:checked ~ .#{$builder-prefix}-highlight-toggle-label {
+.#{$builder-prefix}-highlight-toggle
+  input:checked
+  ~ .#{$builder-prefix}-highlight-toggle-label {
   color: #6366f1;
 }
 
@@ -2509,7 +2556,8 @@ $builder-prefix: "fu-config-builder";
 }
 
 @keyframes highlight-pulse {
-  0%, 100% {
+  0%,
+  100% {
     outline-color: #6366f1;
   }
   50% {
@@ -2518,7 +2566,8 @@ $builder-prefix: "fu-config-builder";
 }
 
 @keyframes highlight-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
@@ -2703,6 +2752,10 @@ $builder-prefix: "fu-config-builder";
     }
   }
 
+  .#{$builder-prefix}-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  }
+
   // Toggle Styles
   .#{$builder-prefix}-toggle {
     background: #1a202c;
@@ -2760,6 +2813,17 @@ $builder-prefix: "fu-config-builder";
         fill: #818cf8;
       }
     }
+
+    &:disabled {
+      &:hover {
+        border-color: #4a5568;
+        background: #2d3748;
+
+        svg {
+          fill: #a0aec0;
+        }
+      }
+    }
   }
 
   .#{$builder-prefix}-slider-input {
@@ -2793,6 +2857,7 @@ $builder-prefix: "fu-config-builder";
     background: #2d3748;
     border-color: #4a5568;
     color: #e2e8f0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23a0aec0'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
 
     &:focus {
       border-color: #6366f1;
@@ -2907,9 +2972,9 @@ $builder-prefix: "fu-config-builder";
   }
 
   // Preview Area
-  .#{$builder-prefix}-preview-area {
-    background: #1a202c;
-  }
+  // .#{$builder-prefix}-preview-area {
+  //   background: #1a202c;
+  // }
 
   // Uploader Wrappers
   .#{$builder-prefix}-uploader-wrapper {
@@ -3024,13 +3089,30 @@ $builder-prefix: "fu-config-builder";
     border-color: rgba(255, 255, 255, 0.1);
   }
 
+  .#{$builder-prefix}-css-var-name {
+    background: #312e81;
+    color: #a5b4fc;
+  }
+
+  .#{$builder-prefix}-css-var-source {
+    background: #78350f;
+    color: #fde68a;
+
+    &:hover {
+      background: #92400e;
+      color: #fef3c7;
+    }
+  }
+
   // Style variable highlight in dark mode
   @keyframes style-var-highlight-dark {
-    0%, 100% {
+    0%,
+    100% {
       background: #1a202c;
       border-color: #4a5568;
     }
-    25%, 75% {
+    25%,
+    75% {
       background: #312e81;
       border-color: #6366f1;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
@@ -3085,13 +3167,16 @@ $builder-prefix: "fu-config-builder";
   // Style Editor
   .#{$builder-prefix}-style-toolbar {
     border-bottom-color: #4a5568;
+    display: none;
   }
 
   .#{$builder-prefix}-highlight-toggle-label {
     color: #a0aec0;
   }
 
-  .#{$builder-prefix}-highlight-toggle input:checked ~ .#{$builder-prefix}-highlight-toggle-label {
+  .#{$builder-prefix}-highlight-toggle
+    input:checked
+    ~ .#{$builder-prefix}-highlight-toggle-label {
     color: #818cf8;
   }
 
@@ -3222,3 +3307,6 @@ $builder-prefix: "fu-config-builder";
   }
 }
 
+.file-uploader-limits {
+  margin-bottom: 0;
+}

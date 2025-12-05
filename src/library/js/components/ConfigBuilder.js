@@ -36,10 +36,10 @@ export default class ConfigBuilder {
 
     // Slider configuration for size inputs
     this.sliderConfig = {
-      minMB: 5,       // Minimum value in MB
-      maxMB: 500,     // Maximum value in MB
+      minMB: 5, // Minimum value in MB
+      maxMB: 500, // Maximum value in MB
       sliderStep: 50, // Slider step in MB
-      buttonStep: 10  // +/- button step in MB
+      buttonStep: 10, // +/- button step in MB
     };
 
     // Store panel width for persistence across re-renders
@@ -270,7 +270,17 @@ export default class ConfigBuilder {
             default: true,
             label: "Show Limits",
             hint: "Display file limits section",
-            affectsOptions: ["showFileTypeCount", "showProgressBar", "showPerFileLimit", "showTypeGroupSize", "showTypeGroupCount", "defaultLimitsView", "allowLimitsViewToggle", "showLimitsToggle", "defaultLimitsVisible"],
+            affectsOptions: [
+              "showFileTypeCount",
+              "showProgressBar",
+              "showPerFileLimit",
+              "showTypeGroupSize",
+              "showTypeGroupCount",
+              "defaultLimitsView",
+              "allowLimitsViewToggle",
+              "showLimitsToggle",
+              "defaultLimitsVisible",
+            ],
           },
           showFileTypeCount: {
             type: "boolean",
@@ -426,7 +436,10 @@ export default class ConfigBuilder {
             default: true,
             label: "Enable Video Recording",
             hint: "Enable video recording button",
-            affectsOptions: ["maxVideoRecordingDuration", "recordingCountdownDuration"],
+            affectsOptions: [
+              "maxVideoRecordingDuration",
+              "recordingCountdownDuration",
+            ],
           },
           enableAudioRecording: {
             type: "boolean",
@@ -489,7 +502,14 @@ export default class ConfigBuilder {
             default: true,
             label: "Enable Carousel Preview",
             hint: "Enable carousel preview modal on file click",
-            affectsOptions: ["carouselAutoPreload", "carouselEnableManualLoading", "carouselMaxPreviewRows", "carouselMaxTextPreviewChars", "carouselVisibleTypes", "carouselPreviewableTypes"],
+            affectsOptions: [
+              "carouselAutoPreload",
+              "carouselEnableManualLoading",
+              "carouselMaxPreviewRows",
+              "carouselMaxTextPreviewChars",
+              "carouselVisibleTypes",
+              "carouselPreviewableTypes",
+            ],
           },
           carouselAutoPreload: {
             type: "boolean",
@@ -525,15 +545,7 @@ export default class ConfigBuilder {
           },
           carouselVisibleTypes: {
             type: "multiSelect",
-            default: [
-              "image",
-              "video",
-              "audio",
-              "pdf",
-              "excel",
-              "csv",
-              "text",
-            ],
+            default: ["image", "video", "audio", "pdf", "excel", "csv", "text"],
             label: "Visible Types",
             hint: "File types visible in carousel",
             options: [
@@ -551,15 +563,7 @@ export default class ConfigBuilder {
           },
           carouselPreviewableTypes: {
             type: "multiSelect",
-            default: [
-              "image",
-              "video",
-              "audio",
-              "pdf",
-              "csv",
-              "excel",
-              "text",
-            ],
+            default: ["image", "video", "audio", "pdf", "csv", "excel", "text"],
             label: "Previewable Types",
             hint: "File types that can be previewed",
             options: [
@@ -616,83 +620,311 @@ export default class ConfigBuilder {
         title: "Primary Colors",
         icon: "palette",
         variables: {
-          "--fu-primary-50": { type: "color", default: "#ebf8ff", label: "Primary 50" },
-          "--fu-primary-100": { type: "color", default: "#bee3f8", label: "Primary 100" },
-          "--fu-primary-200": { type: "color", default: "#90cdf4", label: "Primary 200" },
-          "--fu-primary-300": { type: "color", default: "#63b3ed", label: "Primary 300" },
-          "--fu-primary-400": { type: "color", default: "#4299e1", label: "Primary 400" },
-          "--fu-primary-500": { type: "color", default: "#3182ce", label: "Primary 500" },
-          "--fu-primary-600": { type: "color", default: "#2b6cb0", label: "Primary 600" },
-          "--fu-primary-700": { type: "color", default: "#2c5282", label: "Primary 700" },
-          "--fu-primary-800": { type: "color", default: "#2a4365", label: "Primary 800" },
-          "--fu-primary-900": { type: "color", default: "#1a365d", label: "Primary 900" },
-        }
+          "--fu-primary-50": {
+            type: "color",
+            default: "#ebf8ff",
+            label: "Primary 50",
+          },
+          "--fu-primary-100": {
+            type: "color",
+            default: "#bee3f8",
+            label: "Primary 100",
+          },
+          "--fu-primary-200": {
+            type: "color",
+            default: "#90cdf4",
+            label: "Primary 200",
+          },
+          "--fu-primary-300": {
+            type: "color",
+            default: "#63b3ed",
+            label: "Primary 300",
+          },
+          "--fu-primary-400": {
+            type: "color",
+            default: "#4299e1",
+            label: "Primary 400",
+          },
+          "--fu-primary-500": {
+            type: "color",
+            default: "#3182ce",
+            label: "Primary 500",
+          },
+          "--fu-primary-600": {
+            type: "color",
+            default: "#2b6cb0",
+            label: "Primary 600",
+          },
+          "--fu-primary-700": {
+            type: "color",
+            default: "#2c5282",
+            label: "Primary 700",
+          },
+          "--fu-primary-800": {
+            type: "color",
+            default: "#2a4365",
+            label: "Primary 800",
+          },
+          "--fu-primary-900": {
+            type: "color",
+            default: "#1a365d",
+            label: "Primary 900",
+          },
+        },
       },
       grayColors: {
         title: "Gray Colors",
         icon: "palette",
         variables: {
-          "--fu-gray-50": { type: "color", default: "#f7fafc", label: "Gray 50" },
-          "--fu-gray-100": { type: "color", default: "#edf2f7", label: "Gray 100" },
-          "--fu-gray-200": { type: "color", default: "#e2e8f0", label: "Gray 200" },
-          "--fu-gray-300": { type: "color", default: "#cbd5e0", label: "Gray 300" },
-          "--fu-gray-400": { type: "color", default: "#a0aec0", label: "Gray 400" },
-          "--fu-gray-500": { type: "color", default: "#718096", label: "Gray 500" },
-          "--fu-gray-600": { type: "color", default: "#4a5568", label: "Gray 600" },
-          "--fu-gray-700": { type: "color", default: "#2d3748", label: "Gray 700" },
-          "--fu-gray-800": { type: "color", default: "#1a202c", label: "Gray 800" },
-          "--fu-gray-900": { type: "color", default: "#171923", label: "Gray 900" },
-        }
+          "--fu-gray-50": {
+            type: "color",
+            default: "#f7fafc",
+            label: "Gray 50",
+          },
+          "--fu-gray-100": {
+            type: "color",
+            default: "#edf2f7",
+            label: "Gray 100",
+          },
+          "--fu-gray-200": {
+            type: "color",
+            default: "#e2e8f0",
+            label: "Gray 200",
+          },
+          "--fu-gray-300": {
+            type: "color",
+            default: "#cbd5e0",
+            label: "Gray 300",
+          },
+          "--fu-gray-400": {
+            type: "color",
+            default: "#a0aec0",
+            label: "Gray 400",
+          },
+          "--fu-gray-500": {
+            type: "color",
+            default: "#718096",
+            label: "Gray 500",
+          },
+          "--fu-gray-600": {
+            type: "color",
+            default: "#4a5568",
+            label: "Gray 600",
+          },
+          "--fu-gray-700": {
+            type: "color",
+            default: "#2d3748",
+            label: "Gray 700",
+          },
+          "--fu-gray-800": {
+            type: "color",
+            default: "#1a202c",
+            label: "Gray 800",
+          },
+          "--fu-gray-900": {
+            type: "color",
+            default: "#171923",
+            label: "Gray 900",
+          },
+        },
       },
       statusColors: {
         title: "Status Colors",
         icon: "check",
         variables: {
-          "--fu-success-50": { type: "color", default: "#f0fff4", label: "Success 50" },
-          "--fu-success-100": { type: "color", default: "#c6f6d5", label: "Success 100" },
-          "--fu-success-500": { type: "color", default: "#48bb78", label: "Success 500" },
-          "--fu-success-600": { type: "color", default: "#38a169", label: "Success 600" },
-          "--fu-success-700": { type: "color", default: "#2f855a", label: "Success 700" },
-          "--fu-success-800": { type: "color", default: "#276749", label: "Success 800" },
-          "--fu-error-50": { type: "color", default: "#fff5f5", label: "Error 50" },
-          "--fu-error-100": { type: "color", default: "#fed7d7", label: "Error 100" },
-          "--fu-error-500": { type: "color", default: "#fc8181", label: "Error 500" },
-          "--fu-error-600": { type: "color", default: "#e53e3e", label: "Error 600" },
-          "--fu-error-700": { type: "color", default: "#c53030", label: "Error 700" },
-          "--fu-error-800": { type: "color", default: "#9b2c2c", label: "Error 800" },
-          "--fu-warning-50": { type: "color", default: "#fffbeb", label: "Warning 50" },
-          "--fu-warning-100": { type: "color", default: "#fef3c7", label: "Warning 100" },
-          "--fu-warning-400": { type: "color", default: "#fbbf24", label: "Warning 400" },
-          "--fu-warning-500": { type: "color", default: "#f59e0b", label: "Warning 500" },
-          "--fu-warning-600": { type: "color", default: "#d97706", label: "Warning 600" },
-          "--fu-warning-700": { type: "color", default: "#b45309", label: "Warning 700" },
-        }
+          "--fu-success-50": {
+            type: "color",
+            default: "#f0fff4",
+            label: "Success 50",
+          },
+          "--fu-success-100": {
+            type: "color",
+            default: "#c6f6d5",
+            label: "Success 100",
+          },
+          "--fu-success-500": {
+            type: "color",
+            default: "#48bb78",
+            label: "Success 500",
+          },
+          "--fu-success-600": {
+            type: "color",
+            default: "#38a169",
+            label: "Success 600",
+          },
+          "--fu-success-700": {
+            type: "color",
+            default: "#2f855a",
+            label: "Success 700",
+          },
+          "--fu-success-800": {
+            type: "color",
+            default: "#276749",
+            label: "Success 800",
+          },
+          "--fu-error-50": {
+            type: "color",
+            default: "#fff5f5",
+            label: "Error 50",
+          },
+          "--fu-error-100": {
+            type: "color",
+            default: "#fed7d7",
+            label: "Error 100",
+          },
+          "--fu-error-500": {
+            type: "color",
+            default: "#fc8181",
+            label: "Error 500",
+          },
+          "--fu-error-600": {
+            type: "color",
+            default: "#e53e3e",
+            label: "Error 600",
+          },
+          "--fu-error-700": {
+            type: "color",
+            default: "#c53030",
+            label: "Error 700",
+          },
+          "--fu-error-800": {
+            type: "color",
+            default: "#9b2c2c",
+            label: "Error 800",
+          },
+          "--fu-warning-50": {
+            type: "color",
+            default: "#fffbeb",
+            label: "Warning 50",
+          },
+          "--fu-warning-100": {
+            type: "color",
+            default: "#fef3c7",
+            label: "Warning 100",
+          },
+          "--fu-warning-400": {
+            type: "color",
+            default: "#fbbf24",
+            label: "Warning 400",
+          },
+          "--fu-warning-500": {
+            type: "color",
+            default: "#f59e0b",
+            label: "Warning 500",
+          },
+          "--fu-warning-600": {
+            type: "color",
+            default: "#d97706",
+            label: "Warning 600",
+          },
+          "--fu-warning-700": {
+            type: "color",
+            default: "#b45309",
+            label: "Warning 700",
+          },
+        },
       },
       semanticColorsLight: {
         title: "Semantic Colors (Light Mode)",
         icon: "sun",
         mode: "light",
         variables: {
-          "--fu-color-primary": { type: "color", default: "#4299e1", label: "Primary" },
-          "--fu-color-primary-hover": { type: "color", default: "#3182ce", label: "Primary Hover" },
-          "--fu-color-primary-light": { type: "color", default: "#ebf8ff", label: "Primary Light" },
-          "--fu-color-text": { type: "color", default: "#2d3748", label: "Text" },
-          "--fu-color-text-muted": { type: "color", default: "#718096", label: "Text Muted" },
-          "--fu-color-text-light": { type: "color", default: "#4a5568", label: "Text Light" },
-          "--fu-color-bg": { type: "color", default: "#ffffff", label: "Background" },
-          "--fu-color-bg-light": { type: "color", default: "#f7fafc", label: "Background Light" },
-          "--fu-color-bg-hover": { type: "color", default: "#ebf8ff", label: "Background Hover" },
-          "--fu-color-border": { type: "color", default: "#cbd5e0", label: "Border" },
-          "--fu-color-border-light": { type: "color", default: "#e2e8f0", label: "Border Light" },
-          "--fu-color-border-hover": { type: "color", default: "#4299e1", label: "Border Hover" },
-          "--fu-color-success": { type: "color", default: "#48bb78", label: "Success" },
-          "--fu-color-success-bg": { type: "color", default: "#c6f6d5", label: "Success Background" },
-          "--fu-color-success-text": { type: "color", default: "#2f855a", label: "Success Text" },
-          "--fu-color-error": { type: "color", default: "#fc8181", label: "Error" },
-          "--fu-color-error-bg": { type: "color", default: "#fed7d7", label: "Error Background" },
-          "--fu-color-error-text": { type: "color", default: "#c53030", label: "Error Text" },
-          "--fu-color-error-hover": { type: "color", default: "#9b2c2c", label: "Error Hover" },
-        }
+          "--fu-color-primary": {
+            type: "color",
+            default: "#4299e1",
+            label: "Primary",
+          },
+          "--fu-color-primary-hover": {
+            type: "color",
+            default: "#3182ce",
+            label: "Primary Hover",
+          },
+          "--fu-color-primary-light": {
+            type: "color",
+            default: "#ebf8ff",
+            label: "Primary Light",
+          },
+          "--fu-color-text": {
+            type: "color",
+            default: "#2d3748",
+            label: "Text",
+          },
+          "--fu-color-text-muted": {
+            type: "color",
+            default: "#718096",
+            label: "Text Muted",
+          },
+          "--fu-color-text-light": {
+            type: "color",
+            default: "#4a5568",
+            label: "Text Light",
+          },
+          "--fu-color-bg": {
+            type: "color",
+            default: "#ffffff",
+            label: "Background",
+          },
+          "--fu-color-bg-light": {
+            type: "color",
+            default: "#f7fafc",
+            label: "Background Light",
+          },
+          "--fu-color-bg-hover": {
+            type: "color",
+            default: "#ebf8ff",
+            label: "Background Hover",
+          },
+          "--fu-color-border": {
+            type: "color",
+            default: "#cbd5e0",
+            label: "Border",
+          },
+          "--fu-color-border-light": {
+            type: "color",
+            default: "#e2e8f0",
+            label: "Border Light",
+          },
+          "--fu-color-border-hover": {
+            type: "color",
+            default: "#4299e1",
+            label: "Border Hover",
+          },
+          "--fu-color-success": {
+            type: "color",
+            default: "#48bb78",
+            label: "Success",
+          },
+          "--fu-color-success-bg": {
+            type: "color",
+            default: "#c6f6d5",
+            label: "Success Background",
+          },
+          "--fu-color-success-text": {
+            type: "color",
+            default: "#2f855a",
+            label: "Success Text",
+          },
+          "--fu-color-error": {
+            type: "color",
+            default: "#fc8181",
+            label: "Error",
+          },
+          "--fu-color-error-bg": {
+            type: "color",
+            default: "#fed7d7",
+            label: "Error Background",
+          },
+          "--fu-color-error-text": {
+            type: "color",
+            default: "#c53030",
+            label: "Error Text",
+          },
+          "--fu-color-error-hover": {
+            type: "color",
+            default: "#9b2c2c",
+            label: "Error Hover",
+          },
+        },
       },
       semanticColorsDark: {
         title: "Semantic Colors (Dark Mode)",
@@ -701,95 +933,283 @@ export default class ConfigBuilder {
         variables: {
           // Same variables as light mode, but with dark mode default values
           // These override the light mode values via @media (prefers-color-scheme: dark)
-          "--fu-color-text": { type: "color", default: "#e2e8f0", label: "Text" },
-          "--fu-color-text-muted": { type: "color", default: "#a0aec0", label: "Text Muted" },
-          "--fu-color-text-light": { type: "color", default: "#cbd5e0", label: "Text Light" },
-          "--fu-color-bg": { type: "color", default: "#1a202c", label: "Background" },
-          "--fu-color-bg-light": { type: "color", default: "#2d3748", label: "Background Light" },
-          "--fu-color-bg-hover": { type: "color", default: "#1a365d", label: "Background Hover" },
-          "--fu-color-border": { type: "color", default: "#4a5568", label: "Border" },
-          "--fu-color-border-light": { type: "color", default: "#2d3748", label: "Border Light" },
-          "--fu-color-border-hover": { type: "color", default: "#4299e1", label: "Border Hover" },
-        }
+          "--fu-color-text": {
+            type: "color",
+            default: "#e2e8f0",
+            label: "Text",
+          },
+          "--fu-color-text-muted": {
+            type: "color",
+            default: "#a0aec0",
+            label: "Text Muted",
+          },
+          "--fu-color-text-light": {
+            type: "color",
+            default: "#cbd5e0",
+            label: "Text Light",
+          },
+          "--fu-color-bg": {
+            type: "color",
+            default: "#1a202c",
+            label: "Background",
+          },
+          "--fu-color-bg-light": {
+            type: "color",
+            default: "#2d3748",
+            label: "Background Light",
+          },
+          "--fu-color-bg-hover": {
+            type: "color",
+            default: "#1a365d",
+            label: "Background Hover",
+          },
+          "--fu-color-border": {
+            type: "color",
+            default: "#4a5568",
+            label: "Border",
+          },
+          "--fu-color-border-light": {
+            type: "color",
+            default: "#2d3748",
+            label: "Border Light",
+          },
+          "--fu-color-border-hover": {
+            type: "color",
+            default: "#4299e1",
+            label: "Border Hover",
+          },
+        },
       },
       spacing: {
         title: "Spacing",
         icon: "size",
         variables: {
-          "--fu-spacing-xs": { type: "size", default: "4px", label: "Extra Small" },
+          "--fu-spacing-xs": {
+            type: "size",
+            default: "4px",
+            label: "Extra Small",
+          },
           "--fu-spacing-sm": { type: "size", default: "8px", label: "Small" },
           "--fu-spacing-md": { type: "size", default: "12px", label: "Medium" },
           "--fu-spacing-lg": { type: "size", default: "16px", label: "Large" },
-          "--fu-spacing-xl": { type: "size", default: "20px", label: "Extra Large" },
-          "--fu-spacing-2xl": { type: "size", default: "24px", label: "2X Large" },
-          "--fu-spacing-3xl": { type: "size", default: "32px", label: "3X Large" },
-          "--fu-spacing-4xl": { type: "size", default: "40px", label: "4X Large" },
-        }
+          "--fu-spacing-xl": {
+            type: "size",
+            default: "20px",
+            label: "Extra Large",
+          },
+          "--fu-spacing-2xl": {
+            type: "size",
+            default: "24px",
+            label: "2X Large",
+          },
+          "--fu-spacing-3xl": {
+            type: "size",
+            default: "32px",
+            label: "3X Large",
+          },
+          "--fu-spacing-4xl": {
+            type: "size",
+            default: "40px",
+            label: "4X Large",
+          },
+        },
       },
       typography: {
         title: "Typography",
         icon: "text",
         variables: {
-          "--fu-font-size-xs": { type: "size", default: "12px", label: "Font Size XS" },
-          "--fu-font-size-sm": { type: "size", default: "13px", label: "Font Size SM" },
-          "--fu-font-size-base": { type: "size", default: "14px", label: "Font Size Base" },
-          "--fu-font-size-md": { type: "size", default: "16px", label: "Font Size MD" },
-          "--fu-font-size-lg": { type: "size", default: "18px", label: "Font Size LG" },
-          "--fu-font-size-xl": { type: "size", default: "20px", label: "Font Size XL" },
-          "--fu-font-weight-normal": { type: "number", default: "400", label: "Weight Normal" },
-          "--fu-font-weight-medium": { type: "number", default: "500", label: "Weight Medium" },
-          "--fu-font-weight-semibold": { type: "number", default: "600", label: "Weight Semibold" },
-          "--fu-font-weight-bold": { type: "number", default: "700", label: "Weight Bold" },
-        }
+          "--fu-font-size-xs": {
+            type: "size",
+            default: "12px",
+            label: "Font Size XS",
+          },
+          "--fu-font-size-sm": {
+            type: "size",
+            default: "13px",
+            label: "Font Size SM",
+          },
+          "--fu-font-size-base": {
+            type: "size",
+            default: "14px",
+            label: "Font Size Base",
+          },
+          "--fu-font-size-md": {
+            type: "size",
+            default: "16px",
+            label: "Font Size MD",
+          },
+          "--fu-font-size-lg": {
+            type: "size",
+            default: "18px",
+            label: "Font Size LG",
+          },
+          "--fu-font-size-xl": {
+            type: "size",
+            default: "20px",
+            label: "Font Size XL",
+          },
+          "--fu-font-weight-normal": {
+            type: "number",
+            default: "400",
+            label: "Weight Normal",
+          },
+          "--fu-font-weight-medium": {
+            type: "number",
+            default: "500",
+            label: "Weight Medium",
+          },
+          "--fu-font-weight-semibold": {
+            type: "number",
+            default: "600",
+            label: "Weight Semibold",
+          },
+          "--fu-font-weight-bold": {
+            type: "number",
+            default: "700",
+            label: "Weight Bold",
+          },
+        },
       },
       borderRadius: {
         title: "Border Radius",
         icon: "window",
         variables: {
+          "--fu-radius-xs": {
+            type: "size",
+            default: "3px",
+            label: "Extra Small",
+          },
           "--fu-radius-sm": { type: "size", default: "4px", label: "Small" },
           "--fu-radius-md": { type: "size", default: "6px", label: "Medium" },
           "--fu-radius-lg": { type: "size", default: "8px", label: "Large" },
-          "--fu-radius-xl": { type: "size", default: "12px", label: "Extra Large" },
+          "--fu-radius-xl": {
+            type: "size",
+            default: "12px",
+            label: "Extra Large",
+          },
           "--fu-radius-round": { type: "size", default: "50%", label: "Round" },
-        }
+        },
       },
       shadows: {
         title: "Shadows",
         icon: "layers",
         variables: {
-          "--fu-shadow-sm": { type: "text", default: "0 1px 2px 0 rgba(0, 0, 0, 0.05)", label: "Small Shadow" },
-          "--fu-shadow-md": { type: "text", default: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)", label: "Medium Shadow" },
-          "--fu-shadow-lg": { type: "text", default: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)", label: "Large Shadow" },
-          "--fu-shadow-xl": { type: "text", default: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", label: "XL Shadow" },
-        }
+          "--fu-shadow-sm": {
+            type: "text",
+            default: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+            label: "Small Shadow",
+          },
+          "--fu-shadow-md": {
+            type: "text",
+            default:
+              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+            label: "Medium Shadow",
+          },
+          "--fu-shadow-lg": {
+            type: "text",
+            default:
+              "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+            label: "Large Shadow",
+          },
+          "--fu-shadow-xl": {
+            type: "text",
+            default:
+              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            label: "XL Shadow",
+          },
+        },
       },
       transitions: {
         title: "Transitions",
         icon: "settings",
         variables: {
-          "--fu-transition-fast": { type: "text", default: "all 0.15s ease", label: "Fast" },
-          "--fu-transition-base": { type: "text", default: "all 0.2s ease", label: "Base" },
-          "--fu-transition-slow": { type: "text", default: "all 0.3s ease", label: "Slow" },
-        }
+          "--fu-transition-fast": {
+            type: "text",
+            default: "all 0.15s ease",
+            label: "Fast",
+          },
+          "--fu-transition-base": {
+            type: "text",
+            default: "all 0.2s ease",
+            label: "Base",
+          },
+          "--fu-transition-slow": {
+            type: "text",
+            default: "all 0.3s ease",
+            label: "Slow",
+          },
+        },
       },
       components: {
         title: "Component Sizes",
         icon: "settings",
         variables: {
-          "--fu-dropzone-border-width": { type: "size", default: "2px", label: "Dropzone Border" },
-          "--fu-preview-height": { type: "size", default: "150px", label: "Preview Height" },
-          "--fu-preview-height-mobile": { type: "size", default: "120px", label: "Preview Height Mobile" },
-          "--fu-icon-size-sm": { type: "size", default: "18px", label: "Icon Small" },
-          "--fu-icon-size-md": { type: "size", default: "20px", label: "Icon Medium" },
-          "--fu-icon-size-lg": { type: "size", default: "40px", label: "Icon Large" },
-          "--fu-icon-size-xl": { type: "size", default: "48px", label: "Icon XL" },
-          "--fu-icon-size-2xl": { type: "size", default: "64px", label: "Icon 2XL" },
-          "--fu-button-size": { type: "size", default: "40px", label: "Button Size" },
-          "--fu-spinner-size": { type: "size", default: "40px", label: "Spinner Size" },
-          "--fu-spinner-border-width": { type: "size", default: "4px", label: "Spinner Border" },
-          "--fu-limit-item-width": { type: "size", default: "105px", label: "Limit Item Width" },
-          "--fu-limit-item-width-large": { type: "size", default: "150px", label: "Limit Item Width Large" },
-        }
+          "--fu-dropzone-border-width": {
+            type: "size",
+            default: "2px",
+            label: "Dropzone Border",
+          },
+          "--fu-preview-height": {
+            type: "size",
+            default: "150px",
+            label: "Preview Height",
+          },
+          "--fu-preview-height-mobile": {
+            type: "size",
+            default: "120px",
+            label: "Preview Height Mobile",
+          },
+          "--fu-icon-size-sm": {
+            type: "size",
+            default: "18px",
+            label: "Icon Small",
+          },
+          "--fu-icon-size-md": {
+            type: "size",
+            default: "20px",
+            label: "Icon Medium",
+          },
+          "--fu-icon-size-lg": {
+            type: "size",
+            default: "40px",
+            label: "Icon Large",
+          },
+          "--fu-icon-size-xl": {
+            type: "size",
+            default: "48px",
+            label: "Icon XL",
+          },
+          "--fu-icon-size-2xl": {
+            type: "size",
+            default: "64px",
+            label: "Icon 2XL",
+          },
+          "--fu-button-size": {
+            type: "size",
+            default: "40px",
+            label: "Button Size",
+          },
+          "--fu-spinner-size": {
+            type: "size",
+            default: "40px",
+            label: "Spinner Size",
+          },
+          "--fu-spinner-border-width": {
+            type: "size",
+            default: "4px",
+            label: "Spinner Border",
+          },
+          "--fu-limit-item-width": {
+            type: "size",
+            default: "105px",
+            label: "Limit Item Width",
+          },
+          "--fu-limit-item-width-large": {
+            type: "size",
+            default: "150px",
+            label: "Limit Item Width Large",
+          },
+        },
       },
     };
   }
@@ -813,50 +1233,157 @@ export default class ConfigBuilder {
   getVarToSelectorMap() {
     return {
       // Primary colors - dropzone, buttons, links
+      "--fu-primary-50": ".file-uploader-dropzone",
+      "--fu-primary-100": ".file-uploader-limits-summary",
       "--fu-primary-400": ".file-uploader-dropzone, .file-uploader-btn",
-      "--fu-primary-500": ".file-uploader-dropzone:hover, .file-uploader-btn:hover",
-      "--fu-color-primary": ".file-uploader-dropzone, .file-uploader-btn, .file-uploader-file-link",
+      "--fu-primary-500":
+        ".file-uploader-dropzone:hover, .file-uploader-btn:hover",
+      "--fu-primary-600": ".file-uploader-type-icon",
+      "--fu-color-primary":
+        ".file-uploader-dropzone, .file-uploader-btn, .file-uploader-file-link",
       "--fu-color-primary-hover": ".file-uploader-dropzone:hover",
       "--fu-color-primary-light": ".file-uploader-dropzone",
 
       // Text colors
-      "--fu-color-text": ".file-uploader, .file-uploader-file-name",
+      "--fu-color-text": ".file-uploader, .file-uploader-file-name, .file-uploader-limits-title",
       "--fu-color-text-muted": ".file-uploader-hint, .file-uploader-file-size",
       "--fu-color-text-light": ".file-uploader-dropzone-text",
 
       // Background colors
-      "--fu-color-bg": ".file-uploader, .file-uploader-file",
-      "--fu-color-bg-light": ".file-uploader-dropzone",
-      "--fu-color-bg-hover": ".file-uploader-file:hover",
+      "--fu-color-bg": ".file-uploader, .file-uploader-file, .file-uploader-type-card",
+      "--fu-color-bg-light": ".file-uploader-dropzone, .file-uploader-limits",
+      "--fu-color-bg-hover": ".file-uploader-file:hover, .file-uploader-limits-summary, .file-uploader-compact-progress, .file-uploader-type-progress, .file-uploader-general-card-progress",
 
       // Border colors
       "--fu-color-border": ".file-uploader, .file-uploader-file",
-      "--fu-color-border-light": ".file-uploader-dropzone",
+      "--fu-color-border-light": ".file-uploader-dropzone, .file-uploader-limits, .file-uploader-type-card, .file-uploader-type-header",
       "--fu-color-border-hover": ".file-uploader-dropzone:hover",
 
-      // Status colors
-      "--fu-color-success": ".file-uploader-file-success, .file-uploader-progress-bar",
+      // Success colors (palette level)
+      "--fu-success-50": ".file-uploader-download",
+      "--fu-success-500": ".file-uploader-progress-fill, .file-uploader-type-progress-fill, .file-uploader-limit-progress-fill",
+      "--fu-success-600": ".file-uploader-download:hover",
+      "--fu-success-700": ".file-uploader-download:active",
+
+      // Status colors (semantic)
+      "--fu-color-success":
+        ".file-uploader-file-success, .file-uploader-progress-bar",
+      "--fu-color-success-bg": ".file-uploader-file-success",
+      "--fu-color-success-text": ".file-uploader-file-success",
       "--fu-color-error": ".file-uploader-file-error, .file-uploader-error",
+      "--fu-color-error-bg": ".file-uploader-file-error",
+      "--fu-color-error-text": ".file-uploader-file-error",
+      "--fu-color-error-hover": ".file-uploader-remove:hover",
+
+      // Error colors (palette level)
+      "--fu-error-50": ".file-uploader-error-message",
+      "--fu-error-100": ".file-uploader-error-details",
+      "--fu-error-300": ".file-uploader-type-card.error",
+      "--fu-error-500": ".file-uploader-remove",
+      "--fu-error-600": ".file-uploader-remove:hover, .file-uploader-type-card.error",
+      "--fu-error-700": ".file-uploader-error-icon, .file-uploader-type-card.error",
+      "--fu-error-800": ".file-uploader-remove:active",
+
+      // Warning colors (palette level)
+      "--fu-warning-400": ".file-uploader-warning-icon",
+      "--fu-warning-500": ".file-uploader-type-card.warning",
+      "--fu-warning-600": ".file-uploader-type-card.warning",
+
+      // Gray colors (palette level)
+      "--fu-gray-50": ".file-uploader-type-card",
+      "--fu-gray-100": ".file-uploader-type-header",
+      "--fu-gray-200": ".file-uploader-type-divider",
+      "--fu-gray-300": ".file-uploader-type-card",
+      "--fu-gray-400": ".file-uploader-type-icon.empty",
+      "--fu-gray-500": ".file-uploader-file-meta",
+      "--fu-gray-600": ".file-uploader-limits-text",
 
       // Spacing
-      "--fu-spacing-sm": ".file-uploader-file",
-      "--fu-spacing-md": ".file-uploader-dropzone, .file-uploader-files",
-      "--fu-spacing-lg": ".file-uploader",
+      "--fu-spacing-xs": ".file-uploader-limits-toggle",
+      "--fu-spacing-sm": ".file-uploader-file, .file-uploader-type-header",
+      "--fu-spacing-md": ".file-uploader-dropzone, .file-uploader-files, .file-uploader-limits, .file-uploader-type-card",
+      "--fu-spacing-lg": ".file-uploader, .file-uploader-limits, .file-uploader-limits-grid",
+      "--fu-spacing-xl": ".file-uploader-dropzone",
+      "--fu-spacing-2xl": ".file-uploader-files",
 
       // Typography
-      "--fu-font-size-sm": ".file-uploader-file-size, .file-uploader-hint",
+      "--fu-font-size-xs": ".file-uploader-limits-toggle, .file-uploader-type-value",
+      "--fu-font-size-sm": ".file-uploader-file-size, .file-uploader-hint, .file-uploader-limits-title, .file-uploader-type-name",
       "--fu-font-size-base": ".file-uploader, .file-uploader-file-name",
+      "--fu-font-weight-medium": ".file-uploader-limits-title, .file-uploader-type-name",
+      "--fu-font-weight-semibold": ".file-uploader-file-name",
 
       // Border radius
-      "--fu-radius-md": ".file-uploader-btn, .file-uploader-file",
+      "--fu-radius-xs": ".file-uploader-compact-progress, .file-uploader-type-progress, .file-uploader-limit-progress",
+      "--fu-radius-sm": ".file-uploader-limits-toggle, .file-uploader-type-icon",
+      "--fu-radius-md": ".file-uploader-btn, .file-uploader-file, .file-uploader-limits, .file-uploader-type-card",
       "--fu-radius-lg": ".file-uploader, .file-uploader-dropzone",
+      "--fu-radius-round": ".file-uploader-remove",
+
+      // Shadows
+      "--fu-shadow-sm": ".file-uploader-file",
+      "--fu-shadow-md": ".file-uploader-file:hover, .file-uploader-type-card:hover",
+
+      // Transitions
+      "--fu-transition-base": ".file-uploader-file, .file-uploader-btn",
+      "--fu-transition-fast": ".file-uploader-remove",
 
       // Component specific
+      "--fu-dropzone-padding": ".file-uploader-dropzone",
       "--fu-dropzone-border-width": ".file-uploader-dropzone",
       "--fu-preview-height": ".file-uploader-file-preview",
+      "--fu-preview-height-mobile": ".file-uploader-file-preview",
+      "--fu-icon-size-sm": ".file-uploader-file-icon",
+      "--fu-icon-size-md": ".file-uploader-type-icon",
       "--fu-icon-size-lg": ".file-uploader-dropzone-icon",
+      "--fu-icon-size-xl": ".file-uploader-empty-icon",
       "--fu-button-size": ".file-uploader-btn",
       "--fu-spinner-size": ".file-uploader-spinner",
+      "--fu-spinner-border-width": ".file-uploader-spinner",
+      "--fu-limit-item-width": ".file-uploader-limit-item",
+      "--fu-limit-item-width-large": ".file-uploader-limit-item.large",
+    };
+  }
+
+  /**
+   * Get mapping of semantic variables to their source palette variables
+   * This matches the CSS definitions in _variables.scss
+   */
+  getVarSourceMap() {
+    return {
+      // Light mode semantic -> palette mappings
+      light: {
+        "--fu-color-primary": "--fu-primary-400",
+        "--fu-color-primary-hover": "--fu-primary-500",
+        "--fu-color-primary-light": "--fu-primary-50",
+        "--fu-color-text": "--fu-gray-700",
+        "--fu-color-text-muted": "--fu-gray-500",
+        "--fu-color-text-light": "--fu-gray-600",
+        "--fu-color-bg-light": "--fu-gray-50",
+        "--fu-color-bg-hover": "--fu-primary-50",
+        "--fu-color-border": "--fu-gray-300",
+        "--fu-color-border-light": "--fu-gray-200",
+        "--fu-color-border-hover": "--fu-primary-400",
+        "--fu-color-success": "--fu-success-500",
+        "--fu-color-success-bg": "--fu-success-100",
+        "--fu-color-success-text": "--fu-success-700",
+        "--fu-color-error": "--fu-error-500",
+        "--fu-color-error-bg": "--fu-error-100",
+        "--fu-color-error-text": "--fu-error-700",
+        "--fu-color-error-hover": "--fu-error-800",
+      },
+      // Dark mode semantic -> palette mappings
+      dark: {
+        "--fu-color-text": "--fu-gray-200",
+        "--fu-color-text-muted": "--fu-gray-400",
+        "--fu-color-text-light": "--fu-gray-300",
+        "--fu-color-bg": "--fu-gray-800",
+        "--fu-color-bg-light": "--fu-gray-700",
+        "--fu-color-bg-hover": "--fu-primary-900",
+        "--fu-color-border": "--fu-gray-600",
+        "--fu-color-border-light": "--fu-gray-700",
+        "--fu-color-border-hover": "--fu-primary-400",
+      },
     };
   }
 
@@ -881,15 +1408,69 @@ export default class ConfigBuilder {
     // Remove existing theme classes
     container.classList.remove("theme-light", "theme-dark");
 
+    let effectiveTheme;
     if (this.theme === "system") {
       // Use system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      container.classList.add(prefersDark ? "theme-dark" : "theme-light");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      effectiveTheme = prefersDark ? "dark" : "light";
     } else {
-      container.classList.add(`theme-${this.theme}`);
+      effectiveTheme = this.theme;
     }
 
+    container.classList.add(`theme-${effectiveTheme}`);
     container.dataset.theme = this.theme;
+
+    // Apply theme to file uploader preview containers
+    this.applyThemeToUploaders(effectiveTheme);
+  }
+
+  /**
+   * Apply theme CSS variables to all file uploader preview containers
+   */
+  applyThemeToUploaders(effectiveTheme) {
+    // Get all uploader containers in the preview
+    const uploaderContainers = this.element.querySelectorAll(
+      ".fu-config-builder-uploader-container"
+    );
+    uploaderContainers.forEach((container) => {
+      this.applyThemeToContainer(container, effectiveTheme);
+    });
+  }
+
+  /**
+   * Get theme variable overrides for light/dark mode
+   */
+  getThemeVars(effectiveTheme) {
+    // Define dark mode CSS variable overrides (matching _variables.scss dark mode)
+    // Using actual hex values to ensure proper override regardless of media query state
+    const darkModeVars = {
+      "--fu-color-text": "#e2e8f0", // --fu-gray-200
+      "--fu-color-text-muted": "#a0aec0", // --fu-gray-400
+      "--fu-color-text-light": "#cbd5e0", // --fu-gray-300
+      "--fu-color-bg": "#1a202c", // --fu-gray-800
+      "--fu-color-bg-light": "#374151", // Slightly lighter than container for contrast
+      "--fu-color-bg-hover": "#1a365d", // --fu-primary-900
+      "--fu-color-border": "#4a5568", // --fu-gray-600
+      "--fu-color-border-light": "#4a5568", // Visible border in dark mode
+      "--fu-color-border-hover": "#4299e1", // --fu-primary-400
+    };
+
+    // Define light mode CSS variable values (defaults from _variables.scss)
+    const lightModeVars = {
+      "--fu-color-text": "#2d3748", // --fu-gray-700
+      "--fu-color-text-muted": "#718096", // --fu-gray-500
+      "--fu-color-text-light": "#4a5568", // --fu-gray-600
+      "--fu-color-bg": "#ffffff",
+      "--fu-color-bg-light": "#f7fafc", // --fu-gray-50
+      "--fu-color-bg-hover": "#ebf8ff", // --fu-primary-50
+      "--fu-color-border": "#cbd5e0", // --fu-gray-300
+      "--fu-color-border-light": "#e2e8f0", // --fu-gray-200
+      "--fu-color-border-hover": "#4299e1", // --fu-primary-400
+    };
+
+    return effectiveTheme === "dark" ? darkModeVars : lightModeVars;
   }
 
   /**
@@ -901,9 +1482,11 @@ export default class ConfigBuilder {
     this.applyTheme();
 
     // Update active button states
-    this.element.querySelectorAll(".fu-config-builder-theme-btn").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.theme === theme);
-    });
+    this.element
+      .querySelectorAll(".fu-config-builder-theme-btn")
+      .forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.theme === theme);
+      });
 
     // Refresh CSS vars panels to show mode-specific variables
     this.refreshCssVarsPanels();
@@ -913,16 +1496,19 @@ export default class ConfigBuilder {
    * Refresh all CSS vars panels to reflect current theme mode
    */
   refreshCssVarsPanels() {
-    this.element.querySelectorAll('.fu-config-builder-css-vars-panel').forEach(panel => {
-      const wrapper = panel.closest('[data-uploader-wrapper]');
-      if (wrapper) {
-        const containerId = wrapper.querySelector('[data-uploader-container]')?.dataset.uploaderContainer;
-        if (containerId) {
-          panel.innerHTML = this.renderUsedCssVariables(containerId);
-          this.attachCssVarsPanelEvents(panel);
+    this.element
+      .querySelectorAll(".fu-config-builder-css-vars-panel")
+      .forEach((panel) => {
+        const wrapper = panel.closest("[data-uploader-wrapper]");
+        if (wrapper) {
+          const containerId = wrapper.querySelector("[data-uploader-container]")
+            ?.dataset.uploaderContainer;
+          if (containerId) {
+            panel.innerHTML = this.renderUsedCssVariables(containerId);
+            this.attachCssVarsPanelEvents(panel);
+          }
         }
-      }
-    });
+      });
   }
 
   /**
@@ -931,7 +1517,7 @@ export default class ConfigBuilder {
   render() {
     // Get first category key for default active tab
     const categoryKeys = Object.keys(this.optionDefinitions);
-    const firstCategoryKey = categoryKeys[0] || 'urls';
+    const firstCategoryKey = categoryKeys[0] || "urls";
 
     this.element.innerHTML = `
       <div class="fu-config-builder" data-theme="${this.theme}">
@@ -941,13 +1527,19 @@ export default class ConfigBuilder {
               <svg viewBox="0 0 576 512" fill="currentColor"><path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 0 160c0 35.3-28.7 64-64 64l-320 0c-35.3 0-64-28.7-64-64l0-160-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
             </a>
             <div class="fu-config-builder-theme-switcher" id="theme-switcher">
-              <button class="fu-config-builder-theme-btn ${this.theme === "light" ? "active" : ""}" data-theme="light" title="Light Mode">
+              <button class="fu-config-builder-theme-btn ${
+                this.theme === "light" ? "active" : ""
+              }" data-theme="light" title="Light Mode">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
               </button>
-              <button class="fu-config-builder-theme-btn ${this.theme === "dark" ? "active" : ""}" data-theme="dark" title="Dark Mode">
+              <button class="fu-config-builder-theme-btn ${
+                this.theme === "dark" ? "active" : ""
+              }" data-theme="dark" title="Dark Mode">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
               </button>
-              <button class="fu-config-builder-theme-btn ${this.theme === "system" ? "active" : ""}" data-theme="system" title="System Default">
+              <button class="fu-config-builder-theme-btn ${
+                this.theme === "system" ? "active" : ""
+              }" data-theme="system" title="System Default">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
               </button>
             </div>
@@ -964,11 +1556,15 @@ export default class ConfigBuilder {
             <div class="fu-config-builder-panel-header">
               <!-- Main Tabs: Config / Styles -->
               <div class="fu-config-builder-main-tabs">
-                <button class="fu-config-builder-main-tab ${this.activeMainTab === "config" ? "active" : ""}" data-main-tab="config">
+                <button class="fu-config-builder-main-tab ${
+                  this.activeMainTab === "config" ? "active" : ""
+                }" data-main-tab="config">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"/><path d="M19 11h2m-1 -1v2"/></svg>
                   Configuration
                 </button>
-                <button class="fu-config-builder-main-tab ${this.activeMainTab === "styles" ? "active" : ""}" data-main-tab="styles" id="styles-main-tab">
+                <button class="fu-config-builder-main-tab ${
+                  this.activeMainTab === "styles" ? "active" : ""
+                }" data-main-tab="styles" id="styles-main-tab">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25"/><circle cx="8.5" cy="10.5" r="1"/><circle cx="12.5" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
                   Styles
                   <span class="fu-config-builder-custom-indicator" id="styles-custom-indicator"></span>
@@ -977,7 +1573,9 @@ export default class ConfigBuilder {
             </div>
             <div class="fu-config-builder-panel-content">
               <!-- Config Tab Content -->
-              <div class="fu-config-builder-main-tab-content ${this.activeMainTab === "config" ? "active" : ""}" id="main-tab-config">
+              <div class="fu-config-builder-main-tab-content ${
+                this.activeMainTab === "config" ? "active" : ""
+              }" id="main-tab-config">
                 <!-- Vertical Tabs -->
                 <div class="fu-config-builder-vertical-tabs">
                   ${this.renderVerticalTabs(firstCategoryKey)}
@@ -987,13 +1585,27 @@ export default class ConfigBuilder {
                 <div class="fu-config-builder-options-content">
                   <!-- Presets -->
                   <div class="fu-config-builder-presets">
-                    <button class="fu-config-builder-preset ${this.currentPreset === "custom" ? "active" : ""}" data-preset="custom">Custom</button>
-                    <button class="fu-config-builder-preset ${this.currentPreset === "default" ? "active" : ""}" data-preset="default">Default</button>
-                    <button class="fu-config-builder-preset ${this.currentPreset === "minimal" ? "active" : ""}" data-preset="minimal">Minimal</button>
-                    <button class="fu-config-builder-preset ${this.currentPreset === "images-only" ? "active" : ""}" data-preset="images-only">Images Only</button>
-                    <button class="fu-config-builder-preset ${this.currentPreset === "documents" ? "active" : ""}" data-preset="documents">Documents</button>
-                    <button class="fu-config-builder-preset ${this.currentPreset === "media" ? "active" : ""}" data-preset="media">Media</button>
-                    <button class="fu-config-builder-preset ${this.currentPreset === "single-file" ? "active" : ""}" data-preset="single-file">Single File</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "custom" ? "active" : ""
+                    }" data-preset="custom">Custom</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "default" ? "active" : ""
+                    }" data-preset="default">Default</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "minimal" ? "active" : ""
+                    }" data-preset="minimal">Minimal</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "images-only" ? "active" : ""
+                    }" data-preset="images-only">Images Only</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "documents" ? "active" : ""
+                    }" data-preset="documents">Documents</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "media" ? "active" : ""
+                    }" data-preset="media">Media</button>
+                    <button class="fu-config-builder-preset ${
+                      this.currentPreset === "single-file" ? "active" : ""
+                    }" data-preset="single-file">Single File</button>
                   </div>
 
                   <!-- Category Panels -->
@@ -1002,7 +1614,9 @@ export default class ConfigBuilder {
               </div>
 
               <!-- Styles Tab Content -->
-              <div class="fu-config-builder-main-tab-content ${this.activeMainTab === "styles" ? "active" : ""}" id="main-tab-styles">
+              <div class="fu-config-builder-main-tab-content ${
+                this.activeMainTab === "styles" ? "active" : ""
+              }" id="main-tab-styles">
                 <!-- Style Vertical Tabs with Reset at bottom -->
                 <div class="fu-config-builder-vertical-tabs fu-config-builder-style-tabs">
                   ${this.renderStyleVerticalTabs()}
@@ -1118,12 +1732,18 @@ export default class ConfigBuilder {
    */
   renderVerticalTabs(activeCategory) {
     let html = "";
-    for (const [categoryKey, category] of Object.entries(this.optionDefinitions)) {
+    for (const [categoryKey, category] of Object.entries(
+      this.optionDefinitions
+    )) {
       const isActive = categoryKey === activeCategory;
       html += `
-        <button class="fu-config-builder-vertical-tab ${isActive ? "active" : ""}" data-category="${categoryKey}" title="${category.title}">
+        <button class="fu-config-builder-vertical-tab ${
+          isActive ? "active" : ""
+        }" data-category="${categoryKey}" title="${category.title}">
           ${this.getCategoryIcon(category.icon)}
-          <span class="fu-config-builder-vertical-tab-label">${this.getShortCategoryName(category.title)}</span>
+          <span class="fu-config-builder-vertical-tab-label">${this.getShortCategoryName(
+            category.title
+          )}</span>
         </button>
       `;
     }
@@ -1143,10 +1763,10 @@ export default class ConfigBuilder {
       "Upload Behavior": "Behavior",
       "Limits Display": "Limits",
       "Alert Notifications": "Alerts",
-      "Buttons": "Buttons",
+      Buttons: "Buttons",
       "Media Capture": "Media",
       "Carousel Preview": "Carousel",
-      "Cross-Uploader Drag & Drop": "Cross"
+      "Cross-Uploader Drag & Drop": "Cross",
     };
     return shortNames[title] || title.split(" ")[0];
   }
@@ -1163,9 +1783,15 @@ export default class ConfigBuilder {
       const isActive = sectionKey === firstSection;
       const modeClass = section.mode ? `mode-${section.mode}` : "";
       html += `
-        <button class="fu-config-builder-vertical-tab ${isActive ? "active" : ""} ${modeClass}" data-style-section="${sectionKey}" title="${section.title}">
+        <button class="fu-config-builder-vertical-tab ${
+          isActive ? "active" : ""
+        } ${modeClass}" data-style-section="${sectionKey}" title="${
+        section.title
+      }">
           ${this.getCategoryIcon(section.icon)}
-          <span class="fu-config-builder-vertical-tab-label">${this.getShortStyleName(section.title)}</span>
+          <span class="fu-config-builder-vertical-tab-label">${this.getShortStyleName(
+            section.title
+          )}</span>
         </button>
       `;
     }
@@ -1182,12 +1808,12 @@ export default class ConfigBuilder {
       "Status Colors": "Status",
       "Semantic Colors (Light Mode)": "Light",
       "Semantic Colors (Dark Mode)": "Dark",
-      "Spacing": "Space",
-      "Typography": "Type",
+      Spacing: "Space",
+      Typography: "Type",
       "Border Radius": "Radius",
-      "Shadows": "Shadow",
-      "Transitions": "Trans",
-      "Component Sizes": "Comps"
+      Shadows: "Shadow",
+      Transitions: "Trans",
+      "Component Sizes": "Comps",
     };
     return shortNames[title] || title.split(" ")[0];
   }
@@ -1197,9 +1823,10 @@ export default class ConfigBuilder {
    */
   getModeBadge(mode) {
     if (!mode) return "";
-    const icon = mode === "light"
-      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
-      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    const icon =
+      mode === "light"
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     const label = mode === "light" ? "Light Mode" : "Dark Mode";
     return `<span class="fu-config-builder-mode-badge mode-${mode}">${icon} ${label}</span>`;
   }
@@ -1216,7 +1843,9 @@ export default class ConfigBuilder {
       const isActive = sectionKey === firstSection;
       const modeClass = section.mode ? `mode-${section.mode}` : "";
       html += `
-        <div class="fu-config-builder-category-panel fu-config-builder-style-panel ${isActive ? "active" : ""} ${modeClass}" data-style-panel="${sectionKey}">
+        <div class="fu-config-builder-category-panel fu-config-builder-style-panel ${
+          isActive ? "active" : ""
+        } ${modeClass}" data-style-panel="${sectionKey}">
           <div class="fu-config-builder-category-panel-header">
             <h3>${section.title}</h3>
             ${this.getModeBadge(section.mode)}
@@ -1235,8 +1864,16 @@ export default class ConfigBuilder {
    */
   renderStyleVariables(variables) {
     let html = "";
+
+    // Get computed styles from the DOM for actual values
+    // Style variables are defined at :root level, so use document.documentElement
+    const computedStyles = getComputedStyle(document.documentElement);
+
     for (const [varName, def] of Object.entries(variables)) {
-      const currentValue = this.styleValues[varName] || def.default;
+      // Get actual computed value from DOM
+      const computedValue = computedStyles.getPropertyValue(varName).trim();
+      // Use user-modified value if exists, otherwise use computed value, then fall back to default
+      const currentValue = this.styleValues[varName] || computedValue || def.default;
 
       if (def.type === "color") {
         html += `
@@ -1386,19 +2023,27 @@ export default class ConfigBuilder {
     this.updateCssOutput();
 
     // Update all input fields
-    this.element.querySelectorAll(".fu-config-builder-color-picker, .fu-config-builder-color-text").forEach(input => {
-      const varName = input.dataset.var;
-      if (varName && this.styleValues[varName]) {
-        input.value = this.styleValues[varName];
-      }
-    });
+    this.element
+      .querySelectorAll(
+        ".fu-config-builder-color-picker, .fu-config-builder-color-text"
+      )
+      .forEach((input) => {
+        const varName = input.dataset.var;
+        if (varName && this.styleValues[varName]) {
+          input.value = this.styleValues[varName];
+        }
+      });
 
-    this.element.querySelectorAll(".fu-config-builder-size-input, .fu-config-builder-number-input, .fu-config-builder-text-input").forEach(input => {
-      const varName = input.dataset.var;
-      if (varName && this.styleValues[varName]) {
-        input.value = this.styleValues[varName];
-      }
-    });
+    this.element
+      .querySelectorAll(
+        ".fu-config-builder-size-input, .fu-config-builder-number-input, .fu-config-builder-text-input"
+      )
+      .forEach((input) => {
+        const varName = input.dataset.var;
+        if (varName && this.styleValues[varName]) {
+          input.value = this.styleValues[varName];
+        }
+      });
   }
 
   /**
@@ -1414,13 +2059,13 @@ export default class ConfigBuilder {
     // Remove pseudo-selectors for querySelectorAll
     const cleanSelector = selector
       .split(",")
-      .map(s => s.trim().replace(/:hover|:focus|:active/g, ""))
-      .filter(s => s)
+      .map((s) => s.trim().replace(/:hover|:focus|:active/g, ""))
+      .filter((s) => s)
       .join(", ");
 
     try {
       const elements = previewArea.querySelectorAll(cleanSelector);
-      elements.forEach(el => {
+      elements.forEach((el) => {
         el.classList.add("fu-highlight-glow");
       });
     } catch (e) {
@@ -1435,7 +2080,7 @@ export default class ConfigBuilder {
     const previewArea = this.element.querySelector("#uploader-preview");
     if (!previewArea) return;
 
-    previewArea.querySelectorAll(".fu-highlight-glow").forEach(el => {
+    previewArea.querySelectorAll(".fu-highlight-glow").forEach((el) => {
       el.classList.remove("fu-highlight-glow");
     });
   }
@@ -1445,11 +2090,16 @@ export default class ConfigBuilder {
    */
   renderCategoryPanels(activeCategory) {
     let html = "";
-    for (const [categoryKey, category] of Object.entries(this.optionDefinitions)) {
+    for (const [categoryKey, category] of Object.entries(
+      this.optionDefinitions
+    )) {
       const isActive = categoryKey === activeCategory;
-      const sliderConfigHtml = categoryKey === "sizeLimits" ? this.renderSliderConfig() : "";
+      const sliderConfigHtml =
+        categoryKey === "sizeLimits" ? this.renderSliderConfig() : "";
       html += `
-        <div class="fu-config-builder-category-panel ${isActive ? "active" : ""}" data-category-panel="${categoryKey}">
+        <div class="fu-config-builder-category-panel ${
+          isActive ? "active" : ""
+        }" data-category-panel="${categoryKey}">
           <div class="fu-config-builder-category-panel-header">
             <h3>${category.title}</h3>
           </div>
@@ -1501,7 +2151,7 @@ export default class ConfigBuilder {
         name: "Uploader 1",
         config: { ...this.config },
         preset: this.currentPreset,
-        instance: null
+        instance: null,
       };
     }
 
@@ -1509,8 +2159,12 @@ export default class ConfigBuilder {
     for (const [id, data] of Object.entries(this.uploaderInstances)) {
       const isActive = id === this.activeUploaderId;
       html += `
-        <div class="fu-config-builder-uploader-tab ${isActive ? "active" : ""}" data-uploader-id="${id}">
-          <span class="fu-config-builder-uploader-tab-name" data-uploader-id="${id}">${data.name}</span>
+        <div class="fu-config-builder-uploader-tab ${
+          isActive ? "active" : ""
+        }" data-uploader-id="${id}">
+          <span class="fu-config-builder-uploader-tab-name" data-uploader-id="${id}">${
+        data.name
+      }</span>
           <div class="fu-config-builder-uploader-tab-actions">
             <button class="fu-config-builder-uploader-tab-duplicate" data-uploader-id="${id}" title="Duplicate uploader">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1518,14 +2172,18 @@ export default class ConfigBuilder {
                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
               </svg>
             </button>
-            ${Object.keys(this.uploaderInstances).length > 1 ? `
+            ${
+              Object.keys(this.uploaderInstances).length > 1
+                ? `
               <button class="fu-config-builder-uploader-tab-close" data-uploader-id="${id}" title="Remove uploader">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="18" y1="6" x2="6" y2="18"/>
                   <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
               </button>
-            ` : ""}
+            `
+                : ""
+            }
           </div>
         </div>
       `;
@@ -1546,7 +2204,9 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-category" data-category="${categoryKey}">
           <div class="fu-config-builder-category-header">
             ${this.getCategoryIcon(category.icon)}
-            <span class="fu-config-builder-category-title">${category.title}</span>
+            <span class="fu-config-builder-category-title">${
+              category.title
+            }</span>
             <svg class="fu-config-builder-category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M6 9l6 6 6-6"/>
             </svg>
@@ -1603,19 +2263,39 @@ export default class ConfigBuilder {
         content = this.renderToggle(key, def, isDisabled, dependencyIndicator);
         break;
       case "text":
-        content = this.renderTextInput(key, def, isDisabled, dependencyIndicator);
+        content = this.renderTextInput(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator
+        );
         break;
       case "number":
-        content = this.renderNumberInput(key, def, isDisabled, dependencyIndicator);
+        content = this.renderNumberInput(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator
+        );
         break;
       case "size":
-        content = this.renderSizeInput(key, def, isDisabled, dependencyIndicator);
+        content = this.renderSizeInput(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator
+        );
         break;
       case "select":
         content = this.renderSelect(key, def, isDisabled, dependencyIndicator);
         break;
       case "multiSelect":
-        content = this.renderMultiSelect(key, def, isDisabled, dependencyIndicator);
+        content = this.renderMultiSelect(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator
+        );
         break;
       case "extensions":
         content = this.renderExtensions(key, def);
@@ -1647,7 +2327,11 @@ export default class ConfigBuilder {
     const isActive = this.config[key] === true;
     const disabledClass = isDisabled ? "disabled" : "";
     return `
-      <div class="fu-config-builder-toggle ${isActive ? "active" : ""} ${disabledClass}" data-option="${key}" data-type="boolean" ${isDisabled ? 'data-disabled="true"' : ""}>
+      <div class="fu-config-builder-toggle ${
+        isActive ? "active" : ""
+      } ${disabledClass}" data-option="${key}" data-type="boolean" ${
+      isDisabled ? 'data-disabled="true"' : ""
+    }>
         <div class="fu-config-builder-toggle-switch"></div>
         <div class="fu-config-builder-toggle-content">
           <div class="fu-config-builder-toggle-label">
@@ -1687,8 +2371,13 @@ export default class ConfigBuilder {
    */
   renderNumberInput(key, def, isDisabled = false, dependencyIndicator = "") {
     // Use slider design for maxFiles
-    if (key === 'maxFiles') {
-      return this.renderCountSliderInput(key, def, isDisabled, dependencyIndicator);
+    if (key === "maxFiles") {
+      return this.renderCountSliderInput(
+        key,
+        def,
+        isDisabled,
+        dependencyIndicator
+      );
     }
 
     return `
@@ -1713,7 +2402,12 @@ export default class ConfigBuilder {
   /**
    * Render count slider input (for maxFiles)
    */
-  renderCountSliderInput(key, def, isDisabled = false, dependencyIndicator = "") {
+  renderCountSliderInput(
+    key,
+    def,
+    isDisabled = false,
+    dependencyIndicator = ""
+  ) {
     const value = this.config[key] || 0;
     const min = def.min || 1;
     const max = def.max || 100;
@@ -1731,7 +2425,9 @@ export default class ConfigBuilder {
         </label>
         <div class="fu-config-builder-count-slider" data-option="${key}" data-type="countSlider">
           <div class="fu-config-builder-slider-row">
-            <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${isDisabled ? "disabled" : ""}>
+            <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${
+              isDisabled ? "disabled" : ""
+            }>
               ${minusIcon}
             </button>
             <input type="range"
@@ -1742,7 +2438,9 @@ export default class ConfigBuilder {
                    max="${max}"
                    step="${step}"
                    ${isDisabled ? "disabled" : ""}>
-            <button type="button" class="fu-config-builder-slider-btn" data-action="increase" ${isDisabled ? "disabled" : ""}>
+            <button type="button" class="fu-config-builder-slider-btn" data-action="increase" ${
+              isDisabled ? "disabled" : ""
+            }>
               ${plusIcon}
             </button>
             <input type="number"
@@ -1770,7 +2468,8 @@ export default class ConfigBuilder {
   renderSizeInput(key, def, isDisabled = false, dependencyIndicator = "") {
     const bytes = this.config[key];
     // Determine best unit and value for display
-    const { value: displayValue, unit: displayUnit } = this.bytesToBestUnit(bytes);
+    const { value: displayValue, unit: displayUnit } =
+      this.bytesToBestUnit(bytes);
     const { minMB, maxMB, sliderStep } = this.sliderConfig;
 
     // Convert to current slider unit for slider display
@@ -1782,10 +2481,15 @@ export default class ConfigBuilder {
     const minusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>`;
     const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
 
-    const units = ['bytes', 'KB', 'MB', 'GB'];
-    const unitOptions = units.map(u =>
-      `<option value="${u}" ${displayUnit === u ? 'selected' : ''}>${u}</option>`
-    ).join('');
+    const units = ["bytes", "KB", "MB", "GB"];
+    const unitOptions = units
+      .map(
+        (u) =>
+          `<option value="${u}" ${
+            displayUnit === u ? "selected" : ""
+          }>${u}</option>`
+      )
+      .join("");
 
     return `
       <div class="fu-config-builder-group ${isDisabled ? "disabled" : ""}">
@@ -1797,7 +2501,9 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-size-slider" data-option="${key}" data-type="sizeSlider" data-unit="${displayUnit}">
           <!-- Single row: - slider + input + unit dropdown -->
           <div class="fu-config-builder-slider-row">
-            <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${isDisabled ? "disabled" : ""}>
+            <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${
+              isDisabled ? "disabled" : ""
+            }>
               ${minusIcon}
             </button>
             <input type="range"
@@ -1808,7 +2514,9 @@ export default class ConfigBuilder {
                    max="${maxValue}"
                    step="${stepValue}"
                    ${isDisabled ? "disabled" : ""}>
-            <button type="button" class="fu-config-builder-slider-btn" data-action="increase" ${isDisabled ? "disabled" : ""}>
+            <button type="button" class="fu-config-builder-slider-btn" data-action="increase" ${
+              isDisabled ? "disabled" : ""
+            }>
               ${plusIcon}
             </button>
             <input type="number"
@@ -1818,7 +2526,9 @@ export default class ConfigBuilder {
                    min="${minValue}"
                    max="${maxValue}"
                    ${isDisabled ? "disabled" : ""}>
-            <select class="fu-config-builder-unit-dropdown" data-unit-for="${key}" ${isDisabled ? "disabled" : ""}>
+            <select class="fu-config-builder-unit-dropdown" data-unit-for="${key}" ${
+      isDisabled ? "disabled" : ""
+    }>
               ${unitOptions}
             </select>
           </div>
@@ -1838,10 +2548,10 @@ export default class ConfigBuilder {
    */
   bytesToUnit(bytes, unit) {
     const multipliers = {
-      'bytes': 1,
-      'KB': 1024,
-      'MB': 1024 * 1024,
-      'GB': 1024 * 1024 * 1024
+      bytes: 1,
+      KB: 1024,
+      MB: 1024 * 1024,
+      GB: 1024 * 1024 * 1024,
     };
     const multiplier = multipliers[unit] || 1;
     return Math.round((bytes || 0) / multiplier);
@@ -1852,10 +2562,10 @@ export default class ConfigBuilder {
    */
   unitToBytes(value, unit) {
     const multipliers = {
-      'bytes': 1,
-      'KB': 1024,
-      'MB': 1024 * 1024,
-      'GB': 1024 * 1024 * 1024
+      bytes: 1,
+      KB: 1024,
+      MB: 1024 * 1024,
+      GB: 1024 * 1024 * 1024,
     };
     const multiplier = multipliers[unit] || 1;
     return (value || 0) * multiplier;
@@ -1867,13 +2577,13 @@ export default class ConfigBuilder {
   bytesToBestUnit(bytes) {
     bytes = bytes || 0;
     if (bytes >= 1024 * 1024 * 1024) {
-      return { value: Math.round(bytes / (1024 * 1024 * 1024)), unit: 'GB' };
+      return { value: Math.round(bytes / (1024 * 1024 * 1024)), unit: "GB" };
     } else if (bytes >= 1024 * 1024) {
-      return { value: Math.round(bytes / (1024 * 1024)), unit: 'MB' };
+      return { value: Math.round(bytes / (1024 * 1024)), unit: "MB" };
     } else if (bytes >= 1024) {
-      return { value: Math.round(bytes / 1024), unit: 'KB' };
+      return { value: Math.round(bytes / 1024), unit: "KB" };
     }
-    return { value: bytes, unit: 'bytes' };
+    return { value: bytes, unit: "bytes" };
   }
 
   /**
@@ -1883,7 +2593,9 @@ export default class ConfigBuilder {
     const options = def.options
       .map(
         (opt) =>
-          `<option value="${opt.value}" ${this.config[key] === opt.value ? "selected" : ""}>${opt.label}</option>`
+          `<option value="${opt.value}" ${
+            this.config[key] === opt.value ? "selected" : ""
+          }>${opt.label}</option>`
       )
       .join("");
 
@@ -1894,7 +2606,9 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           <code>${key}</code>
         </label>
-        <select class="fu-config-builder-select" data-option="${key}" data-type="select" ${isDisabled ? "disabled" : ""}>
+        <select class="fu-config-builder-select" data-option="${key}" data-type="select" ${
+      isDisabled ? "disabled" : ""
+    }>
           ${options}
         </select>
         <div class="fu-config-builder-hint">${def.hint}</div>
@@ -1910,7 +2624,9 @@ export default class ConfigBuilder {
     const tags = def.options
       .map(
         (opt) =>
-          `<span class="fu-config-builder-tag ${selected.includes(opt) ? "selected" : ""} ${isDisabled ? "disabled" : ""}"
+          `<span class="fu-config-builder-tag ${
+            selected.includes(opt) ? "selected" : ""
+          } ${isDisabled ? "disabled" : ""}"
               data-value="${opt}">${opt}</span>`
       )
       .join("");
@@ -1922,7 +2638,11 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           <code>${key}</code>
         </label>
-        <div class="fu-config-builder-tags ${isDisabled ? "disabled" : ""}" data-option="${key}" data-type="multiSelect" ${isDisabled ? 'data-disabled="true"' : ""}>
+        <div class="fu-config-builder-tags ${
+          isDisabled ? "disabled" : ""
+        }" data-option="${key}" data-type="multiSelect" ${
+      isDisabled ? 'data-disabled="true"' : ""
+    }>
           ${tags}
         </div>
         <div class="fu-config-builder-hint">${def.hint}</div>
@@ -1938,7 +2658,18 @@ export default class ConfigBuilder {
       image: ["bmp", "gif", "ico", "jpeg", "jpg", "png", "svg", "webp"],
       video: ["avi", "flv", "mkv", "mov", "mp4", "mpeg", "webm"],
       audio: ["aac", "flac", "m4a", "mp3", "ogg", "wav", "wma"],
-      document: ["csv", "doc", "docx", "pdf", "ppt", "pptx", "rtf", "txt", "xls", "xlsx"],
+      document: [
+        "csv",
+        "doc",
+        "docx",
+        "pdf",
+        "ppt",
+        "pptx",
+        "rtf",
+        "txt",
+        "xls",
+        "xlsx",
+      ],
       archive: ["7z", "bz2", "gz", "rar", "tar", "zip"],
     };
 
@@ -1966,7 +2697,14 @@ export default class ConfigBuilder {
             </span>
           </div>
           <div class="fu-config-builder-extensions">
-            ${sortedExts.map((ext) => `<span class="fu-config-builder-ext ${selected.includes(ext) ? "selected" : ""}" data-ext="${ext}">.${ext}</span>`).join("")}
+            ${sortedExts
+              .map(
+                (ext) =>
+                  `<span class="fu-config-builder-ext ${
+                    selected.includes(ext) ? "selected" : ""
+                  }" data-ext="${ext}">.${ext}</span>`
+              )
+              .join("")}
           </div>
         </div>
       `;
@@ -1987,7 +2725,7 @@ export default class ConfigBuilder {
     const minusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>`;
     const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
 
-    const units = ['bytes', 'KB', 'MB', 'GB'];
+    const units = ["bytes", "KB", "MB", "GB"];
 
     let html = `
       <div class="fu-config-builder-group">
@@ -2001,13 +2739,22 @@ export default class ConfigBuilder {
 
     for (const type of types) {
       const bytes = values[type] || 0;
-      const { value: displayValue, unit: displayUnit } = bytes > 0 ? this.bytesToBestUnit(bytes) : { value: 0, unit: 'MB' };
+      const { value: displayValue, unit: displayUnit } =
+        bytes > 0 ? this.bytesToBestUnit(bytes) : { value: 0, unit: "MB" };
       const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, displayUnit);
-      const stepValue = Math.max(1, this.bytesToUnit(sliderStep * 1024 * 1024, displayUnit));
+      const stepValue = Math.max(
+        1,
+        this.bytesToUnit(sliderStep * 1024 * 1024, displayUnit)
+      );
 
-      const unitOptions = units.map(u =>
-        `<option value="${u}" ${displayUnit === u ? 'selected' : ''}>${u}</option>`
-      ).join('');
+      const unitOptions = units
+        .map(
+          (u) =>
+            `<option value="${u}" ${
+              displayUnit === u ? "selected" : ""
+            }>${u}</option>`
+        )
+        .join("");
 
       html += `
         <div class="fu-config-builder-type-slider-block" data-type-key="${type}" data-unit="${displayUnit}">
@@ -2029,7 +2776,7 @@ export default class ConfigBuilder {
             <input type="number"
                    class="fu-config-builder-slider-value-input fu-config-builder-slider-value-input-sm"
                    data-value-type="${type}"
-                   value="${displayValue || ''}"
+                   value="${displayValue || ""}"
                    min="0"
                    max="${maxValue}"
                    placeholder="0">
@@ -2092,7 +2839,7 @@ export default class ConfigBuilder {
             <input type="number"
                    class="fu-config-builder-slider-value-input fu-config-builder-slider-value-input-sm"
                    data-value-type="${type}"
-                   value="${value || ''}"
+                   value="${value || ""}"
                    min="0"
                    max="100"
                    placeholder="0">
@@ -2191,11 +2938,14 @@ export default class ConfigBuilder {
       "audio/webm": "WebM Audio",
       "application/pdf": "PDF",
       "application/msword": "DOC",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        "DOCX",
       "application/vnd.ms-excel": "XLS",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "XLSX",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        "XLSX",
       "application/vnd.ms-powerpoint": "PPT",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation": "PPTX",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        "PPTX",
       "text/plain": "TXT",
       "text/csv": "CSV",
       "application/rtf": "RTF",
@@ -2236,13 +2986,21 @@ export default class ConfigBuilder {
             </span>
           </div>
           <div class="fu-config-builder-mimes">
-            ${sortedMimes.map((mime) => `
-              <span class="fu-config-builder-mime ${selected.includes(mime) ? "selected" : ""}"
+            ${sortedMimes
+              .map(
+                (mime) => `
+              <span class="fu-config-builder-mime ${
+                selected.includes(mime) ? "selected" : ""
+              }"
                     data-mime="${mime}">
-                <span class="fu-config-builder-mime-label">${mimeLabels[mime] || mime}</span>
+                <span class="fu-config-builder-mime-label">${
+                  mimeLabels[mime] || mime
+                }</span>
                 <span class="fu-config-builder-mime-value">${mime}</span>
               </span>
-            `).join("")}
+            `
+              )
+              .join("")}
           </div>
         </div>
       `;
@@ -2262,40 +3020,51 @@ export default class ConfigBuilder {
       // File Size Limits - Ruler/scale icon
       size: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M177.9 494.1c-18.7 18.7-49.1 18.7-67.9 0L17.9 402.1c-18.7-18.7-18.7-49.1 0-67.9l50.7-50.7 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 50.7-50.7c18.7-18.7 49.1-18.7 67.9 0l92.1 92.1c18.7 18.7 18.7 49.1 0 67.9L177.9 494.1z"/></svg>',
       // Per-Type Limits - Layers/stack icon
-      layers: '<svg viewBox="0 0 576 512" fill="currentColor"><path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/></svg>',
+      layers:
+        '<svg viewBox="0 0 576 512" fill="currentColor"><path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/></svg>',
       // Allowed File Types - File icon
       file: '<svg viewBox="0 0 384 512" fill="currentColor"><path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 288c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128z"/></svg>',
       // Upload Behavior - Gear/cog icon
-      settings: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>',
+      settings:
+        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>',
       // Limits Display - Eye icon
       eye: '<svg viewBox="0 0 576 512" fill="currentColor"><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/></svg>',
       // Alert Notifications - Bell icon
       bell: '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M224 0c-17.7 0-32 14.3-32 32l0 19.2C119 66 64 130.6 64 208l0 18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416l384 0c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8l0-18.8c0-77.4-55-142-128-156.8L256 32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3l-64 0-64 0c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z"/></svg>',
       // Buttons - Square with plus
-      button: '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM200 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/></svg>',
+      button:
+        '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM200 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/></svg>',
       // Media Capture - Camera icon
-      camera: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>',
+      camera:
+        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>',
       // Carousel Preview - Image/photo icon
-      image: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6l96 0 32 0 208 0c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>',
+      image:
+        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6l96 0 32 0 208 0c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>',
       // MIME Type Validation - Shield with check
-      shield: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8l0 378.1C394 378 431.1 230.1 432 141.4L256 66.8z"/></svg>',
+      shield:
+        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8l0 378.1C394 378 431.1 230.1 432 141.4L256 66.8z"/></svg>',
       // Sun icon - Light mode
       sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
       // Moon icon - Dark mode
       moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
       // Palette icon - Colors
-      palette: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M512 256c0 .9 0 1.8 0 2.7c-.4 36.5-33.6 61.3-70.1 61.3L344 320c-26.5 0-48 21.5-48 48c0 3.4 .4 6.7 1 9.9c2.1 10.2 6.5 20 10.8 29.9c6.1 13.8 12.1 27.5 12.1 42c0 31.8-21.6 60.7-53.4 62c-3.5 .1-7 .2-10.6 .2C114.6 512 0 397.4 0 256S114.6 0 256 0S512 114.6 512 256zM128 288a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm0-96a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM288 96a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm96 96a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>',
+      palette:
+        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M512 256c0 .9 0 1.8 0 2.7c-.4 36.5-33.6 61.3-70.1 61.3L344 320c-26.5 0-48 21.5-48 48c0 3.4 .4 6.7 1 9.9c2.1 10.2 6.5 20 10.8 29.9c6.1 13.8 12.1 27.5 12.1 42c0 31.8-21.6 60.7-53.4 62c-3.5 .1-7 .2-10.6 .2C114.6 512 0 397.4 0 256S114.6 0 256 0S512 114.6 512 256zM128 288a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm0-96a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM288 96a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm96 96a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>',
       // Check icon
-      check: '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>',
+      check:
+        '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>',
       // Text/Typography icon
       text: '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M254 52.8C249.3 40.3 237.3 32 224 32s-25.3 8.3-30 20.8L57.8 416L32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-1.8 0 18-48 159.6 0 18 48-1.8 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-25.8 0L254 52.8zM279.8 304l-111.6 0L224 155.1 279.8 304z"/></svg>',
       // Window/Border radius icon
-      window: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM96 96l320 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32L96 416c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32z"/></svg>',
+      window:
+        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM96 96l320 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32L96 416c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32z"/></svg>',
       // Move/Cross-uploader icon
       move: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"/></svg>',
     };
 
-    return `<span class="fu-config-builder-category-icon">${icons[icon] || icons.settings}</span>`;
+    return `<span class="fu-config-builder-category-icon">${
+      icons[icon] || icons.settings
+    }</span>`;
   }
 
   /**
@@ -2316,189 +3085,240 @@ export default class ConfigBuilder {
    */
   attachEvents() {
     // Theme switcher buttons
-    this.element.querySelectorAll(".fu-config-builder-theme-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        this.setTheme(btn.dataset.theme);
+    this.element
+      .querySelectorAll(".fu-config-builder-theme-btn")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          this.setTheme(btn.dataset.theme);
+        });
       });
-    });
 
     // Listen for system theme changes
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-      if (this.theme === "system") {
-        this.applyTheme();
-        // Refresh CSS vars panels for system theme change
-        this.refreshCssVarsPanels();
-      }
-    });
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", () => {
+        if (this.theme === "system") {
+          this.applyTheme();
+          // Refresh CSS vars panels for system theme change
+          this.refreshCssVarsPanels();
+        }
+      });
 
     // Main tab switching (Config / Styles)
-    this.element.querySelectorAll(".fu-config-builder-main-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const mainTab = tab.dataset.mainTab;
+    this.element
+      .querySelectorAll(".fu-config-builder-main-tab")
+      .forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const mainTab = tab.dataset.mainTab;
 
-        // Update main tab active states
-        this.element.querySelectorAll(".fu-config-builder-main-tab").forEach((t) => {
-          t.classList.remove("active");
-        });
-        tab.classList.add("active");
+          // Update main tab active states
+          this.element
+            .querySelectorAll(".fu-config-builder-main-tab")
+            .forEach((t) => {
+              t.classList.remove("active");
+            });
+          tab.classList.add("active");
 
-        // Update main tab content visibility
-        this.element.querySelectorAll(".fu-config-builder-main-tab-content").forEach((content) => {
-          content.classList.remove("active");
-        });
-        const targetContent = this.element.querySelector(`#main-tab-${mainTab}`);
-        if (targetContent) {
-          targetContent.classList.add("active");
-        }
-
-        this.activeMainTab = mainTab;
-
-        // Update CSS output when switching to styles
-        if (mainTab === "styles") {
-          this.updateCssOutput();
-        }
-      });
-    });
-
-    // Vertical tab switching for config categories
-    this.element.querySelectorAll(".fu-config-builder-vertical-tab[data-category]").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const categoryKey = tab.dataset.category;
-
-        // Update tab active states within config tab
-        const configTab = this.element.querySelector("#main-tab-config");
-        if (configTab) {
-          configTab.querySelectorAll(".fu-config-builder-vertical-tab").forEach((t) => {
-            t.classList.remove("active");
-          });
-        }
-        tab.classList.add("active");
-
-        // Update panel visibility
-        this.element.querySelectorAll(".fu-config-builder-category-panel[data-category-panel]").forEach((panel) => {
-          panel.classList.remove("active");
-        });
-        const targetPanel = this.element.querySelector(`[data-category-panel="${categoryKey}"]`);
-        if (targetPanel) {
-          targetPanel.classList.add("active");
-        }
-
-        this.currentCategory = categoryKey;
-      });
-    });
-
-    // Vertical tab switching for style sections
-    this.element.querySelectorAll(".fu-config-builder-vertical-tab[data-style-section]").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const sectionKey = tab.dataset.styleSection;
-
-        // Update tab active states within styles tab
-        const stylesTab = this.element.querySelector("#main-tab-styles");
-        if (stylesTab) {
-          stylesTab.querySelectorAll(".fu-config-builder-vertical-tab").forEach((t) => {
-            t.classList.remove("active");
-          });
-        }
-        tab.classList.add("active");
-
-        // Update style panel visibility
-        this.element.querySelectorAll(".fu-config-builder-style-panel").forEach((panel) => {
-          panel.classList.remove("active");
-        });
-        const targetPanel = this.element.querySelector(`[data-style-panel="${sectionKey}"]`);
-        if (targetPanel) {
-          targetPanel.classList.add("active");
-        }
-
-        this.currentStyleSection = sectionKey;
-      });
-    });
-
-    // Style color picker inputs
-    this.element.querySelectorAll(".fu-config-builder-color-picker").forEach((picker) => {
-      picker.addEventListener("input", (e) => {
-        const varName = e.target.dataset.var;
-        const value = e.target.value;
-        this.styleValues[varName] = value;
-
-        // Update text input
-        const textInput = this.element.querySelector(`.fu-config-builder-color-text[data-var="${varName}"]`);
-        if (textInput) {
-          textInput.value = value;
-        }
-
-        this.applyStylesToPreview();
-        this.updateCssOutput();
-      });
-    });
-
-    // Style color text inputs
-    this.element.querySelectorAll(".fu-config-builder-color-text").forEach((input) => {
-      input.addEventListener("input", (e) => {
-        const varName = e.target.dataset.var;
-        let value = e.target.value.trim();
-
-        // Auto-add # if missing
-        if (value && !value.startsWith("#")) {
-          value = "#" + value;
-        }
-
-        // Validate hex color (3 or 6 characters)
-        const isValidHex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(value);
-
-        if (isValidHex) {
-          // Expand 3-char hex to 6-char for color picker
-          let fullHex = value;
-          if (value.length === 4) {
-            fullHex = "#" + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
+          // Update main tab content visibility
+          this.element
+            .querySelectorAll(".fu-config-builder-main-tab-content")
+            .forEach((content) => {
+              content.classList.remove("active");
+            });
+          const targetContent = this.element.querySelector(
+            `#main-tab-${mainTab}`
+          );
+          if (targetContent) {
+            targetContent.classList.add("active");
           }
 
-          this.styleValues[varName] = fullHex;
+          this.activeMainTab = mainTab;
 
-          // Update color picker
-          const picker = this.element.querySelector(`.fu-config-builder-color-picker[data-var="${varName}"]`);
-          if (picker) {
-            picker.value = fullHex;
+          // Update CSS output when switching to styles
+          if (mainTab === "styles") {
+            this.updateCssOutput();
+          }
+        });
+      });
+
+    // Vertical tab switching for config categories
+    this.element
+      .querySelectorAll(".fu-config-builder-vertical-tab[data-category]")
+      .forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const categoryKey = tab.dataset.category;
+
+          // Update tab active states within config tab
+          const configTab = this.element.querySelector("#main-tab-config");
+          if (configTab) {
+            configTab
+              .querySelectorAll(".fu-config-builder-vertical-tab")
+              .forEach((t) => {
+                t.classList.remove("active");
+              });
+          }
+          tab.classList.add("active");
+
+          // Update panel visibility
+          this.element
+            .querySelectorAll(
+              ".fu-config-builder-category-panel[data-category-panel]"
+            )
+            .forEach((panel) => {
+              panel.classList.remove("active");
+            });
+          const targetPanel = this.element.querySelector(
+            `[data-category-panel="${categoryKey}"]`
+          );
+          if (targetPanel) {
+            targetPanel.classList.add("active");
+          }
+
+          this.currentCategory = categoryKey;
+        });
+      });
+
+    // Vertical tab switching for style sections
+    this.element
+      .querySelectorAll(".fu-config-builder-vertical-tab[data-style-section]")
+      .forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const sectionKey = tab.dataset.styleSection;
+
+          // Update tab active states within styles tab
+          const stylesTab = this.element.querySelector("#main-tab-styles");
+          if (stylesTab) {
+            stylesTab
+              .querySelectorAll(".fu-config-builder-vertical-tab")
+              .forEach((t) => {
+                t.classList.remove("active");
+              });
+          }
+          tab.classList.add("active");
+
+          // Update style panel visibility
+          this.element
+            .querySelectorAll(".fu-config-builder-style-panel")
+            .forEach((panel) => {
+              panel.classList.remove("active");
+            });
+          const targetPanel = this.element.querySelector(
+            `[data-style-panel="${sectionKey}"]`
+          );
+          if (targetPanel) {
+            targetPanel.classList.add("active");
+          }
+
+          this.currentStyleSection = sectionKey;
+        });
+      });
+
+    // Style color picker inputs
+    this.element
+      .querySelectorAll(".fu-config-builder-color-picker")
+      .forEach((picker) => {
+        picker.addEventListener("input", (e) => {
+          const varName = e.target.dataset.var;
+          const value = e.target.value;
+          this.styleValues[varName] = value;
+
+          // Update text input
+          const textInput = this.element.querySelector(
+            `.fu-config-builder-color-text[data-var="${varName}"]`
+          );
+          if (textInput) {
+            textInput.value = value;
           }
 
           this.applyStylesToPreview();
           this.updateCssOutput();
-        }
+        });
       });
-    });
+
+    // Style color text inputs
+    this.element
+      .querySelectorAll(".fu-config-builder-color-text")
+      .forEach((input) => {
+        input.addEventListener("input", (e) => {
+          const varName = e.target.dataset.var;
+          let value = e.target.value.trim();
+
+          // Auto-add # if missing
+          if (value && !value.startsWith("#")) {
+            value = "#" + value;
+          }
+
+          // Validate hex color (3 or 6 characters)
+          const isValidHex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(value);
+
+          if (isValidHex) {
+            // Expand 3-char hex to 6-char for color picker
+            let fullHex = value;
+            if (value.length === 4) {
+              fullHex =
+                "#" +
+                value[1] +
+                value[1] +
+                value[2] +
+                value[2] +
+                value[3] +
+                value[3];
+            }
+
+            this.styleValues[varName] = fullHex;
+
+            // Update color picker
+            const picker = this.element.querySelector(
+              `.fu-config-builder-color-picker[data-var="${varName}"]`
+            );
+            if (picker) {
+              picker.value = fullHex;
+            }
+
+            this.applyStylesToPreview();
+            this.updateCssOutput();
+          }
+        });
+      });
 
     // Style size inputs
-    this.element.querySelectorAll(".fu-config-builder-size-input").forEach((input) => {
-      input.addEventListener("input", (e) => {
-        const varName = e.target.dataset.var;
-        const value = e.target.value;
-        this.styleValues[varName] = value;
-        this.applyStylesToPreview();
-        this.updateCssOutput();
+    this.element
+      .querySelectorAll(".fu-config-builder-size-input")
+      .forEach((input) => {
+        input.addEventListener("input", (e) => {
+          const varName = e.target.dataset.var;
+          const value = e.target.value;
+          this.styleValues[varName] = value;
+          this.applyStylesToPreview();
+          this.updateCssOutput();
+        });
       });
-    });
 
     // Style number inputs
-    this.element.querySelectorAll(".fu-config-builder-number-input").forEach((input) => {
-      input.addEventListener("input", (e) => {
-        const varName = e.target.dataset.var;
-        const value = e.target.value;
-        this.styleValues[varName] = value;
-        this.applyStylesToPreview();
-        this.updateCssOutput();
+    this.element
+      .querySelectorAll(".fu-config-builder-number-input")
+      .forEach((input) => {
+        input.addEventListener("input", (e) => {
+          const varName = e.target.dataset.var;
+          const value = e.target.value;
+          this.styleValues[varName] = value;
+          this.applyStylesToPreview();
+          this.updateCssOutput();
+        });
       });
-    });
 
     // Style text inputs (for shadows, transitions, etc.)
-    this.element.querySelectorAll(".fu-config-builder-text-input").forEach((input) => {
-      input.addEventListener("input", (e) => {
-        const varName = e.target.dataset.var;
-        const value = e.target.value;
-        this.styleValues[varName] = value;
-        this.applyStylesToPreview();
-        this.updateCssOutput();
+    this.element
+      .querySelectorAll(".fu-config-builder-text-input")
+      .forEach((input) => {
+        input.addEventListener("input", (e) => {
+          const varName = e.target.dataset.var;
+          const value = e.target.value;
+          this.styleValues[varName] = value;
+          this.applyStylesToPreview();
+          this.updateCssOutput();
+        });
       });
-    });
 
     // Reset styles button
     const resetStylesBtn = this.element.querySelector("#reset-styles");
@@ -2520,20 +3340,22 @@ export default class ConfigBuilder {
     }
 
     // Style variable hover events for highlighting
-    this.element.querySelectorAll(".fu-config-builder-style-var").forEach((varEl) => {
-      varEl.addEventListener("mouseenter", () => {
-        if (this.highlightMode) {
-          const varName = varEl.dataset.var;
-          this.highlightElements(varName);
-        }
-      });
+    this.element
+      .querySelectorAll(".fu-config-builder-style-var")
+      .forEach((varEl) => {
+        varEl.addEventListener("mouseenter", () => {
+          if (this.highlightMode) {
+            const varName = varEl.dataset.var;
+            this.highlightElements(varName);
+          }
+        });
 
-      varEl.addEventListener("mouseleave", () => {
-        if (this.highlightMode) {
-          this.clearHighlights();
-        }
+        varEl.addEventListener("mouseleave", () => {
+          if (this.highlightMode) {
+            this.clearHighlights();
+          }
+        });
       });
-    });
 
     // Copy CSS button
     const copyCssBtn = this.element.querySelector("#copy-css");
@@ -2542,7 +3364,8 @@ export default class ConfigBuilder {
         const cssOutput = this.generateCssOutput();
         navigator.clipboard.writeText(cssOutput).then(() => {
           const originalText = copyCssBtn.innerHTML;
-          copyCssBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+          copyCssBtn.innerHTML =
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
           setTimeout(() => {
             copyCssBtn.innerHTML = originalText;
           }, 2000);
@@ -2565,7 +3388,7 @@ export default class ConfigBuilder {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       });
-    };
+    }
 
     // Panel resizer
     const resizer = this.element.querySelector("#panel-resizer");
@@ -2612,13 +3435,15 @@ export default class ConfigBuilder {
     }
 
     // Category collapse/expand (legacy, keeping for compatibility)
-    this.element.querySelectorAll(".fu-config-builder-category-header").forEach((header) => {
-      header.addEventListener("click", () => {
-        header.classList.toggle("collapsed");
-        const content = header.nextElementSibling;
-        content.classList.toggle("hidden");
+    this.element
+      .querySelectorAll(".fu-config-builder-category-header")
+      .forEach((header) => {
+        header.addEventListener("click", () => {
+          header.classList.toggle("collapsed");
+          const content = header.nextElementSibling;
+          content.classList.toggle("hidden");
+        });
       });
-    });
 
     // Tab switching
     this.element.querySelectorAll(".fu-config-builder-tab").forEach((tab) => {
@@ -2638,11 +3463,13 @@ export default class ConfigBuilder {
     });
 
     // Preset buttons
-    this.element.querySelectorAll(".fu-config-builder-preset").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        this.applyPreset(btn.dataset.preset);
+    this.element
+      .querySelectorAll(".fu-config-builder-preset")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          this.applyPreset(btn.dataset.preset);
+        });
       });
-    });
 
     // Add uploader button
     const addUploaderBtn = this.element.querySelector("#add-uploader");
@@ -2653,77 +3480,95 @@ export default class ConfigBuilder {
     }
 
     // Uploader tab clicks
-    this.element.querySelectorAll(".fu-config-builder-uploader-tab").forEach((tab) => {
-      tab.addEventListener("click", (e) => {
-        if (!e.target.closest(".fu-config-builder-uploader-tab-close") &&
-            !e.target.closest(".fu-config-builder-uploader-tab-duplicate")) {
-          this.selectUploader(tab.dataset.uploaderId);
-        }
+    this.element
+      .querySelectorAll(".fu-config-builder-uploader-tab")
+      .forEach((tab) => {
+        tab.addEventListener("click", (e) => {
+          if (
+            !e.target.closest(".fu-config-builder-uploader-tab-close") &&
+            !e.target.closest(".fu-config-builder-uploader-tab-duplicate")
+          ) {
+            this.selectUploader(tab.dataset.uploaderId);
+          }
+        });
       });
-    });
 
     // Uploader tab close buttons
-    this.element.querySelectorAll(".fu-config-builder-uploader-tab-close").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.removeUploader(btn.dataset.uploaderId);
+    this.element
+      .querySelectorAll(".fu-config-builder-uploader-tab-close")
+      .forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.removeUploader(btn.dataset.uploaderId);
+        });
       });
-    });
 
     // Uploader tab duplicate buttons
-    this.element.querySelectorAll(".fu-config-builder-uploader-tab-duplicate").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.duplicateUploader(btn.dataset.uploaderId);
+    this.element
+      .querySelectorAll(".fu-config-builder-uploader-tab-duplicate")
+      .forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.duplicateUploader(btn.dataset.uploaderId);
+        });
       });
-    });
 
     // Uploader tab name editing (double-click)
-    this.element.querySelectorAll(".fu-config-builder-uploader-tab-name").forEach((nameEl) => {
-      nameEl.addEventListener("dblclick", (e) => {
-        e.stopPropagation();
-        this.editUploaderName(nameEl.dataset.uploaderId);
+    this.element
+      .querySelectorAll(".fu-config-builder-uploader-tab-name")
+      .forEach((nameEl) => {
+        nameEl.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          this.editUploaderName(nameEl.dataset.uploaderId);
+        });
       });
-    });
 
     // Toggle options
-    this.element.querySelectorAll('.fu-config-builder-toggle[data-type="boolean"]').forEach((toggle) => {
-      toggle.addEventListener("click", () => {
-        // Skip if disabled
-        if (toggle.dataset.disabled === "true") return;
+    this.element
+      .querySelectorAll('.fu-config-builder-toggle[data-type="boolean"]')
+      .forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          // Skip if disabled
+          if (toggle.dataset.disabled === "true") return;
 
-        toggle.classList.toggle("active");
-        const optionKey = toggle.dataset.option;
-        this.config[optionKey] = toggle.classList.contains("active");
+          toggle.classList.toggle("active");
+          const optionKey = toggle.dataset.option;
+          this.config[optionKey] = toggle.classList.contains("active");
 
-        // Update dependent options visibility
-        this.updateDependentOptions(optionKey);
+          // Update dependent options visibility
+          this.updateDependentOptions(optionKey);
 
-        this.onConfigChange();
+          this.onConfigChange();
+        });
       });
-    });
 
     // Text inputs
-    this.element.querySelectorAll('.fu-config-builder-input[data-type="text"]').forEach((input) => {
-      input.addEventListener("input", () => {
-        this.config[input.dataset.option] = input.value;
-        this.onConfigChange();
+    this.element
+      .querySelectorAll('.fu-config-builder-input[data-type="text"]')
+      .forEach((input) => {
+        input.addEventListener("input", () => {
+          this.config[input.dataset.option] = input.value;
+          this.onConfigChange();
+        });
       });
-    });
 
     // Number inputs
-    this.element.querySelectorAll('.fu-config-builder-input[data-type="number"]').forEach((input) => {
-      input.addEventListener("input", () => {
-        this.config[input.dataset.option] = parseInt(input.value) || 0;
-        this.onConfigChange();
+    this.element
+      .querySelectorAll('.fu-config-builder-input[data-type="number"]')
+      .forEach((input) => {
+        input.addEventListener("input", () => {
+          this.config[input.dataset.option] = parseInt(input.value) || 0;
+          this.onConfigChange();
+        });
       });
-    });
 
     // Slider configuration inputs
     const sliderConfigMin = this.element.querySelector("#slider-config-min");
     const sliderConfigMax = this.element.querySelector("#slider-config-max");
     const sliderConfigStep = this.element.querySelector("#slider-config-step");
-    const sliderConfigBtnStep = this.element.querySelector("#slider-config-btn-step");
+    const sliderConfigBtnStep = this.element.querySelector(
+      "#slider-config-btn-step"
+    );
 
     if (sliderConfigMin) {
       sliderConfigMin.addEventListener("input", () => {
@@ -2745,329 +3590,107 @@ export default class ConfigBuilder {
     }
     if (sliderConfigBtnStep) {
       sliderConfigBtnStep.addEventListener("input", () => {
-        this.sliderConfig.buttonStep = parseInt(sliderConfigBtnStep.value) || 10;
+        this.sliderConfig.buttonStep =
+          parseInt(sliderConfigBtnStep.value) || 10;
       });
     }
 
     // Size slider inputs with unit dropdown
-    this.element.querySelectorAll('.fu-config-builder-size-slider[data-type="sizeSlider"]').forEach((container) => {
-      const optionKey = container.dataset.option;
-      const slider = container.querySelector(".fu-config-builder-slider-input");
-      const valueInput = container.querySelector(".fu-config-builder-slider-value-input");
-      const unitDropdown = container.querySelector(".fu-config-builder-unit-dropdown");
-      const decreaseBtn = container.querySelector('[data-action="decrease"]');
-      const increaseBtn = container.querySelector('[data-action="increase"]');
-      const labels = container.querySelectorAll(".fu-config-builder-slider-label");
+    this.element
+      .querySelectorAll(
+        '.fu-config-builder-size-slider[data-type="sizeSlider"]'
+      )
+      .forEach((container) => {
+        const optionKey = container.dataset.option;
+        const slider = container.querySelector(
+          ".fu-config-builder-slider-input"
+        );
+        const valueInput = container.querySelector(
+          ".fu-config-builder-slider-value-input"
+        );
+        const unitDropdown = container.querySelector(
+          ".fu-config-builder-unit-dropdown"
+        );
+        const decreaseBtn = container.querySelector('[data-action="decrease"]');
+        const increaseBtn = container.querySelector('[data-action="increase"]');
+        const labels = container.querySelectorAll(
+          ".fu-config-builder-slider-label"
+        );
 
-      if (!slider || !valueInput || !decreaseBtn || !increaseBtn || !unitDropdown) {
-        console.warn("Size slider elements not found for:", optionKey);
-        return;
-      }
-
-      const getCurrentUnit = () => unitDropdown.value;
-
-      const updateSliderRange = (unit) => {
-        const { minMB, maxMB, sliderStep } = this.sliderConfig;
-        const minValue = this.bytesToUnit(minMB * 1024 * 1024, unit);
-        const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, unit);
-        const stepValue = this.bytesToUnit(sliderStep * 1024 * 1024, unit);
-
-        slider.min = minValue;
-        slider.max = maxValue;
-        slider.step = stepValue;
-        valueInput.min = minValue;
-        valueInput.max = maxValue;
-
-        // Update labels
-        if (labels.length >= 2) {
-          labels[0].textContent = `${minValue} ${unit}`;
-          labels[1].textContent = `${maxValue} ${unit}`;
+        if (
+          !slider ||
+          !valueInput ||
+          !decreaseBtn ||
+          !increaseBtn ||
+          !unitDropdown
+        ) {
+          console.warn("Size slider elements not found for:", optionKey);
+          return;
         }
-      };
-
-      const updateValue = (value, unit) => {
-        // Clamp to slider range
-        const { minMB, maxMB } = this.sliderConfig;
-        const minValue = this.bytesToUnit(minMB * 1024 * 1024, unit);
-        const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, unit);
-        value = Math.max(minValue, Math.min(maxValue, value));
-
-        // Update UI
-        slider.value = value;
-        valueInput.value = value;
-
-        // Update config (convert to bytes)
-        const bytes = this.unitToBytes(value, unit);
-        this.config[optionKey] = bytes;
-
-        // Also set display value
-        const displayKey = optionKey + "Display";
-        this.config[displayKey] = value + " " + unit;
-
-        this.onConfigChange();
-      };
-
-      // Unit dropdown change
-      unitDropdown.addEventListener("change", () => {
-        const newUnit = unitDropdown.value;
-        const currentBytes = this.config[optionKey];
-        const newValue = this.bytesToUnit(currentBytes, newUnit);
-
-        updateSliderRange(newUnit);
-        slider.value = newValue;
-        valueInput.value = newValue;
-        container.dataset.unit = newUnit;
-      });
-
-      // Slider change
-      slider.addEventListener("input", () => {
-        updateValue(parseInt(slider.value) || 0, getCurrentUnit());
-      });
-
-      // Direct value input
-      valueInput.addEventListener("input", () => {
-        updateValue(parseInt(valueInput.value) || 0, getCurrentUnit());
-      });
-
-      // Decrease button
-      decreaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const unit = getCurrentUnit();
-        const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
-        const currentValue = parseInt(valueInput.value) || 0;
-        updateValue(currentValue - buttonStep, unit);
-      });
-
-      // Increase button
-      increaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const unit = getCurrentUnit();
-        const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
-        const currentValue = parseInt(valueInput.value) || 0;
-        updateValue(currentValue + buttonStep, unit);
-      });
-    });
-
-    // Count slider inputs (for maxFiles)
-    this.element.querySelectorAll('.fu-config-builder-count-slider[data-type="countSlider"]').forEach((container) => {
-      const optionKey = container.dataset.option;
-      const slider = container.querySelector(".fu-config-builder-slider-input");
-      const valueInput = container.querySelector(".fu-config-builder-slider-value-input");
-      const decreaseBtn = container.querySelector('[data-action="decrease"]');
-      const increaseBtn = container.querySelector('[data-action="increase"]');
-
-      if (!slider || !valueInput || !decreaseBtn || !increaseBtn) {
-        console.warn("Count slider elements not found for:", optionKey);
-        return;
-      }
-
-      const updateValue = (value) => {
-        const min = parseInt(slider.min) || 1;
-        const max = parseInt(slider.max) || 100;
-        value = Math.max(min, Math.min(max, value));
-
-        slider.value = value;
-        valueInput.value = value;
-        this.config[optionKey] = value;
-        this.onConfigChange();
-      };
-
-      slider.addEventListener("input", () => {
-        updateValue(parseInt(slider.value) || 1);
-      });
-
-      valueInput.addEventListener("input", () => {
-        updateValue(parseInt(valueInput.value) || 1);
-      });
-
-      decreaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        updateValue((parseInt(valueInput.value) || 1) - 1);
-      });
-
-      increaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        updateValue((parseInt(valueInput.value) || 1) + 1);
-      });
-    });
-
-    // Select dropdowns
-    this.element.querySelectorAll('.fu-config-builder-select[data-type="select"]').forEach((select) => {
-      select.addEventListener("change", () => {
-        this.config[select.dataset.option] = select.value;
-        this.onConfigChange();
-      });
-    });
-
-    // Multi-select tags
-    this.element.querySelectorAll('.fu-config-builder-tags[data-type="multiSelect"]').forEach((container) => {
-      container.querySelectorAll(".fu-config-builder-tag").forEach((tag) => {
-        tag.addEventListener("click", () => {
-          tag.classList.toggle("selected");
-          const selected = Array.from(
-            container.querySelectorAll(".fu-config-builder-tag.selected")
-          ).map((t) => t.dataset.value);
-          this.config[container.dataset.option] = selected;
-          this.onConfigChange();
-        });
-      });
-    });
-
-    // Extension selector
-    this.element.querySelectorAll('[data-type="extensions"]').forEach((container) => {
-      // Individual extension toggle
-      container.querySelectorAll(".fu-config-builder-ext").forEach((ext) => {
-        ext.addEventListener("click", () => {
-          ext.classList.toggle("selected");
-          this.updateExtensionsFromUI(container);
-        });
-      });
-
-      // Group toggle
-      container.querySelectorAll(".fu-config-builder-ext-group-toggle").forEach((toggle) => {
-        toggle.addEventListener("click", () => {
-          const group = toggle.closest(".fu-config-builder-ext-group");
-          const exts = group.querySelectorAll(".fu-config-builder-ext");
-          const allSelected = Array.from(exts).every((e) =>
-            e.classList.contains("selected")
-          );
-
-          exts.forEach((e) => {
-            if (allSelected) {
-              e.classList.remove("selected");
-            } else {
-              e.classList.add("selected");
-            }
-          });
-
-          toggle.textContent = allSelected ? "Select All" : "Deselect All";
-          this.updateExtensionsFromUI(container);
-        });
-      });
-    });
-
-    // MIME type selector
-    this.element.querySelectorAll('[data-type="mimeTypes"]').forEach((container) => {
-      // Individual MIME type toggle
-      container.querySelectorAll(".fu-config-builder-mime").forEach((mime) => {
-        mime.addEventListener("click", () => {
-          mime.classList.toggle("selected");
-          this.updateMimeTypesFromUI(container);
-        });
-      });
-
-      // Group toggle
-      container.querySelectorAll(".fu-config-builder-mime-group-toggle").forEach((toggle) => {
-        toggle.addEventListener("click", () => {
-          const group = toggle.closest(".fu-config-builder-mime-group");
-          const mimes = group.querySelectorAll(".fu-config-builder-mime");
-          const allSelected = Array.from(mimes).every((m) =>
-            m.classList.contains("selected")
-          );
-
-          mimes.forEach((m) => {
-            if (allSelected) {
-              m.classList.remove("selected");
-            } else {
-              m.classList.add("selected");
-            }
-          });
-
-          toggle.textContent = allSelected ? "Select All" : "Deselect All";
-          this.updateMimeTypesFromUI(container);
-        });
-      });
-    });
-
-    // Type size slider inputs with unit dropdown
-    this.element.querySelectorAll('[data-type="typeSizeSlider"]').forEach((container) => {
-      const optionKey = container.dataset.option;
-
-      container.querySelectorAll(".fu-config-builder-type-slider-block").forEach((block) => {
-        const typeKey = block.dataset.typeKey;
-        const slider = block.querySelector(".fu-config-builder-slider-input");
-        const valueInput = block.querySelector(".fu-config-builder-slider-value-input");
-        const unitDropdown = block.querySelector(".fu-config-builder-unit-dropdown");
-        const decreaseBtn = block.querySelector('[data-action="decrease"]');
-        const increaseBtn = block.querySelector('[data-action="increase"]');
-        const labels = block.querySelectorAll(".fu-config-builder-slider-label");
-
-        if (!slider || !valueInput || !decreaseBtn || !increaseBtn || !unitDropdown) return;
 
         const getCurrentUnit = () => unitDropdown.value;
 
         const updateSliderRange = (unit) => {
-          const { maxMB, sliderStep } = this.sliderConfig;
+          const { minMB, maxMB, sliderStep } = this.sliderConfig;
+          const minValue = this.bytesToUnit(minMB * 1024 * 1024, unit);
           const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, unit);
-          const stepValue = Math.max(1, this.bytesToUnit(sliderStep * 1024 * 1024, unit));
+          const stepValue = this.bytesToUnit(sliderStep * 1024 * 1024, unit);
 
+          slider.min = minValue;
           slider.max = maxValue;
           slider.step = stepValue;
+          valueInput.min = minValue;
           valueInput.max = maxValue;
 
           // Update labels
           if (labels.length >= 2) {
-            labels[0].textContent = `0 ${unit}`;
+            labels[0].textContent = `${minValue} ${unit}`;
             labels[1].textContent = `${maxValue} ${unit}`;
           }
         };
 
-        const updateTypeValue = (value, unit) => {
-          // Clamp to slider range (0 means no limit)
-          const { maxMB } = this.sliderConfig;
+        const updateValue = (value, unit) => {
+          // Clamp to slider range
+          const { minMB, maxMB } = this.sliderConfig;
+          const minValue = this.bytesToUnit(minMB * 1024 * 1024, unit);
           const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, unit);
-          value = Math.max(0, Math.min(maxValue, value));
+          value = Math.max(minValue, Math.min(maxValue, value));
 
           // Update UI
           slider.value = value;
-          valueInput.value = value || '';
+          valueInput.value = value;
 
-          // Initialize objects if needed
-          if (!this.config[optionKey]) {
-            this.config[optionKey] = {};
-          }
+          // Update config (convert to bytes)
+          const bytes = this.unitToBytes(value, unit);
+          this.config[optionKey] = bytes;
 
-          // Get the corresponding display key
+          // Also set display value
           const displayKey = optionKey + "Display";
-          if (!this.config[displayKey]) {
-            this.config[displayKey] = {};
-          }
+          this.config[displayKey] = value + " " + unit;
 
-          if (value > 0) {
-            const bytes = this.unitToBytes(value, unit);
-            this.config[optionKey][typeKey] = bytes;
-            this.config[displayKey][typeKey] = value + " " + unit;
-          } else {
-            delete this.config[optionKey][typeKey];
-            delete this.config[displayKey][typeKey];
-          }
           this.onConfigChange();
         };
 
         // Unit dropdown change
         unitDropdown.addEventListener("change", () => {
           const newUnit = unitDropdown.value;
-          const currentBytes = this.config[optionKey]?.[typeKey] || 0;
-          const newValue = currentBytes > 0 ? this.bytesToUnit(currentBytes, newUnit) : 0;
+          const currentBytes = this.config[optionKey];
+          const newValue = this.bytesToUnit(currentBytes, newUnit);
 
           updateSliderRange(newUnit);
           slider.value = newValue;
-          valueInput.value = newValue || '';
-          block.dataset.unit = newUnit;
+          valueInput.value = newValue;
+          container.dataset.unit = newUnit;
         });
 
         // Slider change
         slider.addEventListener("input", () => {
-          updateTypeValue(parseInt(slider.value) || 0, getCurrentUnit());
+          updateValue(parseInt(slider.value) || 0, getCurrentUnit());
         });
 
         // Direct value input
         valueInput.addEventListener("input", () => {
-          updateTypeValue(parseInt(valueInput.value) || 0, getCurrentUnit());
+          updateValue(parseInt(valueInput.value) || 0, getCurrentUnit());
         });
 
         // Decrease button
@@ -3075,9 +3698,12 @@ export default class ConfigBuilder {
           e.preventDefault();
           e.stopPropagation();
           const unit = getCurrentUnit();
-          const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
+          const buttonStep = this.bytesToUnit(
+            this.sliderConfig.buttonStep * 1024 * 1024,
+            unit
+          );
           const currentValue = parseInt(valueInput.value) || 0;
-          updateTypeValue(currentValue - buttonStep, unit);
+          updateValue(currentValue - buttonStep, unit);
         });
 
         // Increase button
@@ -3085,65 +3711,371 @@ export default class ConfigBuilder {
           e.preventDefault();
           e.stopPropagation();
           const unit = getCurrentUnit();
-          const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
+          const buttonStep = this.bytesToUnit(
+            this.sliderConfig.buttonStep * 1024 * 1024,
+            unit
+          );
           const currentValue = parseInt(valueInput.value) || 0;
-          updateTypeValue(currentValue + buttonStep, unit);
+          updateValue(currentValue + buttonStep, unit);
         });
       });
-    });
 
-    // Type count slider inputs
-    this.element.querySelectorAll('[data-type="typeCountSlider"]').forEach((container) => {
-      const optionKey = container.dataset.option;
+    // Count slider inputs (for maxFiles)
+    this.element
+      .querySelectorAll(
+        '.fu-config-builder-count-slider[data-type="countSlider"]'
+      )
+      .forEach((container) => {
+        const optionKey = container.dataset.option;
+        const slider = container.querySelector(
+          ".fu-config-builder-slider-input"
+        );
+        const valueInput = container.querySelector(
+          ".fu-config-builder-slider-value-input"
+        );
+        const decreaseBtn = container.querySelector('[data-action="decrease"]');
+        const increaseBtn = container.querySelector('[data-action="increase"]');
 
-      container.querySelectorAll(".fu-config-builder-type-slider-block").forEach((block) => {
-        const typeKey = block.dataset.typeKey;
-        const slider = block.querySelector(".fu-config-builder-slider-input");
-        const valueInput = block.querySelector(".fu-config-builder-slider-value-input");
-        const decreaseBtn = block.querySelector('[data-action="decrease"]');
-        const increaseBtn = block.querySelector('[data-action="increase"]');
+        if (!slider || !valueInput || !decreaseBtn || !increaseBtn) {
+          console.warn("Count slider elements not found for:", optionKey);
+          return;
+        }
 
-        if (!slider || !valueInput || !decreaseBtn || !increaseBtn) return;
-
-        const updateTypeValue = (value) => {
-          value = Math.max(0, Math.min(100, value));
+        const updateValue = (value) => {
+          const min = parseInt(slider.min) || 1;
+          const max = parseInt(slider.max) || 100;
+          value = Math.max(min, Math.min(max, value));
 
           slider.value = value;
-          valueInput.value = value || '';
-
-          if (!this.config[optionKey]) {
-            this.config[optionKey] = {};
-          }
-
-          if (value > 0) {
-            this.config[optionKey][typeKey] = value;
-          } else {
-            delete this.config[optionKey][typeKey];
-          }
+          valueInput.value = value;
+          this.config[optionKey] = value;
           this.onConfigChange();
         };
 
         slider.addEventListener("input", () => {
-          updateTypeValue(parseInt(slider.value) || 0);
+          updateValue(parseInt(slider.value) || 1);
         });
 
         valueInput.addEventListener("input", () => {
-          updateTypeValue(parseInt(valueInput.value) || 0);
+          updateValue(parseInt(valueInput.value) || 1);
         });
 
         decreaseBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          updateTypeValue((parseInt(valueInput.value) || 0) - 1);
+          updateValue((parseInt(valueInput.value) || 1) - 1);
         });
 
         increaseBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          updateTypeValue((parseInt(valueInput.value) || 0) + 1);
+          updateValue((parseInt(valueInput.value) || 1) + 1);
         });
       });
-    });
+
+    // Select dropdowns
+    this.element
+      .querySelectorAll('.fu-config-builder-select[data-type="select"]')
+      .forEach((select) => {
+        select.addEventListener("change", () => {
+          this.config[select.dataset.option] = select.value;
+          this.onConfigChange();
+        });
+      });
+
+    // Multi-select tags
+    this.element
+      .querySelectorAll('.fu-config-builder-tags[data-type="multiSelect"]')
+      .forEach((container) => {
+        container.querySelectorAll(".fu-config-builder-tag").forEach((tag) => {
+          tag.addEventListener("click", () => {
+            tag.classList.toggle("selected");
+            const selected = Array.from(
+              container.querySelectorAll(".fu-config-builder-tag.selected")
+            ).map((t) => t.dataset.value);
+            this.config[container.dataset.option] = selected;
+            this.onConfigChange();
+          });
+        });
+      });
+
+    // Extension selector
+    this.element
+      .querySelectorAll('[data-type="extensions"]')
+      .forEach((container) => {
+        // Individual extension toggle
+        container.querySelectorAll(".fu-config-builder-ext").forEach((ext) => {
+          ext.addEventListener("click", () => {
+            ext.classList.toggle("selected");
+            this.updateExtensionsFromUI(container);
+          });
+        });
+
+        // Group toggle
+        container
+          .querySelectorAll(".fu-config-builder-ext-group-toggle")
+          .forEach((toggle) => {
+            toggle.addEventListener("click", () => {
+              const group = toggle.closest(".fu-config-builder-ext-group");
+              const exts = group.querySelectorAll(".fu-config-builder-ext");
+              const allSelected = Array.from(exts).every((e) =>
+                e.classList.contains("selected")
+              );
+
+              exts.forEach((e) => {
+                if (allSelected) {
+                  e.classList.remove("selected");
+                } else {
+                  e.classList.add("selected");
+                }
+              });
+
+              toggle.textContent = allSelected ? "Select All" : "Deselect All";
+              this.updateExtensionsFromUI(container);
+            });
+          });
+      });
+
+    // MIME type selector
+    this.element
+      .querySelectorAll('[data-type="mimeTypes"]')
+      .forEach((container) => {
+        // Individual MIME type toggle
+        container
+          .querySelectorAll(".fu-config-builder-mime")
+          .forEach((mime) => {
+            mime.addEventListener("click", () => {
+              mime.classList.toggle("selected");
+              this.updateMimeTypesFromUI(container);
+            });
+          });
+
+        // Group toggle
+        container
+          .querySelectorAll(".fu-config-builder-mime-group-toggle")
+          .forEach((toggle) => {
+            toggle.addEventListener("click", () => {
+              const group = toggle.closest(".fu-config-builder-mime-group");
+              const mimes = group.querySelectorAll(".fu-config-builder-mime");
+              const allSelected = Array.from(mimes).every((m) =>
+                m.classList.contains("selected")
+              );
+
+              mimes.forEach((m) => {
+                if (allSelected) {
+                  m.classList.remove("selected");
+                } else {
+                  m.classList.add("selected");
+                }
+              });
+
+              toggle.textContent = allSelected ? "Select All" : "Deselect All";
+              this.updateMimeTypesFromUI(container);
+            });
+          });
+      });
+
+    // Type size slider inputs with unit dropdown
+    this.element
+      .querySelectorAll('[data-type="typeSizeSlider"]')
+      .forEach((container) => {
+        const optionKey = container.dataset.option;
+
+        container
+          .querySelectorAll(".fu-config-builder-type-slider-block")
+          .forEach((block) => {
+            const typeKey = block.dataset.typeKey;
+            const slider = block.querySelector(
+              ".fu-config-builder-slider-input"
+            );
+            const valueInput = block.querySelector(
+              ".fu-config-builder-slider-value-input"
+            );
+            const unitDropdown = block.querySelector(
+              ".fu-config-builder-unit-dropdown"
+            );
+            const decreaseBtn = block.querySelector('[data-action="decrease"]');
+            const increaseBtn = block.querySelector('[data-action="increase"]');
+            const labels = block.querySelectorAll(
+              ".fu-config-builder-slider-label"
+            );
+
+            if (
+              !slider ||
+              !valueInput ||
+              !decreaseBtn ||
+              !increaseBtn ||
+              !unitDropdown
+            )
+              return;
+
+            const getCurrentUnit = () => unitDropdown.value;
+
+            const updateSliderRange = (unit) => {
+              const { maxMB, sliderStep } = this.sliderConfig;
+              const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, unit);
+              const stepValue = Math.max(
+                1,
+                this.bytesToUnit(sliderStep * 1024 * 1024, unit)
+              );
+
+              slider.max = maxValue;
+              slider.step = stepValue;
+              valueInput.max = maxValue;
+
+              // Update labels
+              if (labels.length >= 2) {
+                labels[0].textContent = `0 ${unit}`;
+                labels[1].textContent = `${maxValue} ${unit}`;
+              }
+            };
+
+            const updateTypeValue = (value, unit) => {
+              // Clamp to slider range (0 means no limit)
+              const { maxMB } = this.sliderConfig;
+              const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, unit);
+              value = Math.max(0, Math.min(maxValue, value));
+
+              // Update UI
+              slider.value = value;
+              valueInput.value = value || "";
+
+              // Initialize objects if needed
+              if (!this.config[optionKey]) {
+                this.config[optionKey] = {};
+              }
+
+              // Get the corresponding display key
+              const displayKey = optionKey + "Display";
+              if (!this.config[displayKey]) {
+                this.config[displayKey] = {};
+              }
+
+              if (value > 0) {
+                const bytes = this.unitToBytes(value, unit);
+                this.config[optionKey][typeKey] = bytes;
+                this.config[displayKey][typeKey] = value + " " + unit;
+              } else {
+                delete this.config[optionKey][typeKey];
+                delete this.config[displayKey][typeKey];
+              }
+              this.onConfigChange();
+            };
+
+            // Unit dropdown change
+            unitDropdown.addEventListener("change", () => {
+              const newUnit = unitDropdown.value;
+              const currentBytes = this.config[optionKey]?.[typeKey] || 0;
+              const newValue =
+                currentBytes > 0 ? this.bytesToUnit(currentBytes, newUnit) : 0;
+
+              updateSliderRange(newUnit);
+              slider.value = newValue;
+              valueInput.value = newValue || "";
+              block.dataset.unit = newUnit;
+            });
+
+            // Slider change
+            slider.addEventListener("input", () => {
+              updateTypeValue(parseInt(slider.value) || 0, getCurrentUnit());
+            });
+
+            // Direct value input
+            valueInput.addEventListener("input", () => {
+              updateTypeValue(
+                parseInt(valueInput.value) || 0,
+                getCurrentUnit()
+              );
+            });
+
+            // Decrease button
+            decreaseBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const unit = getCurrentUnit();
+              const buttonStep = this.bytesToUnit(
+                this.sliderConfig.buttonStep * 1024 * 1024,
+                unit
+              );
+              const currentValue = parseInt(valueInput.value) || 0;
+              updateTypeValue(currentValue - buttonStep, unit);
+            });
+
+            // Increase button
+            increaseBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const unit = getCurrentUnit();
+              const buttonStep = this.bytesToUnit(
+                this.sliderConfig.buttonStep * 1024 * 1024,
+                unit
+              );
+              const currentValue = parseInt(valueInput.value) || 0;
+              updateTypeValue(currentValue + buttonStep, unit);
+            });
+          });
+      });
+
+    // Type count slider inputs
+    this.element
+      .querySelectorAll('[data-type="typeCountSlider"]')
+      .forEach((container) => {
+        const optionKey = container.dataset.option;
+
+        container
+          .querySelectorAll(".fu-config-builder-type-slider-block")
+          .forEach((block) => {
+            const typeKey = block.dataset.typeKey;
+            const slider = block.querySelector(
+              ".fu-config-builder-slider-input"
+            );
+            const valueInput = block.querySelector(
+              ".fu-config-builder-slider-value-input"
+            );
+            const decreaseBtn = block.querySelector('[data-action="decrease"]');
+            const increaseBtn = block.querySelector('[data-action="increase"]');
+
+            if (!slider || !valueInput || !decreaseBtn || !increaseBtn) return;
+
+            const updateTypeValue = (value) => {
+              value = Math.max(0, Math.min(100, value));
+
+              slider.value = value;
+              valueInput.value = value || "";
+
+              if (!this.config[optionKey]) {
+                this.config[optionKey] = {};
+              }
+
+              if (value > 0) {
+                this.config[optionKey][typeKey] = value;
+              } else {
+                delete this.config[optionKey][typeKey];
+              }
+              this.onConfigChange();
+            };
+
+            slider.addEventListener("input", () => {
+              updateTypeValue(parseInt(slider.value) || 0);
+            });
+
+            valueInput.addEventListener("input", () => {
+              updateTypeValue(parseInt(valueInput.value) || 0);
+            });
+
+            decreaseBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              updateTypeValue((parseInt(valueInput.value) || 0) - 1);
+            });
+
+            increaseBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              updateTypeValue((parseInt(valueInput.value) || 0) + 1);
+            });
+          });
+      });
 
     // Note: Copy/Download button events are now attached dynamically per-card in updateCodeOutput()
   }
@@ -3211,40 +4143,58 @@ export default class ConfigBuilder {
   updateAllSizeSliders() {
     const { minMB, maxMB, sliderStep } = this.sliderConfig;
 
-    this.element.querySelectorAll('.fu-config-builder-size-slider[data-type="sizeSlider"]').forEach((container) => {
-      const slider = container.querySelector(".fu-config-builder-slider-input");
-      const valueInput = container.querySelector(".fu-config-builder-slider-value-input");
-      const unitDropdown = container.querySelector(".fu-config-builder-unit-dropdown");
-      const labels = container.querySelectorAll(".fu-config-builder-slider-label");
+    this.element
+      .querySelectorAll(
+        '.fu-config-builder-size-slider[data-type="sizeSlider"]'
+      )
+      .forEach((container) => {
+        const slider = container.querySelector(
+          ".fu-config-builder-slider-input"
+        );
+        const valueInput = container.querySelector(
+          ".fu-config-builder-slider-value-input"
+        );
+        const unitDropdown = container.querySelector(
+          ".fu-config-builder-unit-dropdown"
+        );
+        const labels = container.querySelectorAll(
+          ".fu-config-builder-slider-label"
+        );
 
-      // Get current unit from dropdown or fallback to MB
-      const currentUnit = unitDropdown?.value || 'MB';
-      const minValue = this.bytesToUnit(minMB * 1024 * 1024, currentUnit);
-      const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, currentUnit);
-      const stepValue = Math.max(1, this.bytesToUnit(sliderStep * 1024 * 1024, currentUnit));
+        // Get current unit from dropdown or fallback to MB
+        const currentUnit = unitDropdown?.value || "MB";
+        const minValue = this.bytesToUnit(minMB * 1024 * 1024, currentUnit);
+        const maxValue = this.bytesToUnit(maxMB * 1024 * 1024, currentUnit);
+        const stepValue = Math.max(
+          1,
+          this.bytesToUnit(sliderStep * 1024 * 1024, currentUnit)
+        );
 
-      if (slider) {
-        slider.min = minValue;
-        slider.max = maxValue;
-        slider.step = stepValue;
-        // Clamp current value
-        const currentValue = parseInt(slider.value) || minValue;
-        slider.value = Math.max(minValue, Math.min(maxValue, currentValue));
-      }
+        if (slider) {
+          slider.min = minValue;
+          slider.max = maxValue;
+          slider.step = stepValue;
+          // Clamp current value
+          const currentValue = parseInt(slider.value) || minValue;
+          slider.value = Math.max(minValue, Math.min(maxValue, currentValue));
+        }
 
-      if (valueInput) {
-        valueInput.min = minValue;
-        valueInput.max = maxValue;
-        const currentValue = parseInt(valueInput.value) || minValue;
-        valueInput.value = Math.max(minValue, Math.min(maxValue, currentValue));
-      }
+        if (valueInput) {
+          valueInput.min = minValue;
+          valueInput.max = maxValue;
+          const currentValue = parseInt(valueInput.value) || minValue;
+          valueInput.value = Math.max(
+            minValue,
+            Math.min(maxValue, currentValue)
+          );
+        }
 
-      // Update range labels
-      if (labels.length >= 2) {
-        labels[0].textContent = `${minValue} ${currentUnit}`;
-        labels[1].textContent = `${maxValue} ${currentUnit}`;
-      }
-    });
+        // Update range labels
+        if (labels.length >= 2) {
+          labels[0].textContent = `${minValue} ${currentUnit}`;
+          labels[1].textContent = `${maxValue} ${currentUnit}`;
+        }
+      });
   }
 
   /**
@@ -3328,7 +4278,10 @@ export default class ConfigBuilder {
     }
 
     // Update the current uploader instance's preset immediately
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].preset = preset;
     }
 
@@ -3357,10 +4310,12 @@ export default class ConfigBuilder {
           wrapper.querySelectorAll(".fu-config-builder-group").forEach((el) => {
             el.classList.remove("disabled");
           });
-          wrapper.querySelectorAll(".fu-config-builder-toggle").forEach((el) => {
-            el.dataset.disabled = "false";
-            el.classList.remove("disabled");
-          });
+          wrapper
+            .querySelectorAll(".fu-config-builder-toggle")
+            .forEach((el) => {
+              el.dataset.disabled = "false";
+              el.classList.remove("disabled");
+            });
           wrapper.querySelectorAll(".fu-config-builder-tags").forEach((el) => {
             el.dataset.disabled = "false";
             el.classList.remove("disabled");
@@ -3377,10 +4332,12 @@ export default class ConfigBuilder {
           wrapper.querySelectorAll(".fu-config-builder-group").forEach((el) => {
             el.classList.add("disabled");
           });
-          wrapper.querySelectorAll(".fu-config-builder-toggle").forEach((el) => {
-            el.dataset.disabled = "true";
-            el.classList.add("disabled");
-          });
+          wrapper
+            .querySelectorAll(".fu-config-builder-toggle")
+            .forEach((el) => {
+              el.dataset.disabled = "true";
+              el.classList.add("disabled");
+            });
           wrapper.querySelectorAll(".fu-config-builder-tags").forEach((el) => {
             el.dataset.disabled = "true";
             el.classList.add("disabled");
@@ -3398,12 +4355,14 @@ export default class ConfigBuilder {
   clearPresetSelection() {
     if (this.currentPreset && this.currentPreset !== "custom") {
       this.currentPreset = "custom";
-      this.element.querySelectorAll(".fu-config-builder-preset").forEach((btn) => {
-        btn.classList.remove("active");
-        if (btn.dataset.preset === "custom") {
-          btn.classList.add("active");
-        }
-      });
+      this.element
+        .querySelectorAll(".fu-config-builder-preset")
+        .forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.dataset.preset === "custom") {
+            btn.classList.add("active");
+          }
+        });
     }
   }
 
@@ -3426,6 +4385,8 @@ export default class ConfigBuilder {
     this._previewTimeout = setTimeout(() => {
       this.updatePreview();
       this.showPreviewFeedback();
+      // Refresh CSS variables panel - elements may have appeared/disappeared due to config change
+      this.refreshCssVarsPanels();
     }, 300);
 
     if (this.options.onConfigChange) {
@@ -3437,7 +4398,9 @@ export default class ConfigBuilder {
    * Show visual feedback that preview was updated
    */
   showPreviewFeedback() {
-    const previewArea = this.element.querySelector(".fu-config-builder-preview-area");
+    const previewArea = this.element.querySelector(
+      ".fu-config-builder-preview-area"
+    );
     if (!previewArea) return;
 
     // Add flash animation
@@ -3457,7 +4420,9 @@ export default class ConfigBuilder {
    */
   showToast(message) {
     // Remove existing toast
-    const existingToast = this.element.querySelector(".fu-config-builder-toast");
+    const existingToast = this.element.querySelector(
+      ".fu-config-builder-toast"
+    );
     if (existingToast) {
       existingToast.remove();
     }
@@ -3488,7 +4453,7 @@ export default class ConfigBuilder {
       fontWeight: "500",
       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
       zIndex: "10000",
-      animation: "toastSlideIn 0.3s ease"
+      animation: "toastSlideIn 0.3s ease",
     });
 
     // Add animation keyframes if not exists
@@ -3522,7 +4487,10 @@ export default class ConfigBuilder {
    */
   updateCodeOutput() {
     // Make sure active uploader's config is saved
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
     }
 
@@ -3549,25 +4517,34 @@ export default class ConfigBuilder {
 
     uploaders.forEach(([id, data]) => {
       const isActive = id === this.activeUploaderId;
-      const code = type === "js"
-        ? this.generateSingleUploaderJsCode(id, data)
-        : this.generateSingleUploaderPhpCode(id, data);
+      const code =
+        type === "js"
+          ? this.generateSingleUploaderJsCode(id, data)
+          : this.generateSingleUploaderPhpCode(id, data);
 
-      const highlightedCode = type === "js"
-        ? this.highlightJsCode(code)
-        : this.highlightPhpCode(code);
+      const highlightedCode =
+        type === "js"
+          ? this.highlightJsCode(code)
+          : this.highlightPhpCode(code);
 
       // Generate filename from uploader name
-      const filename = data.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "") || `uploader`;
+      const filename =
+        data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "") || `uploader`;
 
       html += `
-        <div class="fu-config-builder-code-card ${isActive ? "active" : ""}" data-uploader-id="${id}">
+        <div class="fu-config-builder-code-card ${
+          isActive ? "active" : ""
+        }" data-uploader-id="${id}">
           <div class="fu-config-builder-code">
             <div class="fu-config-builder-code-header">
-              <span class="fu-config-builder-code-title">${data.name}${isActive ? ' <span class="fu-config-builder-code-badge">Editing</span>' : ''}</span>
+              <span class="fu-config-builder-code-title">${data.name}${
+        isActive
+          ? ' <span class="fu-config-builder-code-badge">Editing</span>'
+          : ""
+      }</span>
               <div class="fu-config-builder-code-actions">
                 <button class="fu-config-builder-code-btn" data-action="copy" data-uploader-id="${id}" data-type="${type}">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3605,9 +4582,10 @@ export default class ConfigBuilder {
       btn.addEventListener("click", () => {
         const uploaderId = btn.dataset.uploaderId;
         const uploaderData = this.uploaderInstances[uploaderId];
-        const code = type === "js"
-          ? this.generateSingleUploaderJsCode(uploaderId, uploaderData)
-          : this.generateSingleUploaderPhpCode(uploaderId, uploaderData);
+        const code =
+          type === "js"
+            ? this.generateSingleUploaderJsCode(uploaderId, uploaderData)
+            : this.generateSingleUploaderPhpCode(uploaderId, uploaderData);
         this.copyToClipboard(code, btn);
       });
     });
@@ -3617,9 +4595,10 @@ export default class ConfigBuilder {
         const uploaderId = btn.dataset.uploaderId;
         const uploaderData = this.uploaderInstances[uploaderId];
         const filename = btn.dataset.filename;
-        const code = type === "js"
-          ? this.generateSingleUploaderJsCode(uploaderId, uploaderData)
-          : this.generateSingleUploaderPhpCode(uploaderId, uploaderData);
+        const code =
+          type === "js"
+            ? this.generateSingleUploaderJsCode(uploaderId, uploaderData)
+            : this.generateSingleUploaderPhpCode(uploaderId, uploaderData);
         const ext = type === "js" ? "js" : "php";
         const mimeType = type === "js" ? "text/javascript" : "text/php";
         this.downloadFile(code, `${filename}-config.${ext}`, mimeType);
@@ -3634,17 +4613,21 @@ export default class ConfigBuilder {
     const changedConfig = this.getChangedConfig(data.config);
 
     // Generate variable name from uploader name
-    const varName = data.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_|_$/g, "") || "uploader";
+    const varName =
+      data.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_|_$/g, "") || "uploader";
 
     let code = `const ${varName} = new FileUploader('#${varName}', {\n`;
 
     const entries = Object.entries(changedConfig);
     entries.forEach(([key, value], index) => {
       const comma = index < entries.length - 1 ? "," : "";
-      code += `  ${key}: ${JSON.stringify(value, null, 2).replace(/\n/g, "\n  ")}${comma}\n`;
+      code += `  ${key}: ${JSON.stringify(value, null, 2).replace(
+        /\n/g,
+        "\n  "
+      )}${comma}\n`;
     });
 
     code += `});`;
@@ -3697,7 +4680,10 @@ export default class ConfigBuilder {
     // Now apply other highlighting
     result = result
       // Keywords
-      .replace(/\b(const|let|var|new|true|false|null)\b/g, '<span class="code-keyword">$1</span>')
+      .replace(
+        /\b(const|let|var|new|true|false|null)\b/g,
+        '<span class="code-keyword">$1</span>'
+      )
       // Numbers
       .replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>')
       // Property names
@@ -3746,9 +4732,15 @@ export default class ConfigBuilder {
     // Now apply other highlighting
     result = result
       // PHP tags
-      .replace(/(&lt;\?php|<\?php)/g, '<span class="code-keyword">&lt;?php</span>')
+      .replace(
+        /(&lt;\?php|<\?php)/g,
+        '<span class="code-keyword">&lt;?php</span>'
+      )
       // Keywords
-      .replace(/\b(return|true|false|null)\b/g, '<span class="code-keyword">$1</span>')
+      .replace(
+        /\b(return|true|false|null)\b/g,
+        '<span class="code-keyword">$1</span>'
+      )
       // Numbers
       .replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>');
 
@@ -3756,11 +4748,19 @@ export default class ConfigBuilder {
     stringPlaceholders.forEach((str, i) => {
       // Check if this string is an array key (followed by =>)
       const placeholder = `__STRING_${i}__`;
-      if (result.includes(placeholder + ' =>') || result.includes(placeholder + '=>')) {
+      if (
+        result.includes(placeholder + " =>") ||
+        result.includes(placeholder + "=>")
+      ) {
         // It's an array key, use property styling
-        const innerMatch = str.match(/<span class="code-string">'([^']+)'<\/span>/);
+        const innerMatch = str.match(
+          /<span class="code-string">'([^']+)'<\/span>/
+        );
         if (innerMatch) {
-          result = result.replace(placeholder, `<span class="code-property">'${innerMatch[1]}'</span>`);
+          result = result.replace(
+            placeholder,
+            `<span class="code-property">'${innerMatch[1]}'</span>`
+          );
         } else {
           result = result.replace(placeholder, str);
         }
@@ -3797,7 +4797,7 @@ export default class ConfigBuilder {
       "perTypeMaxFileCount",
       "totalMaxSize",
       "totalMaxSizeDisplay",
-      "maxFiles"
+      "maxFiles",
     ];
 
     for (const [key, value] of Object.entries(config)) {
@@ -3828,7 +4828,10 @@ export default class ConfigBuilder {
    */
   generateCode() {
     // Make sure active uploader's config is saved
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
     }
 
@@ -3844,17 +4847,21 @@ export default class ConfigBuilder {
       code += `// ${data.name}${marker}\n`;
 
       // Generate variable name from uploader name
-      const varName = data.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
+      const varName =
+        data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
 
       code += `const ${varName} = new FileUploader('#${varName}', {\n`;
 
       const entries = Object.entries(changedConfig);
       entries.forEach(([key, value], index) => {
         const comma = index < entries.length - 1 ? "," : "";
-        code += `  ${key}: ${JSON.stringify(value, null, 2).replace(/\n/g, "\n  ")}${comma}\n`;
+        code += `  ${key}: ${JSON.stringify(value, null, 2).replace(
+          /\n/g,
+          "\n  "
+        )}${comma}\n`;
       });
 
       code += `});\n`;
@@ -3877,28 +4884,22 @@ export default class ConfigBuilder {
     // Apply syntax highlighting
     code = code
       // Comments (must be first to avoid interference)
-      .replace(
-        /(\/\/.*$)/gm,
-        '<span class="code-comment">$1</span>'
-      )
+      .replace(/(\/\/.*$)/gm, '<span class="code-comment">$1</span>')
       // Keywords
       .replace(
         /\b(const|let|var|new|true|false|null)\b/g,
         '<span class="code-keyword">$1</span>'
       )
       // Strings
+      .replace(/"([^"\\]|\\.)*"/g, '<span class="code-string">"$&"</span>')
       .replace(
-        /"([^"\\]|\\.)*"/g,
-        '<span class="code-string">"$&"</span>'
+        /<span class="code-string">"(".*?")"<\/span>/g,
+        '<span class="code-string">$1</span>'
       )
-      .replace(/<span class="code-string">"(".*?")"<\/span>/g, '<span class="code-string">$1</span>')
       // Numbers
       .replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>')
       // Property names
-      .replace(
-        /(\w+):/g,
-        '<span class="code-property">$1</span>:'
-      );
+      .replace(/(\w+):/g, '<span class="code-property">$1</span>:');
 
     return code;
   }
@@ -3908,7 +4909,10 @@ export default class ConfigBuilder {
    */
   generatePhpCode() {
     // Make sure active uploader's config is saved
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
     }
 
@@ -3921,10 +4925,11 @@ export default class ConfigBuilder {
       const changedConfig = this.getChangedConfig(data.config, true); // server-only
 
       // Generate key name from uploader name
-      const keyName = data.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
+      const keyName =
+        data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
 
       // Add comment for each uploader
       const marker = isActive ? " ← Currently Editing" : "";
@@ -3964,14 +4969,16 @@ export default class ConfigBuilder {
 
     if (Array.isArray(value)) {
       if (value.length === 0) return "[]";
-      const items = value.map(v => this.jsValueToPhp(v)).join(", ");
+      const items = value.map((v) => this.jsValueToPhp(v)).join(", ");
       return `[${items}]`;
     }
 
     if (typeof value === "object") {
       const entries = Object.entries(value);
       if (entries.length === 0) return "[]";
-      const items = entries.map(([k, v]) => `'${k}' => ${this.jsValueToPhp(v)}`).join(",\n        ");
+      const items = entries
+        .map(([k, v]) => `'${k}' => ${this.jsValueToPhp(v)}`)
+        .join(",\n        ");
       return `[\n        ${items}\n    ]`;
     }
 
@@ -3987,19 +4994,25 @@ export default class ConfigBuilder {
     // Apply PHP syntax highlighting
     code = code
       // PHP tags
-      .replace(/(&lt;\?php|<\?php)/g, '<span class="code-keyword">&lt;?php</span>')
+      .replace(
+        /(&lt;\?php|<\?php)/g,
+        '<span class="code-keyword">&lt;?php</span>'
+      )
       // Block comments
       .replace(/(\/\*\*[\s\S]*?\*\/)/g, '<span class="code-comment">$1</span>')
       // Single line comments
       .replace(/(\/\/.*$)/gm, '<span class="code-comment">$1</span>')
       // Keywords
-      .replace(/\b(return|true|false|null)\b/g, '<span class="code-keyword">$1</span>')
+      .replace(
+        /\b(return|true|false|null)\b/g,
+        '<span class="code-keyword">$1</span>'
+      )
       // Numbers
       .replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>')
       // Strings (single quotes)
       .replace(/'([^'\\]|\\.)*'/g, '<span class="code-string">$&</span>')
       // Array keys
-      .replace(/'(\w+)'\s*=>/g, '<span class="code-property">\'$1\'</span> =>');
+      .replace(/'(\w+)'\s*=>/g, "<span class=\"code-property\">'$1'</span> =>");
 
     return code;
   }
@@ -4013,7 +5026,10 @@ export default class ConfigBuilder {
     if (!previewEl) return;
 
     // Get or create active uploader data
-    if (!this.activeUploaderId || !this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      !this.activeUploaderId ||
+      !this.uploaderInstances[this.activeUploaderId]
+    ) {
       // Initialize if needed
       if (Object.keys(this.uploaderInstances).length === 0) {
         this.uploaderCounter = 1;
@@ -4023,7 +5039,7 @@ export default class ConfigBuilder {
           config: { ...this.config },
           preset: this.currentPreset,
           instance: null,
-          containerId: null
+          containerId: null,
         };
       }
     }
@@ -4056,18 +5072,27 @@ export default class ConfigBuilder {
       const activeData = this.uploaderInstances[this.activeUploaderId];
       if (activeData) {
         // Destroy existing active instance
-        if (activeData.instance && typeof activeData.instance.destroy === "function") {
+        if (
+          activeData.instance &&
+          typeof activeData.instance.destroy === "function"
+        ) {
           activeData.instance.destroy();
         }
         activeData.instance = null;
 
         // Find and clear the active container
-        const existingWrapper = previewEl.querySelector(`[data-uploader-wrapper="${this.activeUploaderId}"]`);
+        const existingWrapper = previewEl.querySelector(
+          `[data-uploader-wrapper="${this.activeUploaderId}"]`
+        );
         if (existingWrapper) {
-          const uploaderContainer = existingWrapper.querySelector(".fu-config-builder-uploader-container");
+          const uploaderContainer = existingWrapper.querySelector(
+            ".fu-config-builder-uploader-container"
+          );
           if (uploaderContainer) {
             uploaderContainer.innerHTML = "";
-            const containerId = `preview-${this.activeUploaderId}-${Date.now()}`;
+            const containerId = `preview-${
+              this.activeUploaderId
+            }-${Date.now()}`;
             const container = document.createElement("div");
             container.id = containerId;
             uploaderContainer.appendChild(container);
@@ -4079,13 +5104,20 @@ export default class ConfigBuilder {
                 autoFetchConfig: false,
                 cleanupOnUnload: false,
               };
-              activeData.instance = new window.FileUploader(`#${containerId}`, previewConfig);
+              activeData.instance = new window.FileUploader(
+                `#${containerId}`,
+                previewConfig
+              );
               activeData.containerId = containerId;
             }
           }
         }
       }
     }
+
+    // Apply theme to newly created uploaders
+    const effectiveTheme = this.getEffectiveThemeMode();
+    this.applyThemeToUploaders(effectiveTheme);
   }
 
   /**
@@ -4096,13 +5128,21 @@ export default class ConfigBuilder {
     const containerId = `preview-${id}-${Date.now()}`;
 
     const wrapper = document.createElement("div");
-    wrapper.className = `fu-config-builder-uploader-wrapper ${isActive ? "active" : ""}`;
+    wrapper.className = `fu-config-builder-uploader-wrapper ${
+      isActive ? "active" : ""
+    }`;
     wrapper.dataset.uploaderWrapper = id;
 
     wrapper.innerHTML = `
       <div class="fu-config-builder-uploader-header">
         <span class="fu-config-builder-uploader-label">${data.name}</span>
-        ${isActive ? '<span class="fu-config-builder-uploader-badge">Editing</span>' : '<button class="fu-config-builder-uploader-edit-btn" data-uploader-id="' + id + '">Edit This</button>'}
+        ${
+          isActive
+            ? '<span class="fu-config-builder-uploader-badge">Editing</span>'
+            : '<button class="fu-config-builder-uploader-edit-btn" data-uploader-id="' +
+              id +
+              '">Edit This</button>'
+        }
       </div>
       <div class="fu-config-builder-uploader-container">
         <div id="${containerId}" data-uploader-container="${containerId}"></div>
@@ -4133,7 +5173,9 @@ export default class ConfigBuilder {
     }
 
     // Add click handler for "Edit This" button
-    const editBtn = wrapper.querySelector(".fu-config-builder-uploader-edit-btn");
+    const editBtn = wrapper.querySelector(
+      ".fu-config-builder-uploader-edit-btn"
+    );
     if (editBtn) {
       editBtn.addEventListener("click", () => {
         this.selectUploader(id);
@@ -4149,9 +5191,30 @@ export default class ConfigBuilder {
     }
 
     // Attach CSS variables panel events
-    const cssVarsPanel = wrapper.querySelector('.fu-config-builder-css-vars-panel');
+    const cssVarsPanel = wrapper.querySelector(
+      ".fu-config-builder-css-vars-panel"
+    );
     if (cssVarsPanel) {
       this.attachCssVarsPanelEvents(cssVarsPanel);
+    }
+
+    // Apply current theme to the new uploader container
+    const effectiveTheme = this.getEffectiveThemeMode();
+    const uploaderContainer = wrapper.querySelector(
+      ".fu-config-builder-uploader-container"
+    );
+    if (uploaderContainer) {
+      this.applyThemeToContainer(uploaderContainer, effectiveTheme);
+    }
+  }
+
+  /**
+   * Apply theme CSS variables to a single container
+   */
+  applyThemeToContainer(container, effectiveTheme) {
+    const varsToApply = this.getThemeVars(effectiveTheme);
+    for (const [varName, value] of Object.entries(varsToApply)) {
+      container.style.setProperty(varName, value);
     }
   }
 
@@ -4159,7 +5222,9 @@ export default class ConfigBuilder {
    * Toggle CSS variables panel visibility
    */
   toggleCssVarsPanel(uploaderId) {
-    const wrapper = this.element.querySelector(`[data-uploader-wrapper="${uploaderId}"]`);
+    const wrapper = this.element.querySelector(
+      `[data-uploader-wrapper="${uploaderId}"]`
+    );
     if (!wrapper) return;
 
     const panel = wrapper.querySelector(`[data-vars-panel="${uploaderId}"]`);
@@ -4173,12 +5238,15 @@ export default class ConfigBuilder {
       // Update button text
       const btnText = btn.querySelector("span");
       if (btnText) {
-        btnText.textContent = isVisible ? "Show CSS Variables" : "Hide CSS Variables";
+        btnText.textContent = isVisible
+          ? "Show CSS Variables"
+          : "Hide CSS Variables";
       }
 
       // Refresh panel content when opening to get latest computed values
       if (!isVisible) {
-        const containerId = wrapper.querySelector('[data-uploader-container]')?.dataset.uploaderContainer;
+        const containerId = wrapper.querySelector("[data-uploader-container]")
+          ?.dataset.uploaderContainer;
         if (containerId) {
           panel.innerHTML = this.renderUsedCssVariables(containerId);
           this.attachCssVarsPanelEvents(panel);
@@ -4192,14 +5260,19 @@ export default class ConfigBuilder {
    */
   attachCssVarsPanelEvents(panel) {
     // Click on item to navigate to Styles panel
-    panel.querySelectorAll(".fu-config-builder-css-var-item").forEach(item => {
-      item.addEventListener("click", () => {
-        const varName = item.dataset.varName;
-        if (varName) {
-          this.navigateToStyleVariable(varName);
-        }
+    panel
+      .querySelectorAll(".fu-config-builder-css-var-item")
+      .forEach((item) => {
+        item.addEventListener("click", () => {
+          // If this variable has a source variable (references another var),
+          // navigate to the source variable instead
+          const sourceVar = item.dataset.sourceVar;
+          const varName = sourceVar || item.dataset.varName;
+          if (varName) {
+            this.navigateToStyleVariable(varName);
+          }
+        });
       });
-    });
   }
 
   /**
@@ -4214,25 +5287,29 @@ export default class ConfigBuilder {
    * Check if a CSS variable is actually being applied (has a computed value)
    */
   isVariableApplied(containerId, varName) {
-    const container = this.element.querySelector(`[data-uploader-container="${containerId}"]`);
+    const container = this.element.querySelector(
+      `[data-uploader-container="${containerId}"]`
+    );
     if (!container) return false;
 
     // Get the computed value of the CSS variable from the root/container
-    const uploaderElement = container.querySelector('.file-uploader');
+    const uploaderElement = container.querySelector(".file-uploader");
     if (!uploaderElement) return false;
 
     const computedValue = this.getComputedCssVariable(uploaderElement, varName);
-    return computedValue !== '';
+    return computedValue !== "";
   }
 
   /**
    * Get applied CSS variables with their actual computed values for an uploader
    */
   getAppliedCssVariables(containerId) {
-    const container = this.element.querySelector(`[data-uploader-container="${containerId}"]`);
+    const container = this.element.querySelector(
+      `[data-uploader-container="${containerId}"]`
+    );
     if (!container) return [];
 
-    const uploaderElement = container.querySelector('.file-uploader');
+    const uploaderElement = container.querySelector(".file-uploader");
     if (!uploaderElement) return [];
 
     const appliedVars = [];
@@ -4240,35 +5317,98 @@ export default class ConfigBuilder {
 
     // Map of CSS properties to the CSS variables that control them
     const propToVarMap = {
-      'color': ['--fu-color-text', '--fu-color-text-muted', '--fu-color-text-light', '--fu-color-success-text', '--fu-color-error-text'],
-      'background-color': ['--fu-color-bg', '--fu-color-bg-light', '--fu-color-bg-hover', '--fu-color-primary', '--fu-color-primary-light', '--fu-color-success-bg', '--fu-color-error-bg'],
-      'border-color': ['--fu-color-border', '--fu-color-border-light', '--fu-color-border-hover', '--fu-color-primary'],
-      'font-size': ['--fu-font-size-xs', '--fu-font-size-sm', '--fu-font-size-base', '--fu-font-size-md', '--fu-font-size-lg'],
-      'font-family': ['--fu-font-family'],
-      'font-weight': ['--fu-font-weight-normal', '--fu-font-weight-medium', '--fu-font-weight-semibold', '--fu-font-weight-bold'],
-      'border-radius': ['--fu-radius-sm', '--fu-radius-md', '--fu-radius-lg', '--fu-radius-xl'],
-      'padding': ['--fu-spacing-xs', '--fu-spacing-sm', '--fu-spacing-md', '--fu-spacing-lg', '--fu-spacing-xl'],
-      'gap': ['--fu-spacing-xs', '--fu-spacing-sm', '--fu-spacing-md', '--fu-spacing-lg'],
-      'box-shadow': ['--fu-shadow-sm', '--fu-shadow-md', '--fu-shadow-lg'],
-      'width': ['--fu-icon-size-sm', '--fu-icon-size-md', '--fu-icon-size-lg', '--fu-button-size', '--fu-spinner-size'],
-      'height': ['--fu-preview-height', '--fu-button-size', '--fu-spinner-size', '--fu-icon-size-lg'],
-      'border-width': ['--fu-dropzone-border-width']
+      color: [
+        "--fu-color-text",
+        "--fu-color-text-muted",
+        "--fu-color-text-light",
+        "--fu-color-success-text",
+        "--fu-color-error-text",
+      ],
+      "background-color": [
+        "--fu-color-bg",
+        "--fu-color-bg-light",
+        "--fu-color-bg-hover",
+        "--fu-color-primary",
+        "--fu-color-primary-light",
+        "--fu-color-success-bg",
+        "--fu-color-error-bg",
+      ],
+      "border-color": [
+        "--fu-color-border",
+        "--fu-color-border-light",
+        "--fu-color-border-hover",
+        "--fu-color-primary",
+      ],
+      "font-size": [
+        "--fu-font-size-xs",
+        "--fu-font-size-sm",
+        "--fu-font-size-base",
+        "--fu-font-size-md",
+        "--fu-font-size-lg",
+      ],
+      "font-family": ["--fu-font-family"],
+      "font-weight": [
+        "--fu-font-weight-normal",
+        "--fu-font-weight-medium",
+        "--fu-font-weight-semibold",
+        "--fu-font-weight-bold",
+      ],
+      "border-radius": [
+        "--fu-radius-xs",
+        "--fu-radius-sm",
+        "--fu-radius-md",
+        "--fu-radius-lg",
+        "--fu-radius-xl",
+      ],
+      padding: [
+        "--fu-spacing-xs",
+        "--fu-spacing-sm",
+        "--fu-spacing-md",
+        "--fu-spacing-lg",
+        "--fu-spacing-xl",
+      ],
+      gap: [
+        "--fu-spacing-xs",
+        "--fu-spacing-sm",
+        "--fu-spacing-md",
+        "--fu-spacing-lg",
+      ],
+      "box-shadow": ["--fu-shadow-sm", "--fu-shadow-md", "--fu-shadow-lg"],
+      width: [
+        "--fu-icon-size-sm",
+        "--fu-icon-size-md",
+        "--fu-icon-size-lg",
+        "--fu-button-size",
+        "--fu-spinner-size",
+      ],
+      height: [
+        "--fu-preview-height",
+        "--fu-button-size",
+        "--fu-spinner-size",
+        "--fu-icon-size-lg",
+      ],
+      "border-width": ["--fu-dropzone-border-width"],
     };
 
     // Elements to check in the uploader
     const elementsToCheck = [
-      { selector: '.file-uploader', name: 'Container' },
-      { selector: '.file-uploader-dropzone', name: 'Dropzone' },
-      { selector: '.file-uploader-dropzone-icon', name: 'Dropzone Icon' },
-      { selector: '.file-uploader-dropzone-text', name: 'Dropzone Text' },
-      { selector: '.file-uploader-hint', name: 'Hint' },
-      { selector: '.file-uploader-files', name: 'Files List' },
-      { selector: '.file-uploader-file', name: 'File Item' },
-      { selector: '.file-uploader-file-preview', name: 'File Preview' },
-      { selector: '.file-uploader-file-name', name: 'File Name' },
-      { selector: '.file-uploader-file-size', name: 'File Size' },
-      { selector: '.file-uploader-btn', name: 'Button' },
-      { selector: '.file-uploader-progress-bar', name: 'Progress Bar' }
+      { selector: ".file-uploader", name: "Container" },
+      { selector: ".file-uploader-dropzone", name: "Dropzone" },
+      { selector: ".file-uploader-dropzone-icon", name: "Dropzone Icon" },
+      { selector: ".file-uploader-dropzone-text", name: "Dropzone Text" },
+      { selector: ".file-uploader-hint", name: "Hint" },
+      { selector: ".file-uploader-files", name: "Files List" },
+      { selector: ".file-uploader-file", name: "File Item" },
+      { selector: ".file-uploader-file-preview", name: "File Preview" },
+      { selector: ".file-uploader-file-name", name: "File Name" },
+      { selector: ".file-uploader-file-size", name: "File Size" },
+      { selector: ".file-uploader-btn", name: "Button" },
+      { selector: ".file-uploader-progress-bar", name: "Progress Bar" },
+      { selector: ".file-uploader-compact-progress", name: "Compact Progress" },
+      { selector: ".file-uploader-type-progress", name: "Type Progress" },
+      { selector: ".file-uploader-limit-progress", name: "Limit Progress" },
+      { selector: ".file-uploader-limits", name: "Limits" },
+      { selector: ".file-uploader-limits-summary", name: "Limits Summary" },
     ];
 
     for (const { selector } of elementsToCheck) {
@@ -4294,13 +5434,17 @@ export default class ConfigBuilder {
           const normalizedComputed = this.normalizeColorValue(computedValue);
           const normalizedVar = this.normalizeColorValue(varValue);
 
-          if (normalizedComputed && normalizedVar &&
-              (normalizedComputed === normalizedVar || computedValue.includes(varValue))) {
+          if (
+            normalizedComputed &&
+            normalizedVar &&
+            (normalizedComputed === normalizedVar ||
+              computedValue.includes(varValue))
+          ) {
             seenVars.add(varName);
             appliedVars.push({
               name: varName,
               computedValue: varValue,
-              element: selector
+              element: selector,
             });
           }
         }
@@ -4319,7 +5463,7 @@ export default class ConfigBuilder {
           appliedVars.push({
             name: varName,
             computedValue: varValue,
-            element: this.varToSelectorMap[varName]
+            element: this.varToSelectorMap[varName],
           });
         }
       }
@@ -4335,7 +5479,7 @@ export default class ConfigBuilder {
     if (!value) return null;
 
     // Create a temporary element to parse the color
-    const temp = document.createElement('div');
+    const temp = document.createElement("div");
     temp.style.color = value;
     document.body.appendChild(temp);
     const computed = getComputedStyle(temp).color;
@@ -4348,8 +5492,10 @@ export default class ConfigBuilder {
    * Get current effective theme mode (light or dark)
    */
   getEffectiveThemeMode() {
-    if (this.theme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (this.theme === "system") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
     }
     return this.theme;
   }
@@ -4360,10 +5506,14 @@ export default class ConfigBuilder {
   renderUsedCssVariables(containerId) {
     // Get actually applied CSS variables
     const appliedVars = this.getAppliedCssVariables(containerId);
-    const appliedVarNames = new Set(appliedVars.map(v => v.name));
+    const appliedVarNames = new Set(appliedVars.map((v) => v.name));
 
     // Determine current theme mode to filter mode-specific sections
     const currentMode = this.getEffectiveThemeMode();
+
+    // Get the variable source mapping for current mode
+    const varSourceMap = this.getVarSourceMap();
+    const modeSourceMap = varSourceMap[currentMode] || {};
 
     // Group variables by their section - show all mapped variables, not just computed ones
     const groupedVars = {};
@@ -4376,20 +5526,41 @@ export default class ConfigBuilder {
 
       for (const [varName, def] of Object.entries(section.variables)) {
         // Show variable if it's in the selector map OR if it was detected as applied
-        if (this.varToSelectorMap[varName] || appliedVarNames.has(varName)) {
+        const inSelectorMap = !!this.varToSelectorMap[varName];
+        const inApplied = appliedVarNames.has(varName);
+
+        if (inSelectorMap || inApplied) {
           if (!groupedVars[sectionKey]) {
             groupedVars[sectionKey] = {
               title: section.title,
               mode: section.mode,
-              variables: []
+              variables: [],
             };
           }
 
-          // Get value - prefer computed value, then stored value, then default
-          const appliedInfo = appliedVars.find(v => v.name === varName);
-          const currentValue = this.styleValues[varName] || def.default;
-          const computedValue = appliedInfo ? appliedInfo.computedValue : currentValue;
-          const isModified = this.styleValues[varName] && this.styleValues[varName] !== def.default;
+          // Get value - prefer computed value from DOM, then stored value, then default
+          const appliedInfo = appliedVars.find((v) => v.name === varName);
+
+          // Get the actual computed value from the uploader container or document root
+          const container = this.element.querySelector(
+            `[data-uploader-container="${containerId}"]`
+          );
+          const computedStyles = container
+            ? getComputedStyle(container)
+            : getComputedStyle(document.documentElement);
+          const actualComputedValue = computedStyles.getPropertyValue(varName).trim();
+
+          // Use actual computed value if available, otherwise fall back to stored/default
+          const currentValue = actualComputedValue || this.styleValues[varName] || def.default;
+          const computedValue = appliedInfo
+            ? appliedInfo.computedValue
+            : currentValue;
+          const isModified =
+            this.styleValues[varName] &&
+            this.styleValues[varName] !== def.default;
+
+          // Check if this variable references another variable (from varSourceMap)
+          const sourceVar = modeSourceMap[varName] || null;
 
           groupedVars[sectionKey].variables.push({
             name: varName,
@@ -4399,7 +5570,8 @@ export default class ConfigBuilder {
             defaultValue: def.default,
             type: def.type,
             selector: this.varToSelectorMap[varName] || appliedInfo?.element,
-            isModified: isModified
+            isModified: isModified,
+            sourceVar: sourceVar,
           });
         }
       }
@@ -4408,18 +5580,23 @@ export default class ConfigBuilder {
     let html = '<div class="fu-config-builder-css-vars-list">';
 
     // Check if we have any variables
-    const hasVariables = Object.values(groupedVars).some(g => g.variables.length > 0);
+    const hasVariables = Object.values(groupedVars).some(
+      (g) => g.variables.length > 0
+    );
 
     if (!hasVariables) {
-      html += '<div class="fu-config-builder-css-vars-empty">Loading CSS variables...</div>';
+      html +=
+        '<div class="fu-config-builder-css-vars-empty">Loading CSS variables...</div>';
     }
 
     for (const [sectionKey, group] of Object.entries(groupedVars)) {
       if (group.variables.length === 0) continue;
 
       const modeIndicator = group.mode
-        ? `<span class="fu-config-builder-css-vars-mode ${group.mode}">${group.mode === 'light' ? '☀' : '☾'}</span>`
-        : '';
+        ? `<span class="fu-config-builder-css-vars-mode ${group.mode}">${
+            group.mode === "light" ? "☀" : "☾"
+          }</span>`
+        : "";
 
       html += `
         <div class="fu-config-builder-css-vars-group">
@@ -4429,17 +5606,31 @@ export default class ConfigBuilder {
 
       for (const v of group.variables) {
         // Show color preview for color types, or value for others
-        let valueDisplay = '';
-        if (v.type === 'color') {
+        let valueDisplay = "";
+        if (v.type === "color") {
           valueDisplay = `<span class="fu-config-builder-css-var-color" style="background: ${v.currentValue}"></span>`;
         } else {
           valueDisplay = `<code class="fu-config-builder-css-var-value">${v.currentValue}</code>`;
         }
 
+        // Show source variable if this semantic variable references a palette variable
+        const sourceDisplay = v.sourceVar
+          ? `<code class="fu-config-builder-css-var-source" data-source-var="${v.sourceVar}" title="Uses ${v.sourceVar}">← ${v.sourceVar}</code>`
+          : "";
+
+        // If there's a source var, clicking should navigate to it
+        const dataSourceAttr = v.sourceVar ? `data-source-var="${v.sourceVar}"` : "";
+
         html += `
-          <div class="fu-config-builder-css-var-item ${v.isModified ? 'modified' : ''}" data-var-name="${v.name}" data-section="${sectionKey}" title="Click to edit in Styles panel">
+          <div class="fu-config-builder-css-var-item ${
+            v.isModified ? "modified" : ""
+          }${v.sourceVar ? " has-source" : ""}" data-var-name="${
+          v.name
+        }" data-section="${sectionKey}" ${dataSourceAttr} title="${v.sourceVar ? `Uses ${v.sourceVar} - Click to edit source` : "Click to edit in Styles panel"}">
             ${valueDisplay}
             <span class="fu-config-builder-css-var-label">${v.label}</span>
+            <code class="fu-config-builder-css-var-name">${v.name}</code>
+            ${sourceDisplay}
           </div>
         `;
       }
@@ -4450,7 +5641,7 @@ export default class ConfigBuilder {
       `;
     }
 
-    html += '</div>';
+    html += "</div>";
     return html;
   }
 
@@ -4465,21 +5656,29 @@ export default class ConfigBuilder {
     document.documentElement.style.setProperty(varName, value);
 
     // Update the Styles panel if it has this variable
-    const styleVar = this.element.querySelector(`.fu-config-builder-style-var[data-var="${varName}"]`);
+    const styleVar = this.element.querySelector(
+      `.fu-config-builder-style-var[data-var="${varName}"]`
+    );
     if (styleVar) {
       // Try color picker first
-      const colorInput = styleVar.querySelector('.fu-config-builder-color-input');
+      const colorInput = styleVar.querySelector(
+        ".fu-config-builder-color-input"
+      );
       if (colorInput) {
         colorInput.value = value;
         // Update color preview
-        const colorPreview = styleVar.querySelector('.fu-config-builder-color-preview');
+        const colorPreview = styleVar.querySelector(
+          ".fu-config-builder-color-preview"
+        );
         if (colorPreview) colorPreview.style.background = value;
         // Update text input
-        const textInput = styleVar.querySelector('.fu-config-builder-color-text');
+        const textInput = styleVar.querySelector(
+          ".fu-config-builder-color-text"
+        );
         if (textInput) textInput.value = value;
       } else {
         // Try regular input
-        const input = styleVar.querySelector('input');
+        const input = styleVar.querySelector("input");
         if (input) input.value = value;
       }
     }
@@ -4495,33 +5694,38 @@ export default class ConfigBuilder {
 
     // Update the CSS var item in the panel to show/hide reset button
     if (panel) {
-      const item = panel.querySelector(`.fu-config-builder-css-var-item[data-var-name="${varName}"]`);
+      const item = panel.querySelector(
+        `.fu-config-builder-css-var-item[data-var-name="${varName}"]`
+      );
       if (item) {
         const isModified = value !== defaultValue;
-        item.classList.toggle('modified', isModified);
+        item.classList.toggle("modified", isModified);
 
         // Add or remove reset button
-        let resetBtn = item.querySelector('.fu-config-builder-css-var-reset');
+        let resetBtn = item.querySelector(".fu-config-builder-css-var-reset");
         if (isModified && !resetBtn) {
           // Add reset button
-          const editBtn = item.querySelector('.fu-config-builder-css-var-edit');
+          const editBtn = item.querySelector(".fu-config-builder-css-var-edit");
           if (editBtn) {
-            resetBtn = document.createElement('button');
-            resetBtn.className = 'fu-config-builder-css-var-reset';
+            resetBtn = document.createElement("button");
+            resetBtn.className = "fu-config-builder-css-var-reset";
             resetBtn.dataset.varName = varName;
             resetBtn.dataset.default = defaultValue;
             resetBtn.title = `Reset to default: ${defaultValue}`;
-            resetBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
+            resetBtn.innerHTML =
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
             editBtn.parentNode.insertBefore(resetBtn, editBtn);
 
             // Attach click handler
-            resetBtn.addEventListener('click', (e) => {
+            resetBtn.addEventListener("click", (e) => {
               e.stopPropagation();
               this.resetCssVariable(varName, defaultValue);
               // Refresh the panel
-              const wrapper = panel.closest('[data-uploader-wrapper]');
+              const wrapper = panel.closest("[data-uploader-wrapper]");
               if (wrapper) {
-                const containerId = wrapper.querySelector('[data-uploader-container]')?.dataset.uploaderContainer;
+                const containerId = wrapper.querySelector(
+                  "[data-uploader-container]"
+                )?.dataset.uploaderContainer;
                 if (containerId) {
                   panel.innerHTML = this.renderUsedCssVariables(containerId);
                   this.attachCssVarsPanelEvents(panel);
@@ -4551,21 +5755,29 @@ export default class ConfigBuilder {
     document.documentElement.style.setProperty(varName, defaultValue);
 
     // Update the Styles panel if it has this variable
-    const styleVar = this.element.querySelector(`.fu-config-builder-style-var[data-var="${varName}"]`);
+    const styleVar = this.element.querySelector(
+      `.fu-config-builder-style-var[data-var="${varName}"]`
+    );
     if (styleVar) {
       // Try color picker first
-      const colorInput = styleVar.querySelector('.fu-config-builder-color-input');
+      const colorInput = styleVar.querySelector(
+        ".fu-config-builder-color-input"
+      );
       if (colorInput) {
         colorInput.value = defaultValue;
         // Update color preview
-        const colorPreview = styleVar.querySelector('.fu-config-builder-color-preview');
+        const colorPreview = styleVar.querySelector(
+          ".fu-config-builder-color-preview"
+        );
         if (colorPreview) colorPreview.style.background = defaultValue;
         // Update text input
-        const textInput = styleVar.querySelector('.fu-config-builder-color-text');
+        const textInput = styleVar.querySelector(
+          ".fu-config-builder-color-text"
+        );
         if (textInput) textInput.value = defaultValue;
       } else {
         // Try regular input
-        const input = styleVar.querySelector('input');
+        const input = styleVar.querySelector("input");
         if (input) input.value = defaultValue;
       }
     }
@@ -4610,39 +5822,63 @@ export default class ConfigBuilder {
     this.currentStyleSection = targetSection;
 
     // Update main tab UI
-    this.element.querySelectorAll(".fu-config-builder-main-tab").forEach(tab => {
-      tab.classList.toggle("active", tab.dataset.mainTab === "styles");
-    });
-    this.element.querySelectorAll(".fu-config-builder-main-tab-content").forEach(content => {
-      content.classList.toggle("active", content.id === "main-tab-styles");
-    });
+    this.element
+      .querySelectorAll(".fu-config-builder-main-tab")
+      .forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.mainTab === "styles");
+      });
+    this.element
+      .querySelectorAll(".fu-config-builder-main-tab-content")
+      .forEach((content) => {
+        content.classList.toggle("active", content.id === "main-tab-styles");
+      });
 
     // Update style vertical tabs
-    this.element.querySelectorAll(".fu-config-builder-vertical-tab[data-style-section]").forEach(tab => {
-      tab.classList.toggle("active", tab.dataset.styleSection === targetSection);
-    });
+    this.element
+      .querySelectorAll(".fu-config-builder-vertical-tab[data-style-section]")
+      .forEach((tab) => {
+        tab.classList.toggle(
+          "active",
+          tab.dataset.styleSection === targetSection
+        );
+      });
 
     // Update style panels
-    this.element.querySelectorAll(".fu-config-builder-style-panel").forEach(panel => {
-      panel.classList.toggle("active", panel.dataset.stylePanel === targetSection);
-    });
+    this.element
+      .querySelectorAll(".fu-config-builder-style-panel")
+      .forEach((panel) => {
+        panel.classList.toggle(
+          "active",
+          panel.dataset.stylePanel === targetSection
+        );
+      });
 
     // Scroll to the variable after a short delay to allow UI to update
     setTimeout(() => {
       // Find the active panel first, then look for the variable within it
-      const activePanel = this.element.querySelector(`.fu-config-builder-style-panel[data-style-panel="${targetSection}"]`);
+      const activePanel = this.element.querySelector(
+        `.fu-config-builder-style-panel[data-style-panel="${targetSection}"]`
+      );
       if (!activePanel) return;
 
-      const varElement = activePanel.querySelector(`.fu-config-builder-style-var[data-var="${varName}"]`);
+      const varElement = activePanel.querySelector(
+        `.fu-config-builder-style-var[data-var="${varName}"]`
+      );
       if (varElement) {
         // Get the scrollable container (options-content)
-        const scrollContainer = activePanel.closest('.fu-config-builder-options-content');
+        const scrollContainer = activePanel.closest(
+          ".fu-config-builder-options-content"
+        );
         if (scrollContainer) {
           // Calculate the scroll position to center the element
           const containerRect = scrollContainer.getBoundingClientRect();
           const elementRect = varElement.getBoundingClientRect();
-          const scrollTop = scrollContainer.scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 2) + (elementRect.height / 2);
-          scrollContainer.scrollTo({ top: scrollTop, behavior: 'smooth' });
+          const scrollTop =
+            scrollContainer.scrollTop +
+            (elementRect.top - containerRect.top) -
+            containerRect.height / 2 +
+            elementRect.height / 2;
+          scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
         } else {
           // Fallback to scrollIntoView
           varElement.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -4669,7 +5905,10 @@ export default class ConfigBuilder {
    */
   addUploader() {
     // Save current config and preset first
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
       this.uploaderInstances[this.activeUploaderId].preset = this.currentPreset;
     }
@@ -4682,7 +5921,7 @@ export default class ConfigBuilder {
       config: { ...this.getDefaultConfig() },
       preset: "default",
       instance: null,
-      containerId: null
+      containerId: null,
     };
 
     // Switch to the new uploader
@@ -4705,7 +5944,10 @@ export default class ConfigBuilder {
     if (!this.uploaderInstances[uploaderId]) return;
 
     // Save current config and preset first
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
       this.uploaderInstances[this.activeUploaderId].preset = this.currentPreset;
     }
@@ -4724,7 +5966,7 @@ export default class ConfigBuilder {
       config: copiedConfig,
       preset: sourceData.preset || null,
       instance: null,
-      containerId: null
+      containerId: null,
     };
 
     // Switch to the new uploader
@@ -4748,7 +5990,10 @@ export default class ConfigBuilder {
     if (this.activeUploaderId === uploaderId) return; // Already selected
 
     // Save current config and preset to the current uploader before switching
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
       this.uploaderInstances[this.activeUploaderId].preset = this.currentPreset;
     }
@@ -4789,7 +6034,8 @@ export default class ConfigBuilder {
       const remainingIds = Object.keys(this.uploaderInstances);
       this.activeUploaderId = remainingIds[0];
       this.config = { ...this.uploaderInstances[this.activeUploaderId].config };
-      this.currentPreset = this.uploaderInstances[this.activeUploaderId].preset || null;
+      this.currentPreset =
+        this.uploaderInstances[this.activeUploaderId].preset || null;
     }
 
     // Update UI
@@ -4806,7 +6052,10 @@ export default class ConfigBuilder {
   isNameDuplicate(name, excludeUploaderId = null) {
     const normalizedName = name.trim().toLowerCase();
     for (const [id, data] of Object.entries(this.uploaderInstances)) {
-      if (id !== excludeUploaderId && data.name.trim().toLowerCase() === normalizedName) {
+      if (
+        id !== excludeUploaderId &&
+        data.name.trim().toLowerCase() === normalizedName
+      ) {
         return true;
       }
     }
@@ -4817,7 +6066,9 @@ export default class ConfigBuilder {
    * Edit uploader name
    */
   editUploaderName(uploaderId) {
-    const nameEl = this.element.querySelector(`.fu-config-builder-uploader-tab-name[data-uploader-id="${uploaderId}"]`);
+    const nameEl = this.element.querySelector(
+      `.fu-config-builder-uploader-tab-name[data-uploader-id="${uploaderId}"]`
+    );
     if (!nameEl) return;
 
     const currentName = this.uploaderInstances[uploaderId].name;
@@ -4897,7 +6148,9 @@ export default class ConfigBuilder {
    * Update preview header with new name
    */
   updatePreviewHeader(uploaderId, newName) {
-    const wrapper = this.element.querySelector(`[data-uploader-wrapper="${uploaderId}"]`);
+    const wrapper = this.element.querySelector(
+      `[data-uploader-wrapper="${uploaderId}"]`
+    );
     if (wrapper) {
       const label = wrapper.querySelector(".fu-config-builder-uploader-label");
       if (label) {
@@ -4915,35 +6168,45 @@ export default class ConfigBuilder {
       listEl.innerHTML = this.renderUploaderTabs();
 
       // Re-attach uploader tab events
-      this.element.querySelectorAll(".fu-config-builder-uploader-tab").forEach((tab) => {
-        tab.addEventListener("click", (e) => {
-          if (!e.target.closest(".fu-config-builder-uploader-tab-close") &&
-              !e.target.closest(".fu-config-builder-uploader-tab-duplicate")) {
-            this.selectUploader(tab.dataset.uploaderId);
-          }
+      this.element
+        .querySelectorAll(".fu-config-builder-uploader-tab")
+        .forEach((tab) => {
+          tab.addEventListener("click", (e) => {
+            if (
+              !e.target.closest(".fu-config-builder-uploader-tab-close") &&
+              !e.target.closest(".fu-config-builder-uploader-tab-duplicate")
+            ) {
+              this.selectUploader(tab.dataset.uploaderId);
+            }
+          });
         });
-      });
 
-      this.element.querySelectorAll(".fu-config-builder-uploader-tab-close").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.removeUploader(btn.dataset.uploaderId);
+      this.element
+        .querySelectorAll(".fu-config-builder-uploader-tab-close")
+        .forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.removeUploader(btn.dataset.uploaderId);
+          });
         });
-      });
 
-      this.element.querySelectorAll(".fu-config-builder-uploader-tab-duplicate").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.duplicateUploader(btn.dataset.uploaderId);
+      this.element
+        .querySelectorAll(".fu-config-builder-uploader-tab-duplicate")
+        .forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.duplicateUploader(btn.dataset.uploaderId);
+          });
         });
-      });
 
-      this.element.querySelectorAll(".fu-config-builder-uploader-tab-name").forEach((nameEl) => {
-        nameEl.addEventListener("dblclick", (e) => {
-          e.stopPropagation();
-          this.editUploaderName(nameEl.dataset.uploaderId);
+      this.element
+        .querySelectorAll(".fu-config-builder-uploader-tab-name")
+        .forEach((nameEl) => {
+          nameEl.addEventListener("dblclick", (e) => {
+            e.stopPropagation();
+            this.editUploaderName(nameEl.dataset.uploaderId);
+          });
         });
-      });
     }
   }
 
@@ -4969,14 +6232,17 @@ export default class ConfigBuilder {
    */
   getAllConfigs() {
     // Update current uploader's config
-    if (this.activeUploaderId && this.uploaderInstances[this.activeUploaderId]) {
+    if (
+      this.activeUploaderId &&
+      this.uploaderInstances[this.activeUploaderId]
+    ) {
       this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
     }
 
     return Object.entries(this.uploaderInstances).map(([id, data]) => ({
       id,
       name: data.name,
-      config: { ...data.config }
+      config: { ...data.config },
     }));
   }
 }
