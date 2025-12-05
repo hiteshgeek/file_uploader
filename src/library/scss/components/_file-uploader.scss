@@ -1530,7 +1530,7 @@ $component-prefix: $file-uploader-prefix !default;
   // Slide in from bottom
   &.slide-in {
     pointer-events: auto;
-    animation: #{$component-prefix}-slide-in-bottom 0.4s cubic-bezier(
+    animation: #{$component-prefix}-slide-in-bottom 0.25s cubic-bezier(
         0.4,
         0,
         0.2,
@@ -1541,7 +1541,7 @@ $component-prefix: $file-uploader-prefix !default;
   // Slide out to top
   &.slide-out {
     pointer-events: none;
-    animation: #{$component-prefix}-slide-out-top 0.4s cubic-bezier(
+    animation: #{$component-prefix}-slide-out-top 0.3s cubic-bezier(
         0.4,
         0,
         0.2,
@@ -1559,9 +1559,9 @@ $component-prefix: $file-uploader-prefix !default;
   .#{$component-prefix}-success-overlay.slide-in & {
     @if $file-uploader-enable-animations {
       animation: #{$component-prefix}-checkmark-pop
-        0.5s
+        0.3s
         cubic-bezier(0.175, 0.885, 0.32, 1.275)
-        0.2s
+        0.1s
         forwards;
     }
   }
@@ -2041,5 +2041,152 @@ $component-prefix: $file-uploader-prefix !default;
 .#{$component-prefix}-wrapper--large {
   .#{$component-prefix}-preview-inner {
     height: 250px;
+  }
+}
+
+// ============================================================================
+// Cross-Uploader Drag & Drop
+// ============================================================================
+
+// File being dragged
+.#{$component-prefix}-preview.#{$component-prefix}-dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// Make preview draggable cursor
+.#{$component-prefix}-preview[draggable="true"] {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// ============================================================================
+// Move/Copy Dialog
+// ============================================================================
+
+.#{$component-prefix}-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.#{$component-prefix}-dialog {
+  background-color: var(--fu-color-bg);
+  border-radius: var(--fu-radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  min-width: 320px;
+  max-width: 90vw;
+  animation: slideIn 0.2s ease-out;
+}
+
+.#{$component-prefix}-dialog-header {
+  padding: var(--fu-spacing-md) var(--fu-spacing-lg);
+  border-bottom: 1px solid var(--fu-color-border);
+
+  h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fu-color-text);
+  }
+}
+
+.#{$component-prefix}-dialog-body {
+  padding: var(--fu-spacing-lg);
+
+  p {
+    margin: 0;
+    color: var(--fu-color-text-muted);
+    line-height: 1.5;
+  }
+
+  strong {
+    color: var(--fu-color-text);
+  }
+}
+
+.#{$component-prefix}-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--fu-spacing-sm);
+  padding: var(--fu-spacing-md) var(--fu-spacing-lg);
+  border-top: 1px solid var(--fu-color-border);
+  background-color: var(--fu-color-bg-light);
+  border-radius: 0 0 var(--fu-radius-lg) var(--fu-radius-lg);
+}
+
+.#{$component-prefix}-dialog-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--fu-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  &:focus {
+    outline: 2px solid var(--fu-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.#{$component-prefix}-dialog-btn-secondary {
+  background-color: var(--fu-color-bg);
+  color: var(--fu-color-text-muted);
+  border: 1px solid var(--fu-color-border);
+
+  &:hover {
+    background-color: var(--fu-color-bg-hover);
+    color: var(--fu-color-text);
+  }
+}
+
+.#{$component-prefix}-dialog-btn-primary {
+  background-color: var(--fu-color-primary);
+  color: white;
+
+  &:hover {
+    background-color: var(--fu-color-primary-hover);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

@@ -12,6 +12,10 @@ import RecordingUI from "../utils/RecordingUI.js";
 import Tooltip from "./tooltip/index.js";
 import { FileCarousel } from "./carousel/index.js";
 
+// Static registry for all FileUploader instances (for cross-uploader drag-drop)
+const uploaderRegistry = new Map();
+let instanceCounter = 0;
+
 export default class FileUploader {
   constructor(element, options = {}) {
     this.element =
@@ -22,6 +26,10 @@ export default class FileUploader {
       return;
     }
 
+    // Generate unique instance ID
+    this.instanceId = `file-uploader-${++instanceCounter}`;
+    uploaderRegistry.set(this.instanceId, this);
+
     // Default options
     // URLs default to current directory - override with absolute paths if needed
     this.options = {
@@ -30,6 +38,7 @@ export default class FileUploader {
       downloadAllUrl: "./download-all.php",
       cleanupZipUrl: "./cleanup-zip.php",
       configUrl: "./get-config.php",
+      uploadDir: "", // Target folder for uploads (relative to server's base upload directory, e.g., "profile_pictures" or "documents/2024")
       allowedExtensions: [],
       perFileMaxSize: 10 * 1024 * 1024, // 10MB (fallback)
       perFileMaxSizeDisplay: "10MB",
@@ -118,6 +127,8 @@ export default class FileUploader {
       onDeleteSuccess: null,
       onDeleteError: null,
       onDuplicateFile: null, // Callback when duplicate file is detected
+      // Cross-uploader drag-drop options
+      enableCrossUploaderDrag: true, // Allow dragging files between uploaders
       ...options,
     };
 
@@ -150,9 +161,8 @@ export default class FileUploader {
     this.recordingUI = new RecordingUI(this);
     this.carousel = null;
     this.carouselContainer = null;
+    this.draggedFileObj = null; // Currently dragged file object
     this.init();
-
-    console.log(this.options);
   }
 
   async init() {
@@ -821,9 +831,15 @@ export default class FileUploader {
       }
 
       // Initialize audio recorder with options
+      // If audio recording is enabled but no specific source is set, default to microphone
+      const enableMic =
+        this.options.enableMicrophoneAudio ||
+        (!this.options.enableMicrophoneAudio &&
+          !this.options.enableSystemAudio);
+
       if (!this.audioRecorder) {
         this.audioRecorder = new AudioWorkletRecorder({
-          enableMicrophoneAudio: this.options.enableMicrophoneAudio,
+          enableMicrophoneAudio: enableMic,
           enableSystemAudio: this.options.enableSystemAudio,
           maxRecordingDuration: this.options.maxAudioRecordingDuration,
           sampleRate: 48000, // High quality audio
@@ -1516,8 +1532,290 @@ export default class FileUploader {
     this.dropZone.addEventListener("drop", (e) => {
       e.preventDefault();
       this.dropZone.classList.remove("file-uploader-dragover");
-      this.handleFiles(e.dataTransfer.files);
+
+      // Check if this is a cross-uploader drag
+      const crossUploaderData = e.dataTransfer.getData(
+        "application/x-file-uploader"
+      );
+
+      if (crossUploaderData) {
+        // Cross-uploader drop
+        try {
+          const data = JSON.parse(crossUploaderData);
+          this.handleCrossUploaderDrop(data, e);
+        } catch (err) {
+          console.error("Failed to parse cross-uploader data:", err);
+        }
+      } else if (e.dataTransfer.files.length > 0) {
+        // Regular file drop from OS
+        this.handleFiles(e.dataTransfer.files);
+      }
     });
+  }
+
+  /**
+   * Attach drag events to file preview for cross-uploader functionality
+   */
+  attachPreviewDragEvents(preview, fileObj) {
+    preview.addEventListener("dragstart", (e) => {
+      // Only allow drag if file is uploaded
+      if (!fileObj.uploaded) {
+        e.preventDefault();
+        return;
+      }
+
+      this.draggedFileObj = fileObj;
+      preview.classList.add("file-uploader-dragging");
+
+      // Set custom data for cross-uploader identification
+      const dragData = {
+        sourceUploaderId: this.instanceId,
+        fileId: fileObj.id,
+        fileName: fileObj.name,
+        fileSize: fileObj.size,
+        serverFilename: fileObj.serverFilename,
+        serverData: fileObj.serverData,
+      };
+
+      e.dataTransfer.setData(
+        "application/x-file-uploader",
+        JSON.stringify(dragData)
+      );
+      e.dataTransfer.effectAllowed = "copyMove";
+    });
+
+    preview.addEventListener("dragend", (e) => {
+      preview.classList.remove("file-uploader-dragging");
+      this.draggedFileObj = null;
+    });
+  }
+
+  /**
+   * Handle drop from another FileUploader instance
+   */
+  async handleCrossUploaderDrop(data, event) {
+    const { sourceUploaderId, fileId, fileName } = data;
+
+    // Check if dropped on same uploader - ignore
+    if (sourceUploaderId === this.instanceId) {
+      return;
+    }
+
+    // Get the source uploader instance
+    const sourceUploader = uploaderRegistry.get(sourceUploaderId);
+    if (!sourceUploader) {
+      console.error("Source uploader not found:", sourceUploaderId);
+      return;
+    }
+
+    // Find the file object in source uploader
+    const sourceFileObj = sourceUploader.files.find((f) => f.id === fileId);
+    if (!sourceFileObj) {
+      console.error("File not found in source uploader:", fileId);
+      return;
+    }
+
+    // Check for duplicates if enabled
+    if (this.options.preventDuplicates) {
+      const duplicate = this.checkDuplicateByNameSize(
+        sourceFileObj.name,
+        sourceFileObj.size
+      );
+      if (duplicate) {
+        this.showError(
+          `"${sourceFileObj.name}" is a duplicate file and has already been uploaded.`
+        );
+        if (this.options.onDuplicateFile) {
+          this.options.onDuplicateFile(sourceFileObj, duplicate);
+        }
+        return;
+      }
+    }
+
+    // Show move/copy dialog
+    const action = await this.showMoveOrCopyDialog(fileName);
+
+    if (!action) {
+      // User cancelled
+      return;
+    }
+
+    // Copy the file to this uploader
+    await this.copyFileFromUploader(sourceFileObj, sourceUploader);
+
+    // If move was selected, remove from source (without deleting from server)
+    if (action === "move") {
+      sourceUploader.removeFileFromUI(sourceFileObj.id);
+    }
+  }
+
+  /**
+   * Check if a file with given name and size already exists
+   * @param {string} name - File name
+   * @param {number} size - File size
+   * @returns {Object|null} - Returns the duplicate file object if found, null otherwise
+   */
+  checkDuplicateByNameSize(name, size) {
+    const checkBy = this.options.duplicateCheckBy;
+    const existingFiles = this.files.filter((f) => f.uploaded || f.uploading);
+
+    for (const existingFile of existingFiles) {
+      let isDuplicate = false;
+
+      switch (checkBy) {
+        case "name":
+          isDuplicate = existingFile.name === name;
+          break;
+        case "size":
+          isDuplicate = existingFile.size === size;
+          break;
+        case "name-size":
+        default:
+          isDuplicate =
+            existingFile.name === name && existingFile.size === size;
+      }
+
+      if (isDuplicate) {
+        return existingFile;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Remove a file from UI without deleting from server
+   * Used when moving files between uploaders
+   * @param {string|number} fileId - The file ID to remove
+   */
+  removeFileFromUI(fileId) {
+    const fileObj = this.files.find((f) => f.id === fileId);
+    if (!fileObj) return;
+
+    // Remove preview element from DOM
+    if (fileObj.previewElement) {
+      fileObj.previewElement.remove();
+    }
+
+    // Remove from files array
+    this.files = this.files.filter((f) => f.id !== fileId);
+
+    // Remove from selected files if present
+    this.selectedFiles.delete(fileId);
+    this.updateSelectionUI();
+
+    // Update limits display
+    this.updateLimitsDisplay();
+
+    // Update carousel
+    this.updateCarousel();
+  }
+
+  /**
+   * Show dialog asking user to move or copy the file
+   */
+  showMoveOrCopyDialog(fileName) {
+    return new Promise((resolve) => {
+      // Create dialog overlay
+      const overlay = document.createElement("div");
+      overlay.className = "file-uploader-dialog-overlay";
+
+      const dialog = document.createElement("div");
+      dialog.className = "file-uploader-dialog";
+
+      dialog.innerHTML = `
+        <div class="file-uploader-dialog-header">
+          <h4>Transfer File</h4>
+        </div>
+        <div class="file-uploader-dialog-body">
+          <p>What would you like to do with "<strong>${fileName}</strong>"?</p>
+        </div>
+        <div class="file-uploader-dialog-footer">
+          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-secondary" data-action="cancel">
+            Cancel
+          </button>
+          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-primary" data-action="copy">
+            ${getIcon("copy")} Copy
+          </button>
+          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-primary" data-action="move">
+            ${getIcon("move")} Move
+          </button>
+        </div>
+      `;
+
+      overlay.appendChild(dialog);
+      document.body.appendChild(overlay);
+
+      // Focus the dialog
+      dialog.querySelector("button[data-action='move']").focus();
+
+      // Handle button clicks
+      const handleClick = (e) => {
+        const action = e.target.closest("button")?.dataset.action;
+        if (action) {
+          overlay.remove();
+          resolve(action === "cancel" ? null : action);
+        }
+      };
+
+      // Handle escape key
+      const handleKeydown = (e) => {
+        if (e.key === "Escape") {
+          overlay.remove();
+          resolve(null);
+        }
+      };
+
+      dialog.addEventListener("click", handleClick);
+      document.addEventListener("keydown", handleKeydown, { once: true });
+
+      // Handle click outside dialog
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+          overlay.remove();
+          resolve(null);
+        }
+      });
+    });
+  }
+
+  /**
+   * Copy a file from another uploader to this one
+   */
+  async copyFileFromUploader(sourceFileObj, sourceUploader) {
+    // Create a new file object with the same data
+    const newFileObj = {
+      id: Date.now() + Math.random().toString(36).substr(2, 9),
+      file: sourceFileObj.file,
+      name: sourceFileObj.name,
+      size: sourceFileObj.size,
+      type: sourceFileObj.type,
+      extension: sourceFileObj.extension,
+      uploaded: true,
+      uploading: false,
+      serverFilename: sourceFileObj.serverFilename,
+      serverData: { ...sourceFileObj.serverData },
+      captureType: sourceFileObj.captureType,
+    };
+
+    // Add to files array
+    this.files.push(newFileObj);
+
+    // Create preview
+    this.createPreview(newFileObj);
+
+    // Show success state (file is already uploaded)
+    this.updatePreviewState(newFileObj, "success");
+
+    // Show download button (since file is already uploaded)
+    if (newFileObj.downloadBtn) {
+      newFileObj.downloadBtn.style.display = "flex";
+    }
+
+    // Update limits display
+    this.updateLimitsDisplay();
+
+    // Update carousel
+    this.updateCarousel();
   }
 
   handleFiles(fileList) {
@@ -1753,6 +2051,13 @@ export default class FileUploader {
     const preview = document.createElement("div");
     preview.className = "file-uploader-preview";
     preview.dataset.fileId = fileObj.id;
+
+    // Make preview draggable for cross-uploader drag-drop
+    if (this.options.enableCrossUploaderDrag) {
+      preview.draggable = true;
+      preview.dataset.uploaderId = this.instanceId;
+      this.attachPreviewDragEvents(preview, fileObj);
+    }
 
     const previewInner = document.createElement("div");
     previewInner.className = "file-uploader-preview-inner";
@@ -2109,6 +2414,11 @@ export default class FileUploader {
     const formData = new FormData();
     formData.append("file", fileObj.file);
 
+    // Add upload directory if specified
+    if (this.options.uploadDir) {
+      formData.append("uploadDir", this.options.uploadDir);
+    }
+
     try {
       const xhr = new XMLHttpRequest();
 
@@ -2266,20 +2576,20 @@ export default class FileUploader {
         // Trigger slide-in animation
         successOverlay.classList.add("slide-in");
 
-        // After 2.5 seconds, start slide-out animation
+        // After 1.2 seconds, start slide-out animation
         setTimeout(() => {
           if (successOverlay) {
             successOverlay.classList.remove("slide-in");
             successOverlay.classList.add("slide-out");
 
-            // After slide-out animation completes (400ms), remove class
+            // After slide-out animation completes (300ms), remove class
             setTimeout(() => {
               if (successOverlay) {
                 successOverlay.classList.remove("slide-out");
               }
-            }, 400);
+            }, 100);
           }
-        }, 2500);
+        }, 500);
       }
     } else if (state === "error") {
       fileObj.previewElement.classList.add("error");
@@ -2290,21 +2600,35 @@ export default class FileUploader {
     }
   }
 
-  async deleteFile(fileId) {
+  /**
+   * Delete a file
+   * @param {string|number} fileId - The file ID to delete
+   * @param {Object} options - Delete options
+   * @param {boolean} options.skipCarouselUpdate - Skip carousel update (for batch operations)
+   */
+  async deleteFile(fileId, options = {}) {
+    const { skipCarouselUpdate = false } = options;
     const fileObj = this.files.find((f) => f.id === fileId);
     if (!fileObj) return;
 
     // If file was uploaded to server, delete from server
     if (fileObj.uploaded && fileObj.serverFilename) {
       try {
+        const deleteData = {
+          filename: fileObj.serverFilename,
+        };
+
+        // Add upload directory if specified
+        if (this.options.uploadDir) {
+          deleteData.uploadDir = this.options.uploadDir;
+        }
+
         const response = await fetch(this.options.deleteUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            filename: fileObj.serverFilename,
-          }),
+          body: JSON.stringify(deleteData),
         });
 
         const result = await response.json();
@@ -2341,8 +2665,10 @@ export default class FileUploader {
     // Update limits display
     this.updateLimitsDisplay();
 
-    // Update carousel after file deletion
-    this.updateCarousel();
+    // Update carousel after file deletion (unless skipped for batch operations)
+    if (!skipCarouselUpdate) {
+      this.updateCarousel();
+    }
   }
 
   downloadFile(fileId) {
@@ -2499,13 +2825,22 @@ export default class FileUploader {
   }
 
   clear() {
+    // Stop any active preloading first
+    if (this.carousel) {
+      this.carousel.updateFiles([]);
+    }
+
+    // Delete files from server (skip carousel updates during batch)
     this.files.forEach((fileObj) => {
       if (fileObj.uploaded && fileObj.serverFilename) {
-        this.deleteFile(fileObj.id);
+        this.deleteFile(fileObj.id, { skipCarouselUpdate: true });
       }
     });
     this.files = [];
     this.previewContainer.innerHTML = "";
+
+    // Update carousel once at the end
+    this.updateCarousel();
   }
 
   async clearAll() {
@@ -2527,12 +2862,20 @@ export default class FileUploader {
       }
     }
 
-    // Delete all files
+    // Stop any active preloading first
+    if (this.carousel) {
+      this.carousel.updateFiles([]);
+    }
+
+    // Delete all files (skip carousel updates during batch)
     const deletePromises = uploadedFiles.map((fileObj) =>
-      this.deleteFile(fileObj.id)
+      this.deleteFile(fileObj.id, { skipCarouselUpdate: true })
     );
 
     await Promise.all(deletePromises);
+
+    // Update carousel once at the end
+    this.updateCarousel();
   }
 
   attachBeforeUnloadHandler() {

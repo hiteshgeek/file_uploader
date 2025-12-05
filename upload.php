@@ -13,9 +13,24 @@ require_once __DIR__ . '/includes/functions.php';
 // Get base path for URLs (e.g., /file_uploader)
 $basePath = get_base_path();
 
+// Get custom upload directory from request (optional)
+$uploadSubDir = '';
+if (isset($_POST['uploadDir']) && !empty($_POST['uploadDir'])) {
+    // Sanitize the upload directory path to prevent directory traversal attacks
+    $uploadSubDir = trim($_POST['uploadDir'], '/\\');
+    // Remove any directory traversal attempts
+    $uploadSubDir = str_replace(['..', '\\'], ['', '/'], $uploadSubDir);
+    // Ensure it ends with a slash
+    $uploadSubDir = rtrim($uploadSubDir, '/') . '/';
+}
+
+// Determine the final upload directory
+$uploadDir = $config['upload_dir'] . $uploadSubDir;
+$uploadUrlPath = '/uploads/' . $uploadSubDir;
+
 // Create uploads directory if it doesn't exist
-if (!is_dir($config['upload_dir'])) {
-    if (!mkdir($config['upload_dir'], 0755, true)) {
+if (!is_dir($uploadDir)) {
+    if (!mkdir($uploadDir, 0755, true)) {
         echo json_encode([
             'success' => false,
             'error' => 'Failed to create upload directory'
@@ -133,14 +148,14 @@ if ($config['unique_filenames']) {
     $filename = $originalName;
     // If file exists, add number suffix
     $counter = 1;
-    while (file_exists($config['upload_dir'] . $filename)) {
+    while (file_exists($uploadDir . $filename)) {
         $nameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
         $filename = $nameWithoutExt . '_' . $counter . '.' . $extension;
         $counter++;
     }
 }
 
-$destination = $config['upload_dir'] . $filename;
+$destination = $uploadDir . $filename;
 
 // Move uploaded file
 if (!move_uploaded_file($file['tmp_name'], $destination)) {
@@ -169,7 +184,7 @@ echo json_encode([
         'type' => $mimeType,
         'extension' => $extension,
         'fileType' => $fileType,
-        'url' => $basePath . '/uploads/' . $filename,
+        'url' => $basePath . $uploadUrlPath . $filename,
         'path' => $destination
     ]
 ]);

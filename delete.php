@@ -12,11 +12,33 @@ $config = require_once 'config.php';
 // Get JSON input
 $input = json_decode(file_get_contents('php://input'), true);
 
+/**
+ * Get sanitized upload directory from input
+ * @param array $data Input data containing optional uploadDir
+ * @param array $config Configuration array
+ * @return string Full path to upload directory
+ */
+function getUploadDir($data, $config) {
+    $uploadSubDir = '';
+    if (isset($data['uploadDir']) && !empty($data['uploadDir'])) {
+        // Sanitize the upload directory path to prevent directory traversal attacks
+        $uploadSubDir = trim($data['uploadDir'], '/\\');
+        // Remove any directory traversal attempts
+        $uploadSubDir = str_replace(['..', '\\'], ['', '/'], $uploadSubDir);
+        // Ensure it ends with a slash
+        $uploadSubDir = rtrim($uploadSubDir, '/') . '/';
+    }
+    return $config['upload_dir'] . $uploadSubDir;
+}
+
 // Check if it's a bulk delete request (array of files)
 if (isset($input['files']) && is_array($input['files'])) {
     $results = [];
     $successCount = 0;
     $failCount = 0;
+
+    // Get upload directory (use global uploadDir if provided, otherwise check per-file)
+    $globalUploadDir = getUploadDir($input, $config);
 
     foreach ($input['files'] as $fileData) {
         if (!isset($fileData['filename']) || empty($fileData['filename'])) {
@@ -25,7 +47,9 @@ if (isset($input['files']) && is_array($input['files'])) {
         }
 
         $filename = basename($fileData['filename']); // Security: prevent directory traversal
-        $filePath = $config['upload_dir'] . $filename;
+        // Use per-file uploadDir if provided, otherwise use global
+        $uploadDir = isset($fileData['uploadDir']) ? getUploadDir($fileData, $config) : $globalUploadDir;
+        $filePath = $uploadDir . $filename;
 
         // Check if file exists and is a file
         if (file_exists($filePath) && is_file($filePath)) {
@@ -74,7 +98,8 @@ if (!isset($input['filename']) || empty($input['filename'])) {
 }
 
 $filename = basename($input['filename']); // Security: prevent directory traversal
-$filePath = $config['upload_dir'] . $filename;
+$uploadDir = getUploadDir($input, $config);
+$filePath = $uploadDir . $filename;
 
 // Check if file exists
 if (!file_exists($filePath)) {
