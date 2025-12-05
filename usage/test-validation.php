@@ -1,35 +1,40 @@
+<?php
+include_once __DIR__ . '/../includes/functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Validation Test - Only Images Allowed</title>
-    <link rel="stylesheet" href="file-uploader.css">
+    <title>Validation Test - File Uploader</title>
+    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="icon" type="image/svg+xml" href="../src/assets/images/download.svg">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            background-color: #f5f5f5;
+            background-color: #f7fafc;
+            color: #2d3748;
         }
 
-        .container {
+        .demo-main {
+            padding: 40px;
             max-width: 800px;
             margin: 0 auto;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            margin: 0 0 10px;
-            color: #2d3748;
+        .demo-header {
+            margin-bottom: 30px;
+        }
+
+        .demo-header h1 {
             font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
         }
 
-        .subtitle {
-            margin: 0 0 30px;
+        .demo-header p {
             color: #718096;
             font-size: 16px;
         }
@@ -53,6 +58,14 @@
             color: #2d3748;
         }
 
+        .demo-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
         .test-section {
             margin-top: 30px;
             padding: 20px;
@@ -74,47 +87,74 @@
             margin: 5px 0;
             color: #4a5568;
         }
+
+        @media (max-width: 992px) {
+            .demo-main {
+                padding: 20px;
+                padding-top: 70px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>File Validation Test</h1>
-        <p class="subtitle">This demo only allows image files to demonstrate validation</p>
+    <div class="demo-layout">
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
-        <div class="info-box">
-            <h3>Allowed Files Only:</h3>
-            <p><strong>Allowed:</strong> Images only (.jpg, .jpeg, .png, .gif, .webp, .svg)</p>
-            <p><strong>Max Size:</strong> 10MB</p>
-        </div>
+        <main class="demo-content">
+            <div class="demo-main">
+                <div class="demo-header">
+                    <h1>File Validation Test</h1>
+                    <p>This demo only allows image files to demonstrate validation</p>
+                </div>
 
-        <div id="fileUploader"></div>
+                <div class="info-box">
+                    <h3>Allowed Files Only:</h3>
+                    <p><strong>Allowed:</strong> Images only (.jpg, .jpeg, .png, .gif, .webp, .svg)</p>
+                    <p><strong>Max Size:</strong> 10MB</p>
+                </div>
 
-        <div class="test-section">
-            <h3>Test Cases:</h3>
-            <p>Try uploading these types of files to see the validation in action:</p>
-            <ul>
-                <li><strong>✅ Should work:</strong> Any image file (JPG, PNG, GIF, etc.)</li>
-                <li><strong>❌ Should fail with error:</strong> PDF, Word documents, Excel files</li>
-                <li><strong>❌ Should fail with error:</strong> Video files (MP4, AVI, etc.)</li>
-                <li><strong>❌ Should fail with error:</strong> ZIP files or other archives</li>
-                <li><strong>❌ Should fail with error:</strong> Files larger than 10MB</li>
-            </ul>
-            <p><strong>Important:</strong> Files that are not allowed will NOT show a preview - only an error message will appear.</p>
-        </div>
+                <div class="demo-section">
+                    <div id="fileUploader"></div>
+                </div>
+
+                <div class="test-section">
+                    <h3>Test Cases:</h3>
+                    <p>Try uploading these types of files to see the validation in action:</p>
+                    <ul>
+                        <li><strong>Should work:</strong> Any image file (JPG, PNG, GIF, etc.)</li>
+                        <li><strong>Should fail with error:</strong> PDF, Word documents, Excel files</li>
+                        <li><strong>Should fail with error:</strong> Video files (MP4, AVI, etc.)</li>
+                        <li><strong>Should fail with error:</strong> ZIP files or other archives</li>
+                        <li><strong>Should fail with error:</strong> Files larger than 10MB</li>
+                    </ul>
+                    <p><strong>Important:</strong> Files that are not allowed will NOT show a preview - only an error message will appear.</p>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <script src="file-uploader.js"></script>
-    <script>
+    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
+    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
+
+    <script type="module">
+        import { FileUploader } from '<?= asset('file-uploader.js') ?>';
+
         // Initialize uploader with ONLY images allowed
         const uploader = new FileUploader('#fileUploader', {
+            uploadUrl: '../upload.php',
+            deleteUrl: '../delete.php',
+            downloadAllUrl: '../download-all.php',
+            configUrl: '../get-config-profile.php',
             multiple: true,
+            showLimits: true,
+            defaultLimitsView: 'concise',
             // Override to allow only images
             allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
             onUploadSuccess: (fileObj, result) => {
-                console.log('✅ Upload success:', fileObj.name);
+                console.log('Upload success:', fileObj.name);
             },
             onUploadError: (fileObj, error) => {
-                console.error('❌ Upload error:', fileObj.name, error);
+                console.error('Upload error:', fileObj.name, error);
             }
         });
 

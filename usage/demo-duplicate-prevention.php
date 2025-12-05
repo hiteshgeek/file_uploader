@@ -1,3 +1,6 @@
+<?php
+include_once __DIR__ . '/../includes/functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,35 +8,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duplicate Prevention Demo - File Uploader</title>
-    <link rel="stylesheet" href="<?php echo asset('main.css'); ?>" />
     <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="icon" type="image/svg+xml" href="../src/assets/images/download.svg">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             line-height: 1.6;
             color: #2d3748;
             background: #f7fafc;
-            margin: 0;
-            padding: 0;
         }
 
-        .container {
+        .demo-main {
+            padding: 40px;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
         }
 
-        h1 {
-            font-size: 32px;
+        .demo-header {
+            margin-bottom: 30px;
+        }
+
+        .demo-header h1 {
+            font-size: 28px;
             font-weight: 700;
-            margin: 0 0 10px;
             color: #1a202c;
+            margin-bottom: 8px;
         }
 
-        .subtitle {
-            font-size: 18px;
+        .demo-header p {
             color: #718096;
-            margin: 0 0 30px;
+            font-size: 16px;
         }
 
         .info-box {
@@ -42,16 +47,18 @@
             padding: 24px;
             margin-bottom: 30px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4299e1;
         }
 
         .info-box h3 {
             margin-top: 0;
             color: #2d3748;
-            font-size: 20px;
+            font-size: 18px;
+            margin-bottom: 12px;
         }
 
         .info-box ul {
-            margin: 10px 0;
+            margin: 10px 0 0;
             padding-left: 20px;
         }
 
@@ -62,7 +69,7 @@
 
         .section {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -70,7 +77,7 @@
 
         .section-title {
             margin-top: 0;
-            font-size: 24px;
+            font-size: 20px;
             color: #1a202c;
             margin-bottom: 20px;
         }
@@ -209,77 +216,87 @@
             color: #68d391;
         }
 
-        .highlight {
-            background: #fef5e7;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
+        @media (max-width: 992px) {
+            .demo-main {
+                padding: 20px;
+                padding-top: 70px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>🔒 Duplicate Prevention Demo</h1>
-        <p class="subtitle">Test the duplicate file prevention feature with real-time configuration</p>
+    <div class="demo-layout">
+        <?php include __DIR__ . '/sidebar.php'; ?>
 
-        <div class="info-box">
-            <h3>How to Test:</h3>
-            <ul>
-                <li>✅ Enable duplicate prevention below</li>
-                <li>📁 Upload a file</li>
-                <li>🔄 Try to upload the same file again</li>
-                <li>👀 Watch the console log for duplicate detection messages</li>
-                <li>⚙️ Change the detection method to see different behaviors</li>
-            </ul>
-        </div>
+        <main class="demo-content">
+            <div class="demo-main">
+                <div class="demo-header">
+                    <h1>Duplicate Prevention Demo</h1>
+                    <p>Test the duplicate file prevention feature with real-time configuration</p>
+                </div>
 
-        <div class="section">
-            <h2 class="section-title">⚙️ Configuration</h2>
+                <div class="info-box">
+                    <h3>How to Test:</h3>
+                    <ul>
+                        <li>Enable duplicate prevention below</li>
+                        <li>Upload a file</li>
+                        <li>Try to upload the same file again</li>
+                        <li>Watch the console log for duplicate detection messages</li>
+                        <li>Change the detection method to see different behaviors</li>
+                    </ul>
+                </div>
 
-            <div class="controls">
-                <div class="control-group">
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" id="preventDuplicates" checked>
-                        <label for="preventDuplicates">Enable Duplicate Prevention</label>
+                <div class="section">
+                    <h2 class="section-title">Configuration</h2>
+
+                    <div class="controls">
+                        <div class="control-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="preventDuplicates" checked>
+                                <label for="preventDuplicates">Enable Duplicate Prevention</label>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="duplicateCheckBy">Check Duplicates By:</label>
+                            <select id="duplicateCheckBy">
+                                <option value="name">Name Only</option>
+                                <option value="size">Size Only</option>
+                                <option value="name-size" selected>Name + Size (Recommended)</option>
+                                <option value="hash">Hash (Not implemented yet)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="applyConfig()">Apply Configuration</button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Upload Files</h2>
+                    <div id="fileUploader"></div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="getUploadedFiles()">Get Uploaded Files</button>
+                        <button class="btn btn-secondary" onclick="getAllFiles()">Get All Files</button>
+                        <button class="btn btn-danger" onclick="clearFiles()">Clear All</button>
+                        <button class="btn btn-secondary" onclick="clearLog()">Clear Log</button>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <label for="duplicateCheckBy">Check Duplicates By:</label>
-                    <select id="duplicateCheckBy">
-                        <option value="name">Name Only</option>
-                        <option value="size">Size Only</option>
-                        <option value="name-size" selected>Name + Size (Recommended)</option>
-                        <option value="hash">Hash (Not implemented yet)</option>
-                    </select>
+                <div class="section">
+                    <h2 class="section-title">Event Log</h2>
+                    <div id="log"></div>
                 </div>
             </div>
-
-            <button class="btn btn-primary" onclick="applyConfig()">🔄 Apply Configuration</button>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">📤 Upload Files</h2>
-            <div id="fileUploader"></div>
-
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="getUploadedFiles()">📋 Get Uploaded Files</button>
-                <button class="btn btn-secondary" onclick="getAllFiles()">📊 Get All Files</button>
-                <button class="btn btn-danger" onclick="clearFiles()">🗑️ Clear All</button>
-                <button class="btn btn-secondary" onclick="clearLog()">🧹 Clear Log</button>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">📝 Event Log</h2>
-            <div id="log"></div>
-        </div>
+        </main>
     </div>
 
+    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
+    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
+
     <script type="module">
-        import { FileUploader } from './dist/js/file-uploader.js';
+        import { FileUploader } from '<?= asset('file-uploader.js') ?>';
 
         let uploader;
 
@@ -296,8 +313,14 @@
             }
 
             uploader = new FileUploader('#fileUploader', {
-                maxFiles: 10,
-                maxFileSize: 10 * 1024 * 1024,
+                uploadUrl: '../upload.php',
+                deleteUrl: '../delete.php',
+                downloadAllUrl: '../download-all.php',
+                cleanupZipUrl: '../cleanup-zip.php',
+                configUrl: '../get-config.php',
+                multiple: true,
+                showLimits: true,
+                defaultLimitsView: 'concise',
                 preventDuplicates: preventDuplicates,
                 duplicateCheckBy: duplicateCheckBy,
 
@@ -314,7 +337,7 @@
                 },
 
                 onDuplicateFile: (file, duplicate) => {
-                    log('warn', `🔒 DUPLICATE DETECTED: "${file.name}" (${formatBytes(file.size)}) matches existing file "${duplicate.name}"`);
+                    log('warn', `DUPLICATE DETECTED: "${file.name}" (${formatBytes(file.size)}) matches existing file "${duplicate.name}"`);
                     console.log('Duplicate file details:', {
                         newFile: file,
                         existingFile: duplicate
@@ -331,14 +354,14 @@
 
         // Apply configuration
         window.applyConfig = function() {
-            log('info', '⚙️ Applying new configuration...');
+            log('info', 'Applying new configuration...');
             initUploader();
         };
 
         // Get uploaded files
         window.getUploadedFiles = function() {
             const files = uploader.getUploadedFiles();
-            log('info', `📋 Uploaded files: ${files.length}`);
+            log('info', `Uploaded files: ${files.length}`);
             files.forEach(f => {
                 log('info', `  - ${f.name} (${formatBytes(f.size)})`);
             });
@@ -347,9 +370,9 @@
         // Get all files
         window.getAllFiles = function() {
             const files = uploader.getFiles();
-            log('info', `📊 All files: ${files.length}`);
+            log('info', `All files: ${files.length}`);
             files.forEach(f => {
-                const status = f.uploaded ? '✅ Uploaded' : f.uploading ? '⏳ Uploading' : '❌ Failed';
+                const status = f.uploaded ? 'Uploaded' : f.uploading ? 'Uploading' : 'Failed';
                 log('info', `  - ${f.name} (${formatBytes(f.size)}) - ${status}`);
             });
         };
@@ -357,13 +380,13 @@
         // Clear files
         window.clearFiles = function() {
             uploader.clear();
-            log('info', '🗑️ All files cleared');
+            log('info', 'All files cleared');
         };
 
         // Clear log
         window.clearLog = function() {
             document.getElementById('log').innerHTML = '';
-            log('info', '🧹 Log cleared');
+            log('info', 'Log cleared');
         };
 
         // Logging function

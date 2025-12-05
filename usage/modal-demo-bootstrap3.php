@@ -11,6 +11,7 @@ $basePath = get_base_path();
     <title>Modal File Uploader - Bootstrap 3 Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="icon" type="image/svg+xml" href="../src/assets/images/download.svg">
     <style>
         /* Detailed Preview Summary (shown below button) */
         .file-preview-summary {
@@ -232,10 +233,14 @@ $basePath = get_base_path();
 </head>
 
 <body>
-    <div class="container" style="margin-top: 40px;">
-        <div class="page-header">
-            <h1>Modal File Uploader <small>Bootstrap 3 Integration</small></h1>
-        </div>
+    <div class="demo-layout">
+        <?php include __DIR__ . '/sidebar.php'; ?>
+
+        <main class="demo-content">
+            <div class="container" style="margin-top: 40px;">
+                <div class="page-header">
+                    <h1>Modal File Uploader <small>Bootstrap 3 Integration</small></h1>
+                </div>
 
         <div class="alert alert-info">
             <h4>Two Display Modes</h4>
@@ -337,17 +342,8 @@ $basePath = get_base_path();
             </div>
         </div>
 
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">Other Demos</h3>
             </div>
-            <div class="panel-body">
-                <a href="index.php" class="btn btn-default btn-sm">Standalone</a>
-                <a href="modal_file_uploader.php" class="btn btn-default btn-sm">Modal (Standalone)</a>
-                <a href="modal-demo-bootstrap4.php" class="btn btn-default btn-sm">Modal BS4</a>
-                <a href="modal-demo-bootstrap5.php" class="btn btn-default btn-sm">Modal BS5</a>
-            </div>
-        </div>
+        </main>
     </div>
 
     <!-- Bootstrap 3 Modal 1 (Minimal) -->

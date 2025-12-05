@@ -11,6 +11,7 @@ $basePath = get_base_path();
     <title>Modal File Uploader - Bootstrap 5 Demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="icon" type="image/svg+xml" href="../src/assets/images/download.svg">
     <style>
         .file-preview-summary {
             display: none;
@@ -140,13 +141,17 @@ $basePath = get_base_path();
 </head>
 
 <body>
-    <div class="container mt-5">
-        <div class="bg-light p-5 rounded">
-            <h1 class="display-4">Modal File Uploader</h1>
-            <p class="lead">Bootstrap 5 Integration with Modal Interface</p>
-            <hr class="my-4">
-            <p>Click the button to open a modal with file uploader. Files persist between modal opens.</p>
-        </div>
+    <div class="demo-layout">
+        <?php include __DIR__ . '/sidebar.php'; ?>
+
+        <main class="demo-content">
+            <div class="container mt-5">
+                <div class="bg-light p-5 rounded">
+                    <h1 class="display-4">Modal File Uploader</h1>
+                    <p class="lead">Bootstrap 5 Integration with Modal Interface</p>
+                    <hr class="my-4">
+                    <p>Click the button to open a modal with file uploader. Files persist between modal opens.</p>
+                </div>
 
         <div class="card mt-4 mb-4">
             <div class="card-header bg-primary text-white">
@@ -224,14 +229,8 @@ $basePath = get_base_path();
             </div>
         </div>
 
-        <div class="alert alert-info" role="alert">
-            <h5 class="alert-heading">Other Demos</h5>
-            <hr>
-            <a href="../index.php" class="btn btn-sm btn-outline-info">Standalone</a>
-            <a href="../modal_file_uploader.php" class="btn btn-sm btn-outline-info">Modal (Standalone)</a>
-            <a href="modal-demo-bootstrap3.php" class="btn btn-sm btn-outline-info">Modal BS3</a>
-            <a href="modal-demo-bootstrap4.php" class="btn btn-sm btn-outline-info">Modal BS4</a>
-        </div>
+            </div>
+        </main>
     </div>
 
     <!-- Bootstrap 5 Modal -->
