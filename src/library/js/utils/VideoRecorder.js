@@ -8,8 +8,32 @@
  * 2. CDN: <script src="https://unpkg.com/fix-webm-duration@1.0.5/fix-webm-duration.js"></script>
  */
 
-import { fixWebmDuration } from "@fix-webm-duration/fix";
 import RecordingSizeManager from "./RecordingSizeManager.js";
+
+// Dynamic import for fixWebmDuration - works in both bundled and unbundled contexts
+let fixWebmDuration = null;
+
+// Try to load from window (CDN) first, then try dynamic import
+async function loadFixWebmDuration() {
+  if (fixWebmDuration) return fixWebmDuration;
+
+  // Check if loaded via CDN script tag
+  if (typeof window !== "undefined" && typeof window.fixWebmDuration === "function") {
+    fixWebmDuration = window.fixWebmDuration;
+    return fixWebmDuration;
+  }
+
+  // Try dynamic import (works when bundled)
+  try {
+    const module = await import("@fix-webm-duration/fix");
+    fixWebmDuration = module.fixWebmDuration;
+    return fixWebmDuration;
+  } catch (e) {
+    // Module not available - duration fix won't be applied
+    console.warn("VideoRecorder: fix-webm-duration not available. Video duration metadata may be incorrect.");
+    return null;
+  }
+}
 
 export default class VideoRecorder {
   constructor(options = {}) {
@@ -355,20 +379,8 @@ export default class VideoRecorder {
 
           console.log("Recording stopped:", { mimeType, durationMs });
 
-          // Helper to find a fixer function (works for global CDN or ESM import)
-          const getFixer = () => {
-            if (
-              typeof window !== "undefined" &&
-              typeof window.fixWebmDuration === "function"
-            ) {
-              return window.fixWebmDuration;
-            }
-            // If you used an ESM import, you can reference it directly in scope
-            if (typeof fixWebmDuration === "function") return fixWebmDuration;
-            return null;
-          };
-
-          const fixer = getFixer();
+          // Load fixer dynamically (works for global CDN, ESM import, or bundled)
+          const fixer = await loadFixWebmDuration();
 
           if (mimeType.includes("webm") && fixer && durationMs > 0) {
             try {

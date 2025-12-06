@@ -3,7 +3,29 @@
  * Handles audio-only recording with microphone and/or system audio
  */
 
-import { fixWebmDuration } from "@fix-webm-duration/fix";
+// Dynamic import for fixWebmDuration - works in both bundled and unbundled contexts
+let fixWebmDuration = null;
+
+async function loadFixWebmDuration() {
+  if (fixWebmDuration) return fixWebmDuration;
+
+  // Check if loaded via CDN script tag
+  if (typeof window !== "undefined" && typeof window.fixWebmDuration === "function") {
+    fixWebmDuration = window.fixWebmDuration;
+    return fixWebmDuration;
+  }
+
+  // Try dynamic import (works when bundled)
+  try {
+    const module = await import("@fix-webm-duration/fix");
+    fixWebmDuration = module.fixWebmDuration;
+    return fixWebmDuration;
+  } catch (e) {
+    // Module not available - duration fix won't be applied
+    console.warn("AudioRecorder: fix-webm-duration not available. Audio duration metadata may be incorrect.");
+    return null;
+  }
+}
 
 export default class AudioRecorder {
   constructor(options = {}) {
@@ -282,10 +304,13 @@ export default class AudioRecorder {
 
           console.log("Audio recording stopped:", { mimeType, durationMs });
 
+          // Load fixer dynamically (works for global CDN, ESM import, or bundled)
+          const fixer = await loadFixWebmDuration();
+
           // Fix WebM duration if needed
-          if (mimeType.includes("webm") && fixWebmDuration && durationMs > 0) {
+          if (mimeType.includes("webm") && fixer && durationMs > 0) {
             try {
-              const fixed = await fixWebmDuration(blob, durationMs, {
+              const fixed = await fixer(blob, durationMs, {
                 logger: console.debug,
               });
               if (fixed instanceof Blob) {
@@ -302,7 +327,7 @@ export default class AudioRecorder {
             console.warn("⚠️ Audio WebM duration fix skipped:", {
               reason: !mimeType.includes("webm")
                 ? "Not WebM format"
-                : !fixWebmDuration
+                : !fixer
                 ? "fixWebmDuration not available"
                 : !(durationMs > 0)
                 ? "No duration recorded"

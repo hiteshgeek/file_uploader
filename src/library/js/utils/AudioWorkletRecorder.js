@@ -2,9 +2,9 @@
  * AudioWorkletRecorder Class
  * High-quality audio recording using Web Audio API with AudioWorklet
  * Provides better audio quality and control compared to MediaRecorder
+ * Note: This recorder outputs WAV format which has proper duration metadata,
+ * so it doesn't require the fix-webm-duration library.
  */
-
-import { fixWebmDuration } from "@fix-webm-duration/fix";
 
 export default class AudioWorkletRecorder {
   constructor(options = {}) {

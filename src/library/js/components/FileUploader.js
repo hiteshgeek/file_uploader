@@ -155,6 +155,7 @@ const DEFAULT_OPTIONS = {
     externalRecordingToolbarContainer: null,
     regionCaptureShowDimensions: true,
     regionCaptureDimensionsPosition: "center",
+    regionCaptureImmediateCapture: true,
   },
 
   // ============================================================================
@@ -970,6 +971,7 @@ export default class FileUploader {
         this.pageCapture = new PageCapture({
           showDimensions: this.options.regionCaptureShowDimensions,
           dimensionsPosition: this.options.regionCaptureDimensionsPosition,
+          immediateCapture: this.options.regionCaptureImmediateCapture,
           onSelectionStart: () => {
             // Region selection started
           },

@@ -5,6 +5,42 @@
  */
 
 import Tooltip from "./tooltip/Tooltip.js";
+import { FileUploader } from "./FileUploader.js";
+
+/**
+ * Get FileUploader's default options (flattened)
+ * @returns {Object} Flat object with all default option values
+ */
+function getFileUploaderDefaults() {
+  // Import directly from FileUploader class
+  if (FileUploader && typeof FileUploader.getDefaultOptions === 'function') {
+    const groupedDefaults = FileUploader.getDefaultOptions();
+    // Flatten the grouped defaults
+    const flat = {};
+    for (const category of Object.values(groupedDefaults)) {
+      if (typeof category === 'object' && category !== null && !Array.isArray(category)) {
+        Object.assign(flat, category);
+      }
+    }
+    console.log('ConfigBuilder: Loaded defaults from FileUploader:', Object.keys(flat).length, 'options');
+    return flat;
+  }
+  // Fallback: try window.FileUploader (for IIFE)
+  if (typeof window !== 'undefined' && window.FileUploader && typeof window.FileUploader.getDefaultOptions === 'function') {
+    const groupedDefaults = window.FileUploader.getDefaultOptions();
+    const flat = {};
+    for (const category of Object.values(groupedDefaults)) {
+      if (typeof category === 'object' && category !== null && !Array.isArray(category)) {
+        Object.assign(flat, category);
+      }
+    }
+    console.log('ConfigBuilder: Loaded defaults from window.FileUploader:', Object.keys(flat).length, 'options');
+    return flat;
+  }
+  // Final fallback: return empty object (will use hardcoded defaults in option definitions)
+  console.warn('ConfigBuilder: FileUploader not found, using fallback defaults');
+  return {};
+}
 
 export default class ConfigBuilder {
   constructor(element, options = {}) {
@@ -22,11 +58,16 @@ export default class ConfigBuilder {
       ...options,
     };
 
+    // Get FileUploader's default options to use as defaults
+    this.fileUploaderDefaults = getFileUploaderDefaults();
+    console.log('ConfigBuilder: fileUploaderDefaults loaded:', this.fileUploaderDefaults);
+
     // All available options with metadata
     this.optionDefinitions = this.getOptionDefinitions();
 
     // Current config values
     this.config = this.getDefaultConfig();
+    console.log('ConfigBuilder: config initialized with defaults:', this.config);
 
     // Current active preset
     this.currentPreset = "default";
@@ -482,6 +523,14 @@ export default class ConfigBuilder {
             ],
             group: "Page Capture",
           },
+          regionCaptureImmediateCapture: {
+            type: "boolean",
+            default: true,
+            label: "Immediate Capture",
+            hint: "When enabled, captures immediately after selection. When disabled, shows a confirmation toolbar allowing repositioning before capture.",
+            dependsOn: "enableRegionCapture",
+            group: "Page Capture",
+          },
 
           // Screen Recording Group
           enableScreenCapture: {
@@ -898,13 +947,29 @@ export default class ConfigBuilder {
   }
 
   /**
+   * Get the default value for an option
+   * Prioritizes FileUploader defaults, falls back to hardcoded default in option definition
+   * @param {string} key - Option key
+   * @param {*} fallbackDefault - Fallback default value from option definition
+   * @returns {*} The default value
+   */
+  getOptionDefault(key, fallbackDefault) {
+    // Check if FileUploader has a default for this option
+    if (this.fileUploaderDefaults && key in this.fileUploaderDefaults) {
+      return structuredClone(this.fileUploaderDefaults[key]);
+    }
+    // Fall back to hardcoded default
+    return structuredClone(fallbackDefault);
+  }
+
+  /**
    * Get default config values
    */
   getDefaultConfig() {
     const config = {};
     for (const category of Object.values(this.optionDefinitions)) {
       for (const [key, def] of Object.entries(category.options)) {
-        config[key] = structuredClone(def.default);
+        config[key] = this.getOptionDefault(key, def.default);
       }
     }
     return config;
@@ -7823,6 +7888,7 @@ export default class ConfigBuilder {
     externalRecordingToolbarContainer: "mediaCapture",
     regionCaptureShowDimensions: "mediaCapture",
     regionCaptureDimensionsPosition: "mediaCapture",
+    regionCaptureImmediateCapture: "mediaCapture",
     // Carousel
     enableCarouselPreview: "carousel",
     carouselAutoPreload: "carousel",

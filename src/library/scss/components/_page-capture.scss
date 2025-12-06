@@ -371,3 +371,129 @@ $component-prefix: $file-uploader-prefix !default;
     }
   }
 }
+
+// ============================================================================
+// Confirmation Mode Styles
+// ============================================================================
+
+// Selection box in confirmation mode (draggable)
+.#{$component-prefix}-page-capture-selection-box.confirmation-mode {
+  border-style: solid !important;
+  cursor: move;
+  pointer-events: auto;
+
+  &.dragging {
+    cursor: grabbing;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5), 0 0 30px rgba(99, 102, 241, 0.3);
+  }
+}
+
+// Confirmation Toolbar
+.#{$component-prefix}-page-capture-confirmation-toolbar {
+  position: fixed;
+  z-index: 1000001;
+  display: flex;
+  align-items: center;
+  gap: var(--fu-spacing-sm);
+  padding: var(--fu-spacing-sm);
+  background: var(--#{$component-prefix}-page-capture-instructions-bg);
+  border-radius: var(--fu-radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(10px);
+    animation: #{$component-prefix}-page-capture-toolbar-fade-in 0.2s ease-out;
+  }
+}
+
+@keyframes #{$component-prefix}-page-capture-toolbar-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Confirmation toolbar buttons
+.#{$component-prefix}-page-capture-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--fu-radius-md);
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-medium);
+  font-family: var(--fu-font-family-base);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Accept button (primary action)
+.#{$component-prefix}-page-capture-btn-accept {
+  background: var(--fu-color-success, #10b981);
+  color: #ffffff;
+
+  &:hover {
+    background: var(--fu-color-success-dark, #059669);
+  }
+}
+
+// Recapture button (secondary action)
+.#{$component-prefix}-page-capture-btn-recapture {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--#{$component-prefix}-page-capture-instructions-text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+// Cancel button
+.#{$component-prefix}-page-capture-btn-cancel {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+}
+
+// Responsive adjustments for confirmation toolbar
+@include respond-below("sm") {
+  .#{$component-prefix}-page-capture-confirmation-toolbar {
+    padding: var(--fu-spacing-xs);
+    gap: var(--fu-spacing-xs);
+  }
+
+  .#{$component-prefix}-page-capture-btn {
+    padding: 6px 10px;
+    font-size: var(--fu-font-size-xs);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}

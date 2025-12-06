@@ -32,7 +32,10 @@ class PageCapture {
 
       // Dimensions display options
       showDimensions: options.showDimensions !== false, // Show dimensions by default
-      dimensionsPosition: options.dimensionsPosition || 'bottom-center', // Position of dimensions display
+      dimensionsPosition: options.dimensionsPosition || 'center', // Position of dimensions display
+
+      // Capture behavior options
+      immediateCapture: options.immediateCapture !== false, // Capture immediately after selection (default: true)
 
       // Output options
       imageFormat: options.imageFormat || 'image/png',
@@ -56,12 +59,19 @@ class PageCapture {
     this.selectionBox = null;
     this.dimensionsDisplay = null;
     this.shapeFeedback = null;
+    this.confirmationToolbar = null;
     this.startPoint = null;
     this.lastMousePosition = null; // Track last mouse position for key toggle
     this.isSquareMode = false; // Ctrl key pressed for square/circle selection
     this.isOvalMode = this.loadShapePreference(); // Load saved shape preference
     this.html2canvasLoaded = false;
     this.html2canvasPromise = null;
+
+    // Confirmation mode state
+    this.isConfirmationMode = false;
+    this.confirmedSelection = null; // Stores the finalized selection { left, top, width, height, isOval }
+    this.isDraggingSelection = false;
+    this.dragStartPoint = null;
   }
 
   /**
@@ -173,6 +183,18 @@ class PageCapture {
         y: 0,
         width: document.documentElement.scrollWidth,
         height: document.documentElement.scrollHeight,
+        // Ignore elements that may cause issues (blob URLs, iframes with cross-origin, etc.)
+        ignoreElements: (element) => {
+          // Ignore elements with blob: src that may have been revoked
+          if (element.src && element.src.startsWith('blob:')) {
+            return true;
+          }
+          // Ignore video elements (they often have blob sources)
+          if (element.tagName === 'VIDEO') {
+            return true;
+          }
+          return false;
+        },
       });
 
       // Restore scroll position
@@ -224,6 +246,16 @@ class PageCapture {
         y: window.scrollY,
         width: window.innerWidth,
         height: window.innerHeight,
+        // Ignore elements that may cause issues (blob URLs, iframes with cross-origin, etc.)
+        ignoreElements: (element) => {
+          if (element.src && element.src.startsWith('blob:')) {
+            return true;
+          }
+          if (element.tagName === 'VIDEO') {
+            return true;
+          }
+          return false;
+        },
       });
 
       const blob = await this.canvasToBlob(canvas);
@@ -334,6 +366,15 @@ class PageCapture {
    */
   handleMouseDown(e) {
     if (e.button !== 0) return; // Only left click
+
+    // If in confirmation mode, exit it first (user is starting a new selection)
+    if (this.isConfirmationMode) {
+      this.exitConfirmationMode();
+      // Reset previous selection box
+      this.selectionBox.style.display = 'none';
+      this.selectionOverlay.style.clipPath = '';
+      this.selectionBox.classList.remove('confirmation-mode', 'dragging');
+    }
 
     // Store both viewport coords (for display) and document coords (for capture)
     this.startPoint = {
@@ -462,6 +503,13 @@ class PageCapture {
    * Handle mouse up - complete selection
    */
   async handleMouseUp(e) {
+    // In confirmation mode, handle drag end
+    if (this.isDraggingSelection) {
+      this.isDraggingSelection = false;
+      this.dragStartPoint = null;
+      return;
+    }
+
     if (!this.startPoint) return;
 
     // Check if Ctrl is pressed for square/circle mode
@@ -518,12 +566,325 @@ class PageCapture {
       return;
     }
 
-    // Capture the selected region
+    // If not immediate capture, show confirmation mode
+    if (!this.options.immediateCapture) {
+      this.enterConfirmationMode(left, top, width, height, isOval);
+      return;
+    }
+
+    // Capture the selected region immediately
+    await this.performCapture(left, top, width, height, isOval);
+  }
+
+  /**
+   * Enter confirmation mode - show toolbar and allow repositioning
+   */
+  enterConfirmationMode(left, top, width, height, isOval) {
+    this.isConfirmationMode = true;
+
+    // Store the selection data (document-relative coordinates)
+    this.confirmedSelection = { left, top, width, height, isOval };
+
+    // Convert to viewport coordinates for display
+    const viewportLeft = left - window.scrollX;
+    const viewportTop = top - window.scrollY;
+
+    // Update selection box appearance for confirmation mode
+    this.selectionBox.classList.add('confirmation-mode');
+
+    // Create and show confirmation toolbar
+    this.createConfirmationToolbar();
+
+    // Update instructions to show repositioning help
+    const instructions = this.selectionOverlay.querySelector('.file-uploader-page-capture-instructions');
+    if (instructions) {
+      instructions.innerHTML = `
+        <span class="file-uploader-page-capture-instructions-text">Drag to reposition selection</span>
+        <div class="file-uploader-page-capture-instructions-shortcuts">
+          <span class="file-uploader-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
+          <span class="file-uploader-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
+          <span class="file-uploader-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
+        </div>
+      `;
+      instructions.style.opacity = '1';
+    }
+
+    // Bind drag events for repositioning
+    this._handleConfirmationMouseDown = this.handleConfirmationMouseDown.bind(this);
+    this._handleConfirmationMouseMove = this.handleConfirmationMouseMove.bind(this);
+    this._handleConfirmationMouseUp = this.handleConfirmationMouseUp.bind(this);
+
+    this.selectionBox.addEventListener('mousedown', this._handleConfirmationMouseDown);
+    document.addEventListener('mousemove', this._handleConfirmationMouseMove);
+    document.addEventListener('mouseup', this._handleConfirmationMouseUp);
+  }
+
+  /**
+   * Create confirmation toolbar with Accept, Recapture, Cancel buttons
+   */
+  createConfirmationToolbar() {
+    this.confirmationToolbar = document.createElement('div');
+    this.confirmationToolbar.className = 'file-uploader-page-capture-confirmation-toolbar';
+    this.confirmationToolbar.innerHTML = `
+      <button class="file-uploader-page-capture-btn file-uploader-page-capture-btn-accept" data-action="accept">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Accept
+      </button>
+      <button class="file-uploader-page-capture-btn file-uploader-page-capture-btn-recapture" data-action="recapture">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Recapture
+      </button>
+      <button class="file-uploader-page-capture-btn file-uploader-page-capture-btn-cancel" data-action="cancel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        Cancel
+      </button>
+    `;
+
+    // Bind button click handlers
+    this._handleToolbarClick = (e) => {
+      const button = e.target.closest('[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      if (action === 'accept') {
+        this.acceptSelection();
+      } else if (action === 'recapture') {
+        this.restartSelection();
+      } else if (action === 'cancel') {
+        this.cancelSelection();
+      }
+    };
+
+    this.confirmationToolbar.addEventListener('click', this._handleToolbarClick);
+    document.body.appendChild(this.confirmationToolbar);
+
+    // Position toolbar below the selection
+    this.updateToolbarPosition();
+  }
+
+  /**
+   * Update confirmation toolbar position based on selection
+   */
+  updateToolbarPosition() {
+    if (!this.confirmationToolbar || !this.confirmedSelection) return;
+
+    const { left, top, width, height } = this.confirmedSelection;
+    const viewportLeft = left - window.scrollX;
+    const viewportTop = top - window.scrollY;
+    const viewportBottom = viewportTop + height;
+
+    // Get toolbar dimensions
+    const toolbarRect = this.confirmationToolbar.getBoundingClientRect();
+    const toolbarWidth = toolbarRect.width || 280;
+    const toolbarHeight = toolbarRect.height || 40;
+    const offset = 12;
+
+    // Position toolbar centered below selection
+    let toolbarX = viewportLeft + (width / 2) - (toolbarWidth / 2);
+    let toolbarY = viewportBottom + offset;
+
+    // If not enough space below, position above
+    if (toolbarY + toolbarHeight > window.innerHeight - 10) {
+      toolbarY = viewportTop - toolbarHeight - offset;
+    }
+
+    // Keep within horizontal viewport bounds
+    toolbarX = Math.max(10, Math.min(toolbarX, window.innerWidth - toolbarWidth - 10));
+
+    // Keep within vertical viewport bounds
+    toolbarY = Math.max(10, Math.min(toolbarY, window.innerHeight - toolbarHeight - 10));
+
+    this.confirmationToolbar.style.left = toolbarX + 'px';
+    this.confirmationToolbar.style.top = toolbarY + 'px';
+  }
+
+  /**
+   * Handle mouse down on selection box in confirmation mode (start drag)
+   */
+  handleConfirmationMouseDown(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.isDraggingSelection = true;
+    this.dragStartPoint = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      selectionLeft: this.confirmedSelection.left,
+      selectionTop: this.confirmedSelection.top
+    };
+
+    this.selectionBox.classList.add('dragging');
+  }
+
+  /**
+   * Handle mouse move in confirmation mode (drag selection)
+   */
+  handleConfirmationMouseMove(e) {
+    if (!this.isDraggingSelection || !this.dragStartPoint) return;
+
+    const deltaX = e.clientX - this.dragStartPoint.clientX;
+    const deltaY = e.clientY - this.dragStartPoint.clientY;
+
+    // Update selection position (document coordinates)
+    this.confirmedSelection.left = this.dragStartPoint.selectionLeft + deltaX;
+    this.confirmedSelection.top = this.dragStartPoint.selectionTop + deltaY;
+
+    // Update selection box visual position (viewport coordinates)
+    const viewportLeft = this.confirmedSelection.left - window.scrollX;
+    const viewportTop = this.confirmedSelection.top - window.scrollY;
+
+    this.selectionBox.style.left = viewportLeft + 'px';
+    this.selectionBox.style.top = viewportTop + 'px';
+
+    // Update clip-path on overlay
+    this.updateClipPath();
+
+    // Update toolbar position
+    this.updateToolbarPosition();
+
+    // Update dimensions display
+    if (this.options.showDimensions && this.dimensionsDisplay) {
+      this.updateDimensionsDisplay(
+        viewportLeft,
+        viewportTop,
+        this.confirmedSelection.width,
+        this.confirmedSelection.height
+      );
+    }
+  }
+
+  /**
+   * Handle mouse up in confirmation mode (end drag)
+   */
+  handleConfirmationMouseUp(e) {
+    if (this.isDraggingSelection) {
+      this.isDraggingSelection = false;
+      this.dragStartPoint = null;
+      this.selectionBox.classList.remove('dragging');
+    }
+  }
+
+  /**
+   * Update clip-path based on current selection
+   */
+  updateClipPath() {
+    if (!this.selectionOverlay || !this.confirmedSelection) return;
+
+    const { left, top, width, height, isOval } = this.confirmedSelection;
+    const viewportLeft = left - window.scrollX;
+    const viewportTop = top - window.scrollY;
+    const right = viewportLeft + width;
+    const bottom = viewportTop + height;
+
+    if (isOval) {
+      const centerX = viewportLeft + width / 2;
+      const centerY = viewportTop + height / 2;
+      const radiusX = width / 2;
+      const radiusY = height / 2;
+      const points = this.generateEllipseClipPath(centerX, centerY, radiusX, radiusY, 48);
+      this.selectionOverlay.style.clipPath = points;
+    } else {
+      this.selectionOverlay.style.clipPath = `polygon(
+        0% 0%, 0% 100%, ${viewportLeft}px 100%, ${viewportLeft}px ${viewportTop}px,
+        ${right}px ${viewportTop}px, ${right}px ${bottom}px,
+        ${viewportLeft}px ${bottom}px, ${viewportLeft}px 100%, 100% 100%, 100% 0%
+      )`;
+    }
+  }
+
+  /**
+   * Accept the current selection and perform capture
+   */
+  async acceptSelection() {
+    if (!this.confirmedSelection) return;
+
+    const { left, top, width, height, isOval } = this.confirmedSelection;
+    await this.performCapture(left, top, width, height, isOval);
+  }
+
+  /**
+   * Restart the selection process
+   */
+  restartSelection() {
+    // Exit confirmation mode
+    this.exitConfirmationMode();
+
+    // Reset selection box
+    this.selectionBox.style.display = 'none';
+    this.selectionOverlay.style.clipPath = '';
+    this.selectionOverlay.classList.remove('selecting');
+
+    // Show original instructions
+    const instructions = this.selectionOverlay.querySelector('.file-uploader-page-capture-instructions');
+    if (instructions) {
+      instructions.innerHTML = `
+        <span class="file-uploader-page-capture-instructions-text">Click and drag to select an area</span>
+        <div class="file-uploader-page-capture-instructions-shortcuts">
+          <span class="file-uploader-page-capture-shortcut${!this.isOvalMode ? ' active' : ''}" data-shape="rectangle"><kbd>1</kbd> Rectangle</span>
+          <span class="file-uploader-page-capture-shortcut${this.isOvalMode ? ' active' : ''}" data-shape="oval"><kbd>2</kbd> Oval</span>
+          <span class="file-uploader-page-capture-shortcut"><kbd>Ctrl</kbd> Square/Circle</span>
+          <span class="file-uploader-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
+        </div>
+      `;
+      instructions.style.opacity = '1';
+    }
+
+    // Hide dimensions display
+    if (this.dimensionsDisplay) {
+      this.dimensionsDisplay.style.display = 'none';
+    }
+  }
+
+  /**
+   * Exit confirmation mode and clean up
+   */
+  exitConfirmationMode() {
+    this.isConfirmationMode = false;
+    this.confirmedSelection = null;
+    this.isDraggingSelection = false;
+    this.dragStartPoint = null;
+
+    // Remove confirmation toolbar first (so it's always removed)
+    if (this.confirmationToolbar) {
+      if (this._handleToolbarClick) {
+        this.confirmationToolbar.removeEventListener('click', this._handleToolbarClick);
+      }
+      this.confirmationToolbar.remove();
+      this.confirmationToolbar = null;
+    }
+
+    // Remove drag event listeners
+    if (this._handleConfirmationMouseDown && this.selectionBox) {
+      this.selectionBox.removeEventListener('mousedown', this._handleConfirmationMouseDown);
+    }
+    if (this._handleConfirmationMouseMove) {
+      document.removeEventListener('mousemove', this._handleConfirmationMouseMove);
+    }
+    if (this._handleConfirmationMouseUp) {
+      document.removeEventListener('mouseup', this._handleConfirmationMouseUp);
+    }
+
+    // Remove confirmation mode class
+    if (this.selectionBox) {
+      this.selectionBox.classList.remove('confirmation-mode', 'dragging');
+    }
+  }
+
+  /**
+   * Perform the actual capture
+   */
+  async performCapture(left, top, width, height, isOval) {
     // Store the resolve/reject callbacks before removing overlay
     const resolveSelection = this._resolveSelection;
     const rejectSelection = this._rejectSelection;
 
     try {
+      // Exit confirmation mode if active
+      if (this.isConfirmationMode) {
+        this.exitConfirmationMode();
+      }
+
       // Remove overlay first (so it doesn't appear in the capture)
       this.removeSelectionOverlay();
 
@@ -561,6 +922,15 @@ class PageCapture {
   handleKeyDown(e) {
     if (e.key === 'Escape') {
       this.cancelSelection();
+    } else if (this.isConfirmationMode) {
+      // Handle confirmation mode keyboard shortcuts
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.acceptSelection();
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        this.restartSelection();
+      }
     } else if ((e.key === 'Control' || e.key === 'Meta') && this.startPoint && this.lastMousePosition) {
       // Toggle to square/circle mode immediately when Ctrl is pressed
       this.isSquareMode = true;
@@ -791,14 +1161,17 @@ class PageCapture {
    * Cancel the current selection
    */
   cancelSelection() {
+    // Store reference before removing overlay (which clears it)
+    const rejectSelection = this._rejectSelection;
+
     this.removeSelectionOverlay();
 
     if (this.options.onSelectionCancel) {
       this.options.onSelectionCancel();
     }
 
-    if (this._rejectSelection) {
-      this._rejectSelection(new Error('Selection cancelled'));
+    if (rejectSelection) {
+      rejectSelection(new Error('Selection cancelled'));
     }
   }
 
@@ -835,6 +1208,26 @@ class PageCapture {
       this.shapeFeedback = null;
     }
 
+    // Confirmation toolbar cleanup
+    if (this.confirmationToolbar) {
+      if (this._handleToolbarClick) {
+        this.confirmationToolbar.removeEventListener('click', this._handleToolbarClick);
+      }
+      this.confirmationToolbar.remove();
+      this.confirmationToolbar = null;
+    }
+
+    // Confirmation mode event listeners cleanup
+    if (this._handleConfirmationMouseDown && this.selectionBox) {
+      this.selectionBox.removeEventListener('mousedown', this._handleConfirmationMouseDown);
+    }
+    if (this._handleConfirmationMouseMove) {
+      document.removeEventListener('mousemove', this._handleConfirmationMouseMove);
+    }
+    if (this._handleConfirmationMouseUp) {
+      document.removeEventListener('mouseup', this._handleConfirmationMouseUp);
+    }
+
     // Restore scrolling
     document.body.style.overflow = '';
 
@@ -846,6 +1239,10 @@ class PageCapture {
 
     this.isSelecting = false;
     this.isSquareMode = false;
+    this.isConfirmationMode = false;
+    this.confirmedSelection = null;
+    this.isDraggingSelection = false;
+    this.dragStartPoint = null;
     // Note: isOvalMode is NOT reset here to preserve the saved shape preference
     this.startPoint = null;
     this.lastMousePosition = null;
@@ -888,6 +1285,16 @@ class PageCapture {
         height: height,
         windowWidth: document.documentElement.scrollWidth,
         windowHeight: document.documentElement.scrollHeight,
+        // Ignore elements that may cause issues (blob URLs, iframes with cross-origin, etc.)
+        ignoreElements: (element) => {
+          if (element.src && element.src.startsWith('blob:')) {
+            return true;
+          }
+          if (element.tagName === 'VIDEO') {
+            return true;
+          }
+          return false;
+        },
       });
 
       // Apply ellipse mask if in oval/circle mode
