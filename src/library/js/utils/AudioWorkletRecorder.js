@@ -36,6 +36,7 @@ export default class AudioWorkletRecorder {
     this.systemAudioEnabled = true;
     this.micGainNode = null;
     this.systemGainNode = null;
+    this.totalSamples = 0; // Track total samples for size estimation
   }
 
   /**
@@ -222,6 +223,10 @@ export default class AudioWorkletRecorder {
       this.workletNode.port.onmessage = (e) => {
         if (e.data.audio) {
           this.audioChunks.push(e.data.audio);
+          // Track total samples for size estimation
+          if (e.data.audio[0]) {
+            this.totalSamples += e.data.audio[0].length;
+          }
         }
       };
 
@@ -508,6 +513,44 @@ export default class AudioWorkletRecorder {
   }
 
   /**
+   * Get current size tracking status for the recording
+   * Calculates estimated WAV file size based on accumulated samples
+   * @returns {Object} Size status with formatted values
+   */
+  getSizeStatus() {
+    // Calculate estimated WAV file size
+    // WAV size = 44 bytes header + (samples * channels * bytesPerSample)
+    const bytesPerSample = this.options.bitDepth / 8;
+    const channels = this.options.numberOfChannels;
+    const headerSize = 44;
+
+    // Total data size = samples * channels * bytesPerSample
+    const dataSize = this.totalSamples * channels * bytesPerSample;
+    const estimatedSize = headerSize + dataSize;
+
+    return {
+      accumulatedSize: estimatedSize,
+      formattedSize: this.formatBytes(estimatedSize),
+      duration: this.getRecordingDuration(),
+      isWarning: false,
+      isNearLimit: false,
+    };
+  }
+
+  /**
+   * Format bytes to human-readable string
+   * @param {number} bytes - Size in bytes
+   * @returns {string} Formatted string
+   */
+  formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  /**
    * Cleanup all resources
    */
   cleanup() {
@@ -567,6 +610,7 @@ export default class AudioWorkletRecorder {
     this.startTime = null;
     this.pausedDuration = 0;
     this.pauseStartTime = null;
+    this.totalSamples = 0;
   }
 
   /**

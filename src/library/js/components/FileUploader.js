@@ -103,6 +103,10 @@ export default class FileUploader {
       recordingCountdownDuration: 3, // Countdown duration before recording starts in seconds (default 3)
       enableMicrophoneAudio: true, // Enable microphone audio recording
       enableSystemAudio: true, // Enable system audio recording
+      showRecordingSize: true, // Show approximate file size during recording
+      videoBitsPerSecond: 2500000, // Video bitrate in bits per second (default 2.5 Mbps)
+      audioBitsPerSecond: 128000, // Audio bitrate in bits per second (default 128 Kbps)
+      maxRecordingFileSize: null, // Max recording file size in bytes (null = no limit, uses maxFileSize if set)
       externalRecordingToolbarContainer: null, // External element/selector for recording toolbar (for modal/external button modes)
       // Carousel preview options
       enableCarouselPreview: true, // Enable carousel preview modal on file click
@@ -506,9 +510,11 @@ export default class FileUploader {
       this.recordingIndicator = document.createElement("div");
       this.recordingIndicator.className = "file-uploader-recording-indicator";
       this.recordingIndicator.style.display = "none";
+      const showSize = this.options.showRecordingSize;
       this.recordingIndicator.innerHTML = `
         <span class="file-uploader-recording-dot"></span>
         <span class="file-uploader-recording-time">00:00 / 05:00</span>
+        ${showSize ? '<span class="file-uploader-recording-size">~0 B</span>' : ''}
       `;
       // Prevent recording indicator from triggering file upload
       this.recordingIndicator.addEventListener("click", (e) => {
@@ -560,9 +566,11 @@ export default class FileUploader {
         this.recordingIndicator = document.createElement("div");
         this.recordingIndicator.className = "file-uploader-recording-indicator";
         this.recordingIndicator.style.display = "none";
+        const showSizeAudio = this.options.showRecordingSize;
         this.recordingIndicator.innerHTML = `
           <span class="file-uploader-recording-dot"></span>
           <span class="file-uploader-recording-time">00:00 / 05:00</span>
+          ${showSizeAudio ? '<span class="file-uploader-recording-size">~0 B</span>' : ''}
         `;
         this.recordingIndicator.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -724,6 +732,8 @@ export default class FileUploader {
         maxDuration: this.options.maxVideoRecordingDuration * 1000, // Convert to ms
         systemAudioConstraints: this.options.enableSystemAudio,
         microphoneAudioConstraints: this.options.enableMicrophoneAudio,
+        videoBitsPerSecond: this.options.videoBitsPerSecond,
+        audioBitsPerSecond: this.options.audioBitsPerSecond,
         onAutoStop: (file) => this.handleVideoAutoStop(file),
       });
 
@@ -1689,6 +1699,10 @@ export default class FileUploader {
     this.externalDropZoneElement = dropZoneElement;
     const activeClass = this.options.externalDropZoneActiveClass;
 
+    // Add tooltip to indicate drop is supported
+    dropZoneElement.setAttribute('data-tooltip-text', 'Drop files here');
+    dropZoneElement.setAttribute('data-tooltip-position', 'top');
+
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       dropZoneElement.addEventListener(eventName, (e) => {
@@ -1723,6 +1737,9 @@ export default class FileUploader {
         this.handleFiles(files);
       }
     });
+
+    // Initialize tooltip on the external drop zone
+    Tooltip.init(dropZoneElement);
   }
 
   /**

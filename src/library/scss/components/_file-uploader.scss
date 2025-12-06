@@ -2207,9 +2207,20 @@ $component-prefix: $file-uploader-prefix !default;
 // ============================================================================
 
 .#{$component-prefix}-drop-active {
-  outline: 2px dashed var(--fu-color-primary) !important;
-  outline-offset: 2px;
-  background-color: rgba(var(--fu-color-primary-rgb, 59, 130, 246), 0.1) !important;
-  transform: scale(1.02);
+  position: relative;
+  outline: 3px dashed var(--fu-color-primary) !important;
+  outline-offset: 3px;
+  transform: scale(1.03);
   transition: all 0.2s ease;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+
+  // Add a subtle inner glow effect
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
 }

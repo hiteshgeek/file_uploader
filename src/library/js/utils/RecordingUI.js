@@ -442,6 +442,12 @@ export default class RecordingUI {
           ? Math.floor(this.uploader.options.maxAudioRecordingDuration)
           : Math.floor(this.uploader.options.maxVideoRecordingDuration);
 
+        // Get size status if available
+        let sizeStatus = null;
+        if (typeof recorder.getSizeStatus === 'function') {
+          sizeStatus = recorder.getSizeStatus();
+        }
+
         // Update time on all recording indicators (internal and external)
         const timeElements = [];
 
@@ -477,6 +483,31 @@ export default class RecordingUI {
 
           timeElement.textContent = timeText;
         });
+
+        // Update size display on all recording indicators
+        if (sizeStatus) {
+          const sizeElements = [];
+
+          // Internal size element
+          const internalSizeEl = this.uploader.recordingIndicator?.querySelector(".file-uploader-recording-size");
+          if (internalSizeEl) sizeElements.push(internalSizeEl);
+
+          // External size element
+          const externalSizeEl = this.externalRecordingIndicator?.querySelector(".file-uploader-recording-size");
+          if (externalSizeEl) sizeElements.push(externalSizeEl);
+
+          sizeElements.forEach(sizeElement => {
+            // Add approximation symbol (~) to indicate estimated size
+            sizeElement.textContent = `~${sizeStatus.formattedSize}`;
+            // Add warning class if approaching limit
+            if (sizeStatus.isWarning) {
+              sizeElement.classList.add('warning');
+            }
+            if (sizeStatus.isNearLimit) {
+              sizeElement.classList.add('danger');
+            }
+          });
+        }
       }
     }, 1000);
   }
@@ -567,9 +598,11 @@ export default class RecordingUI {
 
     this.externalRecordingIndicator = document.createElement("div");
     this.externalRecordingIndicator.className = "file-uploader-recording-indicator";
+    const showSize = this.uploader.options.showRecordingSize;
     this.externalRecordingIndicator.innerHTML = `
       <span class="file-uploader-recording-dot"></span>
       <span class="file-uploader-recording-time">00:00 / ${maxTimeStr}</span>
+      ${showSize ? '<span class="file-uploader-recording-size">~0 B</span>' : ''}
     `;
 
     // Prevent click propagation

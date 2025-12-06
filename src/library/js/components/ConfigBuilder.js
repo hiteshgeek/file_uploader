@@ -503,6 +503,39 @@ export default class ConfigBuilder {
             hint: "Record system audio during screen capture",
             dependsOn: "enableScreenCapture",
           },
+          showRecordingSize: {
+            type: "boolean",
+            default: true,
+            label: "Show Recording Size",
+            hint: "Show approximate file size during recording",
+            dependsOn: "enableVideoRecording",
+          },
+          videoBitsPerSecond: {
+            type: "select",
+            default: 2500000,
+            label: "Video Bitrate",
+            hint: "Video quality/bitrate for screen recording",
+            dependsOn: "enableVideoRecording",
+            options: [
+              { value: 1000000, label: "Low (1 Mbps)" },
+              { value: 2500000, label: "Medium (2.5 Mbps)" },
+              { value: 5000000, label: "High (5 Mbps)" },
+              { value: 8000000, label: "Ultra (8 Mbps)" },
+            ],
+          },
+          audioBitsPerSecond: {
+            type: "select",
+            default: 128000,
+            label: "Audio Bitrate",
+            hint: "Audio quality/bitrate for recordings",
+            dependsOn: "enableVideoRecording",
+            options: [
+              { value: 64000, label: "Low (64 Kbps)" },
+              { value: 128000, label: "Medium (128 Kbps)" },
+              { value: 192000, label: "High (192 Kbps)" },
+              { value: 320000, label: "Ultra (320 Kbps)" },
+            ],
+          },
         },
       },
 
@@ -5881,9 +5914,14 @@ export default class ConfigBuilder {
       : varName;
 
     // Standard FileUploader initialization code
+    const entries = Object.entries(changedConfig);
+
+    if (entries.length === 0) {
+      return `const ${varName} = new FileUploader('#${containerId}');`;
+    }
+
     let code = `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
-    const entries = Object.entries(changedConfig);
     entries.forEach(([key, value], index) => {
       const comma = index < entries.length - 1 ? "," : "";
       const formattedValue = this.formatJsValue(key, value, "  ", comma);
@@ -6271,16 +6309,21 @@ export default class ConfigBuilder {
     }
 
     let code = `// Initialize FileUploader\n`;
-    code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
     const entries = Object.entries(configEntries);
-    entries.forEach(([key, value], index) => {
-      const comma = index < entries.length - 1 ? "," : "";
-      const formattedValue = this.formatJsValue(key, value, "  ", comma);
-      code += `  ${key}: ${formattedValue}\n`;
-    });
+    if (entries.length === 0) {
+      code += `const ${varName} = new FileUploader('#${containerId}');\n\n`;
+    } else {
+      code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
-    code += `});\n\n`;
+      entries.forEach(([key, value], index) => {
+        const comma = index < entries.length - 1 ? "," : "";
+        const formattedValue = this.formatJsValue(key, value, "  ", comma);
+        code += `  ${key}: ${formattedValue}\n`;
+      });
+
+      code += `});\n\n`;
+    }
 
     // Update preview function
     if (isMinimal) {
@@ -6955,16 +6998,20 @@ export default class ConfigBuilder {
           .replace(/[^a-z0-9]+/g, "_")
           .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
 
-      code += `const ${varName} = new FileUploader('#${varName}', {\n`;
-
       const entries = Object.entries(changedConfig);
-      entries.forEach(([key, value], index) => {
-        const comma = index < entries.length - 1 ? "," : "";
-        const formattedValue = this.formatJsValue(key, value, "  ", comma);
-        code += `  ${key}: ${formattedValue}\n`;
-      });
+      if (entries.length === 0) {
+        code += `const ${varName} = new FileUploader('#${varName}');\n`;
+      } else {
+        code += `const ${varName} = new FileUploader('#${varName}', {\n`;
 
-      code += `});\n`;
+        entries.forEach(([key, value], index) => {
+          const comma = index < entries.length - 1 ? "," : "";
+          const formattedValue = this.formatJsValue(key, value, "  ", comma);
+          code += `  ${key}: ${formattedValue}\n`;
+        });
+
+        code += `});\n`;
+      }
 
       // Add spacing between uploaders
       if (uploaderIndex < uploaders.length - 1) {

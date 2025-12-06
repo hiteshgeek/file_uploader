@@ -81,6 +81,26 @@
   font-variant-numeric: tabular-nums;
 }
 
+.file-uploader-recording-size {
+  font-variant-numeric: tabular-nums;
+  padding-left: var(--fu-spacing-sm);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  opacity: 0.9;
+
+  // Warning state - approaching file size limit
+  &.warning {
+    color: var(--fu-warning-200);
+    font-weight: var(--fu-font-weight-semibold);
+  }
+
+  // Danger state - near file size limit
+  &.danger {
+    color: var(--fu-warning-100);
+    font-weight: var(--fu-font-weight-bold);
+    animation: file-uploader-blink 0.5s ease-in-out infinite;
+  }
+}
+
 // ============================================================================
 // Countdown Overlay (Full Screen)
 // ============================================================================

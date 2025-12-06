@@ -1,7 +1,7 @@
 /**
  * VideoRecorder Class
  * Records screen video using MediaDevices API (getDisplayMedia)
- * Features: Pause/Resume, Mic Audio, System Audio, Duration Control
+ * Features: Pause/Resume, Mic Audio, System Audio, Duration Control, Size Tracking
  *
  * Note: For duration metadata fix, use one of these methods:
  * 1. NPM: npm install @fix-webm-duration/fix
@@ -9,6 +9,7 @@
  */
 
 import { fixWebmDuration } from "@fix-webm-duration/fix";
+import RecordingSizeManager from "./RecordingSizeManager.js";
 
 export default class VideoRecorder {
   constructor(options = {}) {
@@ -22,8 +23,13 @@ export default class VideoRecorder {
       selectedMicrophoneId: null, // Selected microphone device ID
       mimeType: "video/webm", // Default video format
       videoBitsPerSecond: 2500000, // 2.5 Mbps
+      audioBitsPerSecond: 128000, // 128 Kbps
       maxDuration: 300000, // 5 minutes max (in milliseconds)
+      maxFileSize: null, // Maximum file size in bytes (null = no limit)
       onAutoStop: null, // Callback when recording auto-stops due to max duration
+      onSizeUpdate: null, // Callback when size is updated (status object)
+      onSizeWarning: null, // Callback when size warning threshold is reached
+      onSizeLimitReached: null, // Callback when size limit is reached (should stop)
       ...options,
     };
 
@@ -40,6 +46,22 @@ export default class VideoRecorder {
     this.recordingTimer = null;
     this.systemAudioEnabled = true; // System audio state
     this.microphoneEnabled = true; // Microphone state
+
+    // Initialize size manager
+    this.sizeManager = new RecordingSizeManager({
+      maxFileSize: this.options.maxFileSize,
+      videoBitsPerSecond: this.options.videoBitsPerSecond,
+      audioBitsPerSecond: this.options.audioBitsPerSecond,
+      onSizeUpdate: this.options.onSizeUpdate,
+      onWarning: this.options.onSizeWarning,
+      onLimitReached: (status) => {
+        // Auto-stop recording when size limit is reached
+        if (this.options.onSizeLimitReached) {
+          this.options.onSizeLimitReached(status);
+        }
+        this.stopRecording().catch(err => console.error('Failed to stop recording on size limit:', err));
+      }
+    });
   }
 
   /**
@@ -115,18 +137,24 @@ export default class VideoRecorder {
       // Determine supported MIME type
       const mimeType = this.getSupportedMimeType();
 
-      // Create MediaRecorder
+      // Create MediaRecorder with bitrate options from size manager
+      const recorderOptions = this.sizeManager.getMediaRecorderOptions('video');
       this.mediaRecorder = new MediaRecorder(this.combinedStream, {
         mimeType: mimeType,
-        videoBitsPerSecond: this.options.videoBitsPerSecond,
+        ...recorderOptions,
       });
 
       this.recordedChunks = [];
+
+      // Start size tracking
+      this.sizeManager.startTracking('video');
 
       // Handle data available event
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data && event.data.size > 0) {
           this.recordedChunks.push(event.data);
+          // Track size with the size manager
+          this.sizeManager.processChunk(event.data);
         }
       };
 
@@ -440,6 +468,14 @@ export default class VideoRecorder {
   }
 
   /**
+   * Get current size tracking status
+   * @returns {object} Size status from RecordingSizeManager
+   */
+  getSizeStatus() {
+    return this.sizeManager.getStatus();
+  }
+
+  /**
    * Cleanup resources
    */
   cleanup() {
@@ -478,6 +514,11 @@ export default class VideoRecorder {
     this.startTime = null;
     this.pausedTime = 0;
     this.pauseStartTime = null;
+
+    // Reset size tracking
+    if (this.sizeManager) {
+      this.sizeManager.stopTracking();
+    }
   }
 
   /**
