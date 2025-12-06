@@ -6523,10 +6523,9 @@ export default class ConfigBuilder {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const captureType = btn.dataset.captureType;
-        const uploaderData = this.uploaderInstances[uploaderId];
 
+        const uploaderData = this.uploaderInstances[uploaderId];
         if (!uploaderData || !uploaderData.instance) {
-          console.warn('FileUploader instance not found for media capture:', uploaderId, 'Available instances:', Object.keys(this.uploaderInstances));
           return;
         }
 
@@ -6534,25 +6533,19 @@ export default class ConfigBuilder {
 
         try {
           if (captureType === 'screenshot') {
-            // Call FileUploader's captureScreenshot method directly
             if (typeof uploader.captureScreenshot === 'function') {
               await uploader.captureScreenshot();
-            } else {
-              console.warn('captureScreenshot method not available on FileUploader instance');
+              this.updatePreviewFileInfo(uploaderId);
             }
           } else if (captureType === 'video') {
-            // Call FileUploader's toggleVideoRecording method directly
             if (typeof uploader.toggleVideoRecording === 'function') {
               await uploader.toggleVideoRecording();
-            } else {
-              console.warn('toggleVideoRecording method not available on FileUploader instance');
+              this.updatePreviewFileInfo(uploaderId);
             }
           } else if (captureType === 'audio') {
-            // Call FileUploader's toggleAudioRecording method directly
             if (typeof uploader.toggleAudioRecording === 'function') {
               await uploader.toggleAudioRecording();
-            } else {
-              console.warn('toggleAudioRecording method not available on FileUploader instance');
+              this.updatePreviewFileInfo(uploaderId);
             }
           }
         } catch (error) {
@@ -6563,7 +6556,71 @@ export default class ConfigBuilder {
   }
 
   /**
-   * Update modal file info display after files are selected
+   * Update the preview file info for a specific uploader
+   * @param {string} uploaderId - The uploader ID
+   */
+  updatePreviewFileInfo(uploaderId) {
+    const uploaderData = this.uploaderInstances[uploaderId];
+    if (!uploaderData) return;
+
+    const wrapper = document.querySelector(`[data-uploader-wrapper="${uploaderId}"]`);
+    if (!wrapper) return;
+
+    const displayMode = uploaderData.config?.displayMode || 'inline';
+    const isMinimal = displayMode === 'modal-minimal';
+
+    // Call the existing updateModalFileInfo method
+    this.updateModalFileInfo(wrapper, uploaderId, uploaderData, isMinimal);
+  }
+
+  /**
+   * Set up a MutationObserver to watch for file changes in the FileUploader
+   * This automatically updates the preview file info when files are added, updated, or removed
+   * @param {string} uploaderId - The uploader ID
+   */
+  setupFileChangeObserver(uploaderId) {
+    const uploaderData = this.uploaderInstances[uploaderId];
+    if (!uploaderData || !uploaderData.instance) return;
+
+    // Get the FileUploader's preview container element
+    const uploader = uploaderData.instance;
+    const previewContainer = uploader.previewContainer;
+
+    if (!previewContainer) {
+      console.warn('[ConfigBuilder] Could not find previewContainer for observer:', uploaderId);
+      return;
+    }
+
+    // Disconnect any existing observer for this uploader
+    if (uploaderData.fileChangeObserver) {
+      uploaderData.fileChangeObserver.disconnect();
+    }
+
+    // Create a MutationObserver to watch for DOM changes in the preview container
+    const observer = new MutationObserver((mutations) => {
+      // Debounce updates to avoid excessive calls during rapid changes
+      if (uploaderData.fileChangeTimeout) {
+        clearTimeout(uploaderData.fileChangeTimeout);
+      }
+      uploaderData.fileChangeTimeout = setTimeout(() => {
+        this.updatePreviewFileInfo(uploaderId);
+      }, 100);
+    });
+
+    // Observe childList changes (files added/removed) and subtree for updates
+    observer.observe(previewContainer, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'data-status'] // Watch for status changes like upload complete
+    });
+
+    // Store the observer reference so we can disconnect it later
+    uploaderData.fileChangeObserver = observer;
+  }
+
+  /**
+   * Update modal file info display after files are selected or removed
    */
   updateModalFileInfo(wrapper, uploaderId, data, isMinimal) {
     if (!data.instance) return;
@@ -6571,15 +6628,7 @@ export default class ConfigBuilder {
     const files = data.instance.getFiles ? data.instance.getFiles() : [];
     const fileCount = files.length;
 
-    if (fileCount === 0) return; // Keep the empty state
-
-    // Calculate total size
-    let totalSize = 0;
-    files.forEach(file => {
-      totalSize += file.size || 0;
-    });
-
-    // Format size
+    // Format size helper
     const formatSize = (bytes) => {
       if (bytes === 0) return '0 B';
       const k = 1024;
@@ -6587,6 +6636,35 @@ export default class ConfigBuilder {
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     };
+
+    // Handle empty state (all files deleted)
+    if (fileCount === 0) {
+      if (isMinimal) {
+        const badge = wrapper.querySelector(`[data-file-badge="${uploaderId}"]`);
+        if (badge) {
+          badge.classList.remove('has-files');
+          badge.innerHTML = `<span class="badge-text">No files selected</span>`;
+        }
+      } else {
+        const summary = wrapper.querySelector(`[data-file-summary="${uploaderId}"]`);
+        if (summary) {
+          summary.classList.remove('has-files');
+          summary.innerHTML = `
+            <div class="summary-empty">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              <span>No files selected yet</span>
+            </div>
+          `;
+        }
+      }
+      return;
+    }
+
+    // Calculate total size
+    let totalSize = 0;
+    files.forEach(file => {
+      totalSize += file.size || 0;
+    });
 
     if (isMinimal) {
       // Update minimal badge
@@ -7173,8 +7251,13 @@ export default class ConfigBuilder {
 
     // If force refresh all or first time, rebuild everything
     if (forceRefreshAll || previewEl.children.length === 0) {
-      // Destroy all existing instances
+      // Destroy all existing instances and disconnect observers
       for (const [id, data] of Object.entries(this.uploaderInstances)) {
+        // Disconnect file change observer
+        if (data.fileChangeObserver) {
+          data.fileChangeObserver.disconnect();
+          data.fileChangeObserver = null;
+        }
         if (data.instance && typeof data.instance.destroy === "function") {
           data.instance.destroy();
         }
@@ -7192,6 +7275,11 @@ export default class ConfigBuilder {
       // Only refresh the active uploader
       const activeData = this.uploaderInstances[this.activeUploaderId];
       if (activeData) {
+        // Disconnect file change observer
+        if (activeData.fileChangeObserver) {
+          activeData.fileChangeObserver.disconnect();
+          activeData.fileChangeObserver = null;
+        }
         // Destroy existing active instance
         if (
           activeData.instance &&
@@ -7371,8 +7459,26 @@ export default class ConfigBuilder {
           autoFetchConfig: false,
           cleanupOnDestroy: true, // Clean up files when preview is refreshed
         };
+
+        // Enable capture features based on modalMediaButtons selection
+        // This ensures the FileUploader instance can handle captures from external buttons
+        if (mediaButtons && mediaButtons.length > 0) {
+          if (mediaButtons.includes('screenshot')) {
+            previewConfig.enableScreenCapture = true;
+          }
+          if (mediaButtons.includes('video')) {
+            previewConfig.enableVideoRecording = true;
+          }
+          if (mediaButtons.includes('audio')) {
+            previewConfig.enableAudioRecording = true;
+          }
+        }
+
         data.instance = new window.FileUploader(`#${containerId}`, previewConfig);
         data.containerId = containerId;
+
+        // Set up file change observer to auto-update preview info
+        this.setupFileChangeObserver(id);
       }
 
       // Add modal open/close handlers
@@ -8299,10 +8405,15 @@ export default class ConfigBuilder {
   removeUploader(uploaderId) {
     if (Object.keys(this.uploaderInstances).length <= 1) return;
 
-    // Destroy the instance
+    // Destroy the instance and disconnect observer
     const data = this.uploaderInstances[uploaderId];
-    if (data && data.instance) {
-      if (typeof data.instance.destroy === "function") {
+    if (data) {
+      // Disconnect file change observer
+      if (data.fileChangeObserver) {
+        data.fileChangeObserver.disconnect();
+        data.fileChangeObserver = null;
+      }
+      if (data.instance && typeof data.instance.destroy === "function") {
         data.instance.destroy();
       }
     }
