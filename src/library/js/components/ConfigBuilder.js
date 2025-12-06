@@ -701,6 +701,15 @@ export default class ConfigBuilder {
               config.displayMode === "modal-minimal" ||
               config.displayMode === "modal-detailed",
           },
+          enableModalDropZone: {
+            type: "boolean",
+            default: true,
+            label: "Enable Drop Zone on Button",
+            hint: "Allow drag and drop files directly onto the modal trigger button",
+            showWhen: (config) =>
+              config.displayMode === "modal-minimal" ||
+              config.displayMode === "modal-detailed",
+          },
         },
       },
 
@@ -5707,11 +5716,12 @@ export default class ConfigBuilder {
     const bootstrapVersion = config.bootstrapVersion || "5";
     const isMinimal = displayMode === "modal-minimal";
     const mediaButtons = config.modalMediaButtons || [];
+    const enableModalDropZone = config.enableModalDropZone !== false;
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
 
-    return this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons);
+    return this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons, enableModalDropZone);
   }
 
   /**
@@ -5920,6 +5930,7 @@ export default class ConfigBuilder {
     const modalSize = config.modalSize || "lg";
     const bootstrapVersion = config.bootstrapVersion || "5";
     const mediaButtons = config.modalMediaButtons || [];
+    const enableModalDropZone = config.enableModalDropZone !== false;
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
@@ -5942,7 +5953,7 @@ export default class ConfigBuilder {
 
     // JS Section
     code += `\n\n/* ----- JavaScript ----- */\n\n`;
-    code += this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons);
+    code += this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons, enableModalDropZone);
 
     return code;
   }
@@ -6137,7 +6148,7 @@ export default class ConfigBuilder {
       html += `<div class="upload-btn-wrapper">\n`;
       if (hasMediaButtons) {
         html += `  <div class="btn-group" role="group">\n`;
-        html += `    <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `    <button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
         if (iconSvg) html += `      ${iconSvg}\n`;
         html += `      ${buttonText}\n`;
         html += `    </button>\n`;
@@ -6148,7 +6159,7 @@ export default class ConfigBuilder {
         }
         html += `  </div>\n`;
       } else {
-        html += `  <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `  <button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
         if (iconSvg) html += `    ${iconSvg}\n`;
         html += `    ${buttonText}\n`;
         html += `  </button>\n`;
@@ -6162,7 +6173,7 @@ export default class ConfigBuilder {
     } else {
       if (hasMediaButtons) {
         html += `<div class="btn-group" role="group">\n`;
-        html += `  <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `  <button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
         if (iconSvg) html += `    ${iconSvg}\n`;
         html += `    ${buttonText}\n`;
         html += `  </button>\n`;
@@ -6173,7 +6184,7 @@ export default class ConfigBuilder {
         }
         html += `</div>\n\n`;
       } else {
-        html += `<button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `<button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
         if (iconSvg) html += `  ${iconSvg}\n`;
         html += `  ${buttonText}\n`;
         html += `</button>\n\n`;
@@ -6250,13 +6261,19 @@ export default class ConfigBuilder {
   /**
    * Generate modal JavaScript code
    */
-  generateModalJs(varName, modalId, containerId, changedConfig, bsVersion, isMinimal, mediaButtons = []) {
+  generateModalJs(varName, modalId, containerId, changedConfig, bsVersion, isMinimal, mediaButtons = [], enableModalDropZone = true) {
     const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
+
+    // Build config entries including externalDropZone if enabled
+    const configEntries = { ...changedConfig };
+    if (enableModalDropZone) {
+      configEntries.externalDropZone = `#${varName}Btn`;
+    }
 
     let code = `// Initialize FileUploader\n`;
     code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
-    const entries = Object.entries(changedConfig);
+    const entries = Object.entries(configEntries);
     entries.forEach(([key, value], index) => {
       const comma = index < entries.length - 1 ? "," : "";
       const formattedValue = this.formatJsValue(key, value, "  ", comma);
@@ -6879,6 +6896,8 @@ export default class ConfigBuilder {
       "modalTitle",
       "modalSize",
       "bootstrapVersion",
+      "enableModalDropZone",
+      "modalMediaButtons",
     ];
 
     for (const [key, value] of Object.entries(config)) {
@@ -7454,13 +7473,18 @@ export default class ConfigBuilder {
 
       // Create uploader instance inside the hidden modal
       if (window.FileUploader) {
+        const enableModalDropZone = data.config.enableModalDropZone !== false; // Default true
+
         const previewConfig = {
           ...data.config,
           autoFetchConfig: false,
           cleanupOnDestroy: true, // Clean up files when preview is refreshed
-          // Enable drag-drop on the modal trigger button
-          externalDropZone: `.fu-config-builder-modal-btn[data-uploader-id="${id}"]`,
         };
+
+        // Enable drag-drop on the modal trigger button if option is enabled
+        if (enableModalDropZone) {
+          previewConfig.externalDropZone = `.fu-config-builder-modal-btn[data-uploader-id="${id}"]`;
+        }
 
         // Enable capture features based on modalMediaButtons selection
         // This ensures the FileUploader instance can handle captures from external buttons
