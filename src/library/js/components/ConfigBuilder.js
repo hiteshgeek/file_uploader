@@ -6277,6 +6277,32 @@ export default class ConfigBuilder {
     const defaults = this.getDefaultConfig();
     const changedKeys = Object.keys(changedConfig);
 
+    // PHP-relevant keys only (server-side validation)
+    const phpRelevantKeys = [
+      // File type validation
+      "allowedExtensions",
+      "allowedMimeTypes",
+      // File type category extensions (for per-type validation)
+      "imageExtensions",
+      "videoExtensions",
+      "audioExtensions",
+      "documentExtensions",
+      "archiveExtensions",
+      // Size limits
+      "perFileMaxSize",
+      "perFileMaxSizeDisplay",
+      "perFileMaxSizePerType",
+      "perFileMaxSizePerTypeDisplay",
+      "perTypeMaxTotalSize",
+      "perTypeMaxTotalSizeDisplay",
+      "perTypeMaxFileCount",
+      "totalMaxSize",
+      "totalMaxSizeDisplay",
+      "maxFiles",
+      // Upload directory
+      "uploadDir",
+    ];
+
     // PHP-relevant groups only (server-side validation)
     const phpRelevantGroups = ["limits", "perTypeLimits", "fileTypes", "urls"];
 
@@ -6295,7 +6321,7 @@ export default class ConfigBuilder {
     if (!hasContent) return "";
 
     if (language === "php") {
-      // For PHP, only show server-relevant groups
+      // For PHP, only show server-relevant groups and keys
       let comment = "/**\n";
       comment += " * Default configuration values for reference (server-relevant options):\n";
       comment += " * [\n";
@@ -6305,11 +6331,18 @@ export default class ConfigBuilder {
         if (!phpRelevantGroups.includes(groupKey)) return;
         if (!groupedDefaults[groupKey]) return;
 
+        // Filter to only PHP-relevant keys within this group
+        const phpKeysInGroup = Object.entries(groupedDefaults[groupKey])
+          .filter(([key]) => phpRelevantKeys.includes(key));
+
+        // Skip group if no PHP-relevant keys
+        if (phpKeysInGroup.length === 0) return;
+
         const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
         comment += ` *   // ${groupTitle}\n`;
         comment += ` *   '${groupKey}' => [\n`;
 
-        Object.entries(groupedDefaults[groupKey]).forEach(([key, value]) => {
+        phpKeysInGroup.forEach(([key, value]) => {
           const formattedValue = this.formatDefaultValueForComment(key, value, language);
           const marker = changedKeys.includes(key) ? " // <- changed" : "";
           comment += ` *     '${key}' => ${formattedValue},${marker}\n`;

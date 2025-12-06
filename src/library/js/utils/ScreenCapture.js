@@ -10,7 +10,7 @@ export default class ScreenCapture {
         cursor: "always",
         ...options.videoConstraints,
       },
-      captureDelay: 100, // Delay before capturing frame (ms)
+      captureDelay: 300, // Delay before capturing frame (ms) - allows dialog to close
       imageFormat: "image/png",
       imageQuality: 0.95,
       ...options,

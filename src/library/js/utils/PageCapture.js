@@ -372,6 +372,18 @@ class PageCapture {
         this.options.onSelectionComplete({ left, top, width, height });
       }
 
+      // Wait for DOM to fully update and repaint before capturing
+      // This ensures the overlay is completely removed from the screen
+      // Use both requestAnimationFrame and a minimum delay for reliability
+      await new Promise(resolve => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            // Additional delay to ensure browser has fully repainted
+            setTimeout(resolve, 100);
+          });
+        });
+      });
+
       const blob = await this.captureArea(left, top, width, height);
 
       if (resolveSelection) {
