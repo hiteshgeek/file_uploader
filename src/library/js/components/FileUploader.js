@@ -136,6 +136,9 @@ export default class FileUploader {
       onDuplicateFile: null, // Callback when duplicate file is detected
       // Cross-uploader drag-drop options
       enableCrossUploaderDrag: true, // Allow dragging files between uploaders
+      // External drop zone options
+      externalDropZone: null, // Element or selector for external drop zone (e.g., modal trigger button)
+      externalDropZoneActiveClass: 'file-uploader-drop-active', // Class added when dragging over external drop zone
       ...options,
     };
 
@@ -1657,6 +1660,67 @@ export default class FileUploader {
       } else if (e.dataTransfer.files.length > 0) {
         // Regular file drop from OS
         this.handleFiles(e.dataTransfer.files);
+      }
+    });
+
+    // Set up external drop zone if specified
+    this.setupExternalDropZone();
+  }
+
+  /**
+   * Set up external drop zone for drag-and-drop file uploads
+   * Allows dropping files on an external element (e.g., modal trigger button)
+   */
+  setupExternalDropZone() {
+    const externalDropZone = this.options.externalDropZone;
+    if (!externalDropZone) return;
+
+    // Get the element - support both selector string and element reference
+    let dropZoneElement;
+    if (typeof externalDropZone === 'string') {
+      dropZoneElement = document.querySelector(externalDropZone);
+    } else if (externalDropZone instanceof HTMLElement) {
+      dropZoneElement = externalDropZone;
+    }
+
+    if (!dropZoneElement) return;
+
+    // Store reference for cleanup
+    this.externalDropZoneElement = dropZoneElement;
+    const activeClass = this.options.externalDropZoneActiveClass;
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZoneElement.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+
+    // Add visual feedback on drag enter/over
+    dropZoneElement.addEventListener('dragenter', () => {
+      dropZoneElement.classList.add(activeClass);
+    });
+
+    dropZoneElement.addEventListener('dragover', () => {
+      dropZoneElement.classList.add(activeClass);
+    });
+
+    // Remove visual feedback on drag leave
+    dropZoneElement.addEventListener('dragleave', (e) => {
+      // Only remove class if we're actually leaving the element
+      if (!dropZoneElement.contains(e.relatedTarget)) {
+        dropZoneElement.classList.remove(activeClass);
+      }
+    });
+
+    // Handle file drop
+    dropZoneElement.addEventListener('drop', (e) => {
+      dropZoneElement.classList.remove(activeClass);
+
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        this.handleFiles(files);
       }
     });
   }

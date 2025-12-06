@@ -2200,3 +2200,16 @@ $component-prefix: $file-uploader-prefix !default;
     transform: translateY(0) scale(1);
   }
 }
+
+
+// ============================================================================
+// External Drop Zone
+// ============================================================================
+
+.#{$component-prefix}-drop-active {
+  outline: 2px dashed var(--fu-color-primary) !important;
+  outline-offset: 2px;
+  background-color: rgba(var(--fu-color-primary-rgb, 59, 130, 246), 0.1) !important;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}

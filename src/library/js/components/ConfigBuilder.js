@@ -7396,7 +7396,7 @@ export default class ConfigBuilder {
           </div>
           ${isMinimal ? `
             <div class="fu-config-builder-modal-minimal-preview">
-              <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}">
+              <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}" data-uploader-id="${id}">
                 ${buttonIconSvg}
                 ${buttonText}
               </button>
@@ -7405,10 +7405,10 @@ export default class ConfigBuilder {
                 <span class="badge-text">No files selected</span>
               </span>
             </div>
-            <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader</p>
+            <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader. Drag and drop files here.</p>
           ` : `
             <div class="fu-config-builder-modal-detailed-preview">
-              <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}">
+              <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}" data-uploader-id="${id}">
                 ${buttonIconSvg}
                 ${buttonText}
               </button>
@@ -7420,7 +7420,7 @@ export default class ConfigBuilder {
                 </div>
               </div>
             </div>
-            <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader</p>
+            <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader. Drag and drop files here.</p>
           `}
           <!-- Hidden modal container for actual FileUploader -->
           <div class="fu-config-builder-modal-hidden" id="${modalId}" style="display: none;">
@@ -7458,6 +7458,8 @@ export default class ConfigBuilder {
           ...data.config,
           autoFetchConfig: false,
           cleanupOnDestroy: true, // Clean up files when preview is refreshed
+          // Enable drag-drop on the modal trigger button
+          externalDropZone: `.fu-config-builder-modal-btn[data-uploader-id="${id}"]`,
         };
 
         // Enable capture features based on modalMediaButtons selection
