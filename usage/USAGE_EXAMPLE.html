@@ -3,43 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Uploader with Screen Recording - Example</title>
+    <title>File Uploader - Usage Examples</title>
 
     <!-- File Uploader CSS -->
     <link rel="stylesheet" href="dist/css/file-uploader.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        h1 { color: #333; margin-bottom: 0.5rem; }
+        h2 { color: #555; margin-top: 2rem; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem; }
+        h3 { color: #666; margin-top: 1.5rem; }
+        .description { color: #666; margin-bottom: 1.5rem; }
+        .example { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 0.875rem; }
+        .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .property { color: #9cdcfe; }
+        .number { color: #b5cea8; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>File Uploader with Screen Capture & Video Recording</h1>
+    <h1>File Uploader - Usage Examples</h1>
+    <p class="description">
+        FileUploader uses a <strong>grouped options</strong> format for better organization and readability.
+        Options are organized into logical categories like <code>urls</code>, <code>limits</code>, <code>mediaCapture</code>, etc.
+    </p>
 
-        <!-- File Uploader Element -->
-        <div id="file-uploader"></div>
+    <!-- Example 1: Basic Usage -->
+    <h2>Example 1: Basic Upload Configuration</h2>
+    <div class="example">
+        <div id="uploader-basic"></div>
     </div>
 
+    <!-- Example 2: Full Featured -->
+    <h2>Example 2: Full Featured with Media Capture</h2>
+    <div class="example">
+        <div id="uploader-full"></div>
+    </div>
+
+    <!-- Example 3: Minimal -->
+    <h2>Example 3: Minimal Configuration</h2>
+    <div class="example">
+        <div id="uploader-minimal"></div>
+    </div>
+
+    <!-- Code Examples -->
+    <h2>Code Examples</h2>
+
+    <h3>Basic Configuration</h3>
+    <pre><code><span class="keyword">const</span> uploader = <span class="keyword">new</span> FileUploader(<span class="string">'#my-uploader'</span>, {
+  <span class="comment">// URL Configuration</span>
+  <span class="property">urls</span>: {
+    <span class="property">uploadUrl</span>: <span class="string">'/api/upload'</span>,
+    <span class="property">deleteUrl</span>: <span class="string">'/api/delete'</span>,
+  },
+
+  <span class="comment">// File Size Limits</span>
+  <span class="property">limits</span>: {
+    <span class="property">perFileMaxSize</span>: <span class="number">10</span> * <span class="number">1024</span> * <span class="number">1024</span>, <span class="comment">// 10MB</span>
+    <span class="property">totalMaxSize</span>: <span class="number">50</span> * <span class="number">1024</span> * <span class="number">1024</span>,  <span class="comment">// 50MB</span>
+    <span class="property">maxFiles</span>: <span class="number">5</span>,
+  },
+});</code></pre>
+
+    <h3>Full Featured Configuration</h3>
+    <pre><code><span class="keyword">const</span> uploader = <span class="keyword">new</span> FileUploader(<span class="string">'#my-uploader'</span>, {
+  <span class="comment">// URL Configuration</span>
+  <span class="property">urls</span>: {
+    <span class="property">uploadUrl</span>: <span class="string">'/api/upload'</span>,
+    <span class="property">deleteUrl</span>: <span class="string">'/api/delete'</span>,
+    <span class="property">downloadAllUrl</span>: <span class="string">'/api/download-all'</span>,
+  },
+
+  <span class="comment">// File Size Limits</span>
+  <span class="property">limits</span>: {
+    <span class="property">perFileMaxSize</span>: <span class="number">25</span> * <span class="number">1024</span> * <span class="number">1024</span>, <span class="comment">// 25MB</span>
+    <span class="property">totalMaxSize</span>: <span class="number">100</span> * <span class="number">1024</span> * <span class="number">1024</span>, <span class="comment">// 100MB</span>
+    <span class="property">maxFiles</span>: <span class="number">10</span>,
+  },
+
+  <span class="comment">// Upload Behavior</span>
+  <span class="property">behavior</span>: {
+    <span class="property">multiple</span>: <span class="keyword">true</span>,
+    <span class="property">preventDuplicates</span>: <span class="keyword">true</span>,
+    <span class="property">confirmBeforeDelete</span>: <span class="keyword">true</span>,
+  },
+
+  <span class="comment">// Media Capture</span>
+  <span class="property">mediaCapture</span>: {
+    <span class="property">enableFullPageCapture</span>: <span class="keyword">true</span>,
+    <span class="property">enableRegionCapture</span>: <span class="keyword">true</span>,
+    <span class="property">enableScreenCapture</span>: <span class="keyword">true</span>,
+    <span class="property">enableVideoRecording</span>: <span class="keyword">true</span>,
+    <span class="property">enableAudioRecording</span>: <span class="keyword">true</span>,
+    <span class="property">maxVideoRecordingDuration</span>: <span class="number">120</span>,
+  },
+
+  <span class="comment">// Carousel Preview</span>
+  <span class="property">carousel</span>: {
+    <span class="property">enableCarouselPreview</span>: <span class="keyword">true</span>,
+    <span class="property">carouselShowDownloadButton</span>: <span class="keyword">true</span>,
+  },
+
+  <span class="comment">// Callbacks</span>
+  <span class="property">callbacks</span>: {
+    <span class="property">onUploadSuccess</span>: (file, response) => {
+      console.log(<span class="string">'Uploaded:'</span>, file.name);
+    },
+    <span class="property">onUploadError</span>: (file, error) => {
+      console.error(<span class="string">'Error:'</span>, error);
+    },
+  },
+});</code></pre>
+
+    <h3>Available Option Groups</h3>
+    <pre><code><span class="comment">// Access default options:</span>
+<span class="keyword">const</span> defaults = FileUploader.getDefaultOptions();
+
+<span class="comment">/**
+ * Option Groups:
+ *
+ * urls          - uploadUrl, deleteUrl, downloadAllUrl, configUrl, uploadDir
+ * limits        - perFileMaxSize, totalMaxSize, maxFiles
+ * perTypeLimits - perFileMaxSizePerType, perTypeMaxTotalSize, perTypeMaxFileCount
+ * fileTypes     - allowedExtensions, imageExtensions, videoExtensions, etc.
+ * behavior      - multiple, autoFetchConfig, preventDuplicates, cleanupOnUnload
+ * limitsDisplay - showLimits, showProgressBar, defaultLimitsView
+ * alerts        - alertAnimation, alertDuration
+ * buttons       - showDownloadAllButton, showClearAllButton
+ * mediaCapture  - enableScreenCapture, enableVideoRecording, enableAudioRecording
+ * carousel      - enableCarouselPreview, carouselAutoPreload
+ * dragDrop      - enableCrossUploaderDrag, externalDropZone
+ * callbacks     - onUploadSuccess, onUploadError, onDeleteSuccess
+ */</span></code></pre>
+
     <!-- IMPORTANT: Load webm-duration-fix BEFORE the file uploader script -->
-    <!-- This enables WebM duration metadata fixing for recorded videos -->
     <script src="https://cdn.jsdelivr.net/npm/webm-duration-fix@latest/dist/webm-duration-fix.min.js"></script>
 
     <!-- File Uploader Script -->
     <script type="module">
         import { FileUploader } from './dist/js/file-uploader.js';
 
-        // Initialize File Uploader with screen capture and video recording enabled
-        const uploader = new FileUploader('#file-uploader', {
-            uploadUrl: '/upload',
-            maxFileSize: 10485760, // 10MB
-            multiple: true,
-            enableScreenCapture: true,  // Enable screenshot capture button
-            enableVideoRecording: true, // Enable video recording button
-            imageExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-            videoExtensions: ['mp4', 'webm', 'mov', 'avi'],
-            onUploadSuccess: (file, response) => {
-                console.log('File uploaded:', file.name, response);
+        // Example 1: Basic Configuration
+        const uploaderBasic = new FileUploader('#uploader-basic', {
+            // URL Configuration
+            urls: {
+                uploadUrl: '/api/upload',
+                deleteUrl: '/api/delete',
             },
-            onUploadError: (file, error) => {
-                console.error('Upload failed:', file.name, error);
-            }
+
+            // File Size Limits
+            limits: {
+                perFileMaxSize: 10 * 1024 * 1024, // 10MB
+                maxFiles: 5,
+            },
+
+            // Callbacks
+            callbacks: {
+                onUploadSuccess: (file, response) => {
+                    console.log('File uploaded:', file.name, response);
+                },
+            },
         });
+
+        // Example 2: Full Featured with Media Capture
+        const uploaderFull = new FileUploader('#uploader-full', {
+            // URL Configuration
+            urls: {
+                uploadUrl: '/api/upload',
+                deleteUrl: '/api/delete',
+                downloadAllUrl: '/api/download-all',
+            },
+
+            // File Size Limits
+            limits: {
+                perFileMaxSize: 25 * 1024 * 1024, // 25MB
+                totalMaxSize: 100 * 1024 * 1024, // 100MB
+                maxFiles: 10,
+            },
+
+            // Upload Behavior
+            behavior: {
+                multiple: true,
+                preventDuplicates: true,
+                confirmBeforeDelete: true,
+            },
+
+            // Media Capture
+            mediaCapture: {
+                enableFullPageCapture: true,
+                enableRegionCapture: true,
+                enableScreenCapture: true,
+                enableVideoRecording: true,
+                enableAudioRecording: true,
+                maxVideoRecordingDuration: 120,
+            },
+
+            // Carousel Preview
+            carousel: {
+                enableCarouselPreview: true,
+                carouselShowDownloadButton: true,
+            },
+
+            // Callbacks
+            callbacks: {
+                onUploadSuccess: (file, response) => {
+                    console.log('File uploaded:', file.name, response);
+                },
+                onUploadError: (file, error) => {
+                    console.error('Upload failed:', file.name, error);
+                },
+            },
+        });
+
+        // Example 3: Minimal Configuration (uses all defaults)
+        const uploaderMinimal = new FileUploader('#uploader-minimal', {
+            urls: {
+                uploadUrl: '/api/upload',
+            },
+        });
+
+        // Log available defaults
+        console.log('Default Options:', FileUploader.getDefaultOptions());
     </script>
 </body>
 </html>

@@ -182,7 +182,7 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * Flatten grouped options into a flat object
+ * Flatten grouped options into a flat object for internal use
  * @param {Object} groupedOptions - Options organized by category
  * @returns {Object} - Flat options object
  */
@@ -197,37 +197,27 @@ function flattenOptions(groupedOptions) {
 }
 
 /**
- * Merge user options with defaults, supporting both flat and grouped formats
- * @param {Object} userOptions - User-provided options (can be flat or grouped)
+ * Merge user grouped options with defaults
+ * @param {Object} userOptions - User-provided grouped options
  * @param {Object} defaults - Default grouped options
- * @returns {Object} - Merged flat options object
+ * @returns {Object} - Merged flat options object for internal use
  */
-function mergeOptions(userOptions, defaults) {
+function mergeGroupedOptions(userOptions, defaults) {
   // Start with flattened defaults
   const flatDefaults = flattenOptions(defaults);
 
-  // Check if user options are grouped (has category keys that match our structure)
+  // Flatten user options (must be grouped format)
+  const flatUserOptions = {};
   const groupKeys = Object.keys(defaults);
-  const userKeys = Object.keys(userOptions);
-  const isGrouped = userKeys.some(key => groupKeys.includes(key) && typeof userOptions[key] === "object" && !Array.isArray(userOptions[key]));
 
-  if (isGrouped) {
-    // User is using grouped format - flatten and merge
-    const flatUserOptions = {};
-    for (const [key, value] of Object.entries(userOptions)) {
-      if (groupKeys.includes(key) && typeof value === "object" && !Array.isArray(value) && value !== null) {
-        // This is a category object - flatten it
-        Object.assign(flatUserOptions, value);
-      } else {
-        // This is a flat option (mixed usage)
-        flatUserOptions[key] = value;
-      }
+  for (const [key, value] of Object.entries(userOptions)) {
+    if (groupKeys.includes(key) && typeof value === "object" && !Array.isArray(value) && value !== null) {
+      // This is a category object - flatten it
+      Object.assign(flatUserOptions, value);
     }
-    return { ...flatDefaults, ...flatUserOptions };
-  } else {
-    // User is using flat format - direct merge
-    return { ...flatDefaults, ...userOptions };
   }
+
+  return { ...flatDefaults, ...flatUserOptions };
 }
 
 export default class FileUploader {
@@ -237,14 +227,6 @@ export default class FileUploader {
    */
   static getDefaultOptions() {
     return JSON.parse(JSON.stringify(DEFAULT_OPTIONS));
-  }
-
-  /**
-   * Get flattened default options
-   * @returns {Object} Default options as flat object
-   */
-  static getDefaultOptionsFlat() {
-    return flattenOptions(DEFAULT_OPTIONS);
   }
 
   constructor(element, options = {}) {
@@ -260,8 +242,8 @@ export default class FileUploader {
     this.instanceId = `file-uploader-${++instanceCounter}`;
     uploaderRegistry.set(this.instanceId, this);
 
-    // Merge user options with defaults (supports both flat and grouped formats)
-    this.options = mergeOptions(options, DEFAULT_OPTIONS);
+    // Merge user grouped options with defaults
+    this.options = mergeGroupedOptions(options, DEFAULT_OPTIONS);
 
     // Validate download-all button configuration
     if (

@@ -6193,23 +6193,37 @@ export default class ConfigBuilder {
       ? `${varName}Container`
       : varName;
 
-    // Standard FileUploader initialization code
-    const entries = Object.entries(changedConfig);
+    // Group the changed config by category
+    const groupedConfig = this.groupChangedConfig(changedConfig);
+    const hasChanges = Object.keys(changedConfig).length > 0;
 
     // Generate defaults comment header
     let code = this.generateDefaultsComment(changedConfig, "js");
 
-    if (entries.length === 0) {
+    if (!hasChanges) {
       code += `const ${varName} = new FileUploader('#${containerId}');`;
       return code;
     }
 
     code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
-    entries.forEach(([key, value], index) => {
-      const comma = index < entries.length - 1 ? "," : "";
-      const formattedValue = this.formatJsValue(key, value, "  ", comma);
-      code += `  ${key}: ${formattedValue}\n`;
+    // Output grouped config
+    const groupKeys = ConfigBuilder.GROUP_ORDER.filter(g => groupedConfig[g]);
+    groupKeys.forEach((groupKey, groupIndex) => {
+      const groupTitle = ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+      const groupEntries = Object.entries(groupedConfig[groupKey]);
+      const isLastGroup = groupIndex === groupKeys.length - 1;
+
+      code += `  // ${groupTitle}\n`;
+      code += `  ${groupKey}: {\n`;
+
+      groupEntries.forEach(([key, value], index) => {
+        const comma = index < groupEntries.length - 1 ? "," : "";
+        const formattedValue = this.formatJsValue(key, value, "    ", comma);
+        code += `    ${key}: ${formattedValue}\n`;
+      });
+
+      code += `  }${isLastGroup ? "" : ","}\n`;
     });
 
     code += `});`;
@@ -6218,43 +6232,80 @@ export default class ConfigBuilder {
   }
 
   /**
-   * Generate a comment block showing ALL default configuration values
+   * Generate a comment block showing default configuration values in grouped format
    * @param {Object} changedConfig - The changed configuration values (used to mark which are changed)
    * @param {string} language - 'js' or 'php'
-   * @returns {string} - Comment block with all default values
+   * @returns {string} - Comment block with default values organized by group
    */
   generateDefaultsComment(changedConfig, language = "js") {
     const defaults = this.getDefaultConfig();
     const changedKeys = Object.keys(changedConfig);
-    const commentLines = [];
 
-    // Show ALL default values
+    // PHP-relevant groups only (server-side validation)
+    const phpRelevantGroups = ["limits", "perTypeLimits", "fileTypes", "urls"];
+
+    // Group all defaults by category
+    const groupedDefaults = {};
     Object.entries(defaults).forEach(([key, defaultValue]) => {
-      const formattedDefault = this.formatDefaultValueForComment(key, defaultValue, language);
-      // Mark changed values with an indicator
-      const marker = changedKeys.includes(key) ? " // <- changed" : "";
-      commentLines.push(`${key}: ${formattedDefault}${marker}`);
+      const group = ConfigBuilder.OPTION_TO_GROUP[key] || "other";
+      if (!groupedDefaults[group]) {
+        groupedDefaults[group] = {};
+      }
+      groupedDefaults[group][key] = defaultValue;
     });
 
-    if (commentLines.length === 0) return "";
+    // Check if any groups have content
+    const hasContent = Object.keys(groupedDefaults).length > 0;
+    if (!hasContent) return "";
 
     if (language === "php") {
+      // For PHP, only show server-relevant groups
       let comment = "/**\n";
-      comment += " * Default configuration values for reference:\n";
+      comment += " * Default configuration values for reference (server-relevant options):\n";
       comment += " * [\n";
-      commentLines.forEach(line => {
-        comment += ` *   ${line}\n`;
+
+      ConfigBuilder.GROUP_ORDER.forEach(groupKey => {
+        // Skip non-PHP relevant groups
+        if (!phpRelevantGroups.includes(groupKey)) return;
+        if (!groupedDefaults[groupKey]) return;
+
+        const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+        comment += ` *   // ${groupTitle}\n`;
+        comment += ` *   '${groupKey}' => [\n`;
+
+        Object.entries(groupedDefaults[groupKey]).forEach(([key, value]) => {
+          const formattedValue = this.formatDefaultValueForComment(key, value, language);
+          const marker = changedKeys.includes(key) ? " // <- changed" : "";
+          comment += ` *     '${key}' => ${formattedValue},${marker}\n`;
+        });
+
+        comment += ` *   ],\n`;
       });
+
       comment += " * ]\n";
       comment += " */\n\n";
       return comment;
     } else {
       let comment = "/**\n";
-      comment += " * Default configuration values for reference:\n";
+      comment += " * Default configuration values for reference (grouped):\n";
       comment += " * {\n";
-      commentLines.forEach(line => {
-        comment += ` *   ${line},\n`;
+
+      ConfigBuilder.GROUP_ORDER.forEach(groupKey => {
+        if (!groupedDefaults[groupKey]) return;
+
+        const groupTitle = ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+        comment += ` *   // ${groupTitle}\n`;
+        comment += ` *   ${groupKey}: {\n`;
+
+        Object.entries(groupedDefaults[groupKey]).forEach(([key, value]) => {
+          const formattedValue = this.formatDefaultValueForComment(key, value, language);
+          const marker = changedKeys.includes(key) ? " // <- changed" : "";
+          comment += ` *     ${key}: ${formattedValue},${marker}\n`;
+        });
+
+        comment += ` *   },\n`;
       });
+
       comment += " * }\n";
       comment += " */\n";
       return comment;
@@ -6879,13 +6930,35 @@ export default class ConfigBuilder {
       code += defaultsComment;
     }
 
+    // Group the changed config by category
+    const groupedConfig = this.groupChangedConfig(changedConfig);
+    const hasChanges = Object.keys(changedConfig).length > 0;
+
+    if (!hasChanges) {
+      code += `return [];\n`;
+      return code;
+    }
+
     code += `return [\n`;
 
-    const entries = Object.entries(changedConfig);
-    entries.forEach(([key, value], index) => {
-      const comma = index < entries.length - 1 ? "," : "";
-      const phpValue = this.jsValueToPhp(value, key);
-      code += `    '${key}' => ${phpValue}${comma}\n`;
+    // Output grouped config (only PHP-relevant groups)
+    const phpRelevantGroups = ["urls", "limits", "perTypeLimits", "fileTypes"];
+    const groupKeys = phpRelevantGroups.filter(g => groupedConfig[g]);
+    groupKeys.forEach((groupKey, groupIndex) => {
+      const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+      const groupEntries = Object.entries(groupedConfig[groupKey]);
+      const isLastGroup = groupIndex === groupKeys.length - 1;
+
+      code += `    // ${groupTitle}\n`;
+      code += `    '${groupKey}' => [\n`;
+
+      groupEntries.forEach(([key, value], index) => {
+        const comma = index < groupEntries.length - 1 ? "," : "";
+        const phpValue = this.jsValueToPhp(value, key);
+        code += `        '${key}' => ${phpValue}${comma}\n`;
+      });
+
+      code += `    ]${isLastGroup ? "" : ","}\n`;
     });
 
     code += `];\n`;
@@ -7438,8 +7511,16 @@ export default class ConfigBuilder {
 
     // Server-relevant keys for PHP config
     const serverRelevantKeys = [
+      // File type validation
       "allowedExtensions",
       "allowedMimeTypes",
+      // File type category extensions (for per-type validation)
+      "imageExtensions",
+      "videoExtensions",
+      "audioExtensions",
+      "documentExtensions",
+      "archiveExtensions",
+      // Size limits
       "perFileMaxSize",
       "perFileMaxSizeDisplay",
       "perFileMaxSizePerType",
@@ -7450,6 +7531,8 @@ export default class ConfigBuilder {
       "totalMaxSize",
       "totalMaxSizeDisplay",
       "maxFiles",
+      // Upload directory
+      "uploadDir",
     ];
 
     // Keys that are ConfigBuilder-only (not FileUploader options)
@@ -7490,7 +7573,167 @@ export default class ConfigBuilder {
   }
 
   /**
+   * Mapping of option keys to their category groups
+   * Used to organize changed config into grouped format
+   */
+  static OPTION_TO_GROUP = {
+    // URLs
+    uploadUrl: "urls",
+    deleteUrl: "urls",
+    downloadAllUrl: "urls",
+    cleanupZipUrl: "urls",
+    copyFileUrl: "urls",
+    configUrl: "urls",
+    uploadDir: "urls",
+    // Limits
+    perFileMaxSize: "limits",
+    perFileMaxSizeDisplay: "limits",
+    totalMaxSize: "limits",
+    totalMaxSizeDisplay: "limits",
+    maxFiles: "limits",
+    // Per-Type Limits
+    perFileMaxSizePerType: "perTypeLimits",
+    perFileMaxSizePerTypeDisplay: "perTypeLimits",
+    perTypeMaxTotalSize: "perTypeLimits",
+    perTypeMaxTotalSizeDisplay: "perTypeLimits",
+    perTypeMaxFileCount: "perTypeLimits",
+    // File Types
+    allowedExtensions: "fileTypes",
+    allowedMimeTypes: "fileTypes",
+    imageExtensions: "fileTypes",
+    videoExtensions: "fileTypes",
+    audioExtensions: "fileTypes",
+    documentExtensions: "fileTypes",
+    archiveExtensions: "fileTypes",
+    // Behavior
+    multiple: "behavior",
+    autoFetchConfig: "behavior",
+    confirmBeforeDelete: "behavior",
+    preventDuplicates: "behavior",
+    duplicateCheckBy: "behavior",
+    cleanupOnUnload: "behavior",
+    cleanupOnDestroy: "behavior",
+    // Limits Display
+    showLimits: "limitsDisplay",
+    showProgressBar: "limitsDisplay",
+    showTypeProgressBar: "limitsDisplay",
+    showPerFileLimit: "limitsDisplay",
+    showTypeGroupSize: "limitsDisplay",
+    showTypeGroupCount: "limitsDisplay",
+    defaultLimitsView: "limitsDisplay",
+    allowLimitsViewToggle: "limitsDisplay",
+    showLimitsToggle: "limitsDisplay",
+    defaultLimitsVisible: "limitsDisplay",
+    // Alerts
+    alertAnimation: "alerts",
+    alertDuration: "alerts",
+    // Buttons
+    showDownloadAllButton: "buttons",
+    downloadAllButtonText: "buttons",
+    downloadAllButtonClasses: "buttons",
+    downloadAllButtonElement: "buttons",
+    showClearAllButton: "buttons",
+    clearAllButtonText: "buttons",
+    clearAllButtonClasses: "buttons",
+    clearAllButtonElement: "buttons",
+    // Media Capture
+    enableFullPageCapture: "mediaCapture",
+    enableRegionCapture: "mediaCapture",
+    enableScreenCapture: "mediaCapture",
+    enableVideoRecording: "mediaCapture",
+    enableAudioRecording: "mediaCapture",
+    collapsibleCaptureButtons: "mediaCapture",
+    maxVideoRecordingDuration: "mediaCapture",
+    maxAudioRecordingDuration: "mediaCapture",
+    recordingCountdownDuration: "mediaCapture",
+    enableMicrophoneAudio: "mediaCapture",
+    enableSystemAudio: "mediaCapture",
+    showRecordingSize: "mediaCapture",
+    videoBitsPerSecond: "mediaCapture",
+    audioBitsPerSecond: "mediaCapture",
+    maxVideoRecordingFileSize: "mediaCapture",
+    maxAudioRecordingFileSize: "mediaCapture",
+    externalRecordingToolbarContainer: "mediaCapture",
+    // Carousel
+    enableCarouselPreview: "carousel",
+    carouselAutoPreload: "carousel",
+    carouselEnableManualLoading: "carousel",
+    carouselVisibleTypes: "carousel",
+    carouselPreviewableTypes: "carousel",
+    carouselMaxPreviewRows: "carousel",
+    carouselMaxTextPreviewChars: "carousel",
+    carouselShowDownloadButton: "carousel",
+    // Drag & Drop
+    enableCrossUploaderDrag: "dragDrop",
+    externalDropZone: "dragDrop",
+    externalDropZoneActiveClass: "dragDrop",
+    // Callbacks
+    onUploadStart: "callbacks",
+    onUploadSuccess: "callbacks",
+    onUploadError: "callbacks",
+    onDeleteSuccess: "callbacks",
+    onDeleteError: "callbacks",
+    onDuplicateFile: "callbacks",
+  };
+
+  /**
+   * Human-readable group names for code comments
+   */
+  static GROUP_TITLES = {
+    urls: "URL Configuration",
+    limits: "File Size Limits",
+    perTypeLimits: "Per-Type Limits",
+    fileTypes: "Allowed File Types",
+    behavior: "Upload Behavior",
+    limitsDisplay: "Limits Display",
+    alerts: "Alert Notifications",
+    buttons: "Buttons",
+    mediaCapture: "Media Capture",
+    carousel: "Carousel Preview",
+    dragDrop: "Drag & Drop",
+    callbacks: "Callbacks",
+  };
+
+  /**
+   * Group order for consistent code output
+   */
+  static GROUP_ORDER = [
+    "urls",
+    "limits",
+    "perTypeLimits",
+    "fileTypes",
+    "behavior",
+    "limitsDisplay",
+    "alerts",
+    "buttons",
+    "mediaCapture",
+    "carousel",
+    "dragDrop",
+    "callbacks",
+  ];
+
+  /**
+   * Group changed config options by their category
+   * @param {Object} changedConfig - Flat changed config object
+   * @returns {Object} - Config grouped by category
+   */
+  groupChangedConfig(changedConfig) {
+    const grouped = {};
+
+    for (const [key, value] of Object.entries(changedConfig)) {
+      const group = ConfigBuilder.OPTION_TO_GROUP[key] || "other";
+      if (!grouped[group]) {
+        grouped[group] = {};
+      }
+      grouped[group][key] = value;
+    }
+
+    return grouped;
+  }
+
+  /**
    * Generate the configuration code for ALL uploaders
+   * Now generates grouped options format for better readability
    */
   generateCode() {
     // Make sure active uploader's config is saved
@@ -7507,6 +7750,7 @@ export default class ConfigBuilder {
     uploaders.forEach(([id, data], uploaderIndex) => {
       const isActive = id === this.activeUploaderId;
       const changedConfig = this.getChangedConfig(data.config);
+      const groupedConfig = this.groupChangedConfig(changedConfig);
 
       // Add comment header for each uploader
       const marker = isActive ? " ← Currently Editing" : "";
@@ -7519,16 +7763,37 @@ export default class ConfigBuilder {
           .replace(/[^a-z0-9]+/g, "_")
           .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
 
-      const entries = Object.entries(changedConfig);
-      if (entries.length === 0) {
+      const groupKeys = ConfigBuilder.GROUP_ORDER.filter(g => groupedConfig[g]);
+
+      if (groupKeys.length === 0) {
         code += `const ${varName} = new FileUploader('#${varName}');\n`;
       } else {
         code += `const ${varName} = new FileUploader('#${varName}', {\n`;
 
-        entries.forEach(([key, value], index) => {
-          const comma = index < entries.length - 1 ? "," : "";
-          const formattedValue = this.formatJsValue(key, value, "  ", comma);
-          code += `  ${key}: ${formattedValue}\n`;
+        groupKeys.forEach((groupKey, groupIndex) => {
+          const groupOptions = groupedConfig[groupKey];
+          const groupTitle = ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+          const isLastGroup = groupIndex === groupKeys.length - 1;
+
+          // Add group comment
+          code += `  // ${groupTitle}\n`;
+          code += `  ${groupKey}: {\n`;
+
+          const entries = Object.entries(groupOptions);
+          entries.forEach(([key, value], index) => {
+            const isLastEntry = index === entries.length - 1;
+            const comma = isLastEntry ? "" : ",";
+            const formattedValue = this.formatJsValue(key, value, "    ", comma);
+            code += `    ${key}: ${formattedValue}\n`;
+          });
+
+          const groupComma = isLastGroup ? "" : ",";
+          code += `  }${groupComma}\n`;
+
+          // Add spacing between groups (except after last)
+          if (!isLastGroup) {
+            code += "\n";
+          }
         });
 
         code += `});\n`;
@@ -7573,7 +7838,17 @@ export default class ConfigBuilder {
   }
 
   /**
-   * Generate PHP configuration code for ALL uploaders
+   * PHP group titles for comments
+   */
+  static PHP_GROUP_TITLES = {
+    urls: "Upload Directory",
+    limits: "File Size Limits",
+    perTypeLimits: "Per-Type Limits",
+    fileTypes: "Allowed File Types & MIME Types",
+  };
+
+  /**
+   * Generate PHP configuration code for ALL uploaders (grouped format)
    */
   generatePhpCode() {
     // Make sure active uploader's config is saved
@@ -7591,6 +7866,7 @@ export default class ConfigBuilder {
     uploaders.forEach(([id, data], uploaderIndex) => {
       const isActive = id === this.activeUploaderId;
       const changedConfig = this.getChangedConfig(data.config, true); // server-only
+      const groupedConfig = this.groupChangedConfig(changedConfig);
 
       // Generate key name from uploader name
       const keyName =
@@ -7604,12 +7880,40 @@ export default class ConfigBuilder {
       code += `    // ${data.name}${marker}\n`;
       code += `    '${keyName}' => [\n`;
 
-      const entries = Object.entries(changedConfig);
-      entries.forEach(([key, value], index) => {
-        const comma = index < entries.length - 1 ? "," : "";
-        const phpValue = this.jsValueToPhp(value, key);
-        code += `        '${key}' => ${phpValue}${comma}\n`;
-      });
+      // PHP only needs specific groups: urls, limits, perTypeLimits, fileTypes
+      const phpGroups = ["urls", "limits", "perTypeLimits", "fileTypes"];
+      const groupKeys = phpGroups.filter(g => groupedConfig[g]);
+
+      if (groupKeys.length === 0) {
+        // No server-relevant options changed
+        code += `        // Using defaults\n`;
+      } else {
+        groupKeys.forEach((groupKey, groupIndex) => {
+          const groupOptions = groupedConfig[groupKey];
+          const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || groupKey;
+          const isLastGroup = groupIndex === groupKeys.length - 1;
+
+          // Add group comment
+          code += `        // ${groupTitle}\n`;
+          code += `        '${groupKey}' => [\n`;
+
+          const entries = Object.entries(groupOptions);
+          entries.forEach(([key, value], index) => {
+            const isLastEntry = index === entries.length - 1;
+            const comma = isLastEntry ? "" : ",";
+            const phpValue = this.jsValueToPhp(value, key);
+            code += `            '${key}' => ${phpValue}${comma}\n`;
+          });
+
+          const groupComma = isLastGroup ? "" : ",";
+          code += `        ]${groupComma}\n`;
+
+          // Add spacing between groups (except after last)
+          if (!isLastGroup) {
+            code += "\n";
+          }
+        });
+      }
 
       const uploaderComma = uploaderIndex < uploaders.length - 1 ? "," : "";
       code += `    ]${uploaderComma}\n`;
