@@ -491,14 +491,14 @@ export default class ConfigBuilder {
           },
           enableMicrophoneAudio: {
             type: "boolean",
-            default: false,
+            default: true,
             label: "Enable Microphone Audio",
             hint: "Record microphone audio during screen capture",
             dependsOn: "enableScreenCapture",
           },
           enableSystemAudio: {
             type: "boolean",
-            default: false,
+            default: true,
             label: "Enable System Audio",
             hint: "Record system audio during screen capture",
             dependsOn: "enableScreenCapture",
@@ -682,6 +682,21 @@ export default class ConfigBuilder {
               { value: "5", label: "Bootstrap 5" },
             ],
             dependsOn: "displayMode",
+            showWhen: (config) =>
+              config.displayMode === "modal-minimal" ||
+              config.displayMode === "modal-detailed",
+          },
+          modalMediaButtons: {
+            type: "multiSelect",
+            default: [],
+            label: "Media Capture Buttons",
+            hint: "Show media capture buttons alongside the modal button for quick access",
+            options: ["screenshot", "video", "audio"],
+            optionLabels: {
+              screenshot: "Screenshot Capture",
+              video: "Screen Recording",
+              audio: "Audio Recording",
+            },
             showWhen: (config) =>
               config.displayMode === "modal-minimal" ||
               config.displayMode === "modal-detailed",
@@ -2969,14 +2984,12 @@ export default class ConfigBuilder {
   }
 
   /**
-   * Check if an option's dependency is satisfied
+   * Check if an option's dependency is satisfied (controls disabled state)
+   * Note: This only checks dependsOn, NOT showWhen.
+   * showWhen controls visibility, dependsOn controls enabled/disabled state.
    */
   isDependencySatisfied(def) {
-    // If showWhen function is provided, use it as the primary check
-    if (def.showWhen && typeof def.showWhen === "function") {
-      return def.showWhen(this.config);
-    }
-    // Check basic dependency (for boolean values like "showLimits")
+    // Only check dependsOn for disabled state (not showWhen)
     if (def.dependsOn) {
       const depValue = this.config[def.dependsOn];
       // For boolean dependencies, check if true
@@ -3391,11 +3404,13 @@ export default class ConfigBuilder {
     const selected = this.config[key] || [];
     const tags = def.options
       .map(
-        (opt) =>
-          `<span class="fu-config-builder-tag ${
+        (opt) => {
+          const label = def.optionLabels ? def.optionLabels[opt] || opt : opt;
+          return `<span class="fu-config-builder-tag ${
             selected.includes(opt) ? "selected" : ""
           } ${isDisabled ? "disabled" : ""}"
-              data-value="${opt}">${opt}</span>`
+              data-value="${opt}">${label}</span>`;
+        }
       )
       .join("");
 
@@ -4394,6 +4409,8 @@ export default class ConfigBuilder {
       sliderConfigUnit.addEventListener("change", () => {
         this.sliderConfig.unit = sliderConfigUnit.value;
         updateSliderConfigLabels();
+        // Sync all unit dropdowns in File Size Limits section to the same unit
+        this.syncUnitDropdowns(sliderConfigUnit.value, "sizeSlider");
         this.updateAllSizeSliders();
       });
     }
@@ -4938,6 +4955,8 @@ export default class ConfigBuilder {
       pertypeSliderUnit.addEventListener("change", () => {
         this.sliderConfig.unit = pertypeSliderUnit.value;
         updatePertypeSliderConfigLabels();
+        // Sync all unit dropdowns in Per-Type Limits section to the same unit
+        this.syncUnitDropdowns(pertypeSliderUnit.value, "perType");
         this.rerenderPerTypeLimitsPanel();
       });
     }
@@ -5084,6 +5103,44 @@ export default class ConfigBuilder {
           labels[1].textContent = `${maxValue} ${currentUnit}`;
         }
       });
+  }
+
+  /**
+   * Sync all unit dropdowns in a section to the same unit (without converting values)
+   * @param {string} newUnit - The new unit to set (bytes, KB, MB, GB)
+   * @param {string} sectionType - Either "sizeSlider" or "perType"
+   */
+  syncUnitDropdowns(newUnit, sectionType) {
+    if (sectionType === "sizeSlider") {
+      // Sync all unit dropdowns in File Size Limits section
+      this.element
+        .querySelectorAll('.fu-config-builder-size-slider[data-type="sizeSlider"] .fu-config-builder-unit-dropdown')
+        .forEach((dropdown) => {
+          if (dropdown.value !== newUnit) {
+            dropdown.value = newUnit;
+            // Reset the slider value to 0 when unit changes
+            const container = dropdown.closest(".fu-config-builder-size-slider");
+            const slider = container?.querySelector(".fu-config-builder-slider-input");
+            const valueInput = container?.querySelector(".fu-config-builder-slider-value-input");
+            if (slider) slider.value = 0;
+            if (valueInput) valueInput.value = "";
+            // Clear the config value for this option
+            const optionKey = container?.dataset.option;
+            if (optionKey) {
+              this.config[optionKey] = 0;
+            }
+          }
+        });
+    } else if (sectionType === "perType") {
+      // Sync all unit dropdowns in Per-Type Limits section
+      this.element
+        .querySelectorAll('.fu-config-builder-filetype-card .fu-config-builder-unit-dropdown-sm')
+        .forEach((dropdown) => {
+          if (dropdown.value !== newUnit) {
+            dropdown.value = newUnit;
+          }
+        });
+    }
   }
 
   /**
@@ -5631,6 +5688,7 @@ export default class ConfigBuilder {
     const modalTitle = config.modalTitle || "Upload Files";
     const modalSize = config.modalSize || "lg";
     const bootstrapVersion = config.bootstrapVersion || "5";
+    const mediaButtons = config.modalMediaButtons || [];
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
@@ -5638,7 +5696,7 @@ export default class ConfigBuilder {
 
     const iconSvg = this.getModalButtonIconSvg(buttonIcon);
 
-    return this.generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bootstrapVersion, isMinimal);
+    return this.generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bootstrapVersion, isMinimal, mediaButtons);
   }
 
   /**
@@ -5648,11 +5706,12 @@ export default class ConfigBuilder {
     const displayMode = config.displayMode;
     const bootstrapVersion = config.bootstrapVersion || "5";
     const isMinimal = displayMode === "modal-minimal";
+    const mediaButtons = config.modalMediaButtons || [];
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
 
-    return this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal);
+    return this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons);
   }
 
   /**
@@ -5860,6 +5919,7 @@ export default class ConfigBuilder {
     const modalTitle = config.modalTitle || "Upload Files";
     const modalSize = config.modalSize || "lg";
     const bootstrapVersion = config.bootstrapVersion || "5";
+    const mediaButtons = config.modalMediaButtons || [];
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
@@ -5874,15 +5934,15 @@ export default class ConfigBuilder {
 
     // CSS Section (only once per mode type)
     code += `/* ----- CSS (add to your stylesheet) ----- */\n\n`;
-    code += this.generateModalCss(isMinimal);
+    code += this.generateModalCss(isMinimal, mediaButtons);
 
     // HTML Section
     code += `\n\n/* ----- HTML ----- */\n\n`;
-    code += this.generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bootstrapVersion, isMinimal);
+    code += this.generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bootstrapVersion, isMinimal, mediaButtons);
 
     // JS Section
     code += `\n\n/* ----- JavaScript ----- */\n\n`;
-    code += this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal);
+    code += this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons);
 
     return code;
   }
@@ -5890,7 +5950,37 @@ export default class ConfigBuilder {
   /**
    * Generate CSS for modal preview styles
    */
-  generateModalCss(isMinimal) {
+  generateModalCss(isMinimal, mediaButtons = []) {
+    const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
+
+    // Common media button CSS
+    const mediaButtonCss = hasMediaButtons ? `
+/* Media Capture Button Styles */
+.media-capture-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+}
+
+.media-capture-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.media-capture-btn.recording {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+  animation: pulse-recording 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-recording {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+` : '';
+
     if (isMinimal) {
       return `.upload-btn-wrapper {
   display: inline-flex;
@@ -5920,7 +6010,7 @@ export default class ConfigBuilder {
 }
 
 .btn-file-badge .badge-count { font-weight: 600; }
-.btn-file-badge .badge-size { font-weight: 500; }`;
+.btn-file-badge .badge-size { font-weight: 500; }${mediaButtonCss}`;
     } else {
       return `.file-preview-summary {
   display: none;
@@ -6004,7 +6094,7 @@ export default class ConfigBuilder {
 }
 
 .edit-files-link:hover { text-decoration: underline; }
-.edit-files-link svg { width: 16px; height: 16px; }`;
+.edit-files-link svg { width: 16px; height: 16px; }${mediaButtonCss}`;
     }
   }
 
@@ -6024,17 +6114,45 @@ export default class ConfigBuilder {
   /**
    * Generate modal HTML markup
    */
-  generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bsVersion, isMinimal) {
+  generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bsVersion, isMinimal, mediaButtons = []) {
     const sizeClass = modalSize === "md" ? "" : ` modal-${modalSize}`;
+    const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
+
+    // Media button icons
+    const mediaButtonIcons = {
+      screenshot: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+      video: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+      audio: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+    };
+
+    const mediaButtonTitles = {
+      screenshot: "Capture Screenshot",
+      video: "Record Screen",
+      audio: "Record Audio",
+    };
 
     // Button with optional preview badge
     let html = `<!-- Trigger Button -->\n`;
     if (isMinimal) {
       html += `<div class="upload-btn-wrapper">\n`;
-      html += `  <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
-      if (iconSvg) html += `    ${iconSvg}\n`;
-      html += `    ${buttonText}\n`;
-      html += `  </button>\n`;
+      if (hasMediaButtons) {
+        html += `  <div class="btn-group" role="group">\n`;
+        html += `    <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        if (iconSvg) html += `      ${iconSvg}\n`;
+        html += `      ${buttonText}\n`;
+        html += `    </button>\n`;
+        for (const btnType of mediaButtons) {
+          html += `    <button type="button" class="btn btn-outline-primary media-capture-btn" data-capture-type="${btnType}" data-uploader="${varName}" title="${mediaButtonTitles[btnType]}">\n`;
+          html += `      ${mediaButtonIcons[btnType]}\n`;
+          html += `    </button>\n`;
+        }
+        html += `  </div>\n`;
+      } else {
+        html += `  <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        if (iconSvg) html += `    ${iconSvg}\n`;
+        html += `    ${buttonText}\n`;
+        html += `  </button>\n`;
+      }
       html += `  <span class="btn-file-badge" id="${varName}Badge">\n`;
       html += `    <span class="badge-count" id="${varName}Count">0</span> files\n`;
       html += `    <span class="badge-separator">|</span>\n`;
@@ -6042,10 +6160,24 @@ export default class ConfigBuilder {
       html += `  </span>\n`;
       html += `</div>\n`;
     } else {
-      html += `<button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
-      if (iconSvg) html += `  ${iconSvg}\n`;
-      html += `  ${buttonText}\n`;
-      html += `</button>\n\n`;
+      if (hasMediaButtons) {
+        html += `<div class="btn-group" role="group">\n`;
+        html += `  <button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        if (iconSvg) html += `    ${iconSvg}\n`;
+        html += `    ${buttonText}\n`;
+        html += `  </button>\n`;
+        for (const btnType of mediaButtons) {
+          html += `  <button type="button" class="btn btn-outline-primary media-capture-btn" data-capture-type="${btnType}" data-uploader="${varName}" title="${mediaButtonTitles[btnType]}">\n`;
+          html += `    ${mediaButtonIcons[btnType]}\n`;
+          html += `  </button>\n`;
+        }
+        html += `</div>\n\n`;
+      } else {
+        html += `<button type="button" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        if (iconSvg) html += `  ${iconSvg}\n`;
+        html += `  ${buttonText}\n`;
+        html += `</button>\n\n`;
+      }
       html += `<!-- Detailed Preview Summary -->\n`;
       html += `<div class="file-preview-summary" id="${varName}Summary">\n`;
       html += `  <div class="summary-header">\n`;
@@ -6118,7 +6250,9 @@ export default class ConfigBuilder {
   /**
    * Generate modal JavaScript code
    */
-  generateModalJs(varName, modalId, containerId, changedConfig, bsVersion, isMinimal) {
+  generateModalJs(varName, modalId, containerId, changedConfig, bsVersion, isMinimal, mediaButtons = []) {
+    const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
+
     let code = `// Initialize FileUploader\n`;
     code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
@@ -6221,6 +6355,64 @@ export default class ConfigBuilder {
       code += `  };\n`;
       code += `  return typeMap[ext] || 'Files';\n`;
       code += `}`;
+    }
+
+    // Add media capture button handlers
+    if (hasMediaButtons) {
+      code += `\n\n// Media capture button handlers\n`;
+      code += `document.querySelectorAll('.media-capture-btn[data-uploader="${varName}"]').forEach(btn => {\n`;
+      code += `  btn.addEventListener('click', async function() {\n`;
+      code += `    const captureType = this.dataset.captureType;\n`;
+      code += `    \n`;
+      code += `    switch(captureType) {\n`;
+      if (mediaButtons.includes('screenshot')) {
+        code += `      case 'screenshot':\n`;
+        code += `        // Capture screenshot using FileUploader's built-in method\n`;
+        code += `        ${varName}.captureScreenshot();\n`;
+        code += `        break;\n`;
+      }
+      if (mediaButtons.includes('video')) {
+        code += `      case 'video':\n`;
+        code += `        // Toggle video recording\n`;
+        code += `        if (this.classList.contains('recording')) {\n`;
+        code += `          ${varName}.stopVideoRecording();\n`;
+        code += `          this.classList.remove('recording');\n`;
+        code += `        } else {\n`;
+        code += `          ${varName}.startVideoRecording();\n`;
+        code += `          this.classList.add('recording');\n`;
+        code += `        }\n`;
+        code += `        break;\n`;
+      }
+      if (mediaButtons.includes('audio')) {
+        code += `      case 'audio':\n`;
+        code += `        // Toggle audio recording\n`;
+        code += `        if (this.classList.contains('recording')) {\n`;
+        code += `          ${varName}.stopAudioRecording();\n`;
+        code += `          this.classList.remove('recording');\n`;
+        code += `        } else {\n`;
+        code += `          ${varName}.startAudioRecording();\n`;
+        code += `          this.classList.add('recording');\n`;
+        code += `        }\n`;
+        code += `        break;\n`;
+      }
+      code += `    }\n`;
+      code += `  });\n`;
+      code += `});\n`;
+
+      // Add listeners for recording state changes
+      if (mediaButtons.includes('video') || mediaButtons.includes('audio')) {
+        code += `\n// Listen for recording state changes to update button states\n`;
+        code += `${varName}.on('recordingStateChange', (state) => {\n`;
+        code += `  const btn = document.querySelector('.media-capture-btn[data-uploader="${varName}"][data-capture-type="' + state.type + '"]');\n`;
+        code += `  if (btn) {\n`;
+        code += `    if (state.isRecording) {\n`;
+        code += `      btn.classList.add('recording');\n`;
+        code += `    } else {\n`;
+        code += `      btn.classList.remove('recording');\n`;
+        code += `    }\n`;
+        code += `  }\n`;
+        code += `});\n`;
+      }
     }
 
     return code;
