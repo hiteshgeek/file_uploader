@@ -4576,6 +4576,14 @@ $builder-prefix: "fu-config-builder";
   gap: 10px;
 }
 
+// Buttons row for detailed preview (upload button + media buttons)
+.#{$builder-prefix}-modal-buttons-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .#{$builder-prefix}-modal-btn {
   display: inline-flex;
   align-items: center;
@@ -4610,6 +4618,86 @@ $builder-prefix: "fu-config-builder";
   font-size: 11px;
   color: #64748b;
   font-style: italic;
+}
+
+// Expandable media capture buttons wrapper
+.file-uploader-capture-expandable {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+// Toggle button for expandable media buttons - matches .file-uploader-capture-btn styling
+.file-uploader-capture-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--fu-color-primary, #6366f1);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    background-color: var(--fu-color-primary-hover, #4f46e5);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .toggle-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+  }
+}
+
+// Wrapper for the sliding media buttons
+.file-uploader-capture-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 0;
+  opacity: 0;
+  overflow: visible; // Allow tooltips to overflow
+  transition: max-width 0.3s ease, opacity 0.25s ease;
+
+  // Hide buttons when collapsed using transform and pointer-events
+  .file-uploader-capture-container {
+    transform: translateX(-10px);
+    pointer-events: none;
+    transition: transform 0.3s ease;
+  }
+}
+
+// Expanded state
+.file-uploader-capture-expandable.expanded {
+  .file-uploader-capture-toggle .toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  .file-uploader-capture-buttons-wrapper {
+    max-width: 200px;
+    opacity: 1;
+
+    .file-uploader-capture-container {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+  }
 }
 
 // Media capture buttons container - uses file-uploader-capture-container and file-uploader-capture-btn

@@ -479,11 +479,8 @@ export default class FileUploader {
     if (this.options.enableScreenCapture && ScreenCapture.isSupported()) {
       this.screenshotBtn = document.createElement("button");
       this.screenshotBtn.type = "button";
-      this.screenshotBtn.className = "file-uploader-capture-btn";
-      this.screenshotBtn.setAttribute(
-        "data-tooltip-text",
-        "Capture Screenshot"
-      );
+      this.screenshotBtn.className = "file-uploader-capture-btn has-tooltip";
+      this.screenshotBtn.setAttribute("data-tooltip", "Capture Screenshot");
       this.screenshotBtn.setAttribute("data-tooltip-position", "top");
       this.screenshotBtn.innerHTML = getIcon("camera");
       this.screenshotBtn.addEventListener("click", (e) => {
@@ -497,8 +494,8 @@ export default class FileUploader {
     if (this.options.enableVideoRecording && VideoRecorder.isSupported()) {
       this.videoRecordBtn = document.createElement("button");
       this.videoRecordBtn.type = "button";
-      this.videoRecordBtn.className = "file-uploader-capture-btn";
-      this.videoRecordBtn.setAttribute("data-tooltip-text", "Record Video");
+      this.videoRecordBtn.className = "file-uploader-capture-btn has-tooltip";
+      this.videoRecordBtn.setAttribute("data-tooltip", "Record Video");
       this.videoRecordBtn.setAttribute("data-tooltip-position", "top");
       this.videoRecordBtn.innerHTML = getIcon("video");
       this.videoRecordBtn.addEventListener("click", (e) => {
@@ -528,10 +525,8 @@ export default class FileUploader {
       );
       if (timeElement) {
         timeElement.style.cursor = "pointer";
-        timeElement.setAttribute(
-          "data-tooltip-text",
-          "Click to toggle time display"
-        );
+        timeElement.classList.add("has-tooltip");
+        timeElement.setAttribute("data-tooltip", "Click to toggle time display");
         timeElement.setAttribute("data-tooltip-position", "top");
         timeElement.dataset.showRemaining = "false";
         timeElement.addEventListener("click", (e) => {
@@ -552,8 +547,8 @@ export default class FileUploader {
     ) {
       this.audioRecordBtn = document.createElement("button");
       this.audioRecordBtn.type = "button";
-      this.audioRecordBtn.className = "file-uploader-capture-btn";
-      this.audioRecordBtn.setAttribute("data-tooltip-text", "Record Audio");
+      this.audioRecordBtn.className = "file-uploader-capture-btn has-tooltip";
+      this.audioRecordBtn.setAttribute("data-tooltip", "Record Audio");
       this.audioRecordBtn.setAttribute("data-tooltip-position", "top");
       this.audioRecordBtn.innerHTML = getIcon("audio");
       this.audioRecordBtn.addEventListener("click", (e) => {
@@ -582,10 +577,8 @@ export default class FileUploader {
         );
         if (timeElement) {
           timeElement.style.cursor = "pointer";
-          timeElement.setAttribute(
-            "data-tooltip-text",
-            "Click to toggle time display"
-          );
+          timeElement.classList.add("has-tooltip");
+          timeElement.setAttribute("data-tooltip", "Click to toggle time display");
           timeElement.setAttribute("data-tooltip-position", "top");
           timeElement.dataset.showRemaining = "false";
           timeElement.addEventListener("click", (e) => {
@@ -603,8 +596,6 @@ export default class FileUploader {
     // Append capture buttons to action container
     if (this.captureButtonContainer.children.length > 0) {
       this.actionContainer.appendChild(this.captureButtonContainer);
-      // Initialize tooltips for capture buttons
-      Tooltip.initAll(this.captureButtonContainer);
     }
 
     // Append action container to dropzone if it has children

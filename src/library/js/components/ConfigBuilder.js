@@ -6847,7 +6847,9 @@ export default class ConfigBuilder {
     // Video icon (matches icons.js video icon)
     video: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"><path d="M96 64c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64L96 64zM464 336l73.5 58.8c4.2 3.4 9.4 5.2 14.8 5.2 13.1 0 23.7-10.6 23.7-23.7l0-240.6c0-13.1-10.6-23.7-23.7-23.7-5.4 0-10.6 1.8-14.8 5.2L464 176 464 336z"/></svg>`,
     // Audio/mic icon (matches icons.js mic icon)
-    audio: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor"><path d="M192 0C139 0 96 43 96 96l0 128c0 53 43 96 96 96s96-43 96-96l0-128c0-53-43-96-96-96zM48 184c0-13.3-10.7-24-24-24S0 170.7 0 184l0 40c0 97.9 73.3 178.7 168 190.5l0 49.5-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-49.5c94.7-11.8 168-92.6 168-190.5l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 79.5-64.5 144-144 144S48 303.5 48 224l0-40z"/></svg>`
+    audio: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor"><path d="M192 0C139 0 96 43 96 96l0 128c0 53 43 96 96 96s96-43 96-96l0-128c0-53-43-96-96-96zM48 184c0-13.3-10.7-24-24-24S0 170.7 0 184l0 40c0 97.9 73.3 178.7 168 190.5l0 49.5-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-49.5c94.7-11.8 168-92.6 168-190.5l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 79.5-64.5 144-144 144S48 303.5 48 224l0-40z"/></svg>`,
+    // Chevron right icon for expandable media buttons toggle
+    chevron_right: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>`
   };
 
   static MEDIA_CAPTURE_TITLES = {
@@ -6857,11 +6859,11 @@ export default class ConfigBuilder {
   };
 
   /**
-   * Generate media capture buttons HTML
+   * Generate media capture buttons HTML with expandable toggle
    * Uses file-uploader-capture-btn class for consistent styling with FileUploader
    * @param {string[]} buttonTypes - Array of button types: 'screenshot', 'video', 'audio'
    * @param {string} uploaderId - The uploader ID for data attribute
-   * @returns {string} HTML string for the media capture buttons container
+   * @returns {string} HTML string for the expandable media capture buttons container
    */
   getMediaCaptureButtonsHtml(buttonTypes, uploaderId) {
     if (!buttonTypes || buttonTypes.length === 0) return '';
@@ -6871,10 +6873,20 @@ export default class ConfigBuilder {
       const title = ConfigBuilder.MEDIA_CAPTURE_TITLES[btnType];
       if (!icon) return '';
 
-      return `<button type="button" class="file-uploader-capture-btn" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" title="${title}">${icon}</button>`;
+      return `<button type="button" class="file-uploader-capture-btn has-tooltip" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" data-tooltip="${title}" data-tooltip-position="top">${icon}</button>`;
     }).join('');
 
-    return `<div class="file-uploader-capture-container" data-uploader-id="${uploaderId}">${buttons}</div>`;
+    const chevronIcon = ConfigBuilder.MEDIA_CAPTURE_ICONS.chevron_right;
+
+    return `
+      <div class="file-uploader-capture-expandable" data-uploader-id="${uploaderId}">
+        <button type="button" class="file-uploader-capture-toggle has-tooltip" data-uploader-id="${uploaderId}" data-tooltip="Media Capture" data-tooltip-position="top">
+          <span class="toggle-chevron">${chevronIcon}</span>
+        </button>
+        <div class="file-uploader-capture-buttons-wrapper">
+          <div class="file-uploader-capture-container" data-uploader-id="${uploaderId}">${buttons}</div>
+        </div>
+      </div>`;
   }
 
   /**
@@ -6883,6 +6895,9 @@ export default class ConfigBuilder {
    * @param {string} uploaderId - The uploader ID to find the FileUploader instance
    */
   attachMediaCaptureHandlers(container, uploaderId) {
+    // Attach toggle handler for expandable media buttons
+    this.attachMediaCaptureToggleHandler(container, uploaderId);
+
     const buttons = container.querySelectorAll('.file-uploader-capture-btn[data-uploader-id="' + uploaderId + '"]');
 
     buttons.forEach(btn => {
@@ -6918,6 +6933,24 @@ export default class ConfigBuilder {
           console.error(`Error during ${captureType} capture:`, error);
         }
       });
+    });
+  }
+
+  /**
+   * Attach toggle handler for expandable media capture buttons
+   * @param {HTMLElement} container - Container element with the toggle button
+   * @param {string} uploaderId - The uploader ID
+   */
+  attachMediaCaptureToggleHandler(container, uploaderId) {
+    const toggleBtn = container.querySelector('.file-uploader-capture-toggle[data-uploader-id="' + uploaderId + '"]');
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const expandable = toggleBtn.closest('.file-uploader-capture-expandable');
+      if (expandable) {
+        expandable.classList.toggle('expanded');
+      }
     });
   }
 
@@ -7883,11 +7916,13 @@ export default class ConfigBuilder {
             <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader. Drag and drop files here.</p>
           ` : `
             <div class="fu-config-builder-modal-detailed-preview">
-              <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}" data-uploader-id="${id}">
-                ${buttonIconSvg}
-                ${buttonText}
-              </button>
-              ${mediaButtonsHtml}
+              <div class="fu-config-builder-modal-buttons-row">
+                <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}" data-uploader-id="${id}">
+                  ${buttonIconSvg}
+                  ${buttonText}
+                </button>
+                ${mediaButtonsHtml}
+              </div>
               <div class="fu-config-builder-file-summary" data-file-summary="${id}">
                 <div class="summary-empty">
                   <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
