@@ -536,6 +536,23 @@ export default class ConfigBuilder {
               { value: 320000, label: "Ultra (320 Kbps)" },
             ],
           },
+          maxRecordingFileSize: {
+            type: "select",
+            default: null,
+            label: "Max Recording File Size",
+            hint: "Maximum file size for recordings (auto-stops when reached)",
+            dependsOn: "enableVideoRecording",
+            options: [
+              { value: null, label: "No Limit (use per-file limit)" },
+              { value: 5242880, label: "5 MB" },
+              { value: 10485760, label: "10 MB" },
+              { value: 26214400, label: "25 MB" },
+              { value: 52428800, label: "50 MB" },
+              { value: 104857600, label: "100 MB" },
+              { value: 262144000, label: "250 MB" },
+              { value: 524288000, label: "500 MB" },
+            ],
+          },
         },
       },
 
@@ -7159,8 +7176,62 @@ export default class ConfigBuilder {
       "totalMaxSize",
       "perTypeMaxTotalSize",
       "perFileMaxSizePerType",
+      "maxRecordingFileSize",
     ];
     return sizeKeys.includes(key);
+  }
+
+  /**
+   * Check if a key represents a bitrate value (in bits per second)
+   * @param {string} key - Config key name
+   * @returns {boolean}
+   */
+  isBitrateKey(key) {
+    const bitrateKeys = [
+      "videoBitsPerSecond",
+      "audioBitsPerSecond",
+    ];
+    return bitrateKeys.includes(key);
+  }
+
+  /**
+   * Format a bitrate value as a readable expression
+   * e.g., 2500000 becomes "2500000" with comment "// 2.5 Mbps"
+   * @param {number} bps - Bitrate in bits per second
+   * @returns {Object} - { expression: string, comment: string }
+   */
+  formatBitrateExpression(bps) {
+    if (bps === 0) return { expression: "0", comment: "" };
+
+    const Mbps = 1000000;
+    const Kbps = 1000;
+
+    // Format as Mbps if >= 1 Mbps
+    if (bps >= Mbps) {
+      const value = bps / Mbps;
+      // Check if it's a clean number
+      if (Number.isInteger(value)) {
+        return {
+          expression: String(bps),
+          comment: `// ${value} Mbps`,
+        };
+      }
+      return {
+        expression: String(bps),
+        comment: `// ${value} Mbps`,
+      };
+    }
+
+    // Format as Kbps
+    if (bps >= Kbps) {
+      const value = bps / Kbps;
+      return {
+        expression: String(bps),
+        comment: `// ${value} Kbps`,
+      };
+    }
+
+    return { expression: String(bps), comment: `// ${bps} bps` };
   }
 
   /**
@@ -7190,9 +7261,16 @@ export default class ConfigBuilder {
       return result;
     }
 
-    // Handle single size value (perFileMaxSize, totalMaxSize)
+    // Handle single size value (perFileMaxSize, totalMaxSize, maxRecordingFileSize)
     if (this.isSizeKey(key) && typeof value === "number") {
       const formatted = this.formatSizeExpression(value);
+      // Place comma before the comment
+      return `${formatted.expression}${trailingComma} ${formatted.comment}`;
+    }
+
+    // Handle bitrate values (videoBitsPerSecond, audioBitsPerSecond)
+    if (this.isBitrateKey(key) && typeof value === "number") {
+      const formatted = this.formatBitrateExpression(value);
       // Place comma before the comment
       return `${formatted.expression}${trailingComma} ${formatted.comment}`;
     }

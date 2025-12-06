@@ -15,7 +15,11 @@ export default class AudioWorkletRecorder {
       sampleRate: options.sampleRate || 48000, // 48kHz default
       bitDepth: options.bitDepth || 16, // 16-bit default
       numberOfChannels: options.numberOfChannels || 2, // Stereo default
+      maxFileSize: options.maxFileSize || null, // Max file size in bytes (null = no limit)
+      warningThreshold: options.warningThreshold || 0.8, // 80% warning
+      stopThreshold: options.stopThreshold || 0.95, // 95% auto-stop
       onAutoStop: null, // Callback when recording auto-stops due to max duration
+      onSizeLimitReached: null, // Callback when file size limit is reached
       ...options,
     };
 
@@ -37,6 +41,9 @@ export default class AudioWorkletRecorder {
     this.micGainNode = null;
     this.systemGainNode = null;
     this.totalSamples = 0; // Track total samples for size estimation
+    this.warningTriggered = false; // Track if warning was triggered
+    this.sizeLimitTriggered = false; // Track if size limit stop was triggered (prevent multiple calls)
+    this.sizeCheckInterval = null; // Interval for checking file size
   }
 
   /**
@@ -144,6 +151,12 @@ export default class AudioWorkletRecorder {
 
       this.isRecording = true;
       this.startTime = Date.now();
+      this.warningTriggered = false;
+
+      // Start file size monitoring if limit is set
+      if (this.options.maxFileSize) {
+        this.startSizeMonitoring();
+      }
 
       // Auto-stop at max duration
       this.recordingTimer = setTimeout(async () => {
@@ -163,6 +176,39 @@ export default class AudioWorkletRecorder {
       this.cleanup();
       throw error;
     }
+  }
+
+  /**
+   * Start monitoring file size and auto-stop if limit is reached
+   */
+  startSizeMonitoring() {
+    // Check every 500ms
+    this.sizeCheckInterval = setInterval(async () => {
+      // Skip if not recording, no limit set, or already stopping due to limit
+      if (!this.isRecording || !this.options.maxFileSize || this.sizeLimitTriggered) return;
+
+      const status = this.getSizeStatus();
+      const percentage = status.accumulatedSize / this.options.maxFileSize;
+
+      // Check if we've reached the stop threshold
+      if (percentage >= this.options.stopThreshold) {
+        // Mark as triggered to prevent multiple calls
+        this.sizeLimitTriggered = true;
+
+        // Stop recording due to file size limit
+        try {
+          const file = await this.stopRecording();
+          if (this.options.onSizeLimitReached) {
+            this.options.onSizeLimitReached(status);
+          }
+          if (this.options.onAutoStop && typeof this.options.onAutoStop === 'function') {
+            this.options.onAutoStop(file);
+          }
+        } catch (error) {
+          console.error("Auto-stop audio recording (size limit) failed:", error);
+        }
+      }
+    }, 500);
   }
 
   /**
@@ -528,12 +574,26 @@ export default class AudioWorkletRecorder {
     const dataSize = this.totalSamples * channels * bytesPerSample;
     const estimatedSize = headerSize + dataSize;
 
+    // Calculate warning/danger states based on file size limit
+    let isWarning = false;
+    let isNearLimit = false;
+    let percentage = 0;
+
+    if (this.options.maxFileSize) {
+      percentage = (estimatedSize / this.options.maxFileSize) * 100;
+      isWarning = percentage >= this.options.warningThreshold * 100;
+      isNearLimit = percentage >= this.options.stopThreshold * 100;
+    }
+
     return {
       accumulatedSize: estimatedSize,
       formattedSize: this.formatBytes(estimatedSize),
       duration: this.getRecordingDuration(),
-      isWarning: false,
-      isNearLimit: false,
+      percentage: Math.min(100, percentage),
+      maxFileSize: this.options.maxFileSize,
+      formattedMaxSize: this.options.maxFileSize ? this.formatBytes(this.options.maxFileSize) : null,
+      isWarning: isWarning,
+      isNearLimit: isNearLimit,
     };
   }
 
@@ -557,6 +617,11 @@ export default class AudioWorkletRecorder {
     if (this.recordingTimer) {
       clearTimeout(this.recordingTimer);
       this.recordingTimer = null;
+    }
+
+    if (this.sizeCheckInterval) {
+      clearInterval(this.sizeCheckInterval);
+      this.sizeCheckInterval = null;
     }
 
     if (this.workletNode) {
@@ -611,6 +676,8 @@ export default class AudioWorkletRecorder {
     this.pausedDuration = 0;
     this.pauseStartTime = null;
     this.totalSamples = 0;
+    this.warningTriggered = false;
+    this.sizeLimitTriggered = false;
   }
 
   /**

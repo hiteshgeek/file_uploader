@@ -728,13 +728,17 @@ export default class FileUploader {
 
       // Initialize video recorder with options
       // Always create a new recorder to ensure options are fresh
+      // Calculate effective max size considering all limits
+      const maxRecordingSize = this.calculateEffectiveMaxRecordingSize('video');
       this.videoRecorder = new VideoRecorder({
         maxDuration: this.options.maxVideoRecordingDuration * 1000, // Convert to ms
         systemAudioConstraints: this.options.enableSystemAudio,
         microphoneAudioConstraints: this.options.enableMicrophoneAudio,
         videoBitsPerSecond: this.options.videoBitsPerSecond,
         audioBitsPerSecond: this.options.audioBitsPerSecond,
+        maxFileSize: maxRecordingSize,
         onAutoStop: (file) => this.handleVideoAutoStop(file),
+        onSizeLimitReached: (status) => this.handleRecordingSizeLimitReached(status, 'video'),
       });
 
       // Set recording type BEFORE starting recording
@@ -858,6 +862,110 @@ export default class FileUploader {
     }
   }
 
+  /**
+   * Handle recording size limit reached (auto-stop due to file size)
+   * @param {Object} status - Size status from the recorder
+   * @param {string} type - 'video' or 'audio'
+   */
+  handleRecordingSizeLimitReached(status, type) {
+    console.log(`Recording stopped: file size limit reached (${status.formattedSize})`);
+    // The recorder will auto-stop, the file will be handled by onAutoStop callback
+  }
+
+  /**
+   * Calculate the effective maximum recording file size considering all constraints:
+   * - maxRecordingFileSize (explicit recording limit)
+   * - perFileMaxSize (per-file limit)
+   * - perFileMaxSizePerType (per-type per-file limit)
+   * - totalMaxSize (total size limit - current usage)
+   * - perTypeMaxTotalSize (per-type total limit - current type usage)
+   * @param {string} recordingType - 'video' or 'audio'
+   * @returns {number|null} - The effective max size in bytes, or null if no limit
+   */
+  calculateEffectiveMaxRecordingSize(recordingType) {
+    const limits = [];
+
+    // 1. Explicit maxRecordingFileSize
+    if (this.options.maxRecordingFileSize) {
+      limits.push(this.options.maxRecordingFileSize);
+    }
+
+    // 2. Per-file max size (general)
+    if (this.options.perFileMaxSize) {
+      limits.push(this.options.perFileMaxSize);
+    }
+
+    // 3. Per-type per-file max size
+    if (this.options.perFileMaxSizePerType) {
+      const perTypeLimit = this.options.perFileMaxSizePerType[recordingType];
+      if (perTypeLimit) {
+        limits.push(perTypeLimit);
+      }
+    }
+
+    // 4. Calculate remaining space from total max size
+    if (this.options.totalMaxSize) {
+      const currentTotalSize = this.getCurrentTotalSize();
+      const remainingTotal = this.options.totalMaxSize - currentTotalSize;
+      if (remainingTotal > 0) {
+        limits.push(remainingTotal);
+      } else {
+        // No space left, return 0 to prevent recording
+        return 0;
+      }
+    }
+
+    // 5. Calculate remaining space from per-type total max size
+    if (this.options.perTypeMaxTotalSize) {
+      const perTypeTotalLimit = this.options.perTypeMaxTotalSize[recordingType];
+      if (perTypeTotalLimit) {
+        const currentTypeSize = this.getCurrentTypeTotalSize(recordingType);
+        const remainingTypeTotal = perTypeTotalLimit - currentTypeSize;
+        if (remainingTypeTotal > 0) {
+          limits.push(remainingTypeTotal);
+        } else {
+          // No space left for this type, return 0 to prevent recording
+          return 0;
+        }
+      }
+    }
+
+    // Return the minimum of all limits, or null if no limits set
+    if (limits.length === 0) {
+      return null;
+    }
+
+    return Math.min(...limits);
+  }
+
+  /**
+   * Get current total size of all files
+   * @returns {number} - Total size in bytes
+   */
+  getCurrentTotalSize() {
+    let totalSize = 0;
+    this.files.forEach(file => {
+      totalSize += file.size || 0;
+    });
+    return totalSize;
+  }
+
+  /**
+   * Get current total size of files of a specific type
+   * @param {string} type - File type ('video', 'audio', 'image', etc.)
+   * @returns {number} - Total size in bytes for that type
+   */
+  getCurrentTypeTotalSize(type) {
+    let totalSize = 0;
+    this.files.forEach(file => {
+      const fileType = this.getFileType(file);
+      if (fileType === type) {
+        totalSize += file.size || 0;
+      }
+    });
+    return totalSize;
+  }
+
   async toggleAudioRecording() {
     if (
       this.audioRecorder &&
@@ -886,6 +994,8 @@ export default class FileUploader {
           !this.options.enableSystemAudio);
 
       // Always create a new recorder to ensure options are fresh
+      // Calculate effective max size considering all limits
+      const maxAudioRecordingSize = this.calculateEffectiveMaxRecordingSize('audio');
       this.audioRecorder = new AudioWorkletRecorder({
         enableMicrophoneAudio: enableMic,
         enableSystemAudio: this.options.enableSystemAudio,
@@ -893,7 +1003,9 @@ export default class FileUploader {
         sampleRate: 48000, // High quality audio
         bitDepth: 16,
         numberOfChannels: 2, // Stereo
+        maxFileSize: maxAudioRecordingSize,
         onAutoStop: (file) => this.handleAudioAutoStop(file),
+        onSizeLimitReached: (status) => this.handleRecordingSizeLimitReached(status, 'audio'),
       });
 
       // Set recording type BEFORE starting recording

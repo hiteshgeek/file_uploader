@@ -96,6 +96,7 @@ export default class RecordingSizeManager {
     this.startTime = null;
     this.chunks = [];
     this.warningTriggered = false;
+    this.limitReachedTriggered = false; // Prevent multiple onLimitReached callbacks
     this.isTracking = false;
     this.recordingType = null; // 'video' or 'audio'
   }
@@ -180,8 +181,9 @@ export default class RecordingSizeManager {
         }
       }
 
-      // Stop threshold
-      if (percentage >= this.options.stopThreshold) {
+      // Stop threshold - only trigger once
+      if (percentage >= this.options.stopThreshold && !this.limitReachedTriggered) {
+        this.limitReachedTriggered = true;
         if (this.options.onLimitReached) {
           this.options.onLimitReached(status);
         }

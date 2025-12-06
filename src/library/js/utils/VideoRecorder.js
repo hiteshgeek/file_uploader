@@ -54,12 +54,20 @@ export default class VideoRecorder {
       audioBitsPerSecond: this.options.audioBitsPerSecond,
       onSizeUpdate: this.options.onSizeUpdate,
       onWarning: this.options.onSizeWarning,
-      onLimitReached: (status) => {
+      onLimitReached: async (status) => {
         // Auto-stop recording when size limit is reached
         if (this.options.onSizeLimitReached) {
           this.options.onSizeLimitReached(status);
         }
-        this.stopRecording().catch(err => console.error('Failed to stop recording on size limit:', err));
+        try {
+          const file = await this.stopRecording();
+          // Call onAutoStop with the file so it gets added to uploader
+          if (this.options.onAutoStop && typeof this.options.onAutoStop === 'function') {
+            this.options.onAutoStop(file);
+          }
+        } catch (err) {
+          console.error('Failed to stop recording on size limit:', err);
+        }
       }
     });
   }
