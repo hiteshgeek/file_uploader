@@ -438,12 +438,14 @@ export default class ConfigBuilder {
         title: "Media Capture",
         icon: "camera",
         options: {
+          // Page Capture Group
           enableFullPageCapture: {
             type: "boolean",
             default: true,
             label: "Enable Full Page Capture",
             hint: "Enable full page screenshot capture button (captures entire scrollable page)",
             affectsOptions: ["modalMediaButtons", "collapsibleCaptureButtons"],
+            group: "Page Capture",
           },
           enableRegionCapture: {
             type: "boolean",
@@ -451,13 +453,44 @@ export default class ConfigBuilder {
             label: "Enable Region Capture",
             hint: "Enable region selection screenshot capture button (user selects area to capture)",
             affectsOptions: ["modalMediaButtons", "collapsibleCaptureButtons"],
+            group: "Page Capture",
           },
+          regionCaptureShowDimensions: {
+            type: "boolean",
+            default: true,
+            label: "Show Region Dimensions",
+            hint: "Display width × height dimensions while selecting a region to capture",
+            dependsOn: "enableRegionCapture",
+            group: "Page Capture",
+          },
+          regionCaptureDimensionsPosition: {
+            type: "select",
+            default: "center",
+            label: "Dimensions Position",
+            hint: "Position of the dimensions display relative to the selection box",
+            dependsOn: "enableRegionCapture",
+            options: [
+              { value: "top-left", label: "Top Left" },
+              { value: "top-center", label: "Top Center" },
+              { value: "top-right", label: "Top Right" },
+              { value: "center-left", label: "Center Left" },
+              { value: "center", label: "Center" },
+              { value: "center-right", label: "Center Right" },
+              { value: "bottom-left", label: "Bottom Left" },
+              { value: "bottom-center", label: "Bottom Center" },
+              { value: "bottom-right", label: "Bottom Right" },
+            ],
+            group: "Page Capture",
+          },
+
+          // Screen Recording Group
           enableScreenCapture: {
             type: "boolean",
             default: true,
             label: "Enable Screenshot Capture",
-            hint: "Enable screenshot capture button",
+            hint: "Enable screenshot capture button (uses display media API)",
             affectsOptions: ["enableMicrophoneAudio", "enableSystemAudio", "modalMediaButtons", "collapsibleCaptureButtons"],
+            group: "Screen Recording",
           },
           enableVideoRecording: {
             type: "boolean",
@@ -470,25 +503,7 @@ export default class ConfigBuilder {
               "modalMediaButtons",
               "collapsibleCaptureButtons",
             ],
-          },
-          enableAudioRecording: {
-            type: "boolean",
-            default: true,
-            label: "Enable Audio Recording",
-            hint: "Enable audio recording button",
-            affectsOptions: ["maxAudioRecordingDuration", "modalMediaButtons", "collapsibleCaptureButtons"],
-          },
-          collapsibleCaptureButtons: {
-            type: "boolean",
-            default: false,
-            label: "Collapsible Capture Buttons",
-            hint: "Show capture buttons in a collapsible/expandable format with toggle button",
-            showWhen: (config) =>
-              config.enableFullPageCapture ||
-              config.enableRegionCapture ||
-              config.enableScreenCapture ||
-              config.enableVideoRecording ||
-              config.enableAudioRecording,
+            group: "Screen Recording",
           },
           maxVideoRecordingDuration: {
             type: "number",
@@ -498,15 +513,7 @@ export default class ConfigBuilder {
             label: "Max Video Duration (sec)",
             hint: "Maximum video recording duration in seconds",
             dependsOn: "enableVideoRecording",
-          },
-          maxAudioRecordingDuration: {
-            type: "number",
-            default: 300,
-            min: 10,
-            max: 3600,
-            label: "Max Audio Duration (sec)",
-            hint: "Maximum audio recording duration in seconds",
-            dependsOn: "enableAudioRecording",
+            group: "Screen Recording",
           },
           recordingCountdownDuration: {
             type: "number",
@@ -516,6 +523,7 @@ export default class ConfigBuilder {
             label: "Recording Countdown (sec)",
             hint: "Countdown duration before recording starts",
             dependsOn: "enableVideoRecording",
+            group: "Screen Recording",
           },
           enableMicrophoneAudio: {
             type: "boolean",
@@ -523,6 +531,7 @@ export default class ConfigBuilder {
             label: "Enable Microphone Audio",
             hint: "Record microphone audio during screen capture",
             dependsOn: "enableScreenCapture",
+            group: "Screen Recording",
           },
           enableSystemAudio: {
             type: "boolean",
@@ -530,13 +539,7 @@ export default class ConfigBuilder {
             label: "Enable System Audio",
             hint: "Record system audio during screen capture",
             dependsOn: "enableScreenCapture",
-          },
-          showRecordingSize: {
-            type: "boolean",
-            default: true,
-            label: "Show Recording Size",
-            hint: "Show approximate file size during recording",
-            dependsOn: "enableVideoRecording",
+            group: "Screen Recording",
           },
           videoBitsPerSecond: {
             type: "selectWithInput",
@@ -551,25 +554,12 @@ export default class ConfigBuilder {
               { value: 5000000, label: "High (5 Mbps)" },
               { value: 8000000, label: "Ultra (8 Mbps)" },
             ],
-          },
-          audioBitsPerSecond: {
-            type: "selectWithInput",
-            default: 128000,
-            label: "Audio Bitrate",
-            hint: "Audio quality/bitrate for recordings. Select a preset or enter a custom value.",
-            dependsOn: "enableVideoRecording",
-            formatType: "bitrate",
-            options: [
-              { value: 64000, label: "Low (64 Kbps)" },
-              { value: 128000, label: "Medium (128 Kbps)" },
-              { value: 192000, label: "High (192 Kbps)" },
-              { value: 320000, label: "Ultra (320 Kbps)" },
-            ],
+            group: "Screen Recording",
           },
           maxVideoRecordingFileSize: {
             type: "selectWithInput",
             default: null,
-            label: "Max Video Recording File Size",
+            label: "Max Video File Size",
             hint: "Maximum file size for screen/video recordings (auto-stops when reached). Select a preset or enter a custom value.",
             dependsOn: "enableVideoRecording",
             formatType: "size",
@@ -583,11 +573,47 @@ export default class ConfigBuilder {
               { value: 262144000, label: "250 MB" },
               { value: 524288000, label: "500 MB" },
             ],
+            group: "Screen Recording",
+          },
+
+          // Audio Recording Group
+          enableAudioRecording: {
+            type: "boolean",
+            default: true,
+            label: "Enable Audio Recording",
+            hint: "Enable audio recording button",
+            affectsOptions: ["maxAudioRecordingDuration", "modalMediaButtons", "collapsibleCaptureButtons"],
+            group: "Audio Recording",
+          },
+          maxAudioRecordingDuration: {
+            type: "number",
+            default: 300,
+            min: 10,
+            max: 3600,
+            label: "Max Audio Duration (sec)",
+            hint: "Maximum audio recording duration in seconds",
+            dependsOn: "enableAudioRecording",
+            group: "Audio Recording",
+          },
+          audioBitsPerSecond: {
+            type: "selectWithInput",
+            default: 128000,
+            label: "Audio Bitrate",
+            hint: "Audio quality/bitrate for recordings. Select a preset or enter a custom value.",
+            dependsOn: "enableAudioRecording",
+            formatType: "bitrate",
+            options: [
+              { value: 64000, label: "Low (64 Kbps)" },
+              { value: 128000, label: "Medium (128 Kbps)" },
+              { value: 192000, label: "High (192 Kbps)" },
+              { value: 320000, label: "Ultra (320 Kbps)" },
+            ],
+            group: "Audio Recording",
           },
           maxAudioRecordingFileSize: {
             type: "selectWithInput",
             default: null,
-            label: "Max Audio Recording File Size",
+            label: "Max Audio File Size",
             hint: "Maximum file size for audio recordings (auto-stops when reached). Select a preset or enter a custom value.",
             dependsOn: "enableAudioRecording",
             formatType: "size",
@@ -600,31 +626,30 @@ export default class ConfigBuilder {
               { value: 52428800, label: "50 MB" },
               { value: 104857600, label: "100 MB" },
             ],
+            group: "Audio Recording",
           },
-          regionCaptureShowDimensions: {
+
+          // Display Options Group
+          collapsibleCaptureButtons: {
+            type: "boolean",
+            default: false,
+            label: "Collapsible Capture Buttons",
+            hint: "Show capture buttons in a collapsible/expandable format with toggle button",
+            showWhen: (config) =>
+              config.enableFullPageCapture ||
+              config.enableRegionCapture ||
+              config.enableScreenCapture ||
+              config.enableVideoRecording ||
+              config.enableAudioRecording,
+            group: "Display Options",
+          },
+          showRecordingSize: {
             type: "boolean",
             default: true,
-            label: "Show Region Dimensions",
-            hint: "Display width × height dimensions while selecting a region to capture",
-            dependsOn: "enableRegionCapture",
-          },
-          regionCaptureDimensionsPosition: {
-            type: "select",
-            default: "bottom-center",
-            label: "Dimensions Position",
-            hint: "Position of the dimensions display relative to the selection box",
-            dependsOn: "regionCaptureShowDimensions",
-            options: [
-              { value: "top-left", label: "Top Left" },
-              { value: "top-center", label: "Top Center" },
-              { value: "top-right", label: "Top Right" },
-              { value: "center-left", label: "Center Left" },
-              { value: "center", label: "Center" },
-              { value: "center-right", label: "Center Right" },
-              { value: "bottom-left", label: "Bottom Left" },
-              { value: "bottom-center", label: "Bottom Center" },
-              { value: "bottom-right", label: "Bottom Right" },
-            ],
+            label: "Show Recording Size",
+            hint: "Show approximate file size during recording",
+            showWhen: (config) => config.enableVideoRecording || config.enableAudioRecording,
+            group: "Display Options",
           },
         },
       },
@@ -3128,8 +3153,47 @@ export default class ConfigBuilder {
   renderCategoryOptions(options) {
     let html = "";
 
-    for (const [key, def] of Object.entries(options)) {
-      html += this.renderOption(key, def);
+    // Check if any options have groups
+    const hasGroups = Object.values(options).some(def => def.group);
+
+    if (hasGroups) {
+      // Collect options by group (preserving order)
+      const groups = new Map();
+      const ungrouped = [];
+
+      for (const [key, def] of Object.entries(options)) {
+        if (def.group) {
+          if (!groups.has(def.group)) {
+            groups.set(def.group, []);
+          }
+          groups.get(def.group).push({ key, def });
+        } else {
+          ungrouped.push({ key, def });
+        }
+      }
+
+      // Render ungrouped options first (if any)
+      for (const { key, def } of ungrouped) {
+        html += this.renderOption(key, def);
+      }
+
+      // Render grouped options
+      for (const [groupName, groupOptions] of groups) {
+        html += `<div class="fu-config-builder-option-group">
+          <div class="fu-config-builder-option-group-title">${groupName}</div>
+          <div class="fu-config-builder-option-group-content">`;
+
+        for (const { key, def } of groupOptions) {
+          html += this.renderOption(key, def);
+        }
+
+        html += `</div></div>`;
+      }
+    } else {
+      // No groups, render all options directly
+      for (const [key, def] of Object.entries(options)) {
+        html += this.renderOption(key, def);
+      }
     }
 
     return html;

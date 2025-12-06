@@ -230,7 +230,7 @@ function flattenOptions(groupedOptions) {
 
 /**
  * Merge user grouped options with defaults
- * @param {Object} userOptions - User-provided grouped options
+ * @param {Object} userOptions - User-provided grouped options (or flat options)
  * @param {Object} defaults - Default grouped options
  * @returns {Object} - Merged flat options object for internal use
  */
@@ -238,7 +238,7 @@ function mergeGroupedOptions(userOptions, defaults) {
   // Start with flattened defaults
   const flatDefaults = flattenOptions(defaults);
 
-  // Flatten user options (must be grouped format)
+  // Flatten user options - supports both grouped and flat formats
   const flatUserOptions = {};
   const groupKeys = Object.keys(defaults);
 
@@ -251,6 +251,9 @@ function mergeGroupedOptions(userOptions, defaults) {
     ) {
       // This is a category object - flatten it
       Object.assign(flatUserOptions, value);
+    } else if (!groupKeys.includes(key)) {
+      // This is a flat option (not a category key) - include it directly
+      flatUserOptions[key] = value;
     }
   }
 

@@ -497,6 +497,67 @@ $builder-prefix: "fu-config-builder";
 }
 
 // ============================================================================
+// Option Groups (for organizing related options within a category)
+// ============================================================================
+
+.#{$builder-prefix}-option-group {
+  background: rgba(99, 102, 241, 0.03);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 4px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.#{$builder-prefix}-option-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6366f1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: #6366f1;
+    border-radius: 50%;
+  }
+}
+
+.#{$builder-prefix}-option-group-content {
+  display: grid;
+  gap: 12px;
+}
+
+// Dark theme support
+[data-theme="dark"] {
+  .#{$builder-prefix}-option-group {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: rgba(99, 102, 241, 0.15);
+  }
+
+  .#{$builder-prefix}-option-group-title {
+    color: #818cf8;
+    border-bottom-color: rgba(99, 102, 241, 0.2);
+
+    &::before {
+      background: #818cf8;
+    }
+  }
+}
+
+// ============================================================================
 // Search
 // ============================================================================
 

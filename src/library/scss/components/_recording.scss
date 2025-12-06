@@ -226,6 +226,7 @@
     svg {
       width: 16px;
       height: 16px;
+      fill: currentColor;
     }
   }
 }
@@ -237,7 +238,8 @@
   overflow: hidden;
   max-width: 0;
   opacity: 0;
-  transition: max-width 0.3s ease, opacity 0.2s ease;
+  margin-left: 0;
+  transition: max-width 0.3s ease, opacity 0.2s ease, margin-left 0.3s ease;
 
   // Hide buttons when collapsed
   .file-uploader-capture-container {
@@ -254,12 +256,67 @@
   }
 
   .file-uploader-capture-buttons-wrapper {
-    max-width: 300px;
+    max-width: 500px;
     opacity: 1;
+    margin-left: var(--fu-spacing-sm, 8px);
 
     .file-uploader-capture-container {
       transform: translateX(0);
       pointer-events: auto;
     }
   }
+}
+
+// ============================================================================
+// Capture Groups (Image, Screen, Audio)
+// ============================================================================
+
+.file-uploader-capture-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--fu-spacing-xs) var(--fu-spacing-sm);
+  background: var(--fu-color-surface-elevated, rgba(255, 255, 255, 0.05));
+  border-radius: var(--fu-radius-lg);
+  border: 1px solid var(--fu-color-border-subtle, rgba(255, 255, 255, 0.1));
+
+  // Add separator between groups
+  & + & {
+    margin-left: var(--fu-spacing-xs);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(var(--fu-spacing-xs) * -0.5 - 1px);
+      top: 20%;
+      height: 60%;
+      width: 1px;
+      background: var(--fu-color-border-subtle, rgba(255, 255, 255, 0.15));
+    }
+  }
+
+  position: relative;
+}
+
+.file-uploader-capture-group-label {
+  font-size: 9px;
+  font-weight: var(--fu-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--fu-color-text-muted, rgba(255, 255, 255, 0.5));
+  white-space: nowrap;
+}
+
+.file-uploader-capture-group-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-spacing-xs);
+}
+
+// Adjust capture container to use flex with groups
+.file-uploader-capture-container {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--fu-spacing-xs);
 }
