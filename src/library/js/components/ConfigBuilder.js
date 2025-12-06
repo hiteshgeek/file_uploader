@@ -4947,6 +4947,10 @@ export default class ConfigBuilder {
       .forEach((container) => {
         container.querySelectorAll(".fu-config-builder-tag").forEach((tag) => {
           tag.addEventListener("click", () => {
+            // Don't allow clicking on disabled tags
+            if (tag.classList.contains("disabled")) {
+              return;
+            }
             tag.classList.toggle("selected");
             const selected = Array.from(
               container.querySelectorAll(".fu-config-builder-tag.selected")
@@ -5656,6 +5660,38 @@ export default class ConfigBuilder {
               });
             } else {
               wrapper.classList.add("fu-config-builder-hidden");
+            }
+          }
+        }
+
+        // Handle filterOptions for multiSelect - update disabled state of tags
+        if (def.type === "multiSelect" && def.filterOptions) {
+          const container = this.element.querySelector(
+            `.fu-config-builder-tags[data-option="${optionKey}"]`
+          );
+          if (container) {
+            const availableOptions = def.filterOptions(this.config);
+            const currentSelected = this.config[optionKey] || [];
+
+            // Update each tag's disabled state
+            container.querySelectorAll(".fu-config-builder-tag").forEach((tag) => {
+              const value = tag.dataset.value;
+              const isAvailable = availableOptions.includes(value);
+
+              if (isAvailable) {
+                tag.classList.remove("disabled");
+                tag.removeAttribute("title");
+              } else {
+                tag.classList.add("disabled");
+                tag.classList.remove("selected"); // Deselect if disabled
+                tag.setAttribute("title", "Enable this option in Media Capture settings first");
+              }
+            });
+
+            // Update config to remove any selected values that are no longer available
+            const validSelected = currentSelected.filter((s) => availableOptions.includes(s));
+            if (validSelected.length !== currentSelected.length) {
+              this.config[optionKey] = validSelected;
             }
           }
         }
