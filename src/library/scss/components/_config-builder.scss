@@ -1313,7 +1313,8 @@ $builder-prefix: "fu-config-builder";
 }
 
 // Slider controls container (below header)
-.#{$builder-prefix}-type-slider-block > .#{$builder-prefix}-type-slider-controls {
+.#{$builder-prefix}-type-slider-block
+  > .#{$builder-prefix}-type-slider-controls {
   padding: 0 14px;
 }
 
@@ -1704,7 +1705,7 @@ $builder-prefix: "fu-config-builder";
   background: #f3f4f6;
   border-radius: 6px;
   margin-bottom: 12px;
-  width: 500px;
+  width: 600px;
 }
 
 .#{$builder-prefix}-tab {
@@ -1885,11 +1886,15 @@ $builder-prefix: "fu-config-builder";
 
 // Option wrapper for dependencies
 .#{$builder-prefix}-option-wrapper {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, max-height 0.3s ease, margin 0.3s ease;
 
   &.fu-config-builder-disabled {
     opacity: 0.5;
     pointer-events: none;
+  }
+
+  &.fu-config-builder-hidden {
+    display: none;
   }
 }
 
@@ -4127,4 +4132,346 @@ $builder-prefix: "fu-config-builder";
   .#{$builder-prefix}-type-slider-title {
     color: #e5e7eb;
   }
+}
+
+// ============================================================================
+// Modal Preview Styles (for Configuration Builder)
+// ============================================================================
+
+.#{$builder-prefix}-mode-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.#{$builder-prefix}-modal-preview {
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 8px;
+  min-height: 120px;
+}
+
+.#{$builder-prefix}-modal-minimal-preview,
+.#{$builder-prefix}-modal-detailed-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.#{$builder-prefix}-modal-minimal-preview {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.#{$builder-prefix}-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.#{$builder-prefix}-file-badge {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #e0f2fe;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #0369a1;
+  font-weight: 500;
+
+  &.has-files {
+    display: inline-flex;
+  }
+
+  .badge-separator {
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .badge-count {
+    font-weight: 600;
+  }
+
+  .badge-size {
+    font-weight: 500;
+  }
+}
+
+.#{$builder-prefix}-file-summary {
+  display: none;
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+
+  &.has-files {
+    display: block;
+  }
+
+  .summary-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+
+    svg {
+      color: #0284c7;
+    }
+
+    > span {
+      font-weight: 600;
+      color: #0369a1;
+      font-size: 15px;
+    }
+  }
+
+  .summary-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 12px;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-value {
+    font-weight: 600;
+    color: #1e40af;
+    font-size: 18px;
+  }
+
+  .stat-label {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .file-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .file-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: white;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+
+    .count {
+      background: #3b82f6;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+  }
+}
+
+.#{$builder-prefix}-preview-hint {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+// Hidden modal container (preview modal)
+.#{$builder-prefix}-modal-hidden {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.#{$builder-prefix}-modal-dialog {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.#{$builder-prefix}-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+
+  h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.#{$builder-prefix}-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #111827;
+  }
+}
+
+.#{$builder-prefix}-modal-body {
+  padding: 20px;
+  max-height: calc(90vh - 140px);
+  overflow-y: auto;
+}
+
+.#{$builder-prefix}-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.#{$builder-prefix}-modal-close-btn {
+  padding: 8px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+// ============================================================================
+// Modal Code Sections (3-panel layout for HTML/CSS/JS)
+// ============================================================================
+
+.#{$builder-prefix}-code-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 8px 8px 0 0;
+}
+
+.#{$builder-prefix}-modal-section {
+  margin-top: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+
+  .#{$builder-prefix}-code-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 10px 14px;
+  }
+
+  .#{$builder-prefix}-code-content {
+    max-height: 250px;
+    overflow-y: auto;
+
+    pre {
+      margin: 0;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  }
+}
+
+.#{$builder-prefix}-code-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+
+  svg {
+    color: #6b7280;
+  }
+}
+
+// Syntax highlighting for HTML
+.#{$builder-prefix}-code-tag {
+  color: #e11d48;
+}
+
+.#{$builder-prefix}-code-attr {
+  color: #7c3aed;
+}
+
+// Syntax highlighting for CSS
+.#{$builder-prefix}-code-selector {
+  color: #2563eb;
+}
+
+.#{$builder-prefix}-code-property {
+  color: #7c3aed;
+}
+
+.#{$builder-prefix}-code-value {
+  color: #0891b2;
 }
