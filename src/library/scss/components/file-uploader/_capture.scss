@@ -261,6 +261,11 @@
 
   @if $file-uploader-enable-animations {
     animation: #{$component-prefix}-blink 1s ease-in-out infinite;
+
+    // Paused state - faster, more noticeable blinking
+    &.paused {
+      animation: #{$component-prefix}-blink-paused 0.6s ease-in-out infinite;
+    }
   }
 }
 

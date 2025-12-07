@@ -8,18 +8,21 @@ import TooltipManager from "../utils/TooltipManager.js";
 import FileUploader from "./FileUploader.js";
 
 // Import from modular config-builder components
-import { getVarToSelectorMap, getVarSourceMap } from "./config-builder/VarMaps.js";
+import {
+  getVarToSelectorMap,
+  getVarSourceMap,
+} from "./config-builder/VarMaps.js";
 import {
   getThemeVars,
   getEffectiveTheme,
   applyThemeToContainer,
   loadSavedTheme,
-  saveTheme
+  saveTheme,
 } from "./config-builder/ThemeManager.js";
 import {
   buildSearchIndex as buildSearchIndexFn,
   fuzzySearch as fuzzySearchFn,
-  highlightMatch
+  highlightMatch,
 } from "./config-builder/SearchEngine.js";
 import {
   OPTION_TO_GROUP,
@@ -32,7 +35,7 @@ import {
   MODAL_BUTTON_ICONS,
   PHP_RELEVANT_KEYS,
   PHP_RELEVANT_GROUPS,
-  groupChangedConfig
+  groupChangedConfig,
 } from "./config-builder/Constants.js";
 import {
   getFileTypeIcon as getFileTypeIconFn,
@@ -41,11 +44,17 @@ import {
   rerenderPerTypeLimitsPanel as rerenderPerTypeLimitsPanelFn,
   attachTypeSizeSliderEvents as attachTypeSizeSliderEventsFn,
   attachTypeCountSliderEvents as attachTypeCountSliderEventsFn,
-  attachPerTypeByFileTypeEvents as attachPerTypeByFileTypeEventsFn
+  attachPerTypeByFileTypeEvents as attachPerTypeByFileTypeEventsFn,
 } from "./config-builder/PerTypeLimits.js";
 import { getCategoryIcon as getCategoryIconFn } from "./config-builder/Icons.js";
-import { getOptionDefinitions as getOptionDefinitionsFn, getDefaultConfig as getDefaultConfigFn } from "./config-builder/OptionDefinitions.js";
-import { getStyleDefinitions as getStyleDefinitionsFn, getDefaultStyleValues as getDefaultStyleValuesFn } from "./config-builder/StyleDefinitions.js";
+import {
+  getOptionDefinitions as getOptionDefinitionsFn,
+  getDefaultConfig as getDefaultConfigFn,
+} from "./config-builder/OptionDefinitions.js";
+import {
+  getStyleDefinitions as getStyleDefinitionsFn,
+  getDefaultStyleValues as getDefaultStyleValuesFn,
+} from "./config-builder/StyleDefinitions.js";
 import {
   renderUploaderTabs as renderUploaderTabsFn,
   refreshAllPreviews as refreshAllPreviewsFn,
@@ -56,7 +65,7 @@ import {
   isNameDuplicate as isNameDuplicateFn,
   editUploaderName as editUploaderNameFn,
   updatePreviewHeader as updatePreviewHeaderFn,
-  updateUploaderTabsUI as updateUploaderTabsUIFn
+  updateUploaderTabsUI as updateUploaderTabsUIFn,
 } from "./config-builder/UploaderManager.js";
 import {
   attachSearchEvents as attachSearchEventsFn,
@@ -64,7 +73,7 @@ import {
   fuzzySearchForBuilder as fuzzySearchForBuilderFn,
   renderSearchResults as renderSearchResultsFn,
   hideSearchResults as hideSearchResultsFn,
-  navigateToOption as navigateToOptionFn
+  navigateToOption as navigateToOptionFn,
 } from "./config-builder/SearchUI.js";
 
 /**
@@ -73,32 +82,54 @@ import {
  */
 function getFileUploaderDefaults() {
   // Import directly from FileUploader class
-  if (FileUploader && typeof FileUploader.getDefaultOptions === 'function') {
+  if (FileUploader && typeof FileUploader.getDefaultOptions === "function") {
     const groupedDefaults = FileUploader.getDefaultOptions();
     // Flatten the grouped defaults
     const flat = {};
     for (const category of Object.values(groupedDefaults)) {
-      if (typeof category === 'object' && category !== null && !Array.isArray(category)) {
+      if (
+        typeof category === "object" &&
+        category !== null &&
+        !Array.isArray(category)
+      ) {
         Object.assign(flat, category);
       }
     }
-    console.log('ConfigBuilder: Loaded defaults from FileUploader:', Object.keys(flat).length, 'options');
+    console.log(
+      "ConfigBuilder: Loaded defaults from FileUploader:",
+      Object.keys(flat).length,
+      "options"
+    );
     return flat;
   }
   // Fallback: try window.FileUploader (for IIFE)
-  if (typeof window !== 'undefined' && window.FileUploader && typeof window.FileUploader.getDefaultOptions === 'function') {
+  if (
+    typeof window !== "undefined" &&
+    window.FileUploader &&
+    typeof window.FileUploader.getDefaultOptions === "function"
+  ) {
     const groupedDefaults = window.FileUploader.getDefaultOptions();
     const flat = {};
     for (const category of Object.values(groupedDefaults)) {
-      if (typeof category === 'object' && category !== null && !Array.isArray(category)) {
+      if (
+        typeof category === "object" &&
+        category !== null &&
+        !Array.isArray(category)
+      ) {
         Object.assign(flat, category);
       }
     }
-    console.log('ConfigBuilder: Loaded defaults from window.FileUploader:', Object.keys(flat).length, 'options');
+    console.log(
+      "ConfigBuilder: Loaded defaults from window.FileUploader:",
+      Object.keys(flat).length,
+      "options"
+    );
     return flat;
   }
   // Final fallback: return empty object (will use hardcoded defaults in option definitions)
-  console.warn('ConfigBuilder: FileUploader not found, using fallback defaults');
+  console.warn(
+    "ConfigBuilder: FileUploader not found, using fallback defaults"
+  );
   return {};
 }
 
@@ -120,14 +151,20 @@ export default class ConfigBuilder {
 
     // Get FileUploader's default options to use as defaults
     this.fileUploaderDefaults = getFileUploaderDefaults();
-    console.log('ConfigBuilder: fileUploaderDefaults loaded:', this.fileUploaderDefaults);
+    console.log(
+      "ConfigBuilder: fileUploaderDefaults loaded:",
+      this.fileUploaderDefaults
+    );
 
     // All available options with metadata
     this.optionDefinitions = this.getOptionDefinitions();
 
     // Current config values
     this.config = this.getDefaultConfig();
-    console.log('ConfigBuilder: config initialized with defaults:', this.config);
+    console.log(
+      "ConfigBuilder: config initialized with defaults:",
+      this.config
+    );
 
     // Current active preset
     this.currentPreset = "default";
@@ -168,9 +205,13 @@ export default class ConfigBuilder {
     this.theme = localStorage.getItem("fu-config-builder-theme") || "system";
 
     // Restore active main tab and category from localStorage
-    this.activeMainTab = localStorage.getItem("fu-config-builder-main-tab") || "config";
-    this.currentCategory = localStorage.getItem("fu-config-builder-category") || "urls";
-    this.currentStyleSection = localStorage.getItem("fu-config-builder-style-section") || "primaryColors";
+    this.activeMainTab =
+      localStorage.getItem("fu-config-builder-main-tab") || "config";
+    this.currentCategory =
+      localStorage.getItem("fu-config-builder-category") || "urls";
+    this.currentStyleSection =
+      localStorage.getItem("fu-config-builder-style-section") ||
+      "primaryColors";
 
     this.init();
   }
@@ -199,7 +240,10 @@ export default class ConfigBuilder {
    * Uses optionDefinitions and fileUploaderDefaults
    */
   getDefaultConfig() {
-    return getDefaultConfigFn(this.optionDefinitions, this.fileUploaderDefaults);
+    return getDefaultConfigFn(
+      this.optionDefinitions,
+      this.fileUploaderDefaults
+    );
   }
 
   /**
@@ -354,7 +398,9 @@ export default class ConfigBuilder {
       : firstCategoryKey;
 
     this.element.innerHTML = `
-      <div class="fu-config-builder theme-${this.getEffectiveThemeMode()}" data-theme="${this.theme}">
+      <div class="fu-config-builder theme-${this.getEffectiveThemeMode()}" data-theme="${
+      this.theme
+    }">
         <div class="fu-config-builder-header">
           <div class="fu-config-builder-header-left">
             <div class="fu-config-builder-header-title">
@@ -388,7 +434,7 @@ export default class ConfigBuilder {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Demos
             </a>
-            <a href="../index.php" data-tooltip="All Projects" data-tooltip-position="bottom">
+            <a href="../../index.php" data-tooltip="All Projects" data-tooltip-position="bottom">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               All Projects
             </a>
@@ -639,7 +685,9 @@ export default class ConfigBuilder {
       html += `
         <button class="fu-config-builder-vertical-tab ${
           isActive ? "active" : ""
-        }" data-category="${categoryKey}" data-tooltip="${category.title}" data-tooltip-position="right">
+        }" data-category="${categoryKey}" data-tooltip="${
+        category.title
+      }" data-tooltip-position="right">
           ${this.getCategoryIcon(category.icon)}
           <span class="fu-config-builder-vertical-tab-label">${this.getShortCategoryName(
             category.title
@@ -685,7 +733,9 @@ export default class ConfigBuilder {
       html += `
         <button class="fu-config-builder-vertical-tab ${
           isActive ? "active" : ""
-        } ${modeClass}" data-style-section="${sectionKey}" data-tooltip="${section.title}" data-tooltip-position="right">
+        } ${modeClass}" data-style-section="${sectionKey}" data-tooltip="${
+        section.title
+      }" data-tooltip-position="right">
           ${this.getCategoryIcon(section.icon)}
           <span class="fu-config-builder-vertical-tab-label">${this.getShortStyleName(
             section.title
@@ -771,7 +821,8 @@ export default class ConfigBuilder {
       // Get actual computed value from DOM
       const computedValue = computedStyles.getPropertyValue(varName).trim();
       // Use user-modified value if exists, otherwise use computed value, then fall back to default
-      const currentValue = this.styleValues[varName] || computedValue || def.default;
+      const currentValue =
+        this.styleValues[varName] || computedValue || def.default;
 
       if (def.type === "color") {
         html += `
@@ -1028,9 +1079,14 @@ export default class ConfigBuilder {
    */
   renderSliderConfig() {
     const units = ["bytes", "KB", "MB", "GB"];
-    const unitOptions = units.map(u =>
-      `<option value="${u}" ${this.sliderConfig.unit === u ? "selected" : ""}>${u}</option>`
-    ).join("");
+    const unitOptions = units
+      .map(
+        (u) =>
+          `<option value="${u}" ${
+            this.sliderConfig.unit === u ? "selected" : ""
+          }>${u}</option>`
+      )
+      .join("");
 
     return `
       <div class="fu-config-builder-slider-config">
@@ -1066,20 +1122,29 @@ export default class ConfigBuilder {
   renderPerTypeLimitsConfig() {
     const viewMode = this.perTypeLimitsViewMode || "byLimitType";
     const units = ["bytes", "KB", "MB", "GB"];
-    const unitOptions = units.map(u =>
-      `<option value="${u}" ${this.sliderConfig.unit === u ? "selected" : ""}>${u}</option>`
-    ).join("");
+    const unitOptions = units
+      .map(
+        (u) =>
+          `<option value="${u}" ${
+            this.sliderConfig.unit === u ? "selected" : ""
+          }>${u}</option>`
+      )
+      .join("");
 
     return `
       <div class="fu-config-builder-pertype-config">
         <div class="fu-config-builder-pertype-view-toggle">
           <span class="fu-config-builder-pertype-view-label">Group by:</span>
           <div class="fu-config-builder-pertype-view-buttons">
-            <button type="button" class="fu-config-builder-pertype-view-btn ${viewMode === "byLimitType" ? "active" : ""}" data-view="byLimitType">
+            <button type="button" class="fu-config-builder-pertype-view-btn ${
+              viewMode === "byLimitType" ? "active" : ""
+            }" data-view="byLimitType">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
               By Limit Type
             </button>
-            <button type="button" class="fu-config-builder-pertype-view-btn ${viewMode === "byFileType" ? "active" : ""}" data-view="byFileType">
+            <button type="button" class="fu-config-builder-pertype-view-btn ${
+              viewMode === "byFileType" ? "active" : ""
+            }" data-view="byFileType">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4h6a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2H9a2 2 0 0 1 -2 -2V6a2 2 0 0 1 2 -2z"/><path d="M9 4v0a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0"/></svg>
               By File Type
             </button>
@@ -1094,19 +1159,27 @@ export default class ConfigBuilder {
           </div>
           <div class="fu-config-builder-slider-config-item">
             <label>Min (${this.sliderConfig.unit})</label>
-            <input type="number" id="pertype-slider-config-min" value="${this.sliderConfig.minValue}" min="1" max="10000">
+            <input type="number" id="pertype-slider-config-min" value="${
+              this.sliderConfig.minValue
+            }" min="1" max="10000">
           </div>
           <div class="fu-config-builder-slider-config-item">
             <label>Max (${this.sliderConfig.unit})</label>
-            <input type="number" id="pertype-slider-config-max" value="${this.sliderConfig.maxValue}" min="10" max="100000">
+            <input type="number" id="pertype-slider-config-max" value="${
+              this.sliderConfig.maxValue
+            }" min="10" max="100000">
           </div>
           <div class="fu-config-builder-slider-config-item">
             <label>Slider Step</label>
-            <input type="number" id="pertype-slider-config-step" value="${this.sliderConfig.sliderStep}" min="1" max="1000">
+            <input type="number" id="pertype-slider-config-step" value="${
+              this.sliderConfig.sliderStep
+            }" min="1" max="1000">
           </div>
           <div class="fu-config-builder-slider-config-item">
             <label>+/- Step</label>
-            <input type="number" id="pertype-slider-config-btn-step" value="${this.sliderConfig.buttonStep}" min="1" max="100">
+            <input type="number" id="pertype-slider-config-btn-step" value="${
+              this.sliderConfig.buttonStep
+            }" min="1" max="100">
           </div>
         </div>
       </div>
@@ -1228,7 +1301,7 @@ export default class ConfigBuilder {
     let html = "";
 
     // Check if any options have groups
-    const hasGroups = Object.values(options).some(def => def.group);
+    const hasGroups = Object.values(options).some((def) => def.group);
 
     if (hasGroups) {
       // Collect options by group (preserving order)
@@ -1340,7 +1413,12 @@ export default class ConfigBuilder {
         content = this.renderSelect(key, def, isDisabled, dependencyIndicator);
         break;
       case "selectWithInput":
-        content = this.renderSelectWithInput(key, def, isDisabled, dependencyIndicator);
+        content = this.renderSelectWithInput(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator
+        );
         break;
       case "multiSelect":
         content = this.renderMultiSelect(
@@ -1368,8 +1446,13 @@ export default class ConfigBuilder {
 
     // Wrap with dependency container if has dependency or showWhen
     if (def.dependsOn || def.showWhen) {
-      const hiddenClass = def.showWhen && !def.showWhen(this.config) ? "fu-config-builder-hidden" : "";
-      return `<div class="fu-config-builder-option-wrapper ${dependencyClass} ${hiddenClass}" data-depends-on="${def.dependsOn || ""}" data-option-key="${key}">${content}</div>`;
+      const hiddenClass =
+        def.showWhen && !def.showWhen(this.config)
+          ? "fu-config-builder-hidden"
+          : "";
+      return `<div class="fu-config-builder-option-wrapper ${dependencyClass} ${hiddenClass}" data-depends-on="${
+        def.dependsOn || ""
+      }" data-option-key="${key}">${content}</div>`;
     }
     return content;
   }
@@ -1660,7 +1743,10 @@ export default class ConfigBuilder {
    * Get slider step value in bytes
    */
   getSliderStepBytes() {
-    return this.unitToBytes(this.sliderConfig.sliderStep, this.sliderConfig.unit);
+    return this.unitToBytes(
+      this.sliderConfig.sliderStep,
+      this.sliderConfig.unit
+    );
   }
 
   /**
@@ -1712,14 +1798,21 @@ export default class ConfigBuilder {
    * Render select dropdown with custom input option
    * Allows users to either select from presets or enter a custom value
    */
-  renderSelectWithInput(key, def, isDisabled = false, dependencyIndicator = "") {
+  renderSelectWithInput(
+    key,
+    def,
+    isDisabled = false,
+    dependencyIndicator = ""
+  ) {
     const currentValue = this.config[key];
-    const isCustomValue = currentValue !== null && !def.options.some(opt => opt.value === currentValue);
+    const isCustomValue =
+      currentValue !== null &&
+      !def.options.some((opt) => opt.value === currentValue);
 
     // Add "Custom" option if not already present
     const optionsWithCustom = [
       ...def.options,
-      { value: "__custom__", label: "Custom..." }
+      { value: "__custom__", label: "Custom..." },
     ];
 
     const options = optionsWithCustom
@@ -1727,7 +1820,9 @@ export default class ConfigBuilder {
         (opt) =>
           `<option value="${opt.value}" ${
             (opt.value === "__custom__" && isCustomValue) ||
-            (!isCustomValue && this.config[key] === opt.value) ? "selected" : ""
+            (!isCustomValue && this.config[key] === opt.value)
+              ? "selected"
+              : ""
           }>${opt.label}</option>`
       )
       .join("");
@@ -1762,16 +1857,24 @@ export default class ConfigBuilder {
     let unitOptions = "";
     if (def.formatType === "size") {
       unitOptions = `
-        <option value="bytes" ${inputUnit === "bytes" ? "selected" : ""}>bytes</option>
+        <option value="bytes" ${
+          inputUnit === "bytes" ? "selected" : ""
+        }>bytes</option>
         <option value="KB" ${inputUnit === "KB" ? "selected" : ""}>KB</option>
         <option value="MB" ${inputUnit === "MB" ? "selected" : ""}>MB</option>
         <option value="GB" ${inputUnit === "GB" ? "selected" : ""}>GB</option>
       `;
     } else if (def.formatType === "bitrate") {
       unitOptions = `
-        <option value="bps" ${inputUnit === "bps" ? "selected" : ""}>bps</option>
-        <option value="Kbps" ${inputUnit === "Kbps" ? "selected" : ""}>Kbps</option>
-        <option value="Mbps" ${inputUnit === "Mbps" ? "selected" : ""}>Mbps</option>
+        <option value="bps" ${
+          inputUnit === "bps" ? "selected" : ""
+        }>bps</option>
+        <option value="Kbps" ${
+          inputUnit === "Kbps" ? "selected" : ""
+        }>Kbps</option>
+        <option value="Mbps" ${
+          inputUnit === "Mbps" ? "selected" : ""
+        }>Mbps</option>
       `;
     }
 
@@ -1785,14 +1888,26 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-select-with-input" data-option="${key}" data-type="selectWithInput" data-format-type="${def.formatType || ""}">
-          <select class="fu-config-builder-select" data-role="preset" ${isDisabled ? "disabled" : ""}>
+        <div class="fu-config-builder-select-with-input" data-option="${key}" data-type="selectWithInput" data-format-type="${
+      def.formatType || ""
+    }">
+          <select class="fu-config-builder-select" data-role="preset" ${
+            isDisabled ? "disabled" : ""
+          }>
             ${options}
           </select>
           <input type="number" class="fu-config-builder-input fu-config-builder-custom-value visible" data-role="custom-value"
-                 value="${inputValue}" placeholder="Value" ${customInputsDisabled ? "disabled" : ""}
+                 value="${inputValue}" placeholder="Value" ${
+      customInputsDisabled ? "disabled" : ""
+    }
                  min="0" step="any">
-          ${unitOptions ? `<select class="fu-config-builder-select fu-config-builder-custom-unit visible" data-role="custom-unit" ${customInputsDisabled ? "disabled" : ""}>${unitOptions}</select>` : ""}
+          ${
+            unitOptions
+              ? `<select class="fu-config-builder-select fu-config-builder-custom-unit visible" data-role="custom-unit" ${
+                  customInputsDisabled ? "disabled" : ""
+                }>${unitOptions}</select>`
+              : ""
+          }
         </div>
         <div class="fu-config-builder-hint">${def.hint}</div>
       </div>
@@ -1827,7 +1942,11 @@ export default class ConfigBuilder {
           isSelected ? "selected" : ""
         } ${isDisabled || !isAvailable ? "disabled" : ""}"
               data-value="${opt}"
-              ${!isAvailable ? 'title="Enable this option in Media Capture settings first"' : ""}>${label}</span>`;
+              ${
+                !isAvailable
+                  ? 'title="Enable this option in Media Capture settings first"'
+                  : ""
+              }>${label}</span>`;
       })
       .join("");
 
@@ -1881,7 +2000,9 @@ export default class ConfigBuilder {
           ${def.label}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
+        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
+          def.hint
+        }</div>
         <div data-option="${key}" data-type="extensions">
     `;
 
@@ -1932,14 +2053,18 @@ export default class ConfigBuilder {
           ${def.label}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
+        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
+          def.hint
+        }</div>
         <div class="fu-config-builder-type-sliders" data-option="${key}" data-type="typeSizeSlider">
     `;
 
     for (const type of types) {
       const bytes = values[type] || 0;
       const { value: displayValue, unit: displayUnit } =
-        bytes > 0 ? this.bytesToBestUnit(bytes) : { value: 0, unit: this.sliderConfig.unit };
+        bytes > 0
+          ? this.bytesToBestUnit(bytes)
+          : { value: 0, unit: this.sliderConfig.unit };
       const maxValue = this.bytesToUnit(this.getSliderMaxBytes(), displayUnit);
       const stepValue = Math.max(
         1,
@@ -1961,7 +2086,9 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-type-slider-block" data-type-key="${type}" data-unit="${displayUnit}">
           <div class="fu-config-builder-type-slider-header">
             ${typeIcon}
-            <span class="fu-config-builder-type-slider-title">${this.capitalizeFirst(type)}</span>
+            <span class="fu-config-builder-type-slider-title">${this.capitalizeFirst(
+              type
+            )}</span>
           </div>
           <div class="fu-config-builder-type-slider-controls">
             <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="decrease">
@@ -2016,7 +2143,9 @@ export default class ConfigBuilder {
           ${def.label}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
+        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
+          def.hint
+        }</div>
         <div class="fu-config-builder-type-sliders" data-option="${key}" data-type="typeCountSlider">
     `;
 
@@ -2028,7 +2157,9 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-type-slider-block" data-type-key="${type}">
           <div class="fu-config-builder-type-slider-header">
             ${typeIcon}
-            <span class="fu-config-builder-type-slider-title">${this.capitalizeFirst(type)}</span>
+            <span class="fu-config-builder-type-slider-title">${this.capitalizeFirst(
+              type
+            )}</span>
           </div>
           <div class="fu-config-builder-type-slider-controls">
             <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="decrease">
@@ -2173,7 +2304,9 @@ export default class ConfigBuilder {
           ${def.label}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
+        <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
+          def.hint
+        }</div>
         <div data-option="${key}" data-type="mimeTypes">
     `;
 
@@ -2724,18 +2857,21 @@ export default class ConfigBuilder {
         codeEl.addEventListener("click", (e) => {
           e.stopPropagation();
           const key = codeEl.dataset.copyKey;
-          navigator.clipboard.writeText(key).then(() => {
-            // Add copied state and update tooltip
-            codeEl.classList.add("copied");
-            codeEl.dataset.tooltip = "Copied!";
-            // Reset after delay
-            setTimeout(() => {
-              codeEl.classList.remove("copied");
-              codeEl.dataset.tooltip = "Click to copy";
-            }, 1500);
-          }).catch((err) => {
-            console.error("Failed to copy:", err);
-          });
+          navigator.clipboard
+            .writeText(key)
+            .then(() => {
+              // Add copied state and update tooltip
+              codeEl.classList.add("copied");
+              codeEl.dataset.tooltip = "Copied!";
+              // Reset after delay
+              setTimeout(() => {
+                codeEl.classList.remove("copied");
+                codeEl.dataset.tooltip = "Click to copy";
+              }, 1500);
+            })
+            .catch((err) => {
+              console.error("Failed to copy:", err);
+            });
         });
       });
 
@@ -2789,8 +2925,14 @@ export default class ConfigBuilder {
 
     // Helper to update label text when unit changes
     const updateSliderConfigLabels = () => {
-      const minLabel = this.element.querySelector("#slider-config-min")?.closest(".fu-config-builder-slider-config-item")?.querySelector("label");
-      const maxLabel = this.element.querySelector("#slider-config-max")?.closest(".fu-config-builder-slider-config-item")?.querySelector("label");
+      const minLabel = this.element
+        .querySelector("#slider-config-min")
+        ?.closest(".fu-config-builder-slider-config-item")
+        ?.querySelector("label");
+      const maxLabel = this.element
+        .querySelector("#slider-config-max")
+        ?.closest(".fu-config-builder-slider-config-item")
+        ?.querySelector("label");
       if (minLabel) minLabel.textContent = `Min (${this.sliderConfig.unit})`;
       if (maxLabel) maxLabel.textContent = `Max (${this.sliderConfig.unit})`;
     };
@@ -3022,24 +3164,35 @@ export default class ConfigBuilder {
         const optionKey = container.dataset.option;
         const formatType = container.dataset.formatType;
         const presetSelect = container.querySelector('[data-role="preset"]');
-        const customValueInput = container.querySelector('[data-role="custom-value"]');
-        const customUnitSelect = container.querySelector('[data-role="custom-unit"]');
+        const customValueInput = container.querySelector(
+          '[data-role="custom-value"]'
+        );
+        const customUnitSelect = container.querySelector(
+          '[data-role="custom-unit"]'
+        );
 
         // Helper to convert value with unit to base unit (bytes or bps)
         const convertToBaseUnit = (value, unit) => {
           const numValue = parseFloat(value) || 0;
           if (formatType === "size") {
             switch (unit) {
-              case "GB": return numValue * 1024 * 1024 * 1024;
-              case "MB": return numValue * 1024 * 1024;
-              case "KB": return numValue * 1024;
-              default: return numValue;
+              case "GB":
+                return numValue * 1024 * 1024 * 1024;
+              case "MB":
+                return numValue * 1024 * 1024;
+              case "KB":
+                return numValue * 1024;
+              default:
+                return numValue;
             }
           } else if (formatType === "bitrate") {
             switch (unit) {
-              case "Mbps": return numValue * 1000000;
-              case "Kbps": return numValue * 1000;
-              default: return numValue;
+              case "Mbps":
+                return numValue * 1000000;
+              case "Kbps":
+                return numValue * 1000;
+              default:
+                return numValue;
             }
           }
           return numValue;
@@ -3075,18 +3228,23 @@ export default class ConfigBuilder {
             if (!customValueInput.value) {
               customValueInput.value = formatType === "bitrate" ? "1" : "10";
               if (customUnitSelect) {
-                customUnitSelect.value = formatType === "bitrate" ? "Mbps" : "MB";
+                customUnitSelect.value =
+                  formatType === "bitrate" ? "Mbps" : "MB";
               }
             }
             // Update config with custom value
             const unit = customUnitSelect ? customUnitSelect.value : "";
-            this.config[optionKey] = convertToBaseUnit(customValueInput.value, unit);
+            this.config[optionKey] = convertToBaseUnit(
+              customValueInput.value,
+              unit
+            );
           } else {
             // Disable custom inputs and reset them
             setCustomInputsEnabled(false);
             resetCustomInputs();
             // Handle null value
-            this.config[optionKey] = selectedValue === "null" ? null : parseFloat(selectedValue);
+            this.config[optionKey] =
+              selectedValue === "null" ? null : parseFloat(selectedValue);
           }
           this.onConfigChange();
         });
@@ -3095,7 +3253,10 @@ export default class ConfigBuilder {
         if (customValueInput) {
           customValueInput.addEventListener("input", () => {
             const unit = customUnitSelect ? customUnitSelect.value : "";
-            this.config[optionKey] = convertToBaseUnit(customValueInput.value, unit);
+            this.config[optionKey] = convertToBaseUnit(
+              customValueInput.value,
+              unit
+            );
             this.onConfigChange();
           });
         }
@@ -3103,7 +3264,10 @@ export default class ConfigBuilder {
         // Handle custom unit change
         if (customUnitSelect) {
           customUnitSelect.addEventListener("change", () => {
-            this.config[optionKey] = convertToBaseUnit(customValueInput.value, customUnitSelect.value);
+            this.config[optionKey] = convertToBaseUnit(
+              customValueInput.value,
+              customUnitSelect.value
+            );
             this.onConfigChange();
           });
         }
@@ -3425,16 +3589,32 @@ export default class ConfigBuilder {
       });
 
     // Per-Type slider configuration inputs
-    const pertypeSliderUnit = this.element.querySelector("#pertype-slider-config-unit");
-    const pertypeSliderMin = this.element.querySelector("#pertype-slider-config-min");
-    const pertypeSliderMax = this.element.querySelector("#pertype-slider-config-max");
-    const pertypeSliderStep = this.element.querySelector("#pertype-slider-config-step");
-    const pertypeSliderBtnStep = this.element.querySelector("#pertype-slider-config-btn-step");
+    const pertypeSliderUnit = this.element.querySelector(
+      "#pertype-slider-config-unit"
+    );
+    const pertypeSliderMin = this.element.querySelector(
+      "#pertype-slider-config-min"
+    );
+    const pertypeSliderMax = this.element.querySelector(
+      "#pertype-slider-config-max"
+    );
+    const pertypeSliderStep = this.element.querySelector(
+      "#pertype-slider-config-step"
+    );
+    const pertypeSliderBtnStep = this.element.querySelector(
+      "#pertype-slider-config-btn-step"
+    );
 
     // Helper to update pertype label text when unit changes
     const updatePertypeSliderConfigLabels = () => {
-      const minLabel = this.element.querySelector("#pertype-slider-config-min")?.closest(".fu-config-builder-slider-config-item")?.querySelector("label");
-      const maxLabel = this.element.querySelector("#pertype-slider-config-max")?.closest(".fu-config-builder-slider-config-item")?.querySelector("label");
+      const minLabel = this.element
+        .querySelector("#pertype-slider-config-min")
+        ?.closest(".fu-config-builder-slider-config-item")
+        ?.querySelector("label");
+      const maxLabel = this.element
+        .querySelector("#pertype-slider-config-max")
+        ?.closest(".fu-config-builder-slider-config-item")
+        ?.querySelector("label");
       if (minLabel) minLabel.textContent = `Min (${this.sliderConfig.unit})`;
       if (maxLabel) maxLabel.textContent = `Max (${this.sliderConfig.unit})`;
     };
@@ -3468,7 +3648,8 @@ export default class ConfigBuilder {
     }
     if (pertypeSliderBtnStep) {
       pertypeSliderBtnStep.addEventListener("input", () => {
-        this.sliderConfig.buttonStep = parseInt(pertypeSliderBtnStep.value) || 10;
+        this.sliderConfig.buttonStep =
+          parseInt(pertypeSliderBtnStep.value) || 10;
       });
     }
 
@@ -3559,8 +3740,14 @@ export default class ConfigBuilder {
 
         // Get current unit from dropdown or fallback to configured unit
         const currentUnit = unitDropdown?.value || this.sliderConfig.unit;
-        const minValue = this.bytesToUnit(this.getSliderMinBytes(), currentUnit);
-        const maxValue = this.bytesToUnit(this.getSliderMaxBytes(), currentUnit);
+        const minValue = this.bytesToUnit(
+          this.getSliderMinBytes(),
+          currentUnit
+        );
+        const maxValue = this.bytesToUnit(
+          this.getSliderMaxBytes(),
+          currentUnit
+        );
         const stepValue = Math.max(
           1,
           this.bytesToUnit(this.getSliderStepBytes(), currentUnit)
@@ -3602,14 +3789,22 @@ export default class ConfigBuilder {
     if (sectionType === "sizeSlider") {
       // Sync all unit dropdowns in File Size Limits section
       this.element
-        .querySelectorAll('.fu-config-builder-size-slider[data-type="sizeSlider"] .fu-config-builder-unit-dropdown')
+        .querySelectorAll(
+          '.fu-config-builder-size-slider[data-type="sizeSlider"] .fu-config-builder-unit-dropdown'
+        )
         .forEach((dropdown) => {
           if (dropdown.value !== newUnit) {
             dropdown.value = newUnit;
             // Reset the slider value to 0 when unit changes
-            const container = dropdown.closest(".fu-config-builder-size-slider");
-            const slider = container?.querySelector(".fu-config-builder-slider-input");
-            const valueInput = container?.querySelector(".fu-config-builder-slider-value-input");
+            const container = dropdown.closest(
+              ".fu-config-builder-size-slider"
+            );
+            const slider = container?.querySelector(
+              ".fu-config-builder-slider-input"
+            );
+            const valueInput = container?.querySelector(
+              ".fu-config-builder-slider-value-input"
+            );
             if (slider) slider.value = 0;
             if (valueInput) valueInput.value = "";
             // Clear the config value for this option
@@ -3622,7 +3817,9 @@ export default class ConfigBuilder {
     } else if (sectionType === "perType") {
       // Sync all unit dropdowns in Per-Type Limits section
       this.element
-        .querySelectorAll('.fu-config-builder-filetype-card .fu-config-builder-unit-dropdown-sm')
+        .querySelectorAll(
+          ".fu-config-builder-filetype-card .fu-config-builder-unit-dropdown-sm"
+        )
         .forEach((dropdown) => {
           if (dropdown.value !== newUnit) {
             dropdown.value = newUnit;
@@ -3810,10 +4007,14 @@ export default class ConfigBuilder {
    */
   updateShowWhenOptions() {
     // Iterate through all option definitions to find showWhen options
-    for (const [categoryKey, category] of Object.entries(this.optionDefinitions)) {
+    for (const [categoryKey, category] of Object.entries(
+      this.optionDefinitions
+    )) {
       for (const [optionKey, def] of Object.entries(category.options)) {
         if (def.showWhen && typeof def.showWhen === "function") {
-          const wrapper = this.element.querySelector(`[data-option-key="${optionKey}"]`);
+          const wrapper = this.element.querySelector(
+            `[data-option-key="${optionKey}"]`
+          );
           if (wrapper) {
             const shouldShow = def.showWhen(this.config);
             if (shouldShow) {
@@ -3823,9 +4024,11 @@ export default class ConfigBuilder {
               wrapper.querySelectorAll("input, select").forEach((el) => {
                 el.disabled = false;
               });
-              wrapper.querySelectorAll(".fu-config-builder-group").forEach((el) => {
-                el.classList.remove("disabled");
-              });
+              wrapper
+                .querySelectorAll(".fu-config-builder-group")
+                .forEach((el) => {
+                  el.classList.remove("disabled");
+                });
             } else {
               wrapper.classList.add("fu-config-builder-hidden");
             }
@@ -3842,22 +4045,29 @@ export default class ConfigBuilder {
             const currentSelected = this.config[optionKey] || [];
 
             // Update each tag's disabled state
-            container.querySelectorAll(".fu-config-builder-tag").forEach((tag) => {
-              const value = tag.dataset.value;
-              const isAvailable = availableOptions.includes(value);
+            container
+              .querySelectorAll(".fu-config-builder-tag")
+              .forEach((tag) => {
+                const value = tag.dataset.value;
+                const isAvailable = availableOptions.includes(value);
 
-              if (isAvailable) {
-                tag.classList.remove("disabled");
-                tag.removeAttribute("title");
-              } else {
-                tag.classList.add("disabled");
-                tag.classList.remove("selected"); // Deselect if disabled
-                tag.setAttribute("title", "Enable this option in Media Capture settings first");
-              }
-            });
+                if (isAvailable) {
+                  tag.classList.remove("disabled");
+                  tag.removeAttribute("title");
+                } else {
+                  tag.classList.add("disabled");
+                  tag.classList.remove("selected"); // Deselect if disabled
+                  tag.setAttribute(
+                    "title",
+                    "Enable this option in Media Capture settings first"
+                  );
+                }
+              });
 
             // Update config to remove any selected values that are no longer available
-            const validSelected = currentSelected.filter((s) => availableOptions.includes(s));
+            const validSelected = currentSelected.filter((s) =>
+              availableOptions.includes(s)
+            );
             if (validSelected.length !== currentSelected.length) {
               this.config[optionKey] = validSelected;
             }
@@ -4003,7 +4213,9 @@ export default class ConfigBuilder {
     const modalHtmlCardsEl = this.element.querySelector("#modal-html-cards");
     const modalCssCardsEl = this.element.querySelector("#modal-css-cards");
     const modalJsCardsEl = this.element.querySelector("#modal-js-cards");
-    const modalTabBtn = this.element.querySelector(".fu-config-builder-modal-tab");
+    const modalTabBtn = this.element.querySelector(
+      ".fu-config-builder-modal-tab"
+    );
 
     if (jsCardsEl) {
       jsCardsEl.innerHTML = this.renderCodeCards("js");
@@ -4017,7 +4229,9 @@ export default class ConfigBuilder {
 
     // Check if any uploader has modal display mode
     const hasModalMode = Object.values(this.uploaderInstances).some(
-      (data) => data.config.displayMode === "modal-minimal" || data.config.displayMode === "modal-detailed"
+      (data) =>
+        data.config.displayMode === "modal-minimal" ||
+        data.config.displayMode === "modal-detailed"
     );
 
     // Show/hide modal tab button
@@ -4057,7 +4271,10 @@ export default class ConfigBuilder {
       // Skip uploaders without modal mode for modal subtabs
       if (type.startsWith("modal-")) {
         const displayMode = data.config.displayMode || "inline";
-        if (displayMode !== "modal-minimal" && displayMode !== "modal-detailed") {
+        if (
+          displayMode !== "modal-minimal" &&
+          displayMode !== "modal-detailed"
+        ) {
           return;
         }
         // Render specific modal section (html, css, or js)
@@ -4074,9 +4291,10 @@ export default class ConfigBuilder {
         code = this.generateSingleUploaderPhpCode(id, data);
       }
 
-      const highlightedCode = type === "js"
-        ? this.highlightJsCode(code)
-        : this.highlightPhpCode(code);
+      const highlightedCode =
+        type === "js"
+          ? this.highlightJsCode(code)
+          : this.highlightPhpCode(code);
 
       // Generate filename from uploader name
       const filename =
@@ -4151,8 +4369,12 @@ export default class ConfigBuilder {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "") || `uploader`;
 
-    const modeBadge = `<span class="fu-config-builder-mode-badge">${isMinimal ? "Minimal" : "Detailed"} Mode</span>`;
-    const editingBadge = isActive ? ' <span class="fu-config-builder-code-badge">Editing</span>' : "";
+    const modeBadge = `<span class="fu-config-builder-mode-badge">${
+      isMinimal ? "Minimal" : "Detailed"
+    } Mode</span>`;
+    const editingBadge = isActive
+      ? ' <span class="fu-config-builder-code-badge">Editing</span>'
+      : "";
 
     let code, highlightedCode, ext;
 
@@ -4172,10 +4394,14 @@ export default class ConfigBuilder {
     }
 
     return `
-      <div class="fu-config-builder-code-card ${isActive ? "active" : ""}" data-uploader-id="${id}" data-modal-section="${section}">
+      <div class="fu-config-builder-code-card ${
+        isActive ? "active" : ""
+      }" data-uploader-id="${id}" data-modal-section="${section}">
         <div class="fu-config-builder-code">
           <div class="fu-config-builder-code-header">
-            <span class="fu-config-builder-code-title">${data.name}${editingBadge} ${modeBadge}</span>
+            <span class="fu-config-builder-code-title">${
+              data.name
+            }${editingBadge} ${modeBadge}</span>
             <div class="fu-config-builder-code-actions">
               <button class="fu-config-builder-code-btn" data-action="copy-section" data-section="${section}" data-uploader-id="${id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -4213,7 +4439,10 @@ export default class ConfigBuilder {
     const modalSize = config.modalSize || "lg";
     const bootstrapVersion = config.bootstrapVersion || "5";
     // Filter media buttons to only include those whose capture option is enabled
-    const mediaButtons = this.filterEnabledMediaButtons(config.modalMediaButtons || [], config);
+    const mediaButtons = this.filterEnabledMediaButtons(
+      config.modalMediaButtons || [],
+      config
+    );
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
@@ -4221,7 +4450,18 @@ export default class ConfigBuilder {
 
     const iconSvg = this.getModalButtonIconSvg(buttonIcon);
 
-    return this.generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bootstrapVersion, isMinimal, mediaButtons);
+    return this.generateModalHtml(
+      varName,
+      modalId,
+      containerId,
+      buttonText,
+      iconSvg,
+      modalTitle,
+      modalSize,
+      bootstrapVersion,
+      isMinimal,
+      mediaButtons
+    );
   }
 
   /**
@@ -4232,13 +4472,25 @@ export default class ConfigBuilder {
     const bootstrapVersion = config.bootstrapVersion || "5";
     const isMinimal = displayMode === "modal-minimal";
     // Filter media buttons to only include those whose capture option is enabled
-    const mediaButtons = this.filterEnabledMediaButtons(config.modalMediaButtons || [], config);
+    const mediaButtons = this.filterEnabledMediaButtons(
+      config.modalMediaButtons || [],
+      config
+    );
     const enableModalDropZone = config.enableModalDropZone !== false;
 
     const modalId = `${varName}Modal`;
     const containerId = `${varName}Container`;
 
-    return this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons, enableModalDropZone);
+    return this.generateModalJs(
+      varName,
+      modalId,
+      containerId,
+      changedConfig,
+      bootstrapVersion,
+      isMinimal,
+      mediaButtons,
+      enableModalDropZone
+    );
   }
 
   /**
@@ -4249,16 +4501,28 @@ export default class ConfigBuilder {
     let escaped = this.escapeHtml(code);
 
     // Highlight HTML tags
-    escaped = escaped.replace(/(&lt;\/?)([\w-]+)/g, '$1<span class="fu-config-builder-code-tag">$2</span>');
+    escaped = escaped.replace(
+      /(&lt;\/?)([\w-]+)/g,
+      '$1<span class="fu-config-builder-code-tag">$2</span>'
+    );
 
     // Highlight attributes
-    escaped = escaped.replace(/\s([\w-]+)=/g, ' <span class="fu-config-builder-code-attr">$1</span>=');
+    escaped = escaped.replace(
+      /\s([\w-]+)=/g,
+      ' <span class="fu-config-builder-code-attr">$1</span>='
+    );
 
     // Highlight attribute values
-    escaped = escaped.replace(/=(&quot;[^&]*&quot;)/g, '=<span class="fu-config-builder-code-string">$1</span>');
+    escaped = escaped.replace(
+      /=(&quot;[^&]*&quot;)/g,
+      '=<span class="fu-config-builder-code-string">$1</span>'
+    );
 
     // Highlight comments
-    escaped = escaped.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="fu-config-builder-code-comment">$1</span>');
+    escaped = escaped.replace(
+      /(&lt;!--[\s\S]*?--&gt;)/g,
+      '<span class="fu-config-builder-code-comment">$1</span>'
+    );
 
     return escaped;
   }
@@ -4271,16 +4535,28 @@ export default class ConfigBuilder {
     let escaped = this.escapeHtml(code);
 
     // Highlight selectors (before {)
-    escaped = escaped.replace(/^([^{]+)\{/gm, '<span class="fu-config-builder-code-selector">$1</span>{');
+    escaped = escaped.replace(
+      /^([^{]+)\{/gm,
+      '<span class="fu-config-builder-code-selector">$1</span>{'
+    );
 
     // Highlight properties
-    escaped = escaped.replace(/\s+([\w-]+):/g, '\n  <span class="fu-config-builder-code-property">$1</span>:');
+    escaped = escaped.replace(
+      /\s+([\w-]+):/g,
+      '\n  <span class="fu-config-builder-code-property">$1</span>:'
+    );
 
     // Highlight values (after :)
-    escaped = escaped.replace(/:\s*([^;]+);/g, ': <span class="fu-config-builder-code-value">$1</span>;');
+    escaped = escaped.replace(
+      /:\s*([^;]+);/g,
+      ': <span class="fu-config-builder-code-value">$1</span>;'
+    );
 
     // Highlight comments
-    escaped = escaped.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="fu-config-builder-code-comment">$1</span>');
+    escaped = escaped.replace(
+      /(\/\*[\s\S]*?\*\/)/g,
+      '<span class="fu-config-builder-code-comment">$1</span>'
+    );
 
     return escaped;
   }
@@ -4325,29 +4601,46 @@ export default class ConfigBuilder {
     });
 
     // Section-specific copy buttons (for Modal tab)
-    container.querySelectorAll('[data-action="copy-section"]').forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const uploaderId = btn.dataset.uploaderId;
-        const section = btn.dataset.section;
-        const uploaderData = this.uploaderInstances[uploaderId];
-        const code = this.getModalSectionCode(uploaderId, uploaderData, section);
-        this.copyToClipboard(code, btn);
+    container
+      .querySelectorAll('[data-action="copy-section"]')
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const uploaderId = btn.dataset.uploaderId;
+          const section = btn.dataset.section;
+          const uploaderData = this.uploaderInstances[uploaderId];
+          const code = this.getModalSectionCode(
+            uploaderId,
+            uploaderData,
+            section
+          );
+          this.copyToClipboard(code, btn);
+        });
       });
-    });
 
     // Section-specific download buttons (for Modal tab)
-    container.querySelectorAll('[data-action="download-section"]').forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const uploaderId = btn.dataset.uploaderId;
-        const section = btn.dataset.section;
-        const filename = btn.dataset.filename;
-        const ext = btn.dataset.ext;
-        const uploaderData = this.uploaderInstances[uploaderId];
-        const code = this.getModalSectionCode(uploaderId, uploaderData, section);
-        const mimeType = section === "js" ? "text/javascript" : section === "css" ? "text/css" : "text/html";
-        this.downloadFile(code, `${filename}.${ext}`, mimeType);
+    container
+      .querySelectorAll('[data-action="download-section"]')
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const uploaderId = btn.dataset.uploaderId;
+          const section = btn.dataset.section;
+          const filename = btn.dataset.filename;
+          const ext = btn.dataset.ext;
+          const uploaderData = this.uploaderInstances[uploaderId];
+          const code = this.getModalSectionCode(
+            uploaderId,
+            uploaderData,
+            section
+          );
+          const mimeType =
+            section === "js"
+              ? "text/javascript"
+              : section === "css"
+              ? "text/css"
+              : "text/html";
+          this.downloadFile(code, `${filename}.${ext}`, mimeType);
+        });
       });
-    });
   }
 
   /**
@@ -4393,9 +4686,10 @@ export default class ConfigBuilder {
         .replace(/^_|_$/g, "") || "uploader";
 
     // For modal modes, use the container ID as selector
-    const containerId = displayMode === "modal-minimal" || displayMode === "modal-detailed"
-      ? `${varName}Container`
-      : varName;
+    const containerId =
+      displayMode === "modal-minimal" || displayMode === "modal-detailed"
+        ? `${varName}Container`
+        : varName;
 
     // Group the changed config by category
     const groupedConfig = this.groupChangedConfig(changedConfig);
@@ -4412,7 +4706,7 @@ export default class ConfigBuilder {
     code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
     // Output grouped config
-    const groupKeys = GROUP_ORDER.filter(g => groupedConfig[g]);
+    const groupKeys = GROUP_ORDER.filter((g) => groupedConfig[g]);
     groupKeys.forEach((groupKey, groupIndex) => {
       const groupTitle = GROUP_TITLES[groupKey] || groupKey;
       const groupEntries = Object.entries(groupedConfig[groupKey]);
@@ -4491,27 +4785,34 @@ export default class ConfigBuilder {
     if (language === "php") {
       // For PHP, only show server-relevant groups and keys
       let comment = "/**\n";
-      comment += " * Default configuration values for reference (server-relevant options):\n";
+      comment +=
+        " * Default configuration values for reference (server-relevant options):\n";
       comment += " * [\n";
 
-      GROUP_ORDER.forEach(groupKey => {
+      GROUP_ORDER.forEach((groupKey) => {
         // Skip non-PHP relevant groups
         if (!phpRelevantGroups.includes(groupKey)) return;
         if (!groupedDefaults[groupKey]) return;
 
         // Filter to only PHP-relevant keys within this group
-        const phpKeysInGroup = Object.entries(groupedDefaults[groupKey])
-          .filter(([key]) => phpRelevantKeys.includes(key));
+        const phpKeysInGroup = Object.entries(groupedDefaults[groupKey]).filter(
+          ([key]) => phpRelevantKeys.includes(key)
+        );
 
         // Skip group if no PHP-relevant keys
         if (phpKeysInGroup.length === 0) return;
 
-        const groupTitle = PHP_GROUP_TITLES[groupKey] || GROUP_TITLES[groupKey] || groupKey;
+        const groupTitle =
+          PHP_GROUP_TITLES[groupKey] || GROUP_TITLES[groupKey] || groupKey;
         comment += ` *   // ${groupTitle}\n`;
         comment += ` *   '${groupKey}' => [\n`;
 
         phpKeysInGroup.forEach(([key, value]) => {
-          const formattedValue = this.formatDefaultValueForComment(key, value, language);
+          const formattedValue = this.formatDefaultValueForComment(
+            key,
+            value,
+            language
+          );
           const marker = changedKeys.includes(key) ? " // <- changed" : "";
           comment += ` *     '${key}' => ${formattedValue},${marker}\n`;
         });
@@ -4527,7 +4828,7 @@ export default class ConfigBuilder {
       comment += " * Default configuration values for reference (grouped):\n";
       comment += " * {\n";
 
-      GROUP_ORDER.forEach(groupKey => {
+      GROUP_ORDER.forEach((groupKey) => {
         if (!groupedDefaults[groupKey]) return;
 
         const groupTitle = GROUP_TITLES[groupKey] || groupKey;
@@ -4535,7 +4836,11 @@ export default class ConfigBuilder {
         comment += ` *   ${groupKey}: {\n`;
 
         Object.entries(groupedDefaults[groupKey]).forEach(([key, value]) => {
-          const formattedValue = this.formatDefaultValueForComment(key, value, language);
+          const formattedValue = this.formatDefaultValueForComment(
+            key,
+            value,
+            language
+          );
           const marker = changedKeys.includes(key) ? " // <- changed" : "";
           comment += ` *     ${key}: ${formattedValue},${marker}\n`;
         });
@@ -4621,7 +4926,10 @@ export default class ConfigBuilder {
     const modalSize = config.modalSize || "lg";
     const bootstrapVersion = config.bootstrapVersion || "5";
     // Filter media buttons to only include those whose capture option is enabled
-    const mediaButtons = this.filterEnabledMediaButtons(config.modalMediaButtons || [], config);
+    const mediaButtons = this.filterEnabledMediaButtons(
+      config.modalMediaButtons || [],
+      config
+    );
     const enableModalDropZone = config.enableModalDropZone !== false;
 
     const modalId = `${varName}Modal`;
@@ -4632,7 +4940,9 @@ export default class ConfigBuilder {
     const iconSvg = this.getModalButtonIconSvg(buttonIcon);
 
     let code = `// ============================================\n`;
-    code += `// ${data.name} - Modal Mode (${isMinimal ? "Minimal" : "Detailed"} Preview)\n`;
+    code += `// ${data.name} - Modal Mode (${
+      isMinimal ? "Minimal" : "Detailed"
+    } Preview)\n`;
     code += `// ============================================\n\n`;
 
     // CSS Section (only once per mode type)
@@ -4641,11 +4951,31 @@ export default class ConfigBuilder {
 
     // HTML Section
     code += `\n\n/* ----- HTML ----- */\n\n`;
-    code += this.generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bootstrapVersion, isMinimal, mediaButtons);
+    code += this.generateModalHtml(
+      varName,
+      modalId,
+      containerId,
+      buttonText,
+      iconSvg,
+      modalTitle,
+      modalSize,
+      bootstrapVersion,
+      isMinimal,
+      mediaButtons
+    );
 
     // JS Section
     code += `\n\n/* ----- JavaScript ----- */\n\n`;
-    code += this.generateModalJs(varName, modalId, containerId, changedConfig, bootstrapVersion, isMinimal, mediaButtons, enableModalDropZone);
+    code += this.generateModalJs(
+      varName,
+      modalId,
+      containerId,
+      changedConfig,
+      bootstrapVersion,
+      isMinimal,
+      mediaButtons,
+      enableModalDropZone
+    );
 
     return code;
   }
@@ -4657,7 +4987,8 @@ export default class ConfigBuilder {
     const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
 
     // Common media button CSS
-    const mediaButtonCss = hasMediaButtons ? `
+    const mediaButtonCss = hasMediaButtons
+      ? `
 /* Media Capture Button Styles */
 .media-capture-btn {
   display: inline-flex;
@@ -4682,7 +5013,8 @@ export default class ConfigBuilder {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
-` : '';
+`
+      : "";
 
     if (isMinimal) {
       return `.upload-btn-wrapper {
@@ -4806,9 +5138,11 @@ export default class ConfigBuilder {
    */
   getModalButtonIconSvg(icon) {
     const icons = {
-      upload: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+      upload:
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
       plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-      folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
+      folder:
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
       none: "",
     };
     return icons[icon] || icons.upload;
@@ -4817,7 +5151,18 @@ export default class ConfigBuilder {
   /**
    * Generate modal HTML markup
    */
-  generateModalHtml(varName, modalId, containerId, buttonText, iconSvg, modalTitle, modalSize, bsVersion, isMinimal, mediaButtons = []) {
+  generateModalHtml(
+    varName,
+    modalId,
+    containerId,
+    buttonText,
+    iconSvg,
+    modalTitle,
+    modalSize,
+    bsVersion,
+    isMinimal,
+    mediaButtons = []
+  ) {
     const sizeClass = modalSize === "md" ? "" : ` modal-${modalSize}`;
     const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
 
@@ -4840,7 +5185,11 @@ export default class ConfigBuilder {
       html += `<div class="upload-btn-wrapper">\n`;
       if (hasMediaButtons) {
         html += `  <div class="btn-group" role="group">\n`;
-        html += `    <button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `    <button type="button" id="${varName}Btn" class="btn btn-primary" data-${
+          bsVersion === "3" ? "toggle" : "bs-toggle"
+        }="modal" data-${
+          bsVersion === "3" ? "target" : "bs-target"
+        }="#${modalId}">\n`;
         if (iconSvg) html += `      ${iconSvg}\n`;
         html += `      ${buttonText}\n`;
         html += `    </button>\n`;
@@ -4851,7 +5200,11 @@ export default class ConfigBuilder {
         }
         html += `  </div>\n`;
       } else {
-        html += `  <button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `  <button type="button" id="${varName}Btn" class="btn btn-primary" data-${
+          bsVersion === "3" ? "toggle" : "bs-toggle"
+        }="modal" data-${
+          bsVersion === "3" ? "target" : "bs-target"
+        }="#${modalId}">\n`;
         if (iconSvg) html += `    ${iconSvg}\n`;
         html += `    ${buttonText}\n`;
         html += `  </button>\n`;
@@ -4865,7 +5218,11 @@ export default class ConfigBuilder {
     } else {
       if (hasMediaButtons) {
         html += `<div class="btn-group" role="group">\n`;
-        html += `  <button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `  <button type="button" id="${varName}Btn" class="btn btn-primary" data-${
+          bsVersion === "3" ? "toggle" : "bs-toggle"
+        }="modal" data-${
+          bsVersion === "3" ? "target" : "bs-target"
+        }="#${modalId}">\n`;
         if (iconSvg) html += `    ${iconSvg}\n`;
         html += `    ${buttonText}\n`;
         html += `  </button>\n`;
@@ -4876,7 +5233,11 @@ export default class ConfigBuilder {
         }
         html += `</div>\n\n`;
       } else {
-        html += `<button type="button" id="${varName}Btn" class="btn btn-primary" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+        html += `<button type="button" id="${varName}Btn" class="btn btn-primary" data-${
+          bsVersion === "3" ? "toggle" : "bs-toggle"
+        }="modal" data-${
+          bsVersion === "3" ? "target" : "bs-target"
+        }="#${modalId}">\n`;
         if (iconSvg) html += `  ${iconSvg}\n`;
         html += `  ${buttonText}\n`;
         html += `</button>\n\n`;
@@ -4900,7 +5261,11 @@ export default class ConfigBuilder {
       html += `    <div class="stat-item"><span class="stat-value" id="${varName}TotalSize">0 KB</span><span class="stat-label">total</span></div>\n`;
       html += `  </div>\n`;
       html += `  <div class="file-types" id="${varName}FileTypes"></div>\n`;
-      html += `  <a class="edit-files-link" data-${bsVersion === "3" ? "toggle" : "bs-toggle"}="modal" data-${bsVersion === "3" ? "target" : "bs-target"}="#${modalId}">\n`;
+      html += `  <a class="edit-files-link" data-${
+        bsVersion === "3" ? "toggle" : "bs-toggle"
+      }="modal" data-${
+        bsVersion === "3" ? "target" : "bs-target"
+      }="#${modalId}">\n`;
       html += `    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>\n`;
       html += `    Edit files\n`;
       html += `  </a>\n`;
@@ -4953,7 +5318,16 @@ export default class ConfigBuilder {
   /**
    * Generate modal JavaScript code
    */
-  generateModalJs(varName, modalId, containerId, changedConfig, bsVersion, isMinimal, mediaButtons = [], enableModalDropZone = true) {
+  generateModalJs(
+    varName,
+    modalId,
+    containerId,
+    changedConfig,
+    bsVersion,
+    isMinimal,
+    mediaButtons = [],
+    enableModalDropZone = true
+  ) {
     const hasMediaButtons = mediaButtons && mediaButtons.length > 0;
 
     // Build config entries including externalDropZone if enabled
@@ -5042,9 +5416,12 @@ export default class ConfigBuilder {
     }
 
     // Modal hidden event
-    const modalEvent = bsVersion === "3" ? "hidden.bs.modal" : "hidden.bs.modal";
+    const modalEvent =
+      bsVersion === "3" ? "hidden.bs.modal" : "hidden.bs.modal";
     code += `// Update preview when modal closes\n`;
-    code += `document.getElementById('${modalId}').addEventListener('${modalEvent}', update${this.capitalizeFirst(varName)}Preview);\n\n`;
+    code += `document.getElementById('${modalId}').addEventListener('${modalEvent}', update${this.capitalizeFirst(
+      varName
+    )}Preview);\n\n`;
 
     // Utility functions
     code += `// Utility functions\n`;
@@ -5079,13 +5456,13 @@ export default class ConfigBuilder {
       code += `    const captureType = this.dataset.captureType;\n`;
       code += `    \n`;
       code += `    switch(captureType) {\n`;
-      if (mediaButtons.includes('screenshot')) {
+      if (mediaButtons.includes("screenshot")) {
         code += `      case 'screenshot':\n`;
         code += `        // Capture screenshot using FileUploader's built-in method\n`;
         code += `        ${varName}.captureScreenshot();\n`;
         code += `        break;\n`;
       }
-      if (mediaButtons.includes('video')) {
+      if (mediaButtons.includes("video")) {
         code += `      case 'video':\n`;
         code += `        // Toggle video recording\n`;
         code += `        if (this.classList.contains('recording')) {\n`;
@@ -5097,7 +5474,7 @@ export default class ConfigBuilder {
         code += `        }\n`;
         code += `        break;\n`;
       }
-      if (mediaButtons.includes('audio')) {
+      if (mediaButtons.includes("audio")) {
         code += `      case 'audio':\n`;
         code += `        // Toggle audio recording\n`;
         code += `        if (this.classList.contains('recording')) {\n`;
@@ -5109,13 +5486,13 @@ export default class ConfigBuilder {
         code += `        }\n`;
         code += `        break;\n`;
       }
-      if (mediaButtons.includes('fullpage')) {
+      if (mediaButtons.includes("fullpage")) {
         code += `      case 'fullpage':\n`;
         code += `        // Capture full page screenshot\n`;
         code += `        ${varName}.captureFullPage();\n`;
         code += `        break;\n`;
       }
-      if (mediaButtons.includes('region')) {
+      if (mediaButtons.includes("region")) {
         code += `      case 'region':\n`;
         code += `        // Capture selected region screenshot\n`;
         code += `        ${varName}.captureRegion();\n`;
@@ -5126,7 +5503,7 @@ export default class ConfigBuilder {
       code += `});\n`;
 
       // Add listeners for recording state changes
-      if (mediaButtons.includes('video') || mediaButtons.includes('audio')) {
+      if (mediaButtons.includes("video") || mediaButtons.includes("audio")) {
         code += `\n// Listen for recording state changes to update button states\n`;
         code += `${varName}.on('recordingStateChange', (state) => {\n`;
         code += `  const btn = document.querySelector('.media-capture-btn[data-uploader="${varName}"][data-capture-type="' + state.type + '"]');\n`;
@@ -5180,9 +5557,10 @@ export default class ConfigBuilder {
 
     // Output grouped config (only PHP-relevant groups)
     const phpRelevantGroups = ["urls", "limits", "perTypeLimits", "fileTypes"];
-    const groupKeys = phpRelevantGroups.filter(g => groupedConfig[g]);
+    const groupKeys = phpRelevantGroups.filter((g) => groupedConfig[g]);
     groupKeys.forEach((groupKey, groupIndex) => {
-      const groupTitle = PHP_GROUP_TITLES[groupKey] || GROUP_TITLES[groupKey] || groupKey;
+      const groupTitle =
+        PHP_GROUP_TITLES[groupKey] || GROUP_TITLES[groupKey] || groupKey;
       const groupEntries = Object.entries(groupedConfig[groupKey]);
       const isLastGroup = groupIndex === groupKeys.length - 1;
 
@@ -5219,11 +5597,13 @@ export default class ConfigBuilder {
    * Get modal button icon SVG based on icon type
    */
   getModalButtonIcon(iconType) {
-    if (iconType === 'none') return '';
+    if (iconType === "none") return "";
     const icons = {
-      upload: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+      upload:
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
       plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-      folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'
+      folder:
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
     };
     return icons[iconType] || icons.upload;
   }
@@ -5245,7 +5625,7 @@ export default class ConfigBuilder {
     // Region capture icon
     region: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M0 80C0 53.5 21.5 32 48 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L48 96l0 64c0 17.7-14.3 32-32 32s-32-14.3-32-32L0 80zM0 432c0-17.7 14.3-32 32-32l0-64c0-17.7 14.3-32 32-32s32 14.3 32 32l0 64 64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L48 464c-26.5 0-48-21.5-48-48zM464 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c26.5 0 48 21.5 48 48l0 80c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-64zM512 336l0 64c0 26.5-21.5 48-48 48l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0 0-64c0-17.7 14.3-32 32-32s32 14.3 32 32zM176 224l160 0c8.8 0 16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16l0-96c0-8.8 7.2-16 16-16z"/></svg>`,
     // Chevron right icon for expandable media buttons toggle
-    chevron_right: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>`
+    chevron_right: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>`,
   };
 
   static MEDIA_CAPTURE_TITLES = {
@@ -5253,7 +5633,7 @@ export default class ConfigBuilder {
     video: "Record Screen",
     audio: "Record Audio",
     fullpage: "Capture Full Page",
-    region: "Capture Region"
+    region: "Capture Region",
   };
 
   /**
@@ -5264,12 +5644,12 @@ export default class ConfigBuilder {
    */
   filterEnabledMediaButtons(buttons, config) {
     if (!buttons || buttons.length === 0) return [];
-    return buttons.filter(btn => {
-      if (btn === 'screenshot') return config.enableScreenCapture !== false;
-      if (btn === 'fullpage') return config.enableFullPageCapture !== false;
-      if (btn === 'region') return config.enableRegionCapture !== false;
-      if (btn === 'video') return config.enableVideoRecording !== false;
-      if (btn === 'audio') return config.enableAudioRecording !== false;
+    return buttons.filter((btn) => {
+      if (btn === "screenshot") return config.enableScreenCapture !== false;
+      if (btn === "fullpage") return config.enableFullPageCapture !== false;
+      if (btn === "region") return config.enableRegionCapture !== false;
+      if (btn === "video") return config.enableVideoRecording !== false;
+      if (btn === "audio") return config.enableAudioRecording !== false;
       return false;
     });
   }
@@ -5282,15 +5662,17 @@ export default class ConfigBuilder {
    * @returns {string} HTML string for the expandable media capture buttons container
    */
   getMediaCaptureButtonsHtml(buttonTypes, uploaderId) {
-    if (!buttonTypes || buttonTypes.length === 0) return '';
+    if (!buttonTypes || buttonTypes.length === 0) return "";
 
-    const buttons = buttonTypes.map(btnType => {
-      const icon = MEDIA_CAPTURE_ICONS[btnType];
-      const title = MEDIA_CAPTURE_TITLES[btnType];
-      if (!icon) return '';
+    const buttons = buttonTypes
+      .map((btnType) => {
+        const icon = MEDIA_CAPTURE_ICONS[btnType];
+        const title = MEDIA_CAPTURE_TITLES[btnType];
+        if (!icon) return "";
 
-      return `<button type="button" class="file-uploader-capture-btn has-tooltip" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" data-tooltip="${title}" data-tooltip-position="top">${icon}</button>`;
-    }).join('');
+        return `<button type="button" class="file-uploader-capture-btn has-tooltip" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" data-tooltip="${title}" data-tooltip-position="top">${icon}</button>`;
+      })
+      .join("");
 
     const chevronIcon = MEDIA_CAPTURE_ICONS.chevron_right;
 
@@ -5314,10 +5696,12 @@ export default class ConfigBuilder {
     // Attach toggle handler for expandable media buttons
     this.attachMediaCaptureToggleHandler(container, uploaderId);
 
-    const buttons = container.querySelectorAll('.file-uploader-capture-btn[data-uploader-id="' + uploaderId + '"]');
+    const buttons = container.querySelectorAll(
+      '.file-uploader-capture-btn[data-uploader-id="' + uploaderId + '"]'
+    );
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', async (e) => {
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
         e.stopPropagation();
         const captureType = btn.dataset.captureType;
 
@@ -5329,28 +5713,28 @@ export default class ConfigBuilder {
         const uploader = uploaderData.instance;
 
         try {
-          if (captureType === 'screenshot') {
-            if (typeof uploader.captureScreenshot === 'function') {
+          if (captureType === "screenshot") {
+            if (typeof uploader.captureScreenshot === "function") {
               await uploader.captureScreenshot();
               this.updatePreviewFileInfo(uploaderId);
             }
-          } else if (captureType === 'video') {
-            if (typeof uploader.toggleVideoRecording === 'function') {
+          } else if (captureType === "video") {
+            if (typeof uploader.toggleVideoRecording === "function") {
               await uploader.toggleVideoRecording();
               this.updatePreviewFileInfo(uploaderId);
             }
-          } else if (captureType === 'audio') {
-            if (typeof uploader.toggleAudioRecording === 'function') {
+          } else if (captureType === "audio") {
+            if (typeof uploader.toggleAudioRecording === "function") {
               await uploader.toggleAudioRecording();
               this.updatePreviewFileInfo(uploaderId);
             }
-          } else if (captureType === 'fullpage') {
-            if (typeof uploader.captureFullPage === 'function') {
+          } else if (captureType === "fullpage") {
+            if (typeof uploader.captureFullPage === "function") {
               await uploader.captureFullPage();
               this.updatePreviewFileInfo(uploaderId);
             }
-          } else if (captureType === 'region') {
-            if (typeof uploader.captureRegion === 'function') {
+          } else if (captureType === "region") {
+            if (typeof uploader.captureRegion === "function") {
               await uploader.captureRegion();
               this.updatePreviewFileInfo(uploaderId);
             }
@@ -5368,14 +5752,16 @@ export default class ConfigBuilder {
    * @param {string} uploaderId - The uploader ID
    */
   attachMediaCaptureToggleHandler(container, uploaderId) {
-    const toggleBtn = container.querySelector('.file-uploader-capture-toggle[data-uploader-id="' + uploaderId + '"]');
+    const toggleBtn = container.querySelector(
+      '.file-uploader-capture-toggle[data-uploader-id="' + uploaderId + '"]'
+    );
     if (!toggleBtn) return;
 
-    toggleBtn.addEventListener('click', (e) => {
+    toggleBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const expandable = toggleBtn.closest('.file-uploader-capture-expandable');
+      const expandable = toggleBtn.closest(".file-uploader-capture-expandable");
       if (expandable) {
-        expandable.classList.toggle('expanded');
+        expandable.classList.toggle("expanded");
       }
     });
   }
@@ -5388,11 +5774,13 @@ export default class ConfigBuilder {
     const uploaderData = this.uploaderInstances[uploaderId];
     if (!uploaderData) return;
 
-    const wrapper = document.querySelector(`[data-uploader-wrapper="${uploaderId}"]`);
+    const wrapper = document.querySelector(
+      `[data-uploader-wrapper="${uploaderId}"]`
+    );
     if (!wrapper) return;
 
-    const displayMode = uploaderData.config?.displayMode || 'inline';
-    const isMinimal = displayMode === 'modal-minimal';
+    const displayMode = uploaderData.config?.displayMode || "inline";
+    const isMinimal = displayMode === "modal-minimal";
 
     // Call the existing updateModalFileInfo method
     this.updateModalFileInfo(wrapper, uploaderId, uploaderData, isMinimal);
@@ -5412,7 +5800,10 @@ export default class ConfigBuilder {
     const previewContainer = uploader.previewContainer;
 
     if (!previewContainer) {
-      console.warn('[ConfigBuilder] Could not find previewContainer for observer:', uploaderId);
+      console.warn(
+        "[ConfigBuilder] Could not find previewContainer for observer:",
+        uploaderId
+      );
       return;
     }
 
@@ -5437,7 +5828,7 @@ export default class ConfigBuilder {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['class', 'data-status'] // Watch for status changes like upload complete
+      attributeFilter: ["class", "data-status"], // Watch for status changes like upload complete
     });
 
     // Store the observer reference so we can disconnect it later
@@ -5458,25 +5849,29 @@ export default class ConfigBuilder {
 
     // Format size helper
     const formatSize = (bytes) => {
-      if (bytes === 0) return '0 B';
+      if (bytes === 0) return "0 B";
       const k = 1024;
-      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const sizes = ["B", "KB", "MB", "GB"];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
     };
 
     // Handle empty state (all files deleted)
     if (fileCount === 0) {
       if (isMinimal) {
-        const badge = wrapper.querySelector(`[data-file-badge="${uploaderId}"]`);
+        const badge = wrapper.querySelector(
+          `[data-file-badge="${uploaderId}"]`
+        );
         if (badge) {
-          badge.classList.remove('has-files');
+          badge.classList.remove("has-files");
           badge.innerHTML = `<span class="badge-text">No files selected</span>`;
         }
       } else {
-        const summary = wrapper.querySelector(`[data-file-summary="${uploaderId}"]`);
+        const summary = wrapper.querySelector(
+          `[data-file-summary="${uploaderId}"]`
+        );
         if (summary) {
-          summary.classList.remove('has-files');
+          summary.classList.remove("has-files");
           summary.innerHTML = `
             <div class="summary-empty">
               <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
@@ -5490,7 +5885,7 @@ export default class ConfigBuilder {
 
     // Calculate total size
     let totalSize = 0;
-    files.forEach(file => {
+    files.forEach((file) => {
       totalSize += file.size || 0;
     });
 
@@ -5498,72 +5893,105 @@ export default class ConfigBuilder {
       // Update minimal badge
       const badge = wrapper.querySelector(`[data-file-badge="${uploaderId}"]`);
       if (badge) {
-        badge.classList.add('has-files');
+        badge.classList.add("has-files");
         badge.innerHTML = `
-          <span class="badge-count">${fileCount}</span> file${fileCount !== 1 ? 's' : ''}
+          <span class="badge-count">${fileCount}</span> file${
+          fileCount !== 1 ? "s" : ""
+        }
           <span class="badge-separator">|</span>
           <span class="badge-size">${formatSize(totalSize)}</span>
         `;
 
         // Add pulse animation when files are added
         if (filesAdded) {
-          badge.classList.remove('file-added-pulse');
+          badge.classList.remove("file-added-pulse");
           // Force reflow to restart animation
           void badge.offsetWidth;
-          badge.classList.add('file-added-pulse');
+          badge.classList.add("file-added-pulse");
         }
       }
     } else {
       // Update detailed summary
-      const summary = wrapper.querySelector(`[data-file-summary="${uploaderId}"]`);
+      const summary = wrapper.querySelector(
+        `[data-file-summary="${uploaderId}"]`
+      );
       if (summary) {
         // Group files by type with icons
         const typeConfig = {
-          'Images': { icon: 'image', color: '#8b5cf6' },
-          'Videos': { icon: 'video', color: '#ef4444' },
-          'Audio': { icon: 'audio', color: '#f59e0b' },
-          'Documents': { icon: 'document', color: '#3b82f6' },
-          'Archives': { icon: 'archive', color: '#6366f1' },
-          'Other': { icon: 'other', color: '#6b7280' }
+          Images: { icon: "image", color: "#8b5cf6" },
+          Videos: { icon: "video", color: "#ef4444" },
+          Audio: { icon: "audio", color: "#f59e0b" },
+          Documents: { icon: "document", color: "#3b82f6" },
+          Archives: { icon: "archive", color: "#6366f1" },
+          Other: { icon: "other", color: "#6b7280" },
         };
 
         const typeGroups = {};
-        files.forEach(file => {
-          const ext = (file.name || '').split('.').pop().toLowerCase();
-          let type = 'Other';
-          if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'].includes(ext)) type = 'Images';
-          else if (['mp4', 'webm', 'avi', 'mov', 'mkv'].includes(ext)) type = 'Videos';
-          else if (['mp3', 'wav', 'ogg', 'flac', 'm4a'].includes(ext)) type = 'Audio';
-          else if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) type = 'Documents';
-          else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) type = 'Archives';
+        files.forEach((file) => {
+          const ext = (file.name || "").split(".").pop().toLowerCase();
+          let type = "Other";
+          if (
+            ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico"].includes(
+              ext
+            )
+          )
+            type = "Images";
+          else if (["mp4", "webm", "avi", "mov", "mkv"].includes(ext))
+            type = "Videos";
+          else if (["mp3", "wav", "ogg", "flac", "m4a"].includes(ext))
+            type = "Audio";
+          else if (
+            [
+              "pdf",
+              "doc",
+              "docx",
+              "txt",
+              "rtf",
+              "xls",
+              "xlsx",
+              "ppt",
+              "pptx",
+            ].includes(ext)
+          )
+            type = "Documents";
+          else if (["zip", "rar", "7z", "tar", "gz"].includes(ext))
+            type = "Archives";
 
           if (!typeGroups[type]) typeGroups[type] = 0;
           typeGroups[type]++;
         });
 
         const typeIcons = {
-          'Images': '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
-          'Videos': '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
-          'Audio': '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-          'Documents': '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
-          'Archives': '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>',
-          'Other': '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M13 2v7h7"/></svg>'
+          Images:
+            '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+          Videos:
+            '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
+          Audio:
+            '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+          Documents:
+            '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
+          Archives:
+            '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>',
+          Other:
+            '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M13 2v7h7"/></svg>',
         };
 
         const typeBadges = Object.entries(typeGroups)
           .map(([type, count]) => {
-            const config = typeConfig[type] || typeConfig['Other'];
+            const config = typeConfig[type] || typeConfig["Other"];
             return `
               <div class="summary-type">
-                <span class="type-icon icon-${config.icon}">${typeIcons[type] || typeIcons['Other']}</span>
+                <span class="type-icon icon-${config.icon}">${
+              typeIcons[type] || typeIcons["Other"]
+            }</span>
                 <span class="type-name">${type}</span>
                 <span class="type-count">${count}</span>
               </div>
             `;
           })
-          .join('');
+          .join("");
 
-        summary.classList.add('has-files');
+        summary.classList.add("has-files");
         summary.innerHTML = `
           <div class="summary-header">
             <div class="summary-icon">
@@ -5575,7 +6003,9 @@ export default class ConfigBuilder {
             <div class="summary-stats">
               <div class="summary-stat">
                 <span class="stat-value">${fileCount}</span>
-                <span class="stat-label">file${fileCount !== 1 ? 's' : ''}</span>
+                <span class="stat-label">file${
+                  fileCount !== 1 ? "s" : ""
+                }</span>
               </div>
               <div class="summary-stat">
                 <span class="stat-value">${formatSize(totalSize)}</span>
@@ -5588,10 +6018,10 @@ export default class ConfigBuilder {
 
         // Add pulse animation when files are added
         if (filesAdded) {
-          summary.classList.remove('file-added-pulse');
+          summary.classList.remove("file-added-pulse");
           // Force reflow to restart animation
           void summary.offsetWidth;
-          summary.classList.add('file-added-pulse');
+          summary.classList.add("file-added-pulse");
         }
       }
     }
@@ -5637,7 +6067,9 @@ export default class ConfigBuilder {
       const index = stringPlaceholders.length;
       // Convert &#039; back to ' for display
       const displayMatch = match.replace(/&#039;/g, "'");
-      stringPlaceholders.push(`<span class="code-string">${displayMatch}</span>`);
+      stringPlaceholders.push(
+        `<span class="code-string">${displayMatch}</span>`
+      );
       return `__STRING_${index}__`;
     });
 
@@ -5864,7 +6296,7 @@ export default class ConfigBuilder {
           .replace(/[^a-z0-9]+/g, "_")
           .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
 
-      const groupKeys = GROUP_ORDER.filter(g => groupedConfig[g]);
+      const groupKeys = GROUP_ORDER.filter((g) => groupedConfig[g]);
 
       if (groupKeys.length === 0) {
         code += `const ${varName} = new FileUploader('#${varName}');\n`;
@@ -5884,7 +6316,12 @@ export default class ConfigBuilder {
           entries.forEach(([key, value], index) => {
             const isLastEntry = index === entries.length - 1;
             const comma = isLastEntry ? "" : ",";
-            const formattedValue = this.formatJsValue(key, value, "    ", comma);
+            const formattedValue = this.formatJsValue(
+              key,
+              value,
+              "    ",
+              comma
+            );
             code += `    ${key}: ${formattedValue}\n`;
           });
 
@@ -5983,7 +6420,7 @@ export default class ConfigBuilder {
 
       // PHP only needs specific groups: urls, limits, perTypeLimits, fileTypes
       const phpGroups = ["urls", "limits", "perTypeLimits", "fileTypes"];
-      const groupKeys = phpGroups.filter(g => groupedConfig[g]);
+      const groupKeys = phpGroups.filter((g) => groupedConfig[g]);
 
       if (groupKeys.length === 0) {
         // No server-relevant options changed
@@ -6097,10 +6534,7 @@ export default class ConfigBuilder {
    * @returns {boolean}
    */
   isBitrateKey(key) {
-    const bitrateKeys = [
-      "videoBitsPerSecond",
-      "audioBitsPerSecond",
-    ];
+    const bitrateKeys = ["videoBitsPerSecond", "audioBitsPerSecond"];
     return bitrateKeys.includes(key);
   }
 
@@ -6180,7 +6614,10 @@ export default class ConfigBuilder {
     }
 
     // Default: use JSON.stringify
-    return JSON.stringify(value, null, 2).replace(/\n/g, `\n${indent}`) + trailingComma;
+    return (
+      JSON.stringify(value, null, 2).replace(/\n/g, `\n${indent}`) +
+      trailingComma
+    );
   }
 
   /**
@@ -6349,21 +6786,36 @@ export default class ConfigBuilder {
         if (existingWrapper) {
           // Check if we need to rebuild the entire wrapper (displayMode changed)
           const currentDisplayMode = activeData.config.displayMode || "inline";
-          const isModalMode = currentDisplayMode === "modal-minimal" || currentDisplayMode === "modal-detailed";
+          const isModalMode =
+            currentDisplayMode === "modal-minimal" ||
+            currentDisplayMode === "modal-detailed";
           const isMinimalMode = currentDisplayMode === "modal-minimal";
-          const wrapperHasModalPreview = existingWrapper.querySelector(".fu-config-builder-modal-preview") !== null;
-          const wrapperHasMinimalPreview = existingWrapper.querySelector(".fu-config-builder-modal-minimal-preview") !== null;
+          const wrapperHasModalPreview =
+            existingWrapper.querySelector(
+              ".fu-config-builder-modal-preview"
+            ) !== null;
+          const wrapperHasMinimalPreview =
+            existingWrapper.querySelector(
+              ".fu-config-builder-modal-minimal-preview"
+            ) !== null;
 
           // If display mode type changed (inline <-> modal, or minimal <-> detailed), rebuild the entire wrapper
           // Also rebuild for modal mode when any modal option changes (button text, title, etc.)
-          const needsRebuild = (isModalMode !== wrapperHasModalPreview) ||
-                               (isModalMode && wrapperHasModalPreview && (isMinimalMode !== wrapperHasMinimalPreview)) ||
-                               isModalMode; // Always rebuild for modal mode to reflect option changes
+          const needsRebuild =
+            isModalMode !== wrapperHasModalPreview ||
+            (isModalMode &&
+              wrapperHasModalPreview &&
+              isMinimalMode !== wrapperHasMinimalPreview) ||
+            isModalMode; // Always rebuild for modal mode to reflect option changes
 
           if (needsRebuild) {
             // Remove the old wrapper and recreate it
             existingWrapper.remove();
-            this.createUploaderPreview(previewEl, this.activeUploaderId, activeData);
+            this.createUploaderPreview(
+              previewEl,
+              this.activeUploaderId,
+              activeData
+            );
           } else {
             // Inline mode - just update the container content
             const uploaderContainer = existingWrapper.querySelector(
@@ -6371,7 +6823,9 @@ export default class ConfigBuilder {
             );
             if (uploaderContainer) {
               uploaderContainer.innerHTML = "";
-              const containerId = `preview-${this.activeUploaderId}-${Date.now()}`;
+              const containerId = `preview-${
+                this.activeUploaderId
+              }-${Date.now()}`;
               const container = document.createElement("div");
               container.id = containerId;
               uploaderContainer.appendChild(container);
@@ -6419,7 +6873,7 @@ export default class ConfigBuilder {
       }
     } catch (error) {
       // Silently handle errors during cleanup
-      console.warn('Error cancelling active recordings:', error);
+      console.warn("Error cancelling active recordings:", error);
     }
   }
 
@@ -6430,7 +6884,8 @@ export default class ConfigBuilder {
     const isActive = id === this.activeUploaderId;
     const containerId = `preview-${id}-${Date.now()}`;
     const displayMode = data.config.displayMode || "inline";
-    const isModalMode = displayMode === "modal-minimal" || displayMode === "modal-detailed";
+    const isModalMode =
+      displayMode === "modal-minimal" || displayMode === "modal-detailed";
 
     const wrapper = document.createElement("div");
     wrapper.className = `fu-config-builder-uploader-wrapper ${
@@ -6449,17 +6904,27 @@ export default class ConfigBuilder {
       const isMinimal = displayMode === "modal-minimal";
 
       // Filter media buttons to only include those whose capture option is enabled
-      const mediaButtons = this.filterEnabledMediaButtons(data.config.modalMediaButtons || [], data.config);
+      const mediaButtons = this.filterEnabledMediaButtons(
+        data.config.modalMediaButtons || [],
+        data.config
+      );
 
       // Get the button icon SVG
       const buttonIconSvg = this.getModalButtonIcon(buttonIcon);
 
       // Generate media capture buttons HTML using the reusable function
-      const mediaButtonsHtml = this.getMediaCaptureButtonsHtml(mediaButtons, id);
+      const mediaButtonsHtml = this.getMediaCaptureButtonsHtml(
+        mediaButtons,
+        id
+      );
 
       wrapper.innerHTML = `
         <div class="fu-config-builder-uploader-header">
-          <span class="fu-config-builder-uploader-label">${data.name} <span class="fu-config-builder-mode-badge">${isMinimal ? "Minimal" : "Detailed"} Mode</span></span>
+          <span class="fu-config-builder-uploader-label">${
+            data.name
+          } <span class="fu-config-builder-mode-badge">${
+        isMinimal ? "Minimal" : "Detailed"
+      } Mode</span></span>
           ${
             isActive
               ? '<span class="fu-config-builder-uploader-badge">Editing</span>'
@@ -6473,7 +6938,9 @@ export default class ConfigBuilder {
             <span class="fu-config-builder-modal-info-item">Size: <strong>${modalSize.toUpperCase()}</strong></span>
             <span class="fu-config-builder-modal-info-item">Bootstrap: <strong>v${bootstrapVersion}</strong></span>
           </div>
-          ${isMinimal ? `
+          ${
+            isMinimal
+              ? `
             <div class="fu-config-builder-modal-minimal-preview">
               <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}" data-uploader-id="${id}">
                 ${buttonIconSvg}
@@ -6485,7 +6952,8 @@ export default class ConfigBuilder {
               </span>
             </div>
             <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader. Drag and drop files here.</p>
-          ` : `
+          `
+              : `
             <div class="fu-config-builder-modal-detailed-preview">
               <div class="fu-config-builder-modal-buttons-row">
                 <button type="button" class="fu-config-builder-modal-btn" data-modal-id="${modalId}" data-uploader-id="${id}">
@@ -6502,7 +6970,8 @@ export default class ConfigBuilder {
               </div>
             </div>
             <p class="fu-config-builder-preview-hint">Click button to open modal with FileUploader. Drag and drop files here.</p>
-          `}
+          `
+          }
           <!-- Hidden modal container for actual FileUploader -->
           <div class="fu-config-builder-modal-hidden" id="${modalId}" style="display: none;">
             <div class="fu-config-builder-modal-dialog fu-config-builder-modal-${modalSize}">
@@ -6551,19 +7020,19 @@ export default class ConfigBuilder {
         // Enable capture features based on modalMediaButtons selection
         // This ensures the FileUploader instance can handle captures from external buttons
         if (mediaButtons && mediaButtons.length > 0) {
-          if (mediaButtons.includes('screenshot')) {
+          if (mediaButtons.includes("screenshot")) {
             previewConfig.enableScreenCapture = true;
           }
-          if (mediaButtons.includes('video')) {
+          if (mediaButtons.includes("video")) {
             previewConfig.enableVideoRecording = true;
           }
-          if (mediaButtons.includes('audio')) {
+          if (mediaButtons.includes("audio")) {
             previewConfig.enableAudioRecording = true;
           }
-          if (mediaButtons.includes('fullpage')) {
+          if (mediaButtons.includes("fullpage")) {
             previewConfig.enableFullPageCapture = true;
           }
-          if (mediaButtons.includes('region')) {
+          if (mediaButtons.includes("region")) {
             previewConfig.enableRegionCapture = true;
           }
 
@@ -6573,7 +7042,10 @@ export default class ConfigBuilder {
           previewConfig.externalRecordingToolbarContainer = `.file-uploader-capture-container[data-uploader-id="${id}"]`;
         }
 
-        data.instance = new window.FileUploader(`#${containerId}`, previewConfig);
+        data.instance = new window.FileUploader(
+          `#${containerId}`,
+          previewConfig
+        );
         data.containerId = containerId;
 
         // Set up file change observer to auto-update preview info
@@ -6581,9 +7053,13 @@ export default class ConfigBuilder {
       }
 
       // Add modal open/close handlers
-      const modalOpenBtn = wrapper.querySelector(`[data-modal-id="${modalId}"]`);
+      const modalOpenBtn = wrapper.querySelector(
+        `[data-modal-id="${modalId}"]`
+      );
       const modal = wrapper.querySelector(`#${modalId}`);
-      const modalCloseBtns = wrapper.querySelectorAll(`[data-close-modal="${modalId}"]`);
+      const modalCloseBtns = wrapper.querySelectorAll(
+        `[data-close-modal="${modalId}"]`
+      );
 
       if (modalOpenBtn && modal) {
         modalOpenBtn.addEventListener("click", () => {
@@ -6649,7 +7125,10 @@ export default class ConfigBuilder {
           autoFetchConfig: false,
           cleanupOnDestroy: true, // Clean up files when preview is refreshed
         };
-        data.instance = new window.FileUploader(`#${containerId}`, previewConfig);
+        data.instance = new window.FileUploader(
+          `#${containerId}`,
+          previewConfig
+        );
         data.containerId = containerId;
       }
     }
@@ -7030,10 +7509,13 @@ export default class ConfigBuilder {
           const computedStyles = container
             ? getComputedStyle(container)
             : getComputedStyle(document.documentElement);
-          const actualComputedValue = computedStyles.getPropertyValue(varName).trim();
+          const actualComputedValue = computedStyles
+            .getPropertyValue(varName)
+            .trim();
 
           // Use actual computed value if available, otherwise fall back to stored/default
-          const currentValue = actualComputedValue || this.styleValues[varName] || def.default;
+          const currentValue =
+            actualComputedValue || this.styleValues[varName] || def.default;
           const computedValue = appliedInfo
             ? appliedInfo.computedValue
             : currentValue;
@@ -7101,14 +7583,20 @@ export default class ConfigBuilder {
           : "";
 
         // If there's a source var, clicking should navigate to it
-        const dataSourceAttr = v.sourceVar ? `data-source-var="${v.sourceVar}"` : "";
+        const dataSourceAttr = v.sourceVar
+          ? `data-source-var="${v.sourceVar}"`
+          : "";
 
         html += `
           <div class="fu-config-builder-css-var-item ${
             v.isModified ? "modified" : ""
           }${v.sourceVar ? " has-source" : ""}" data-var-name="${
           v.name
-        }" data-section="${sectionKey}" ${dataSourceAttr} data-tooltip="${v.sourceVar ? `Uses ${v.sourceVar} - Click to edit source` : "Click to edit in Styles panel"}" data-tooltip-position="top">
+        }" data-section="${sectionKey}" ${dataSourceAttr} data-tooltip="${
+          v.sourceVar
+            ? `Uses ${v.sourceVar} - Click to edit source`
+            : "Click to edit in Styles panel"
+        }" data-tooltip-position="top">
             ${valueDisplay}
             <span class="fu-config-builder-css-var-label">${v.label}</span>
             <code class="fu-config-builder-css-var-name">${v.name}</code>

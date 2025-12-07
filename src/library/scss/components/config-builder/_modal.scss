@@ -759,6 +759,21 @@ $builder-prefix: "fu-config-builder" !default;
   font-weight: 500;
   box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3);
 
+  // Recording type icon (video/audio/webcam)
+  .file-uploader-recording-type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    cursor: help;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+  }
+
   .file-uploader-recording-dot {
     width: 8px;
     height: 8px;
@@ -766,6 +781,11 @@ $builder-prefix: "fu-config-builder" !default;
     background-color: white;
     border-radius: 50%;
     animation: recording-dot-blink 1s ease-in-out infinite;
+
+    // Paused state - faster, more noticeable blinking
+    &.paused {
+      animation: recording-dot-blink-paused 0.6s ease-in-out infinite;
+    }
   }
 
   .file-uploader-recording-time {
@@ -834,5 +854,14 @@ $builder-prefix: "fu-config-builder" !default;
   }
   50% {
     opacity: 0.3;
+  }
+}
+
+@keyframes recording-dot-blink-paused {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
   }
 }

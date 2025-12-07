@@ -217,4 +217,14 @@
       opacity: 0.3;
     }
   }
+
+  // Paused state blink - faster and more noticeable
+  @keyframes #{$component-prefix}-blink-paused {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.2;
+    }
+  }
 }

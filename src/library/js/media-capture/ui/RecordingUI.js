@@ -138,6 +138,8 @@ export default class RecordingUI {
 
     this.recordingType = 'video';
 
+    const isExternal = this.isUsingExternalContainer();
+
     // Create pause button
     const pauseBtn = document.createElement("button");
     pauseBtn.type = "button";
@@ -151,9 +153,9 @@ export default class RecordingUI {
       this.togglePauseRecording();
     });
 
-    // Create system audio button if enabled
+    // Create system audio button if enabled (only for internal toolbar)
     let systemAudioBtn = null;
-    if (this.uploader.options.enableSystemAudio) {
+    if (!isExternal && this.uploader.options.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
       systemAudioBtn.className = "file-uploader-capture-btn";
@@ -179,9 +181,9 @@ export default class RecordingUI {
       });
     }
 
-    // Create microphone button if enabled
+    // Create microphone button if enabled (only for internal toolbar)
     let micBtn = null;
-    if (this.uploader.options.enableMicrophoneAudio) {
+    if (!isExternal && this.uploader.options.enableMicrophoneAudio) {
       micBtn = document.createElement("button");
       micBtn.type = "button";
       micBtn.className = "file-uploader-capture-btn";
@@ -249,6 +251,8 @@ export default class RecordingUI {
 
     this.recordingType = 'audio';
 
+    const isExternal = this.isUsingExternalContainer();
+
     // Create pause button
     const pauseBtn = document.createElement("button");
     pauseBtn.type = "button";
@@ -262,9 +266,9 @@ export default class RecordingUI {
       this.togglePauseAudioRecording();
     });
 
-    // Create system audio button if enabled
+    // Create system audio button if enabled (only for internal toolbar)
     let systemAudioBtn = null;
-    if (this.uploader.options.enableSystemAudio) {
+    if (!isExternal && this.uploader.options.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
       systemAudioBtn.className = "file-uploader-capture-btn";
@@ -346,6 +350,8 @@ export default class RecordingUI {
         pauseBtn.setAttribute("data-tooltip", "Pause Recording");
         pauseBtn.classList.remove("paused");
       }
+      // Remove paused state from recording indicators
+      this.setRecordingIndicatorPausedState(false);
     } else {
       this.uploader.videoRecorder.pauseRecording();
       if (pauseBtn) {
@@ -353,6 +359,8 @@ export default class RecordingUI {
         pauseBtn.setAttribute("data-tooltip", "Resume Recording");
         pauseBtn.classList.add("paused");
       }
+      // Add paused state to recording indicators
+      this.setRecordingIndicatorPausedState(true);
     }
   }
 
@@ -372,12 +380,38 @@ export default class RecordingUI {
         pauseBtn.setAttribute("data-tooltip", "Pause Recording");
         pauseBtn.classList.remove("paused");
       }
+      // Remove paused state from recording indicators
+      this.setRecordingIndicatorPausedState(false);
     } else {
       this.uploader.audioRecorder.pauseRecording();
       if (pauseBtn) {
         pauseBtn.innerHTML = getIcon("play");
         pauseBtn.setAttribute("data-tooltip", "Resume Recording");
         pauseBtn.classList.add("paused");
+      }
+      // Add paused state to recording indicators
+      this.setRecordingIndicatorPausedState(true);
+    }
+  }
+
+  /**
+   * Set paused state on all recording indicators
+   * @param {boolean} isPaused - Whether recording is paused
+   */
+  setRecordingIndicatorPausedState(isPaused) {
+    // Internal recording indicator
+    if (this.uploader.recordingIndicator) {
+      const dot = this.uploader.recordingIndicator.querySelector(".file-uploader-recording-dot");
+      if (dot) {
+        dot.classList.toggle("paused", isPaused);
+      }
+    }
+
+    // External recording indicator
+    if (this.externalRecordingIndicator) {
+      const dot = this.externalRecordingIndicator.querySelector(".file-uploader-recording-dot");
+      if (dot) {
+        dot.classList.toggle("paused", isPaused);
       }
     }
   }
@@ -502,10 +536,17 @@ export default class RecordingUI {
         if (externalTimeEl) timeElements.push(externalTimeEl);
 
         timeElements.forEach(timeElement => {
-          // Check if we should show remaining time or elapsed/total
-          const showRemaining = timeElement.dataset.showRemaining === "true";
-          const timeText = this.buildTimeDisplayText(elapsed, maxSeconds, showRemaining);
-          timeElement.textContent = timeText;
+          // Check if this is minimal view (external/modal) - only show elapsed time
+          const isMinimal = timeElement.dataset.minimal === "true";
+          if (isMinimal) {
+            // Minimal view: only elapsed time (MM:SS)
+            timeElement.textContent = this.formatTime(elapsed);
+          } else {
+            // Full view: check if we should show remaining time or elapsed/total
+            const showRemaining = timeElement.dataset.showRemaining === "true";
+            const timeText = this.buildTimeDisplayText(elapsed, maxSeconds, showRemaining);
+            timeElement.textContent = timeText;
+          }
         });
 
         // Update size display on all recording indicators
@@ -605,7 +646,36 @@ export default class RecordingUI {
   }
 
   /**
+   * Get icon name for recording type
+   * @param {string} type - Recording type (video, audio, webcam)
+   * @returns {string} Icon name
+   */
+  getRecordingTypeIcon(type) {
+    const iconMap = {
+      video: "video",
+      audio: "audio",
+      webcam: "webcam"
+    };
+    return iconMap[type] || "video";
+  }
+
+  /**
+   * Get tooltip text for recording type
+   * @param {string} type - Recording type (video, audio, webcam)
+   * @returns {string} Tooltip text
+   */
+  getRecordingTypeTooltip(type) {
+    const tooltipMap = {
+      video: "Screen Recording",
+      audio: "Audio Recording",
+      webcam: "Webcam Recording"
+    };
+    return tooltipMap[type] || "Recording";
+  }
+
+  /**
    * Create an external recording indicator for the external toolbar container
+   * External/modal indicators use a minimal view: type icon + dot + elapsed time only (no limit, no size)
    * @param {HTMLElement} container - The external container
    */
   createExternalRecordingIndicator(container) {
@@ -615,33 +685,20 @@ export default class RecordingUI {
 
     const options = this.uploader.options;
     const showTime = options.showRecordingTime !== false;
-    const showLimit = options.showRecordingLimit !== false;
-    const showSize = options.showRecordingSize !== false;
-    const enableToggle = options.recordingTimeClickToggle !== false;
-    const defaultView = options.recordingTimeDefaultView || "elapsed";
-
-    const maxSeconds = this.recordingType === 'audio'
-      ? Math.floor(options.maxAudioRecordingDuration)
-      : Math.floor(options.maxVideoRecordingDuration);
-
-    // Determine timer format for CSS width
-    let timerFormat = "elapsed"; // default: just elapsed time
-    if (showTime && showLimit && maxSeconds > 0) {
-      timerFormat = defaultView === "remaining" ? "remaining-limit" : "elapsed-limit";
-    }
-
-    // Build initial time display
-    const initialTimeText = this.buildTimeDisplayText(0, maxSeconds, defaultView === "remaining");
+    // External/modal view is minimal - elapsed time only, no limit, no size
 
     this.externalRecordingIndicator = document.createElement("div");
-    this.externalRecordingIndicator.className = "file-uploader-recording-indicator";
+    this.externalRecordingIndicator.className = "file-uploader-recording-indicator file-uploader-recording-indicator--minimal";
 
-    let innerHTML = '<span class="file-uploader-recording-dot"></span>';
+    // Recording type icon
+    const typeIcon = this.getRecordingTypeIcon(this.recordingType);
+    const typeTooltip = this.getRecordingTypeTooltip(this.recordingType);
+
+    // Minimal view: type icon + dot + elapsed time only (no limit, no size)
+    let innerHTML = `<span class="file-uploader-recording-type" data-tooltip="${typeTooltip}" data-tooltip-position="top">${getIcon(typeIcon)}</span>`;
+    innerHTML += '<span class="file-uploader-recording-dot"></span>';
     if (showTime) {
-      innerHTML += `<span class="file-uploader-recording-time" data-timer-format="${timerFormat}">${initialTimeText}</span>`;
-    }
-    if (showSize) {
-      innerHTML += '<span class="file-uploader-recording-size">~0 B</span>';
+      innerHTML += `<span class="file-uploader-recording-time" data-timer-format="elapsed" data-minimal="true">00:00</span>`;
     }
     this.externalRecordingIndicator.innerHTML = innerHTML;
 
@@ -650,23 +707,7 @@ export default class RecordingUI {
       e.stopPropagation();
     });
 
-    // Make time element clickable to toggle time display format (if enabled and limit is shown)
-    const timeElement = this.externalRecordingIndicator.querySelector(".file-uploader-recording-time");
-    if (timeElement && enableToggle && showLimit && maxSeconds > 0) {
-      timeElement.style.cursor = "pointer";
-      timeElement.setAttribute("data-tooltip", "Click to toggle time display");
-      timeElement.setAttribute("data-tooltip-position", "top");
-      timeElement.dataset.showRemaining = defaultView === "remaining" ? "true" : "false";
-      timeElement.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isRemaining = timeElement.dataset.showRemaining === "false";
-        timeElement.dataset.showRemaining = isRemaining ? "true" : "false";
-        // Update timer format for CSS width
-        timeElement.dataset.timerFormat = isRemaining ? "remaining-limit" : "elapsed-limit";
-      });
-    } else if (timeElement) {
-      timeElement.dataset.showRemaining = defaultView === "remaining" ? "true" : "false";
-    }
+    // Minimal view doesn't have toggle - always shows elapsed time only
 
     // Insert at the beginning of the container (before toolbar buttons)
     container.insertBefore(this.externalRecordingIndicator, container.firstChild);
@@ -682,9 +723,36 @@ export default class RecordingUI {
         this.createExternalRecordingIndicator(container);
       }
     } else if (this.uploader.recordingIndicator) {
+      // Add/update recording type icon for internal indicator
+      this.updateInternalRecordingTypeIcon();
       this.uploader.recordingIndicator.style.display = "flex";
     }
     this.startRecordingTimer();
+  }
+
+  /**
+   * Update/add recording type icon to internal recording indicator
+   */
+  updateInternalRecordingTypeIcon() {
+    if (!this.uploader.recordingIndicator) return;
+
+    const typeIcon = this.getRecordingTypeIcon(this.recordingType);
+    const typeTooltip = this.getRecordingTypeTooltip(this.recordingType);
+
+    // Check if type icon already exists
+    let typeIconEl = this.uploader.recordingIndicator.querySelector(".file-uploader-recording-type");
+
+    if (!typeIconEl) {
+      // Create and insert type icon at the beginning
+      typeIconEl = document.createElement("span");
+      typeIconEl.className = "file-uploader-recording-type";
+      this.uploader.recordingIndicator.insertBefore(typeIconEl, this.uploader.recordingIndicator.firstChild);
+    }
+
+    // Update icon content and tooltip
+    typeIconEl.innerHTML = getIcon(typeIcon);
+    typeIconEl.setAttribute("data-tooltip", typeTooltip);
+    typeIconEl.setAttribute("data-tooltip-position", "top");
   }
 
   /**

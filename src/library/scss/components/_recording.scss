@@ -69,12 +69,41 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+// Recording type icon (video/audio/webcam)
+.file-uploader-recording-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  cursor: help;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+}
+
 .file-uploader-recording-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: white;
   animation: file-uploader-blink 1s ease-in-out infinite;
+
+  // Paused state - faster, more noticeable blinking
+  &.paused {
+    animation: file-uploader-blink-paused 0.6s ease-in-out infinite;
+  }
+}
+
+@keyframes file-uploader-blink-paused {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
 
 .file-uploader-recording-time {
