@@ -1,6 +1,6 @@
-# FileUploader Documentation
+# MediaHub Documentation
 
-A flexible, feature-rich file uploader component with drag & drop, preview, AJAX upload, screen capture, video/audio recording, carousel preview, cross-uploader drag-drop, alert notifications, and comprehensive file management capabilities. Compatible with Bootstrap 3-5 and standalone usage.
+A complete file management suite with upload, preview, and capture capabilities. Includes drag & drop, AJAX upload, screen capture, video/audio recording, carousel preview, cross-uploader drag-drop, alert notifications, and comprehensive file management. Compatible with Bootstrap 3-5 and standalone usage.
 
 ---
 

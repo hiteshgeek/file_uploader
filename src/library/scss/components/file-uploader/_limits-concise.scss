@@ -29,7 +29,7 @@
     background-color: rgba(66, 153, 225, 0.04);
     box-shadow: 0 2px 8px rgba(66, 153, 225, 0.12);
 
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: translateY(-1px);
     }
 

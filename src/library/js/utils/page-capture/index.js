@@ -367,14 +367,14 @@ class PageCapture {
 
     updateToolbarPosition(this.confirmationToolbar, this.confirmedSelection);
 
-    const instructions = this.selectionOverlay.querySelector('.file-uploader-page-capture-instructions');
+    const instructions = this.selectionOverlay.querySelector('.media-hub-page-capture-instructions');
     if (instructions) {
       instructions.innerHTML = `
-        <span class="file-uploader-page-capture-instructions-text">Drag to reposition selection</span>
-        <div class="file-uploader-page-capture-instructions-shortcuts">
-          <span class="file-uploader-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
-          <span class="file-uploader-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
-          <span class="file-uploader-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
+        <span class="media-hub-page-capture-instructions-text">Drag to reposition selection</span>
+        <div class="media-hub-page-capture-instructions-shortcuts">
+          <span class="media-hub-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
+          <span class="media-hub-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
+          <span class="media-hub-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
         </div>
       `;
       instructions.style.opacity = '1';
@@ -457,10 +457,10 @@ class PageCapture {
     resetSelectionBox(this.selectionBox, this.selectionOverlay);
     this.selectionOverlay.classList.remove('selecting');
 
-    const instructions = this.selectionOverlay.querySelector('.file-uploader-page-capture-instructions');
+    const instructions = this.selectionOverlay.querySelector('.media-hub-page-capture-instructions');
     if (instructions) {
       instructions.innerHTML = createOverlayContent(this.isOvalMode)
-        .match(/<div class="file-uploader-page-capture-instructions">([\s\S]*)<\/div>/)?.[0] || '';
+        .match(/<div class="media-hub-page-capture-instructions">([\s\S]*)<\/div>/)?.[0] || '';
       instructions.style.opacity = '1';
     }
 

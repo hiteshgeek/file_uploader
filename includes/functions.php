@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Get the base URL path for the file_uploader project
+ * Get the base URL path for the MediaHub project
  * Works regardless of where the project is hosted
  *
  * Supports paths like:
- * - /file_uploader/index.php -> /file_uploader
- * - /file_uploader/usage/demo.php -> /file_uploader
- * - /file_uploader/file-uploader/index.php -> /file_uploader
- * - /file_uploader/file-uploader/usage/demo.php -> /file_uploader
- * - /file_uploader/file-carousel/usage/demo.php -> /file_uploader
+ * - /media_hub/index.php -> /media_hub
+ * - /media_hub/usage/demo.php -> /media_hub
+ * - /media_hub/file-uploader/index.php -> /media_hub
+ * - /media_hub/file-uploader/usage/demo.php -> /media_hub
+ * - /media_hub/file-carousel/usage/demo.php -> /media_hub
  */
 function get_base_path()
 {

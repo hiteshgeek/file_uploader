@@ -13,7 +13,7 @@
   display: none;
   z-index: var(--fu-z-overlay);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(5px);
   }
 
@@ -43,7 +43,7 @@
   transition-duration: 0.3s;
   border-radius: 0;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     background-size: 200% 100%;
     animation: #{$component-prefix}-progress-shimmer 1.5s ease-in-out infinite;
   }
@@ -70,7 +70,7 @@
   pointer-events: none;
   display: flex !important;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(8px);
   }
 
@@ -92,7 +92,7 @@
   transform: scale(0);
 
   .#{$component-prefix}-success-overlay.slide-in & {
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       animation: #{$component-prefix}-checkmark-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards;
     }
   }
@@ -109,7 +109,7 @@
   border-top-color: #fff;
   border-radius: var(--fu-radius-round);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     animation: #{$component-prefix}-spin 0.8s linear infinite;
   }
 
@@ -154,7 +154,7 @@
   font-size: var(--fu-font-size-xs);
   color: var(--fu-color-text-muted);
 
-  span.file-uploader-size {
+  span.media-hub-size {
     margin-left: auto;
   }
 }

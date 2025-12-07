@@ -8,7 +8,7 @@ include_once __DIR__ . '/../../includes/functions.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FileCarousel - Configuration Builder</title>
     <link rel="icon" type="image/svg+xml" href="../../src/assets/images/download.svg">
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>">
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -567,9 +567,9 @@ include_once __DIR__ . '/../../includes/functions.php';
         </div>
     </div>
 
-    <script src="<?php echo asset('file-uploader.js', 'nomodule'); ?>"></script>
+    <script src="<?php echo asset('media-hub.js', 'nomodule'); ?>"></script>
     <script type="module">
-        import { FileCarousel } from '<?php echo asset('file-uploader.js'); ?>';
+        import { FileCarousel } from '<?php echo asset('media-hub.js'); ?>';
 
         // Sample files for demo
         const sampleFiles = [

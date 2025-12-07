@@ -37,7 +37,7 @@ export class CaptureButtonBuilder {
    */
   createCaptureButtons() {
     this.uploader.captureButtonContainer = document.createElement("div");
-    this.uploader.captureButtonContainer.className = "file-uploader-capture-container";
+    this.uploader.captureButtonContainer.className = "media-hub-capture-container";
 
     // Create individual buttons
     this.createFullPageCaptureButton();
@@ -70,7 +70,7 @@ export class CaptureButtonBuilder {
 
     this.uploader.fullPageCaptureBtn = document.createElement("button");
     this.uploader.fullPageCaptureBtn.type = "button";
-    this.uploader.fullPageCaptureBtn.className = "file-uploader-capture-btn has-tooltip";
+    this.uploader.fullPageCaptureBtn.className = "media-hub-capture-btn has-tooltip";
     this.uploader.fullPageCaptureBtn.setAttribute("data-tooltip", "Capture Full Page");
     this.uploader.fullPageCaptureBtn.setAttribute("data-tooltip-position", "top");
     this.uploader.fullPageCaptureBtn.innerHTML = getIcon("fullpage_capture");
@@ -91,7 +91,7 @@ export class CaptureButtonBuilder {
 
     this.uploader.regionCaptureBtn = document.createElement("button");
     this.uploader.regionCaptureBtn.type = "button";
-    this.uploader.regionCaptureBtn.className = "file-uploader-capture-btn has-tooltip";
+    this.uploader.regionCaptureBtn.className = "media-hub-capture-btn has-tooltip";
     this.uploader.regionCaptureBtn.setAttribute("data-tooltip", "Capture Region");
     this.uploader.regionCaptureBtn.setAttribute("data-tooltip-position", "top");
     this.uploader.regionCaptureBtn.innerHTML = getIcon("region_capture");
@@ -112,7 +112,7 @@ export class CaptureButtonBuilder {
 
     this.uploader.screenshotBtn = document.createElement("button");
     this.uploader.screenshotBtn.type = "button";
-    this.uploader.screenshotBtn.className = "file-uploader-capture-btn has-tooltip";
+    this.uploader.screenshotBtn.className = "media-hub-capture-btn has-tooltip";
     this.uploader.screenshotBtn.setAttribute("data-tooltip", "Capture Screenshot");
     this.uploader.screenshotBtn.setAttribute("data-tooltip-position", "top");
     this.uploader.screenshotBtn.innerHTML = getIcon("camera");
@@ -133,7 +133,7 @@ export class CaptureButtonBuilder {
 
     this.uploader.videoRecordBtn = document.createElement("button");
     this.uploader.videoRecordBtn.type = "button";
-    this.uploader.videoRecordBtn.className = "file-uploader-capture-btn has-tooltip";
+    this.uploader.videoRecordBtn.className = "media-hub-capture-btn has-tooltip";
     this.uploader.videoRecordBtn.setAttribute("data-tooltip", "Record Screen");
     this.uploader.videoRecordBtn.setAttribute("data-tooltip-position", "top");
     this.uploader.videoRecordBtn.innerHTML = getIcon("video");
@@ -156,7 +156,7 @@ export class CaptureButtonBuilder {
 
     this.uploader.audioRecordBtn = document.createElement("button");
     this.uploader.audioRecordBtn.type = "button";
-    this.uploader.audioRecordBtn.className = "file-uploader-capture-btn has-tooltip";
+    this.uploader.audioRecordBtn.className = "media-hub-capture-btn has-tooltip";
     this.uploader.audioRecordBtn.setAttribute("data-tooltip", "Record Audio");
     this.uploader.audioRecordBtn.setAttribute("data-tooltip-position", "top");
     this.uploader.audioRecordBtn.innerHTML = getIcon("audio");
@@ -211,15 +211,15 @@ export class CaptureButtonBuilder {
     }
 
     this.uploader.recordingIndicator = document.createElement("div");
-    this.uploader.recordingIndicator.className = "file-uploader-recording-indicator";
+    this.uploader.recordingIndicator.className = "media-hub-recording-indicator";
     this.uploader.recordingIndicator.style.display = "none";
 
-    let innerHTML = '<span class="file-uploader-recording-dot"></span>';
+    let innerHTML = '<span class="media-hub-recording-dot"></span>';
     if (showTime) {
-      innerHTML += `<span class="file-uploader-recording-time" data-timer-format="${timerFormat}">${timeDisplay}</span>`;
+      innerHTML += `<span class="media-hub-recording-time" data-timer-format="${timerFormat}">${timeDisplay}</span>`;
     }
     if (showSize) {
-      innerHTML += '<span class="file-uploader-recording-size">~0 B</span>';
+      innerHTML += '<span class="media-hub-recording-size">~0 B</span>';
     }
     this.uploader.recordingIndicator.innerHTML = innerHTML;
 
@@ -228,7 +228,7 @@ export class CaptureButtonBuilder {
     });
 
     // Make time element clickable to toggle time display format (if enabled and limit is shown)
-    const timeElement = this.uploader.recordingIndicator.querySelector(".file-uploader-recording-time");
+    const timeElement = this.uploader.recordingIndicator.querySelector(".media-hub-recording-time");
     if (timeElement && enableToggle && showLimit && maxVideoSec > 0) {
       timeElement.style.cursor = "pointer";
       timeElement.classList.add("has-tooltip");
@@ -254,11 +254,11 @@ export class CaptureButtonBuilder {
    */
   createCollapsibleContainer() {
     this.uploader.captureExpandable = document.createElement("div");
-    this.uploader.captureExpandable.className = "file-uploader-capture-expandable";
+    this.uploader.captureExpandable.className = "media-hub-capture-expandable";
 
     this.uploader.captureToggleBtn = document.createElement("button");
     this.uploader.captureToggleBtn.type = "button";
-    this.uploader.captureToggleBtn.className = "file-uploader-capture-toggle has-tooltip";
+    this.uploader.captureToggleBtn.className = "media-hub-capture-toggle has-tooltip";
     this.uploader.captureToggleBtn.setAttribute("data-tooltip", "Media Capture");
     this.uploader.captureToggleBtn.setAttribute("data-tooltip-position", "top");
     this.uploader.captureToggleBtn.innerHTML = `<span class="toggle-chevron">${getIcon("chevron_right")}</span>`;
@@ -268,7 +268,7 @@ export class CaptureButtonBuilder {
     });
 
     const buttonsWrapper = document.createElement("div");
-    buttonsWrapper.className = "file-uploader-capture-buttons-wrapper";
+    buttonsWrapper.className = "media-hub-capture-buttons-wrapper";
     buttonsWrapper.appendChild(this.uploader.captureButtonContainer);
 
     this.uploader.captureExpandable.appendChild(this.uploader.captureToggleBtn);

@@ -1,6 +1,6 @@
-# File Uploader
+# MediaHub
 
-A flexible, feature-rich file uploader that works standalone or integrates seamlessly with Bootstrap 3-5 forms.
+A complete file management suite with upload, preview, and capture capabilities. Works standalone or integrates seamlessly with Bootstrap 3-5 forms.
 
 ## Features
 
@@ -46,12 +46,12 @@ A flexible, feature-rich file uploader that works standalone or integrates seaml
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="file-uploader.css" />
+    <link rel="stylesheet" href="media-hub.css" />
   </head>
   <body>
     <div id="myUploader"></div>
 
-    <script src="file-uploader.js"></script>
+    <script src="media-hub.js"></script>
     <script>
       const uploader = new FileUploader("#myUploader");
     </script>
@@ -69,7 +69,7 @@ A flexible, feature-rich file uploader that works standalone or integrates seaml
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="file-uploader.css" />
+    <link rel="stylesheet" href="media-hub.css" />
   </head>
   <body>
     <div class="container">
@@ -82,7 +82,7 @@ A flexible, feature-rich file uploader that works standalone or integrates seaml
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="file-uploader.js"></script>
+    <script src="media-hub.js"></script>
     <script>
       const uploader = new FileUploader("#fileUploader", {
         multiple: true,
@@ -208,17 +208,19 @@ uploader.destroy();
 ## File Structure
 
 ```
-file_uploader/
+media_hub/
 ├── config.php              # Shared configuration
 ├── upload.php              # Upload handler
 ├── delete.php              # Delete handler
 ├── get-config.php          # Config API endpoint
-├── file-uploader.js        # JavaScript class
-├── file-uploader.css       # Styles
-├── index.php              # Standalone demo
-├── demo-bootstrap3.php    # Bootstrap 3 demo
-├── demo-bootstrap4.php    # Bootstrap 4 demo
-├── demo-bootstrap5.php    # Bootstrap 5 demo
+├── dist/js/media-hub.js    # JavaScript bundle
+├── dist/css/media-hub.css  # Styles bundle
+├── index.php               # Main landing page
+├── projects/               # Component projects
+│   ├── file-uploader/      # FileUploader component
+│   ├── file-carousel/      # FileCarousel component
+│   ├── media-capture/      # MediaCapture component
+│   └── utils/              # Utility components
 ├── uploads/                # Upload directory (auto-created)
 └── README.md               # This file
 ```
@@ -246,7 +248,7 @@ file_uploader/
 You can override the default styles by adding your own CSS:
 
 ```css
-.file-uploader-dropzone {
+.media-hub-dropzone {
   border-color: #your-color;
   background-color: #your-bg;
 }

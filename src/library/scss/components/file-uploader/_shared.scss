@@ -15,4 +15,4 @@
 @use "../../shared/variables" as vars;
 
 // Component-specific prefix (derived from shared variables)
-$component-prefix: vars.$file-uploader-prefix !default;
+$component-prefix: vars.$media-hub-prefix !default;

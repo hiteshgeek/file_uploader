@@ -198,7 +198,7 @@ $ease-in-out: cubic-bezier(0.4, 0, 0.2, 1) !default;
 $ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55) !default;
 
 // Component Specific SCSS Variables
-$file-uploader-prefix: "file-uploader" !default;
-$file-uploader-enable-dark-mode: true !default;
-$file-uploader-enable-animations: true !default;
-$file-uploader-enable-bootstrap-compat: true !default;
+$media-hub-prefix: "media-hub" !default;
+$media-hub-enable-dark-mode: true !default;
+$media-hub-enable-animations: true !default;
+$media-hub-enable-bootstrap-compat: true !default;

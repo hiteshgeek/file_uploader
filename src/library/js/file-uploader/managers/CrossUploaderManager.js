@@ -166,26 +166,26 @@ export class CrossUploaderManager {
   showMoveOrCopyDialog(fileName) {
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
-      overlay.className = "file-uploader-dialog-overlay";
+      overlay.className = "media-hub-dialog-overlay";
 
       const dialog = document.createElement("div");
-      dialog.className = "file-uploader-dialog";
+      dialog.className = "media-hub-dialog";
 
       dialog.innerHTML = `
-        <div class="file-uploader-dialog-header">
+        <div class="media-hub-dialog-header">
           <h4>Transfer File</h4>
         </div>
-        <div class="file-uploader-dialog-body">
+        <div class="media-hub-dialog-body">
           <p>What would you like to do with "<strong>${fileName}</strong>"?</p>
         </div>
-        <div class="file-uploader-dialog-footer">
-          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-secondary" data-action="cancel">
+        <div class="media-hub-dialog-footer">
+          <button type="button" class="media-hub-dialog-btn media-hub-dialog-btn-secondary" data-action="cancel">
             Cancel
           </button>
-          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-primary" data-action="copy">
+          <button type="button" class="media-hub-dialog-btn media-hub-dialog-btn-primary" data-action="copy">
             ${getIcon("copy")} Copy
           </button>
-          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-primary" data-action="move">
+          <button type="button" class="media-hub-dialog-btn media-hub-dialog-btn-primary" data-action="move">
             ${getIcon("move")} Move
           </button>
         </div>
@@ -238,23 +238,23 @@ export class CrossUploaderManager {
 
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
-      overlay.className = "file-uploader-dialog-overlay";
+      overlay.className = "media-hub-dialog-overlay";
 
       const dialog = document.createElement("div");
-      dialog.className = "file-uploader-dialog file-uploader-dialog-confirm";
+      dialog.className = "media-hub-dialog media-hub-dialog-confirm";
 
       dialog.innerHTML = `
-        <div class="file-uploader-dialog-header">
+        <div class="media-hub-dialog-header">
           <h4>${title}</h4>
         </div>
-        <div class="file-uploader-dialog-body">
+        <div class="media-hub-dialog-body">
           <p>${message}</p>
         </div>
-        <div class="file-uploader-dialog-footer">
-          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-secondary" data-action="cancel">
+        <div class="media-hub-dialog-footer">
+          <button type="button" class="media-hub-dialog-btn media-hub-dialog-btn-secondary" data-action="cancel">
             ${cancelText}
           </button>
-          <button type="button" class="file-uploader-dialog-btn file-uploader-dialog-btn-${confirmClass}" data-action="confirm">
+          <button type="button" class="media-hub-dialog-btn media-hub-dialog-btn-${confirmClass}" data-action="confirm">
             ${getIcon("trash")} ${confirmText}
           </button>
         </div>

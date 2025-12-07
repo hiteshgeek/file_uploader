@@ -5,7 +5,7 @@
 @use "../../shared/variables" as *;
 @use "../../shared/mixins" as *;
 
-$component-prefix: $file-uploader-prefix !default;
+$component-prefix: $media-hub-prefix !default;
 
 /* ============================================
    Modern Tooltip System - Theme Variables
@@ -25,7 +25,7 @@ $component-prefix: $file-uploader-prefix !default;
 }
 
 /* Light Theme Overrides */
-@if $file-uploader-enable-dark-mode {
+@if $media-hub-enable-dark-mode {
   [data-theme="light"] {
     --#{$component-prefix}-modern-tooltip-bg: rgba(255, 255, 255, 0.75);
     --#{$component-prefix}-modern-tooltip-text: #1a1a1a;
@@ -59,7 +59,7 @@ $component-prefix: $file-uploader-prefix !default;
   border: 1px solid var(--#{$component-prefix}-modern-tooltip-border);
   box-shadow: var(--#{$component-prefix}-modern-tooltip-shadow);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(10px);
   }
   padding: 5px 10px;
@@ -198,7 +198,7 @@ $component-prefix: $file-uploader-prefix !default;
   border: 1px solid var(--#{$component-prefix}-modern-tooltip-border);
   box-shadow: var(--#{$component-prefix}-modern-tooltip-shadow);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(10px);
   }
   padding: 5px 10px;
@@ -320,7 +320,7 @@ $component-prefix: $file-uploader-prefix !default;
     color: var(--#{$component-prefix}-modern-tooltip-text);
     border: 1px solid var(--#{$component-prefix}-modern-tooltip-border);
     box-shadow: var(--#{$component-prefix}-modern-tooltip-shadow);
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       @include backdrop-blur(10px);
     }
     padding: 6px 12px;

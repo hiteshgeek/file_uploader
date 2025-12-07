@@ -10,7 +10,7 @@
 // Capture Button States (Recording-specific)
 // ============================================================================
 
-.file-uploader-capture-btn {
+.media-hub-capture-btn {
   // Stop button styling
   &-stop {
     background-color: var(--fu-error-600) !important;
@@ -54,7 +54,7 @@
 // Recording Indicator
 // ============================================================================
 
-.file-uploader-recording-indicator {
+.media-hub-recording-indicator {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -70,7 +70,7 @@
 }
 
 // Recording type icon (video/audio/webcam)
-.file-uploader-recording-type {
+.media-hub-recording-type {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,20 +84,20 @@
   }
 }
 
-.file-uploader-recording-dot {
+.media-hub-recording-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: white;
-  animation: file-uploader-blink 1s ease-in-out infinite;
+  animation: media-hub-blink 1s ease-in-out infinite;
 
   // Paused state - faster, more noticeable blinking
   &.paused {
-    animation: file-uploader-blink-paused 0.6s ease-in-out infinite;
+    animation: media-hub-blink-paused 0.6s ease-in-out infinite;
   }
 }
 
-@keyframes file-uploader-blink-paused {
+@keyframes media-hub-blink-paused {
   0%, 100% {
     opacity: 1;
   }
@@ -106,7 +106,7 @@
   }
 }
 
-.file-uploader-recording-time {
+.media-hub-recording-time {
   // Base styles for all timer formats
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -134,7 +134,7 @@
   }
 }
 
-.file-uploader-recording-size {
+.media-hub-recording-size {
   // Fixed width to prevent layout shift
   min-width: 60px;
   text-align: right;
@@ -154,7 +154,7 @@
   &.danger {
     color: var(--fu-warning-100);
     font-weight: var(--fu-font-weight-bold);
-    animation: file-uploader-blink 0.5s ease-in-out infinite;
+    animation: media-hub-blink 0.5s ease-in-out infinite;
   }
 }
 
@@ -162,7 +162,7 @@
 // Countdown Overlay (Full Screen)
 // ============================================================================
 
-.file-uploader-countdown-overlay {
+.media-hub-countdown-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -176,11 +176,11 @@
   backdrop-filter: blur(10px);
 }
 
-.file-uploader-countdown-content {
+.media-hub-countdown-content {
   text-align: center;
 }
 
-.file-uploader-countdown-number {
+.media-hub-countdown-number {
   font-size: 120px;
   font-weight: 700;
   color: var(--fu-color-primary);
@@ -188,17 +188,17 @@
   margin-bottom: var(--fu-spacing-lg);
 
   &.pulse {
-    animation: file-uploader-countdown-pulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: media-hub-countdown-pulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-.file-uploader-countdown-text {
+.media-hub-countdown-text {
   font-size: var(--fu-font-size-xl);
   font-weight: var(--fu-font-weight-medium);
   color: white;
 }
 
-@keyframes file-uploader-countdown-pulse {
+@keyframes media-hub-countdown-pulse {
   0% {
     transform: scale(0.8);
     opacity: 0;
@@ -229,7 +229,7 @@
 // Recording Toolbar (Inside Dropzone)
 // ============================================================================
 
-.file-uploader-recording-toolbar {
+.media-hub-recording-toolbar {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -243,19 +243,20 @@
 // Collapsible/Expandable Capture Buttons Container
 // ============================================================================
 
-.file-uploader-capture-expandable {
+.media-hub-capture-expandable {
   display: inline-flex;
   align-items: center;
   position: relative;
 }
 
 // Toggle button for expandable media buttons
-.file-uploader-capture-toggle {
+// Note: Main styles are in _capture.scss, this provides fallback overrides
+.media-hub-capture-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--fu-btn-size-md);
+  aspect-ratio: 1;
   padding: 0;
   border: none;
   border-radius: 50%;
@@ -264,6 +265,12 @@
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
   z-index: 2;
+
+  svg {
+    width: var(--fu-btn-icon-md);
+    height: var(--fu-btn-icon-md);
+    fill: currentColor;
+  }
 
   &:hover {
     background-color: var(--fu-color-primary-dark, #4f46e5);
@@ -279,17 +286,11 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
-
-    svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
   }
 }
 
 // Wrapper for buttons with animated reveal
-.file-uploader-capture-buttons-wrapper {
+.media-hub-capture-buttons-wrapper {
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -299,7 +300,7 @@
   transition: max-width 0.3s ease, opacity 0.2s ease, margin-left 0.3s ease;
 
   // Hide buttons when collapsed
-  .file-uploader-capture-container {
+  .media-hub-capture-container {
     transform: translateX(-10px);
     pointer-events: none;
     transition: transform 0.3s ease;
@@ -307,17 +308,17 @@
 }
 
 // Expanded state
-.file-uploader-capture-expandable.expanded {
-  .file-uploader-capture-toggle .toggle-chevron {
+.media-hub-capture-expandable.expanded {
+  .media-hub-capture-toggle .toggle-chevron {
     transform: rotate(180deg);
   }
 
-  .file-uploader-capture-buttons-wrapper {
+  .media-hub-capture-buttons-wrapper {
     max-width: 500px;
     opacity: 1;
     margin-left: var(--fu-spacing-sm, 8px);
 
-    .file-uploader-capture-container {
+    .media-hub-capture-container {
       transform: translateX(0);
       pointer-events: auto;
     }
@@ -328,7 +329,7 @@
 // Capture Groups (Image, Screen, Audio)
 // ============================================================================
 
-.file-uploader-capture-group {
+.media-hub-capture-group {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -356,7 +357,7 @@
   position: relative;
 }
 
-.file-uploader-capture-group-label {
+.media-hub-capture-group-label {
   font-size: 9px;
   font-weight: var(--fu-font-weight-semibold);
   text-transform: uppercase;
@@ -365,14 +366,14 @@
   white-space: nowrap;
 }
 
-.file-uploader-capture-group-buttons {
+.media-hub-capture-group-buttons {
   display: flex;
   align-items: center;
   gap: var(--fu-spacing-xs);
 }
 
 // Adjust capture container to use flex with groups
-.file-uploader-capture-container {
+.media-hub-capture-container {
   display: flex;
   align-items: flex-end;
   gap: var(--fu-spacing-xs);

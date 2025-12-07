@@ -40,7 +40,7 @@
   }
 
   &.is-expanded .#{$component-prefix}-toggle-icon-wrapper {
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: rotate(180deg);
     }
   }
@@ -164,7 +164,7 @@
     border-color: var(--fu-color-primary);
     box-shadow: 0 2px 8px rgba(66, 153, 225, 0.15);
 
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: translateY(-2px);
     }
   }
@@ -344,7 +344,7 @@
     border-color: var(--fu-color-primary);
     box-shadow: 0 2px 8px rgba(66, 153, 225, 0.15);
 
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: translateY(-2px);
     }
   }

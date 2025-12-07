@@ -525,14 +525,14 @@ $builder-prefix: "fu-config-builder" !default;
 // Expandable media capture buttons
 // ============================================================================
 
-.file-uploader-capture-expandable {
+.media-hub-capture-expandable {
   display: inline-flex;
   align-items: center;
   position: relative;
 }
 
 // Toggle button for expandable media buttons
-.file-uploader-capture-toggle {
+.media-hub-capture-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -571,7 +571,7 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Wrapper for the sliding media buttons
-.file-uploader-capture-buttons-wrapper {
+.media-hub-capture-buttons-wrapper {
   display: flex;
   align-items: center;
   max-width: 0;
@@ -579,7 +579,7 @@ $builder-prefix: "fu-config-builder" !default;
   overflow: hidden;
   transition: max-width 0.3s ease, opacity 0.25s ease;
 
-  .file-uploader-capture-container {
+  .media-hub-capture-container {
     transform: translateX(-10px);
     pointer-events: none;
     transition: transform 0.3s ease;
@@ -587,21 +587,21 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Allow tooltip overflow only when expanded
-.file-uploader-capture-expandable.expanded .file-uploader-capture-buttons-wrapper {
+.media-hub-capture-expandable.expanded .media-hub-capture-buttons-wrapper {
   overflow: visible;
 }
 
 // Expanded state
-.file-uploader-capture-expandable.expanded {
-  .file-uploader-capture-toggle .toggle-chevron {
+.media-hub-capture-expandable.expanded {
+  .media-hub-capture-toggle .toggle-chevron {
     transform: rotate(180deg);
   }
 
-  .file-uploader-capture-buttons-wrapper {
+  .media-hub-capture-buttons-wrapper {
     max-width: 300px;
     opacity: 1;
 
-    .file-uploader-capture-container {
+    .media-hub-capture-container {
       transform: translateX(0);
       pointer-events: auto;
     }
@@ -609,13 +609,13 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Recording state for collapsible capture buttons
-.file-uploader-capture-expandable.recording {
-  .file-uploader-capture-buttons-wrapper {
+.media-hub-capture-expandable.recording {
+  .media-hub-capture-buttons-wrapper {
     max-width: 500px;
     opacity: 1;
     overflow: visible;
 
-    .file-uploader-capture-container {
+    .media-hub-capture-container {
       transform: translateX(0);
       pointer-events: auto;
     }
@@ -623,7 +623,7 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Media capture buttons container
-.file-uploader-capture-container {
+.media-hub-capture-container {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -631,7 +631,7 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Media capture buttons styling for config builder preview
-.file-uploader-capture-btn {
+.media-hub-capture-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -680,8 +680,8 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Recording toolbar buttons in config builder
-.file-uploader-recording-toolbar {
-  .file-uploader-toolbar-btn {
+.media-hub-recording-toolbar {
+  .media-hub-toolbar-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -732,7 +732,7 @@ $builder-prefix: "fu-config-builder" !default;
   }
 
   // Stop button (always red)
-  .file-uploader-toolbar-stop {
+  .media-hub-toolbar-stop {
     background-color: #dc2626;
     color: white;
 
@@ -747,7 +747,7 @@ $builder-prefix: "fu-config-builder" !default;
 }
 
 // Recording indicator styling
-.file-uploader-recording-indicator {
+.media-hub-recording-indicator {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -760,7 +760,7 @@ $builder-prefix: "fu-config-builder" !default;
   box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3);
 
   // Recording type icon (video/audio/webcam)
-  .file-uploader-recording-type {
+  .media-hub-recording-type {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -774,7 +774,7 @@ $builder-prefix: "fu-config-builder" !default;
     }
   }
 
-  .file-uploader-recording-dot {
+  .media-hub-recording-dot {
     width: 8px;
     height: 8px;
     flex-shrink: 0;
@@ -788,7 +788,7 @@ $builder-prefix: "fu-config-builder" !default;
     }
   }
 
-  .file-uploader-recording-time {
+  .media-hub-recording-time {
     // Base styles for all timer formats
     text-align: center;
     font-variant-numeric: tabular-nums;
@@ -816,7 +816,7 @@ $builder-prefix: "fu-config-builder" !default;
     }
   }
 
-  .file-uploader-recording-size {
+  .media-hub-recording-size {
     // Fixed width to prevent layout shift
     min-width: 60px;
     text-align: right;

@@ -47,7 +47,7 @@
 // Bootstrap Form Integration
 // ============================================================================
 
-@if $file-uploader-enable-bootstrap-compat {
+@if $media-hub-enable-bootstrap-compat {
   .form-group .#{$component-prefix}-wrapper,
   .mb-3 .#{$component-prefix}-wrapper {
     margin-top: 0;
@@ -71,7 +71,7 @@
 // Dark Mode Support
 // ============================================================================
 
-@if $file-uploader-enable-dark-mode {
+@if $media-hub-enable-dark-mode {
   @media (prefers-color-scheme: dark) {
     .#{$component-prefix}-dropzone {
       background-color: var(--fu-color-bg-light);
@@ -208,7 +208,7 @@
 // Animations
 // ============================================================================
 
-@if $file-uploader-enable-animations {
+@if $media-hub-enable-animations {
   @keyframes #{$component-prefix}-blink {
     0%, 100% {
       opacity: 1;

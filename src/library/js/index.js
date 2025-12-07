@@ -17,7 +17,7 @@
  * import { FileCarousel } from 'file-uploader/file-carousel';
  * import { MediaCapture } from 'file-uploader/media-capture';
  *
- * @module FileUploaderLib
+ * @module MediaHub
  */
 
 // ============================================================
@@ -55,7 +55,13 @@ import TooltipManager from "./utils/TooltipManager.js";
 // ============================================================
 
 // Named exports for ES modules
-export { FileUploader, FileCarousel, MediaCapture, ConfigBuilder, TooltipManager };
+export {
+  FileUploader,
+  FileCarousel,
+  MediaCapture,
+  ConfigBuilder,
+  TooltipManager,
+};
 
 // Expose classes globally for IIFE build
 if (typeof window !== "undefined") {

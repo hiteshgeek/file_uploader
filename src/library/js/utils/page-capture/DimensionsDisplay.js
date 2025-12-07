@@ -16,7 +16,7 @@ export const DIMENSIONS_POSITIONS = [
  */
 export function createDimensionsDisplay() {
   const element = document.createElement('div');
-  element.className = 'file-uploader-page-capture-dimensions';
+  element.className = 'media-hub-page-capture-dimensions';
   element.style.display = 'none';
   document.body.appendChild(element);
   return element;

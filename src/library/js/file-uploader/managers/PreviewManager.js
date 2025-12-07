@@ -41,7 +41,7 @@ export class PreviewManager {
     }
 
     const preview = document.createElement("div");
-    preview.className = "file-uploader-preview";
+    preview.className = "media-hub-preview";
     preview.dataset.fileId = fileObj.id;
 
     // Make preview draggable for cross-uploader drag-drop
@@ -52,31 +52,31 @@ export class PreviewManager {
     }
 
     const previewInner = document.createElement("div");
-    previewInner.className = "file-uploader-preview-inner";
+    previewInner.className = "media-hub-preview-inner";
 
     // Create preview content based on file type
     let previewContent = "";
 
     if (fileType === "image") {
       const objectUrl = URL.createObjectURL(fileObj.file);
-      previewContent = `<img src="${objectUrl}" alt="${fileObj.name}" class="file-uploader-preview-image">`;
+      previewContent = `<img src="${objectUrl}" alt="${fileObj.name}" class="media-hub-preview-image">`;
     } else if (fileType === "video") {
       const objectUrl = URL.createObjectURL(fileObj.file);
       previewContent = `
-        <video src="${objectUrl}" class="file-uploader-preview-video" data-file-id="${fileObj.id}"></video>
-        <canvas class="file-uploader-video-thumbnail" data-file-id="${fileObj.id}" style="display: none;"></canvas>
-        <div class="file-uploader-video-play-overlay">
-          ${getIcon("play", { class: "file-uploader-video-play-icon" })}
+        <video src="${objectUrl}" class="media-hub-preview-video" data-file-id="${fileObj.id}"></video>
+        <canvas class="media-hub-video-thumbnail" data-file-id="${fileObj.id}" style="display: none;"></canvas>
+        <div class="media-hub-video-play-overlay">
+          ${getIcon("play", { class: "media-hub-video-play-icon" })}
         </div>
-        <div class="file-uploader-media-duration" data-file-id="${fileObj.id}" style="display: none;"></div>
+        <div class="media-hub-media-duration" data-file-id="${fileObj.id}" style="display: none;"></div>
       `;
     } else if (fileType === "audio") {
       const objectUrl = URL.createObjectURL(fileObj.file);
       previewContent = `
-        <div class="file-uploader-preview-audio">
-          ${getIcon("audio", { class: "file-uploader-audio-icon" })}
-          <audio src="${objectUrl}" class="file-uploader-preview-audio-element" data-file-id="${fileObj.id}" style="display: none;"></audio>
-          <div class="file-uploader-media-duration" data-file-id="${fileObj.id}" style="display: none;"></div>
+        <div class="media-hub-preview-audio">
+          ${getIcon("audio", { class: "media-hub-audio-icon" })}
+          <audio src="${objectUrl}" class="media-hub-preview-audio-element" data-file-id="${fileObj.id}" style="display: none;"></audio>
+          <div class="media-hub-media-duration" data-file-id="${fileObj.id}" style="display: none;"></div>
         </div>
       `;
     } else {
@@ -101,9 +101,9 @@ export class PreviewManager {
       }
 
       previewContent = `
-        <div class="file-uploader-preview-file">
-          ${getIcon(iconName, { class: "file-uploader-file-icon" })}
-          <span class="file-uploader-extension">.${fileObj.extension}</span>
+        <div class="media-hub-preview-file">
+          ${getIcon(iconName, { class: "media-hub-file-icon" })}
+          <span class="media-hub-extension">.${fileObj.extension}</span>
         </div>
       `;
     }
@@ -112,44 +112,44 @@ export class PreviewManager {
     const captureIndicator = this.getCaptureIndicator(fileObj.captureType);
 
     const actions = `
-      <div class="file-uploader-actions">
-        <button type="button" class="file-uploader-download" data-file-id="${fileObj.id}" title="Download file" style="display: none;">
+      <div class="media-hub-actions">
+        <button type="button" class="media-hub-download" data-file-id="${fileObj.id}" title="Download file" style="display: none;">
           ${getIcon("download")}
         </button>
-        <button type="button" class="file-uploader-delete" data-file-id="${fileObj.id}" title="Delete file">
+        <button type="button" class="media-hub-delete" data-file-id="${fileObj.id}" title="Delete file">
           ${getIcon("trash")}
         </button>
       </div>
     `;
 
     previewInner.innerHTML = `
-      <div class="file-uploader-selection-checkbox">
-        <input type="checkbox" class="file-uploader-checkbox" data-file-id="${fileObj.id}">
+      <div class="media-hub-selection-checkbox">
+        <input type="checkbox" class="media-hub-checkbox" data-file-id="${fileObj.id}">
       </div>
       ${previewContent}
       ${captureIndicator}
-      <div class="file-uploader-preview-overlay">
-        <div class="file-uploader-spinner"></div>
-        <div class="file-uploader-progress-container">
-          <div class="file-uploader-progress-bar"></div>
+      <div class="media-hub-preview-overlay">
+        <div class="media-hub-spinner"></div>
+        <div class="media-hub-progress-container">
+          <div class="media-hub-progress-bar"></div>
         </div>
-        <div class="file-uploader-progress-text">0%</div>
+        <div class="media-hub-progress-text">0%</div>
       </div>
-      <div class="file-uploader-success-overlay">
-        ${getIcon("check_circle", { class: "file-uploader-success-icon" })}
+      <div class="media-hub-success-overlay">
+        ${getIcon("check_circle", { class: "media-hub-success-icon" })}
       </div>
     `;
 
     const info = document.createElement("div");
-    info.className = "file-uploader-info";
+    info.className = "media-hub-info";
 
     info.innerHTML = `
       ${actions}
-      <div class="file-uploader-info-text">
-        <div class="file-uploader-filename" title="${fileObj.name}">${fileObj.name}</div>
-        <div class="file-uploader-meta">
-          <span class="file-uploader-type">${fileObj.extension.toUpperCase()}</span>
-          <span class="file-uploader-size">${formatFileSize(fileObj.size)}</span>
+      <div class="media-hub-info-text">
+        <div class="media-hub-filename" title="${fileObj.name}">${fileObj.name}</div>
+        <div class="media-hub-meta">
+          <span class="media-hub-type">${fileObj.extension.toUpperCase()}</span>
+          <span class="media-hub-size">${formatFileSize(fileObj.size)}</span>
         </div>
       </div>
     `;
@@ -162,7 +162,7 @@ export class PreviewManager {
     TooltipManager.init(preview);
 
     // Attach delete event
-    const deleteBtn = preview.querySelector(".file-uploader-delete");
+    const deleteBtn = preview.querySelector(".media-hub-delete");
     deleteBtn.addEventListener("click", async () => {
       if (this.uploader.options.confirmBeforeDelete) {
         const confirmed = await this.uploader.crossUploaderManager.showConfirmDialog({
@@ -179,11 +179,11 @@ export class PreviewManager {
     });
 
     // Attach download event
-    const downloadBtn = preview.querySelector(".file-uploader-download");
+    const downloadBtn = preview.querySelector(".media-hub-download");
     downloadBtn.addEventListener("click", () => this.uploader.uploadManager.downloadFile(fileObj.id));
 
     // Attach checkbox selection event
-    const checkbox = preview.querySelector(".file-uploader-checkbox");
+    const checkbox = preview.querySelector(".media-hub-checkbox");
     checkbox.addEventListener("change", (e) => {
       if (e.target.checked) {
         this.uploader.selectedFiles.add(fileObj.id);
@@ -202,10 +202,10 @@ export class PreviewManager {
     if (this.uploader.options.enableCarouselPreview) {
       previewInner.addEventListener("click", (e) => {
         if (
-          e.target.closest(".file-uploader-checkbox") ||
-          e.target.closest(".file-uploader-actions") ||
-          e.target.closest(".file-uploader-preview-overlay") ||
-          e.target.closest(".file-uploader-success-overlay")
+          e.target.closest(".media-hub-checkbox") ||
+          e.target.closest(".media-hub-actions") ||
+          e.target.closest(".media-hub-preview-overlay") ||
+          e.target.closest(".media-hub-success-overlay")
         ) {
           return;
         }
@@ -247,7 +247,7 @@ export class PreviewManager {
     if (!config) return "";
 
     return `
-      <div class="file-uploader-capture-indicator" data-tooltip="${config.tooltip}" data-tooltip-position="left">
+      <div class="media-hub-capture-indicator" data-tooltip="${config.tooltip}" data-tooltip-position="left">
         ${getIcon(config.icon)}
       </div>
     `;
@@ -265,8 +265,8 @@ export class PreviewManager {
     const preview = this.uploader.previewContainer.querySelector(`[data-file-id="${fileId}"]`);
     if (!preview) return;
 
-    const video = preview.querySelector(".file-uploader-preview-video");
-    const canvas = preview.querySelector(".file-uploader-video-thumbnail");
+    const video = preview.querySelector(".media-hub-preview-video");
+    const canvas = preview.querySelector(".media-hub-video-thumbnail");
     if (!video || !canvas) return;
 
     video.addEventListener("loadedmetadata", () => {
@@ -287,7 +287,7 @@ export class PreviewManager {
 
           const thumbnailImg = document.createElement("img");
           thumbnailImg.src = thumbnailUrl;
-          thumbnailImg.className = "file-uploader-preview-image file-uploader-video-thumbnail-img";
+          thumbnailImg.className = "media-hub-preview-image media-hub-video-thumbnail-img";
           thumbnailImg.alt = "Video thumbnail";
 
           video.style.display = "none";
@@ -322,7 +322,7 @@ export class PreviewManager {
     const preview = this.uploader.previewContainer.querySelector(`[data-file-id="${fileId}"]`);
     if (!preview) return;
 
-    const audio = preview.querySelector(".file-uploader-preview-audio-element");
+    const audio = preview.querySelector(".media-hub-preview-audio-element");
     if (!audio) return;
 
     audio.addEventListener(
@@ -355,7 +355,7 @@ export class PreviewManager {
     const preview = this.uploader.previewContainer.querySelector(`[data-file-id="${fileId}"]`);
     if (!preview) return;
 
-    const durationElement = preview.querySelector(".file-uploader-media-duration");
+    const durationElement = preview.querySelector(".media-hub-media-duration");
     if (!durationElement) return;
 
     const hours = Math.floor(duration / 3600);

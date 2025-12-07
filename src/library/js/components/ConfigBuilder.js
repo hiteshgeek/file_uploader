@@ -2709,7 +2709,7 @@ export default class ConfigBuilder {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "file-uploader-custom.css";
+        a.download = "media-hub-custom.css";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -5656,7 +5656,7 @@ export default class ConfigBuilder {
 
   /**
    * Generate media capture buttons HTML with expandable toggle
-   * Uses file-uploader-capture-btn class for consistent styling with FileUploader
+   * Uses media-hub-capture-btn class for consistent styling with FileUploader
    * @param {string[]} buttonTypes - Array of button types: 'screenshot', 'video', 'audio'
    * @param {string} uploaderId - The uploader ID for data attribute
    * @returns {string} HTML string for the expandable media capture buttons container
@@ -5670,19 +5670,19 @@ export default class ConfigBuilder {
         const title = MEDIA_CAPTURE_TITLES[btnType];
         if (!icon) return "";
 
-        return `<button type="button" class="file-uploader-capture-btn has-tooltip" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" data-tooltip="${title}" data-tooltip-position="top">${icon}</button>`;
+        return `<button type="button" class="media-hub-capture-btn has-tooltip" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" data-tooltip="${title}" data-tooltip-position="top">${icon}</button>`;
       })
       .join("");
 
     const chevronIcon = MEDIA_CAPTURE_ICONS.chevron_right;
 
     return `
-      <div class="file-uploader-capture-expandable" data-uploader-id="${uploaderId}">
-        <button type="button" class="file-uploader-capture-toggle has-tooltip" data-uploader-id="${uploaderId}" data-tooltip="Media Capture" data-tooltip-position="top">
+      <div class="media-hub-capture-expandable" data-uploader-id="${uploaderId}">
+        <button type="button" class="media-hub-capture-toggle has-tooltip" data-uploader-id="${uploaderId}" data-tooltip="Media Capture" data-tooltip-position="top">
           <span class="toggle-chevron">${chevronIcon}</span>
         </button>
-        <div class="file-uploader-capture-buttons-wrapper">
-          <div class="file-uploader-capture-container" data-uploader-id="${uploaderId}">${buttons}</div>
+        <div class="media-hub-capture-buttons-wrapper">
+          <div class="media-hub-capture-container" data-uploader-id="${uploaderId}">${buttons}</div>
         </div>
       </div>`;
   }
@@ -5697,7 +5697,7 @@ export default class ConfigBuilder {
     this.attachMediaCaptureToggleHandler(container, uploaderId);
 
     const buttons = container.querySelectorAll(
-      '.file-uploader-capture-btn[data-uploader-id="' + uploaderId + '"]'
+      '.media-hub-capture-btn[data-uploader-id="' + uploaderId + '"]'
     );
 
     buttons.forEach((btn) => {
@@ -5753,13 +5753,13 @@ export default class ConfigBuilder {
    */
   attachMediaCaptureToggleHandler(container, uploaderId) {
     const toggleBtn = container.querySelector(
-      '.file-uploader-capture-toggle[data-uploader-id="' + uploaderId + '"]'
+      '.media-hub-capture-toggle[data-uploader-id="' + uploaderId + '"]'
     );
     if (!toggleBtn) return;
 
     toggleBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const expandable = toggleBtn.closest(".file-uploader-capture-expandable");
+      const expandable = toggleBtn.closest(".media-hub-capture-expandable");
       if (expandable) {
         expandable.classList.toggle("expanded");
       }
@@ -7039,7 +7039,7 @@ export default class ConfigBuilder {
           // Set external recording toolbar container for video/audio recording
           // This shows recording controls (pause, stop, etc.) next to the media capture buttons
           // Use a selector string so it works even after DOM updates
-          previewConfig.externalRecordingToolbarContainer = `.file-uploader-capture-container[data-uploader-id="${id}"]`;
+          previewConfig.externalRecordingToolbarContainer = `.media-hub-capture-container[data-uploader-id="${id}"]`;
         }
 
         data.instance = new window.FileUploader(
@@ -7354,22 +7354,22 @@ export default class ConfigBuilder {
     // Elements to check in the uploader
     const elementsToCheck = [
       { selector: ".file-uploader", name: "Container" },
-      { selector: ".file-uploader-dropzone", name: "Dropzone" },
-      { selector: ".file-uploader-dropzone-icon", name: "Dropzone Icon" },
-      { selector: ".file-uploader-dropzone-text", name: "Dropzone Text" },
-      { selector: ".file-uploader-hint", name: "Hint" },
-      { selector: ".file-uploader-files", name: "Files List" },
-      { selector: ".file-uploader-file", name: "File Item" },
-      { selector: ".file-uploader-file-preview", name: "File Preview" },
-      { selector: ".file-uploader-file-name", name: "File Name" },
-      { selector: ".file-uploader-file-size", name: "File Size" },
-      { selector: ".file-uploader-btn", name: "Button" },
-      { selector: ".file-uploader-progress-bar", name: "Progress Bar" },
-      { selector: ".file-uploader-compact-progress", name: "Compact Progress" },
-      { selector: ".file-uploader-type-progress", name: "Type Progress" },
-      { selector: ".file-uploader-limit-progress", name: "Limit Progress" },
-      { selector: ".file-uploader-limits", name: "Limits" },
-      { selector: ".file-uploader-limits-summary", name: "Limits Summary" },
+      { selector: ".media-hub-dropzone", name: "Dropzone" },
+      { selector: ".media-hub-dropzone-icon", name: "Dropzone Icon" },
+      { selector: ".media-hub-dropzone-text", name: "Dropzone Text" },
+      { selector: ".media-hub-hint", name: "Hint" },
+      { selector: ".media-hub-files", name: "Files List" },
+      { selector: ".media-hub-file", name: "File Item" },
+      { selector: ".media-hub-file-preview", name: "File Preview" },
+      { selector: ".media-hub-file-name", name: "File Name" },
+      { selector: ".media-hub-file-size", name: "File Size" },
+      { selector: ".media-hub-btn", name: "Button" },
+      { selector: ".media-hub-progress-bar", name: "Progress Bar" },
+      { selector: ".media-hub-compact-progress", name: "Compact Progress" },
+      { selector: ".media-hub-type-progress", name: "Type Progress" },
+      { selector: ".media-hub-limit-progress", name: "Limit Progress" },
+      { selector: ".media-hub-limits", name: "Limits" },
+      { selector: ".media-hub-limits-summary", name: "Limits Summary" },
     ];
 
     for (const { selector } of elementsToCheck) {

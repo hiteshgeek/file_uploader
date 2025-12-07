@@ -126,12 +126,16 @@ function addAllScriptsESM() {
             plugins: [
               rollupResolve({ browser: true }),
               rollupCommonjs(),
-              rollupBabel({ babelHelpers: "bundled", babelrc: false, exclude: 'node_modules/**' })
+              rollupBabel({
+                babelHelpers: "bundled",
+                babelrc: false,
+                exclude: "node_modules/**",
+              }),
             ],
           },
           {
             format: "esm",
-            inlineDynamicImports: true // Inline dynamic imports to avoid code-splitting
+            inlineDynamicImports: true, // Inline dynamic imports to avoid code-splitting
           }
         )
       )
@@ -150,7 +154,7 @@ function addAllScriptsESM() {
 // IIFE output (for <script nomodule>)
 // Map entry names to IIFE global names (only libraries need a name, app entries don't)
 const iifeNames = {
-  "file-uploader.js": "FileUploaderLib", // Library bundle - expose as global
+  "media-hub.js": "MediaHub", // Library bundle - expose as global
 };
 
 function addAllScriptsIIFE() {
@@ -165,13 +169,17 @@ function addAllScriptsIIFE() {
             plugins: [
               rollupResolve({ browser: true }),
               rollupCommonjs(),
-              rollupBabel({ babelHelpers: "bundled", babelrc: false, exclude: 'node_modules/**' })
+              rollupBabel({
+                babelHelpers: "bundled",
+                babelrc: false,
+                exclude: "node_modules/**",
+              }),
             ],
           },
           {
             format: "iife",
             name: iifeNames[outName] || undefined, // Only use name for library entries
-            inlineDynamicImports: true // Inline dynamic imports for IIFE compatibility
+            inlineDynamicImports: true, // Inline dynamic imports for IIFE compatibility
           }
         )
       )
@@ -206,7 +214,7 @@ gulp.task("clean", async function () {
 });
 
 const styleEntries = [
-  [[config.libCssDir + "/index.scss"], "file-uploader.css"],
+  [[config.libCssDir + "/index.scss"], "media-hub.css"],
   [[config.assetsCssDir + "/main.scss"], "main.css"],
 ];
 gulp.task("styles", gulp.series("clean-css", addAllStyles));
@@ -215,7 +223,7 @@ gulp.task("styles", gulp.series("clean-css", addAllStyles));
 gulp.task("styles-clean", gulp.series("styles", "clean-old-css"));
 
 const scriptEntries = [
-  [[config.libJsDir + "/index.js"], "file-uploader.js"],
+  [[config.libJsDir + "/index.js"], "media-hub.js"],
   [[config.assetsJsDir + "/main.js"], "main.js"],
   [[config.assetsJsDir + "/bootstrap_3.js"], "bootstrap_3.js"],
   [[config.assetsJsDir + "/bootstrap_4.js"], "bootstrap_4.js"],

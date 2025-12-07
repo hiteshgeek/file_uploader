@@ -4,11 +4,12 @@ include_once __DIR__ . '/usage/demos-config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Utils - Shared Utilities</title>
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="../../src/assets/images/download.svg">
     <style>
         * {
@@ -198,20 +199,22 @@ include_once __DIR__ . '/usage/demos-config.php';
         }
     </style>
 </head>
+
 <body>
     <div class="hero">
         <div class="hero-logo">
-            <svg viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg viewBox="0 0 24 24">
+                <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <circle cx="12" cy="12" r="3" />
+            </svg>
         </div>
         <h1>Utils</h1>
         <p>Shared utility components used across FileUploader, FileCarousel, and MediaCapture</p>
         <div class="hero-buttons">
-            <a href="usage/demo-tooltip.php" class="hero-btn hero-btn-primary">
-                <svg viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                Tooltip System
-            </a>
             <a href="../../index.php" class="hero-btn hero-btn-secondary">
-                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+                </svg>
                 All Projects
             </a>
         </div>
@@ -219,31 +222,35 @@ include_once __DIR__ . '/usage/demos-config.php';
 
     <div class="demos-container">
         <?php foreach ($demos as $category => $items): ?>
-        <div class="demo-category">
-            <h2><?= htmlspecialchars($category) ?></h2>
-            <div class="demo-grid">
-                <?php foreach ($items as $demo): ?>
-                <a href="usage/<?= htmlspecialchars($demo['file']) ?>" class="demo-card">
-                    <div class="demo-card-icon">
-                        <?= getCardIcon($demo['icon']) ?>
-                    </div>
-                    <h3><?= htmlspecialchars($demo['title']) ?></h3>
-                    <p><?= htmlspecialchars($demo['description']) ?></p>
-                    <div class="demo-card-arrow">
-                        View Documentation
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </div>
-                </a>
-                <?php endforeach; ?>
+            <div class="demo-category">
+                <h2><?= htmlspecialchars($category) ?></h2>
+                <div class="demo-grid">
+                    <?php foreach ($items as $demo): ?>
+                        <a href="usage/<?= htmlspecialchars($demo['file']) ?>" class="demo-card">
+                            <div class="demo-card-icon">
+                                <?= getCardIcon($demo['icon']) ?>
+                            </div>
+                            <h3><?= htmlspecialchars($demo['title']) ?></h3>
+                            <p><?= htmlspecialchars($demo['description']) ?></p>
+                            <div class="demo-card-arrow">
+                                View Documentation
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
-        </div>
         <?php endforeach; ?>
     </div>
 </body>
+
 </html>
 
 <?php
-function getCardIcon($icon) {
+function getCardIcon($icon)
+{
     $icons = [
         'tooltip' => '<svg viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>',
     ];

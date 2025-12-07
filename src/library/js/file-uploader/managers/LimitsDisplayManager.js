@@ -65,8 +65,8 @@ export class LimitsDisplayManager {
       : "";
 
     let limitsHTML = hasTypeLimits
-      ? `<div class="file-uploader-limits-header">
-          <span class="file-uploader-limits-title">Upload Limits</span>
+      ? `<div class="media-hub-limits-header">
+          <span class="media-hub-limits-title">Upload Limits</span>
           ${viewModeToggleButton}
         </div>`
       : "";
@@ -100,10 +100,10 @@ export class LimitsDisplayManager {
 
   createViewModeToggle(isDetailed) {
     return `
-      <button type="button" class="file-uploader-limits-toggle${isDetailed ? " is-expanded" : ""}"
+      <button type="button" class="media-hub-limits-toggle${isDetailed ? " is-expanded" : ""}"
               data-tooltip="${isDetailed ? "Switch to concise view" : "Switch to detailed view"}"
               data-tooltip-position="top">
-        ${getIcon(isDetailed ? "grid_view" : "list_view", { class: "file-uploader-toggle-icon" })}
+        ${getIcon(isDetailed ? "grid_view" : "list_view", { class: "media-hub-toggle-icon" })}
         <span>${isDetailed ? "Concise" : "Details"}</span>
       </button>
     `;
@@ -117,7 +117,7 @@ export class LimitsDisplayManager {
     let html = "";
 
     if (allTypesWithLimits.length > 0) {
-      html += '<div class="file-uploader-limits-types">';
+      html += '<div class="media-hub-limits-types">';
       for (const type of allTypesWithLimits) {
         html += this.renderDetailedTypeCard(type, typeLimits);
       }
@@ -149,37 +149,37 @@ export class LimitsDisplayManager {
       typeProgressPercentage = (typeCount / typeCountLimit) * 100;
     }
 
-    const typeIcon = getIcon(type, { class: "file-uploader-type-icon" });
+    const typeIcon = getIcon(type, { class: "media-hub-type-icon" });
     const perFileLimitDisplay = this.uploader.options.perFileMaxSizePerTypeDisplay[type] || this.uploader.options.perFileMaxSizeDisplay || "";
 
     return `
-      <div class="file-uploader-type-card" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
-        <div class="file-uploader-type-card-header">
-          <div class="file-uploader-type-icon-wrapper">${typeIcon}</div>
-          <span class="file-uploader-type-name">${capitalizeFirst(type)}</span>
+      <div class="media-hub-type-card" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
+        <div class="media-hub-type-card-header">
+          <div class="media-hub-type-icon-wrapper">${typeIcon}</div>
+          <span class="media-hub-type-name">${capitalizeFirst(type)}</span>
         </div>
-        <div class="file-uploader-type-card-body">
+        <div class="media-hub-type-card-body">
           ${this.uploader.options.showPerFileLimit && perFileLimitDisplay ? `
-            <div class="file-uploader-type-stat">
-              <span class="file-uploader-type-stat-label">Per file</span>
-              <span class="file-uploader-type-stat-value">${perFileLimitDisplay}</span>
+            <div class="media-hub-type-stat">
+              <span class="media-hub-type-stat-label">Per file</span>
+              <span class="media-hub-type-stat-value">${perFileLimitDisplay}</span>
             </div>
           ` : ""}
           ${this.uploader.options.showTypeGroupSize ? `
-            <div class="file-uploader-type-stat">
-              <span class="file-uploader-type-stat-label">Used</span>
-              <span class="file-uploader-type-stat-value">${typeSizeFormatted}${typeLimitBytes > 0 && limit ? ` / ${limit}` : ""}</span>
+            <div class="media-hub-type-stat">
+              <span class="media-hub-type-stat-label">Used</span>
+              <span class="media-hub-type-stat-value">${typeSizeFormatted}${typeLimitBytes > 0 && limit ? ` / ${limit}` : ""}</span>
             </div>
             ${this.uploader.options.showTypeProgressBar ? `
-              <div class="file-uploader-type-progress">
-                <div class="file-uploader-type-progress-bar" style="width: ${Math.min(100, typeProgressPercentage)}%"></div>
+              <div class="media-hub-type-progress">
+                <div class="media-hub-type-progress-bar" style="width: ${Math.min(100, typeProgressPercentage)}%"></div>
               </div>
             ` : ""}
           ` : ""}
           ${this.uploader.options.showTypeGroupCount ? `
-            <div class="file-uploader-type-stat">
-              <span class="file-uploader-type-stat-label">Files</span>
-              <span class="file-uploader-type-stat-value">${typeCount} / ${typeCountLimit}</span>
+            <div class="media-hub-type-stat">
+              <span class="media-hub-type-stat-label">Files</span>
+              <span class="media-hub-type-stat-value">${typeCount} / ${typeCountLimit}</span>
             </div>
           ` : ""}
         </div>
@@ -206,15 +206,15 @@ export class LimitsDisplayManager {
       : "";
 
     return `
-      <div class="file-uploader-type-card" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
-        <div class="file-uploader-type-card-header">
-          <div class="file-uploader-type-icon-wrapper">${getIcon("other", { class: "file-uploader-type-icon" })}</div>
-          <span class="file-uploader-type-name">Other</span>
+      <div class="media-hub-type-card" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
+        <div class="media-hub-type-card-header">
+          <div class="media-hub-type-icon-wrapper">${getIcon("other", { class: "media-hub-type-icon" })}</div>
+          <span class="media-hub-type-name">Other</span>
         </div>
-        <div class="file-uploader-type-card-body">
-          <div class="file-uploader-type-stat">
-            <span class="file-uploader-type-stat-label">Per file</span>
-            <span class="file-uploader-type-stat-value">${this.uploader.options.perFileMaxSizeDisplay}</span>
+        <div class="media-hub-type-card-body">
+          <div class="media-hub-type-stat">
+            <span class="media-hub-type-stat-label">Per file</span>
+            <span class="media-hub-type-stat-value">${this.uploader.options.perFileMaxSizeDisplay}</span>
           </div>
         </div>
       </div>
@@ -223,31 +223,31 @@ export class LimitsDisplayManager {
 
   renderGeneralLimitsSection(totalSizeFormatted, fileCount, sizePercentage, filePercentage) {
     return `
-      <div class="file-uploader-general-limits">
-        <div class="file-uploader-general-limits-header">
-          <span class="file-uploader-general-limits-title">General Limits</span>
+      <div class="media-hub-general-limits">
+        <div class="media-hub-general-limits-header">
+          <span class="media-hub-general-limits-title">General Limits</span>
         </div>
-        <div class="file-uploader-general-limits-grid">
-          <div class="file-uploader-general-card" data-tooltip="Maximum total size for all uploaded files combined" data-tooltip-position="top">
-            <div class="file-uploader-general-card-icon">${getIcon("storage", { class: "file-uploader-general-icon" })}</div>
-            <div class="file-uploader-general-card-content">
-              <span class="file-uploader-general-card-label">Total Size</span>
-              <span class="file-uploader-general-card-value">${totalSizeFormatted} / ${this.uploader.options.totalMaxSizeDisplay}</span>
+        <div class="media-hub-general-limits-grid">
+          <div class="media-hub-general-card" data-tooltip="Maximum total size for all uploaded files combined" data-tooltip-position="top">
+            <div class="media-hub-general-card-icon">${getIcon("storage", { class: "media-hub-general-icon" })}</div>
+            <div class="media-hub-general-card-content">
+              <span class="media-hub-general-card-label">Total Size</span>
+              <span class="media-hub-general-card-value">${totalSizeFormatted} / ${this.uploader.options.totalMaxSizeDisplay}</span>
               ${this.uploader.options.showProgressBar ? `
-                <div class="file-uploader-general-card-progress">
-                  <div class="file-uploader-general-card-progress-bar" style="width: ${Math.min(100, sizePercentage)}%"></div>
+                <div class="media-hub-general-card-progress">
+                  <div class="media-hub-general-card-progress-bar" style="width: ${Math.min(100, sizePercentage)}%"></div>
                 </div>
               ` : ""}
             </div>
           </div>
-          <div class="file-uploader-general-card" data-tooltip="Maximum number of files that can be uploaded" data-tooltip-position="top">
-            <div class="file-uploader-general-card-icon">${getIcon("calculator", { class: "file-uploader-general-icon" })}</div>
-            <div class="file-uploader-general-card-content">
-              <span class="file-uploader-general-card-label">Total Files</span>
-              <span class="file-uploader-general-card-value">${fileCount} / ${this.uploader.options.maxFiles}</span>
+          <div class="media-hub-general-card" data-tooltip="Maximum number of files that can be uploaded" data-tooltip-position="top">
+            <div class="media-hub-general-card-icon">${getIcon("calculator", { class: "media-hub-general-icon" })}</div>
+            <div class="media-hub-general-card-content">
+              <span class="media-hub-general-card-label">Total Files</span>
+              <span class="media-hub-general-card-value">${fileCount} / ${this.uploader.options.maxFiles}</span>
               ${this.uploader.options.showProgressBar ? `
-                <div class="file-uploader-general-card-progress">
-                  <div class="file-uploader-general-card-progress-bar" style="width: ${Math.min(100, filePercentage)}%"></div>
+                <div class="media-hub-general-card-progress">
+                  <div class="media-hub-general-card-progress-bar" style="width: ${Math.min(100, filePercentage)}%"></div>
                 </div>
               ` : ""}
             </div>
@@ -262,10 +262,10 @@ export class LimitsDisplayManager {
   // ============================================================
 
   renderConciseView(allTypesWithLimits, typeLimits, totalSizeFormatted, fileCount, sizePercentage, filePercentage) {
-    let html = '<div class="file-uploader-limits-grid file-uploader-limits-concise">';
+    let html = '<div class="media-hub-limits-grid media-hub-limits-concise">';
 
     if (allTypesWithLimits.length > 0) {
-      html += '<div class="file-uploader-type-chips">';
+      html += '<div class="media-hub-type-chips">';
       for (const type of allTypesWithLimits) {
         html += this.renderConciseTypeChip(type, typeLimits);
       }
@@ -283,7 +283,7 @@ export class LimitsDisplayManager {
     const allowedExtensions = this.getAllowedExtensionsForType(type);
     const typeCount = this.getFileTypeCount(type);
     const typeCountLimit = this.uploader.options.perTypeMaxFileCount[type] || this.uploader.options.maxFiles;
-    const typeIcon = getIcon(type, { class: "file-uploader-chip-icon" });
+    const typeIcon = getIcon(type, { class: "media-hub-chip-icon" });
     const tooltipText = allowedExtensions.length > 0
       ? `Allowed: ${allowedExtensions.map((ext) => `.${ext}`).join(", ")}`
       : "";
@@ -292,22 +292,22 @@ export class LimitsDisplayManager {
 
     const infoItems = [];
     if (perFileLimitDisplay) {
-      infoItems.push(`<span class="file-uploader-chip-limit">${perFileLimitDisplay} / file</span>`);
+      infoItems.push(`<span class="media-hub-chip-limit">${perFileLimitDisplay} / file</span>`);
     }
-    infoItems.push(`<span class="file-uploader-chip-max">${typeCountLimit} files</span>`);
+    infoItems.push(`<span class="media-hub-chip-max">${typeCountLimit} files</span>`);
     if (limit) {
-      infoItems.push(`<span class="file-uploader-chip-max">Total ${limit}</span>`);
+      infoItems.push(`<span class="media-hub-chip-max">Total ${limit}</span>`);
     }
 
     return `
-      <div class="file-uploader-type-chip-expanded" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
-        <div class="file-uploader-chip-header">
+      <div class="media-hub-type-chip-expanded" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
+        <div class="media-hub-chip-header">
           ${typeIcon}
-          <span class="file-uploader-chip-name">${capitalizeFirst(type)}</span>
-          ${typeCount > 0 ? `<span class="file-uploader-chip-badge">${typeCount}/${typeCountLimit}</span>` : ""}
+          <span class="media-hub-chip-name">${capitalizeFirst(type)}</span>
+          ${typeCount > 0 ? `<span class="media-hub-chip-badge">${typeCount}/${typeCountLimit}</span>` : ""}
         </div>
-        <div class="file-uploader-chip-info">
-          ${infoItems.join('<span class="file-uploader-chip-separator">•</span>')}
+        <div class="media-hub-chip-info">
+          ${infoItems.join('<span class="media-hub-chip-separator">•</span>')}
         </div>
       </div>
     `;
@@ -332,14 +332,14 @@ export class LimitsDisplayManager {
     const otherPerFileLimit = this.uploader.options.perFileMaxSizeDisplay || "";
 
     return `
-      <div class="file-uploader-type-chip-expanded" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
-        <div class="file-uploader-chip-header">
-          ${getIcon("other", { class: "file-uploader-chip-icon" })}
-          <span class="file-uploader-chip-name">Other</span>
+      <div class="media-hub-type-chip-expanded" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
+        <div class="media-hub-chip-header">
+          ${getIcon("other", { class: "media-hub-chip-icon" })}
+          <span class="media-hub-chip-name">Other</span>
         </div>
         ${otherPerFileLimit ? `
-          <div class="file-uploader-chip-info">
-            <span class="file-uploader-chip-limit">${otherPerFileLimit} / file</span>
+          <div class="media-hub-chip-info">
+            <span class="media-hub-chip-limit">${otherPerFileLimit} / file</span>
           </div>
         ` : ""}
       </div>
@@ -348,26 +348,26 @@ export class LimitsDisplayManager {
 
   renderCompactSummary(totalSizeFormatted, fileCount, sizePercentage, filePercentage) {
     return `
-      <div class="file-uploader-compact-summary">
-        <div class="file-uploader-compact-item">
-          <div class="file-uploader-compact-item-header">
-            <span class="file-uploader-compact-item-label">Size</span>
-            <span class="file-uploader-compact-item-value">${totalSizeFormatted} / ${this.uploader.options.totalMaxSizeDisplay}</span>
+      <div class="media-hub-compact-summary">
+        <div class="media-hub-compact-item">
+          <div class="media-hub-compact-item-header">
+            <span class="media-hub-compact-item-label">Size</span>
+            <span class="media-hub-compact-item-value">${totalSizeFormatted} / ${this.uploader.options.totalMaxSizeDisplay}</span>
           </div>
           ${this.uploader.options.showProgressBar ? `
-            <div class="file-uploader-compact-progress">
-              <div class="file-uploader-compact-progress-bar" style="width: ${Math.min(100, sizePercentage)}%"></div>
+            <div class="media-hub-compact-progress">
+              <div class="media-hub-compact-progress-bar" style="width: ${Math.min(100, sizePercentage)}%"></div>
             </div>
           ` : ""}
         </div>
-        <div class="file-uploader-compact-item">
-          <div class="file-uploader-compact-item-header">
-            <span class="file-uploader-compact-item-label">Files</span>
-            <span class="file-uploader-compact-item-value">${fileCount} / ${this.uploader.options.maxFiles}</span>
+        <div class="media-hub-compact-item">
+          <div class="media-hub-compact-item-header">
+            <span class="media-hub-compact-item-label">Files</span>
+            <span class="media-hub-compact-item-value">${fileCount} / ${this.uploader.options.maxFiles}</span>
           </div>
           ${this.uploader.options.showProgressBar ? `
-            <div class="file-uploader-compact-progress">
-              <div class="file-uploader-compact-progress-bar" style="width: ${Math.min(100, filePercentage)}%"></div>
+            <div class="media-hub-compact-progress">
+              <div class="media-hub-compact-progress-bar" style="width: ${Math.min(100, filePercentage)}%"></div>
             </div>
           ` : ""}
         </div>
@@ -380,7 +380,7 @@ export class LimitsDisplayManager {
   // ============================================================
 
   attachLimitsToggleEvents() {
-    const viewModeToggleBtn = this.uploader.limitsContainer.querySelector(".file-uploader-limits-toggle");
+    const viewModeToggleBtn = this.uploader.limitsContainer.querySelector(".media-hub-limits-toggle");
     if (viewModeToggleBtn) {
       viewModeToggleBtn.addEventListener("click", (e) => {
         e.preventDefault();

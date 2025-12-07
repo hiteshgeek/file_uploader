@@ -34,11 +34,11 @@ export class EventManager {
   attachEvents() {
     // Click to browse - only on dropzone or header, not on previews or buttons
     this.uploader.dropZone.addEventListener("click", (e) => {
-      const isPreview = e.target.closest(".file-uploader-preview");
-      const isDownloadBtn = e.target.closest(".file-uploader-download-all");
-      const isClearBtn = e.target.closest(".file-uploader-clear-all");
-      const isButtonContainer = e.target.closest(".file-uploader-button-container");
-      const isActionContainer = e.target.closest(".file-uploader-action-container");
+      const isPreview = e.target.closest(".media-hub-preview");
+      const isDownloadBtn = e.target.closest(".media-hub-download-all");
+      const isClearBtn = e.target.closest(".media-hub-clear-all");
+      const isButtonContainer = e.target.closest(".media-hub-button-container");
+      const isActionContainer = e.target.closest(".media-hub-action-container");
       const isInput = e.target === this.uploader.fileInput;
 
       if (!isPreview && !isDownloadBtn && !isClearBtn && !isButtonContainer && !isActionContainer && !isInput) {
@@ -54,17 +54,17 @@ export class EventManager {
     // Drag & drop events
     this.uploader.dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
-      this.uploader.dropZone.classList.add("file-uploader-dragover");
+      this.uploader.dropZone.classList.add("media-hub-dragover");
     });
 
     this.uploader.dropZone.addEventListener("dragleave", (e) => {
       e.preventDefault();
-      this.uploader.dropZone.classList.remove("file-uploader-dragover");
+      this.uploader.dropZone.classList.remove("media-hub-dragover");
     });
 
     this.uploader.dropZone.addEventListener("drop", (e) => {
       e.preventDefault();
-      this.uploader.dropZone.classList.remove("file-uploader-dragover");
+      this.uploader.dropZone.classList.remove("media-hub-dragover");
 
       const crossUploaderData = e.dataTransfer.getData("application/x-file-uploader");
 
@@ -160,7 +160,7 @@ export class EventManager {
       }
 
       this.uploader.draggedFileObj = fileObj;
-      preview.classList.add("file-uploader-dragging");
+      preview.classList.add("media-hub-dragging");
 
       const dragData = {
         sourceUploaderId: this.uploader.instanceId,
@@ -176,7 +176,7 @@ export class EventManager {
     });
 
     preview.addEventListener("dragend", (e) => {
-      preview.classList.remove("file-uploader-dragging");
+      preview.classList.remove("media-hub-dragging");
       this.uploader.draggedFileObj = null;
     });
   }

@@ -10,7 +10,7 @@ $basePath = get_base_path();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modal File Uploader - Bootstrap 5 Demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="../../../src/assets/images/download.svg">
     <style>
         .file-preview-summary {
@@ -262,8 +262,8 @@ $basePath = get_base_path();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
-    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
+    <script type="module" src="<?= asset('media-hub.js') ?>"></script>
+    <script nomodule src="<?= asset('media-hub.js', 'nomodule') ?>"></script>
 
     <script type="module">
         // Wait for FileUploader to be available on window (set by the module above)

@@ -7,7 +7,7 @@ include_once __DIR__ . '/../../../includes/functions.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validation Test - File Uploader</title>
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="../../../src/assets/images/download.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -133,11 +133,11 @@ include_once __DIR__ . '/../../../includes/functions.php';
         </main>
     </div>
 
-    <script type="module" src="<?= asset('file-uploader.js') ?>"></script>
-    <script nomodule src="<?= asset('file-uploader.js', 'nomodule') ?>"></script>
+    <script type="module" src="<?= asset('media-hub.js') ?>"></script>
+    <script nomodule src="<?= asset('media-hub.js', 'nomodule') ?>"></script>
 
     <script type="module">
-        import { FileUploader } from '<?= asset('file-uploader.js') ?>';
+        import { FileUploader } from '<?= asset('media-hub.js') ?>';
 
         // Initialize uploader with ONLY images allowed
         const uploader = new FileUploader('#fileUploader', {

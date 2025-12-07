@@ -56,7 +56,7 @@ export default class RecordingUI {
   hideOriginalButtons(container) {
     if (this.isUsingExternalContainer() && container) {
       // Find all capture buttons in the external container and hide them
-      const captureButtons = container.querySelectorAll('.file-uploader-capture-btn');
+      const captureButtons = container.querySelectorAll('.media-hub-capture-btn');
       this.externalContainerButtons = Array.from(captureButtons);
 
       // Also find and hide the modal trigger button (sibling of the container)
@@ -94,16 +94,16 @@ export default class RecordingUI {
   async showCountdown(duration) {
     return new Promise((resolve) => {
       const countdown = document.createElement("div");
-      countdown.className = "file-uploader-countdown-overlay";
+      countdown.className = "media-hub-countdown-overlay";
       countdown.innerHTML = `
-        <div class="file-uploader-countdown-content">
-          <div class="file-uploader-countdown-number">${duration}</div>
-          <div class="file-uploader-countdown-text">Get ready to record...</div>
+        <div class="media-hub-countdown-content">
+          <div class="media-hub-countdown-number">${duration}</div>
+          <div class="media-hub-countdown-text">Get ready to record...</div>
         </div>
       `;
       document.body.appendChild(countdown);
 
-      const numberElement = countdown.querySelector(".file-uploader-countdown-number");
+      const numberElement = countdown.querySelector(".media-hub-countdown-number");
       let remaining = duration;
 
       const interval = setInterval(() => {
@@ -143,7 +143,7 @@ export default class RecordingUI {
     // Create pause button
     const pauseBtn = document.createElement("button");
     pauseBtn.type = "button";
-    pauseBtn.className = "file-uploader-capture-btn";
+    pauseBtn.className = "media-hub-capture-btn";
     pauseBtn.setAttribute("data-action", "pause");
     pauseBtn.setAttribute("data-tooltip", "Pause Recording");
     pauseBtn.setAttribute("data-tooltip-position", "top");
@@ -158,7 +158,7 @@ export default class RecordingUI {
     if (!isExternal && this.uploader.options.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
-      systemAudioBtn.className = "file-uploader-capture-btn";
+      systemAudioBtn.className = "media-hub-capture-btn";
       systemAudioBtn.setAttribute("data-action", "system-audio");
 
       // Check if system audio is available
@@ -186,7 +186,7 @@ export default class RecordingUI {
     if (!isExternal && this.uploader.options.enableMicrophoneAudio) {
       micBtn = document.createElement("button");
       micBtn.type = "button";
-      micBtn.className = "file-uploader-capture-btn";
+      micBtn.className = "media-hub-capture-btn";
       micBtn.setAttribute("data-action", "microphone");
 
       // Check if microphone is available
@@ -212,7 +212,7 @@ export default class RecordingUI {
     // Create stop button
     const stopBtn = document.createElement("button");
     stopBtn.type = "button";
-    stopBtn.className = "file-uploader-capture-btn file-uploader-capture-btn-stop";
+    stopBtn.className = "media-hub-capture-btn media-hub-capture-btn-stop";
     stopBtn.setAttribute("data-action", "stop");
     stopBtn.setAttribute("data-tooltip", "Stop Recording");
     stopBtn.setAttribute("data-tooltip-position", "top");
@@ -256,7 +256,7 @@ export default class RecordingUI {
     // Create pause button
     const pauseBtn = document.createElement("button");
     pauseBtn.type = "button";
-    pauseBtn.className = "file-uploader-capture-btn";
+    pauseBtn.className = "media-hub-capture-btn";
     pauseBtn.setAttribute("data-action", "pause");
     pauseBtn.setAttribute("data-tooltip", "Pause Recording");
     pauseBtn.setAttribute("data-tooltip-position", "top");
@@ -271,7 +271,7 @@ export default class RecordingUI {
     if (!isExternal && this.uploader.options.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
-      systemAudioBtn.className = "file-uploader-capture-btn";
+      systemAudioBtn.className = "media-hub-capture-btn";
       systemAudioBtn.setAttribute("data-action", "system-audio");
 
       // Check if system audio is available
@@ -297,7 +297,7 @@ export default class RecordingUI {
     // Create stop button (red by default)
     const stopBtn = document.createElement("button");
     stopBtn.type = "button";
-    stopBtn.className = "file-uploader-capture-btn file-uploader-capture-btn-stop";
+    stopBtn.className = "media-hub-capture-btn media-hub-capture-btn-stop";
     stopBtn.setAttribute("data-action", "stop");
     stopBtn.setAttribute("data-tooltip", "Stop Recording");
     stopBtn.setAttribute("data-tooltip-position", "top");
@@ -401,7 +401,7 @@ export default class RecordingUI {
   setRecordingIndicatorPausedState(isPaused) {
     // Internal recording indicator
     if (this.uploader.recordingIndicator) {
-      const dot = this.uploader.recordingIndicator.querySelector(".file-uploader-recording-dot");
+      const dot = this.uploader.recordingIndicator.querySelector(".media-hub-recording-dot");
       if (dot) {
         dot.classList.toggle("paused", isPaused);
       }
@@ -409,7 +409,7 @@ export default class RecordingUI {
 
     // External recording indicator
     if (this.externalRecordingIndicator) {
-      const dot = this.externalRecordingIndicator.querySelector(".file-uploader-recording-dot");
+      const dot = this.externalRecordingIndicator.querySelector(".media-hub-recording-dot");
       if (dot) {
         dot.classList.toggle("paused", isPaused);
       }
@@ -528,11 +528,11 @@ export default class RecordingUI {
         const timeElements = [];
 
         // Internal recording indicator
-        const internalTimeEl = this.uploader.recordingIndicator?.querySelector(".file-uploader-recording-time");
+        const internalTimeEl = this.uploader.recordingIndicator?.querySelector(".media-hub-recording-time");
         if (internalTimeEl) timeElements.push(internalTimeEl);
 
         // External recording indicator
-        const externalTimeEl = this.externalRecordingIndicator?.querySelector(".file-uploader-recording-time");
+        const externalTimeEl = this.externalRecordingIndicator?.querySelector(".media-hub-recording-time");
         if (externalTimeEl) timeElements.push(externalTimeEl);
 
         timeElements.forEach(timeElement => {
@@ -554,11 +554,11 @@ export default class RecordingUI {
           const sizeElements = [];
 
           // Internal size element
-          const internalSizeEl = this.uploader.recordingIndicator?.querySelector(".file-uploader-recording-size");
+          const internalSizeEl = this.uploader.recordingIndicator?.querySelector(".media-hub-recording-size");
           if (internalSizeEl) sizeElements.push(internalSizeEl);
 
           // External size element
-          const externalSizeEl = this.externalRecordingIndicator?.querySelector(".file-uploader-recording-size");
+          const externalSizeEl = this.externalRecordingIndicator?.querySelector(".media-hub-recording-size");
           if (externalSizeEl) sizeElements.push(externalSizeEl);
 
           sizeElements.forEach(sizeElement => {
@@ -688,17 +688,17 @@ export default class RecordingUI {
     // External/modal view is minimal - elapsed time only, no limit, no size
 
     this.externalRecordingIndicator = document.createElement("div");
-    this.externalRecordingIndicator.className = "file-uploader-recording-indicator file-uploader-recording-indicator--minimal";
+    this.externalRecordingIndicator.className = "media-hub-recording-indicator media-hub-recording-indicator--minimal";
 
     // Recording type icon
     const typeIcon = this.getRecordingTypeIcon(this.recordingType);
     const typeTooltip = this.getRecordingTypeTooltip(this.recordingType);
 
     // Minimal view: type icon + dot + elapsed time only (no limit, no size)
-    let innerHTML = `<span class="file-uploader-recording-type" data-tooltip="${typeTooltip}" data-tooltip-position="top">${getIcon(typeIcon)}</span>`;
-    innerHTML += '<span class="file-uploader-recording-dot"></span>';
+    let innerHTML = `<span class="media-hub-recording-type" data-tooltip="${typeTooltip}" data-tooltip-position="top">${getIcon(typeIcon)}</span>`;
+    innerHTML += '<span class="media-hub-recording-dot"></span>';
     if (showTime) {
-      innerHTML += `<span class="file-uploader-recording-time" data-timer-format="elapsed" data-minimal="true">00:00</span>`;
+      innerHTML += `<span class="media-hub-recording-time" data-timer-format="elapsed" data-minimal="true">00:00</span>`;
     }
     this.externalRecordingIndicator.innerHTML = innerHTML;
 
@@ -740,12 +740,12 @@ export default class RecordingUI {
     const typeTooltip = this.getRecordingTypeTooltip(this.recordingType);
 
     // Check if type icon already exists
-    let typeIconEl = this.uploader.recordingIndicator.querySelector(".file-uploader-recording-type");
+    let typeIconEl = this.uploader.recordingIndicator.querySelector(".media-hub-recording-type");
 
     if (!typeIconEl) {
       // Create and insert type icon at the beginning
       typeIconEl = document.createElement("span");
-      typeIconEl.className = "file-uploader-recording-type";
+      typeIconEl.className = "media-hub-recording-type";
       this.uploader.recordingIndicator.insertBefore(typeIconEl, this.uploader.recordingIndicator.firstChild);
     }
 
@@ -773,7 +773,7 @@ export default class RecordingUI {
 
       // Reset timer display to initial state
       const timeElement = this.uploader.recordingIndicator.querySelector(
-        ".file-uploader-recording-time"
+        ".media-hub-recording-time"
       );
       if (timeElement) {
         // Reset to 00:00 / max duration format

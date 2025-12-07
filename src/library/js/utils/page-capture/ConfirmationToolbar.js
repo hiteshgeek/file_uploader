@@ -13,17 +13,17 @@
  */
 export function createConfirmationToolbar(callbacks) {
   const toolbar = document.createElement('div');
-  toolbar.className = 'file-uploader-page-capture-confirmation-toolbar';
+  toolbar.className = 'media-hub-page-capture-confirmation-toolbar';
   toolbar.innerHTML = `
-    <button class="file-uploader-page-capture-btn file-uploader-page-capture-btn-accept" data-action="accept">
+    <button class="media-hub-page-capture-btn media-hub-page-capture-btn-accept" data-action="accept">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       Accept
     </button>
-    <button class="file-uploader-page-capture-btn file-uploader-page-capture-btn-recapture" data-action="recapture">
+    <button class="media-hub-page-capture-btn media-hub-page-capture-btn-recapture" data-action="recapture">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
       Recapture
     </button>
-    <button class="file-uploader-page-capture-btn file-uploader-page-capture-btn-cancel" data-action="cancel">
+    <button class="media-hub-page-capture-btn media-hub-page-capture-btn-cancel" data-action="cancel">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       Cancel
     </button>

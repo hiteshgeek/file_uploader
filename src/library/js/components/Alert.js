@@ -23,7 +23,7 @@ class Alert {
     if (Alert.container) return;
 
     Alert.container = document.createElement("div");
-    Alert.container.className = "file-uploader-alert-container";
+    Alert.container.className = "media-hub-alert-container";
     document.body.appendChild(Alert.container);
   }
 
@@ -40,7 +40,7 @@ class Alert {
 
     // Limit number of visible alerts
     const existingAlerts = Alert.container.querySelectorAll(
-      ".file-uploader-alert"
+      ".media-hub-alert"
     );
     if (existingAlerts.length >= config.maxAlerts) {
       // Remove oldest alert
@@ -50,7 +50,7 @@ class Alert {
 
     // Create alert element
     const alert = document.createElement("div");
-    alert.className = `file-uploader-alert file-uploader-alert-${config.type}`;
+    alert.className = `media-hub-alert media-hub-alert-${config.type}`;
     alert.setAttribute("role", "alert");
 
     // Icon based on type
@@ -61,21 +61,21 @@ class Alert {
     if (typeof message === "object" && message !== null) {
       // Rich content with structured details
       contentHtml = Alert.buildRichContent(message);
-      alert.classList.add("file-uploader-alert-card");
+      alert.classList.add("media-hub-alert-card");
     } else {
       // Simple string message
-      contentHtml = `<span class="file-uploader-alert-message">${message}</span>`;
+      contentHtml = `<span class="media-hub-alert-message">${message}</span>`;
     }
 
     // Build alert HTML
     alert.innerHTML = `
-      <div class="file-uploader-alert-icon">${icon}</div>
-      <div class="file-uploader-alert-content">
+      <div class="media-hub-alert-icon">${icon}</div>
+      <div class="media-hub-alert-content">
         ${contentHtml}
       </div>
       ${
         config.dismissible
-          ? `<button type="button" class="file-uploader-alert-close" aria-label="Close">
+          ? `<button type="button" class="media-hub-alert-close" aria-label="Close">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
@@ -90,14 +90,14 @@ class Alert {
     // Trigger animation
     requestAnimationFrame(() => {
       alert.classList.add(
-        "file-uploader-alert-show",
-        `file-uploader-alert-${config.animation}`
+        "media-hub-alert-show",
+        `media-hub-alert-${config.animation}`
       );
     });
 
     // Setup close button
     if (config.dismissible) {
-      const closeBtn = alert.querySelector(".file-uploader-alert-close");
+      const closeBtn = alert.querySelector(".media-hub-alert-close");
       closeBtn.addEventListener("click", () => Alert.dismiss(alert));
     }
 
@@ -117,11 +117,11 @@ class Alert {
    * @returns {string} - HTML string
    */
   static buildRichContent(details) {
-    let html = '<div class="file-uploader-alert-card-content">';
+    let html = '<div class="media-hub-alert-card-content">';
 
     // Line 1: File name
     if (details.filename) {
-      html += `<div class="file-uploader-alert-filename" title="${details.filename}">
+      html += `<div class="media-hub-alert-filename" title="${details.filename}">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
@@ -132,12 +132,12 @@ class Alert {
 
     // Line 2: Error message
     if (details.error) {
-      html += `<div class="file-uploader-alert-error-text">${details.error}</div>`;
+      html += `<div class="media-hub-alert-error-text">${details.error}</div>`;
     }
 
     // Line 3: Additional details (limit info, allowed types, etc.)
     if (details.details) {
-      html += `<div class="file-uploader-alert-details">${details.details}</div>`;
+      html += `<div class="media-hub-alert-details">${details.details}</div>`;
     }
 
     html += "</div>";
@@ -159,7 +159,7 @@ class Alert {
     }
 
     // Add exit animation
-    alert.classList.add("file-uploader-alert-hide");
+    alert.classList.add("media-hub-alert-hide");
 
     // Remove after animation
     setTimeout(() => {
@@ -175,7 +175,7 @@ class Alert {
   static dismissAll() {
     if (!Alert.container) return;
 
-    const alerts = Alert.container.querySelectorAll(".file-uploader-alert");
+    const alerts = Alert.container.querySelectorAll(".media-hub-alert");
     alerts.forEach((alert) => Alert.dismiss(alert));
   }
 

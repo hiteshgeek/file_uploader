@@ -7,7 +7,7 @@ include_once __DIR__ . '/../../../includes/functions.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Test - File Uploader</title>
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="../../../src/assets/images/download.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }

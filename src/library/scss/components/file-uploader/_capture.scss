@@ -13,10 +13,9 @@
   margin-left: auto;
 }
 
-.#{$component-prefix}-capture-btn {
+// Capture button base mixin for shared styles
+@mixin capture-btn-base {
   @include flex-center;
-  width: 40px;
-  aspect-ratio: 1;
   border-radius: var(--fu-radius-round);
   border: none;
   background-color: var(--fu-color-primary);
@@ -26,8 +25,7 @@
   @include shadow("md");
 
   svg {
-    width: 18px;
-    aspect-ratio: 1;
+    fill: currentColor;
   }
 
   &:hover:not(:disabled) {
@@ -54,14 +52,43 @@
   }
 }
 
+.#{$component-prefix}-capture-btn {
+  @include capture-btn-base;
+  @include btn-circular-size("md");
+
+  // Size variants - when used WITH base class (e.g., .media-hub-capture-btn.media-hub-capture-btn-xs)
+  &.#{$component-prefix}-capture-btn-xs {
+    @include btn-circular-size("xs");
+  }
+  &.#{$component-prefix}-capture-btn-sm {
+    @include btn-circular-size("sm");
+  }
+  &.#{$component-prefix}-capture-btn-lg {
+    @include btn-circular-size("lg");
+  }
+}
+
+// Standalone size variants (can be used without base class)
+.#{$component-prefix}-capture-btn-xs {
+  @include capture-btn-base;
+  @include btn-circular-size("xs");
+}
+.#{$component-prefix}-capture-btn-sm {
+  @include capture-btn-base;
+  @include btn-circular-size("sm");
+}
+.#{$component-prefix}-capture-btn-lg {
+  @include capture-btn-base;
+  @include btn-circular-size("lg");
+}
+
 .#{$component-prefix}-toolbar-btn {
   @include flex-center;
-  padding: var(--fu-spacing-sm) var(--fu-spacing-md);
+  @include btn-rect-size("md");
   background-color: white;
-  border: 2px solid var(--fu-color-border);
+  border: 1px solid #cbd5e1;
   border-radius: var(--fu-radius-md);
-  color: var(--fu-color-text);
-  font-size: var(--fu-font-size-sm);
+  color: #475569;
   font-weight: var(--fu-font-weight-medium);
   cursor: pointer;
   @include transition((all));
@@ -70,14 +97,13 @@
   gap: var(--fu-spacing-xs);
 
   svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
+    fill: currentColor;
   }
 
   &:hover:not(:disabled) {
-    background-color: var(--fu-color-bg-hover);
+    background-color: #f1f5f9;
     border-color: var(--fu-color-primary);
+    color: var(--fu-color-primary);
     @include shadow("md");
   }
 
@@ -112,6 +138,11 @@
       color: white;
     }
   }
+
+  // Size variants
+  &.btn-xs { @include btn-rect-size("xs"); }
+  &.btn-sm { @include btn-rect-size("sm"); }
+  &.btn-lg { @include btn-rect-size("lg"); }
 }
 
 .#{$component-prefix}-toolbar-stop {
@@ -143,7 +174,7 @@
   z-index: 10;
   @include shadow("sm");
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(5px);
   }
 
@@ -165,10 +196,9 @@
   margin-left: auto;
 }
 
-.#{$component-prefix}-capture-toggle {
+// Capture toggle base mixin for shared styles
+@mixin capture-toggle-base {
   @include flex-center;
-  width: 40px;
-  aspect-ratio: 1;
   border-radius: var(--fu-radius-round);
   border: none;
   background-color: var(--fu-color-primary);
@@ -178,22 +208,51 @@
   @include shadow("md");
   z-index: 2;
 
+  svg {
+    fill: currentColor;
+  }
+
   .toggle-chevron {
     display: flex;
     align-items: center;
     justify-content: center;
     @include transition((transform));
-
-    svg {
-      width: 18px;
-      height: 18px;
-    }
   }
 
   &:hover:not(:disabled) {
     background-color: var(--fu-color-primary-hover);
     @include shadow("lg");
   }
+}
+
+.#{$component-prefix}-capture-toggle {
+  @include capture-toggle-base;
+  @include btn-circular-size("md");
+
+  // Size variants - when used WITH base class
+  &.#{$component-prefix}-capture-toggle-xs {
+    @include btn-circular-size("xs");
+  }
+  &.#{$component-prefix}-capture-toggle-sm {
+    @include btn-circular-size("sm");
+  }
+  &.#{$component-prefix}-capture-toggle-lg {
+    @include btn-circular-size("lg");
+  }
+}
+
+// Standalone size variants (can be used without base class)
+.#{$component-prefix}-capture-toggle-xs {
+  @include capture-toggle-base;
+  @include btn-circular-size("xs");
+}
+.#{$component-prefix}-capture-toggle-sm {
+  @include capture-toggle-base;
+  @include btn-circular-size("sm");
+}
+.#{$component-prefix}-capture-toggle-lg {
+  @include capture-toggle-base;
+  @include btn-circular-size("lg");
 }
 
 .#{$component-prefix}-capture-buttons-wrapper {
@@ -248,7 +307,7 @@
   font-size: var(--fu-font-size-sm);
   font-weight: var(--fu-font-weight-medium);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(5px);
   }
 }
@@ -259,7 +318,7 @@
   background-color: var(--fu-error-500);
   border-radius: var(--fu-radius-round);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     animation: #{$component-prefix}-blink 1s ease-in-out infinite;
 
     // Paused state - faster, more noticeable blinking

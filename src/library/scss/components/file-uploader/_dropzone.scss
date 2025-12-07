@@ -37,7 +37,7 @@
     background-color: var(--fu-color-bg-hover);
     border-style: solid;
 
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       animation: #{$component-prefix}-pulse 1s ease-in-out infinite;
     }
   }
@@ -113,7 +113,7 @@
   opacity: 1;
   transition: opacity $animation-duration-slow ease;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     animation: #{$component-prefix}-slideInDown $animation-duration-slow ease;
   }
 

@@ -3,6 +3,7 @@ include_once __DIR__ . '/../../includes/functions.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,11 +11,13 @@ include_once __DIR__ . '/../../includes/functions.php';
     <link rel="icon" type="image/svg+xml" href="../../src/assets/images/download.svg">
 
     <!-- FileUploader Styles -->
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>">
 
     <style>
         /* Reset and base styles */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -53,16 +56,18 @@ include_once __DIR__ . '/../../includes/functions.php';
         }
     </style>
 </head>
+
 <body>
     <!-- Config Builder Container -->
     <div id="configBuilder"></div>
 
     <!-- FileUploader Scripts (IIFE for global access) -->
-    <script src="<?php echo asset('file-uploader.js', 'nomodule'); ?>"></script>
+    <script src="<?php echo asset('media-hub.js', 'nomodule'); ?>"></script>
 
     <!-- Config Builder Script -->
-    <script type="module">
-        import { ConfigBuilder } from '<?php echo asset('file-uploader.js'); ?>';
+    <script>
+        window.ConfigBuilder = MediaHub.ConfigBuilder;
+        window.FileUploader = MediaHub.FileUploader;
 
         // Initialize the config builder
         const builder = new ConfigBuilder('#configBuilder', {
@@ -86,4 +91,5 @@ include_once __DIR__ . '/../../includes/functions.php';
         window.configBuilder = builder;
     </script>
 </body>
+
 </html>

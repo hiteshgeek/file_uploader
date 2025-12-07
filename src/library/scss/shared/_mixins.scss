@@ -282,6 +282,50 @@
   }
 }
 
+/// Button size mixin for circular icon buttons
+/// @param {String} $size - Size variant (xs, sm, md, lg)
+@mixin btn-circular-size($size: "md") {
+  @if $size == "xs" {
+    width: var(--fu-btn-size-xs);
+    height: var(--fu-btn-size-xs);
+    svg { width: var(--fu-btn-icon-xs); height: var(--fu-btn-icon-xs); }
+  } @else if $size == "sm" {
+    width: var(--fu-btn-size-sm);
+    height: var(--fu-btn-size-sm);
+    svg { width: var(--fu-btn-icon-sm); height: var(--fu-btn-icon-sm); }
+  } @else if $size == "md" {
+    width: var(--fu-btn-size-md);
+    height: var(--fu-btn-size-md);
+    svg { width: var(--fu-btn-icon-md); height: var(--fu-btn-icon-md); }
+  } @else if $size == "lg" {
+    width: var(--fu-btn-size-lg);
+    height: var(--fu-btn-size-lg);
+    svg { width: var(--fu-btn-icon-lg); height: var(--fu-btn-icon-lg); }
+  }
+}
+
+/// Button size mixin for rectangular buttons
+/// @param {String} $size - Size variant (xs, sm, md, lg)
+@mixin btn-rect-size($size: "md") {
+  @if $size == "xs" {
+    padding: var(--fu-btn-padding-xs);
+    font-size: var(--fu-btn-font-xs);
+    svg { width: var(--fu-btn-icon-xs); height: var(--fu-btn-icon-xs); }
+  } @else if $size == "sm" {
+    padding: var(--fu-btn-padding-sm);
+    font-size: var(--fu-btn-font-sm);
+    svg { width: var(--fu-btn-icon-sm); height: var(--fu-btn-icon-sm); }
+  } @else if $size == "md" {
+    padding: var(--fu-btn-padding-md);
+    font-size: var(--fu-btn-font-md);
+    svg { width: var(--fu-btn-icon-md); height: var(--fu-btn-icon-md); }
+  } @else if $size == "lg" {
+    padding: var(--fu-btn-padding-lg);
+    font-size: var(--fu-btn-font-lg);
+    svg { width: var(--fu-btn-icon-lg); height: var(--fu-btn-icon-lg); }
+  }
+}
+
 /// Button base styles
 /// @param {Color} $bg - Background color
 /// @param {Color} $color - Text color

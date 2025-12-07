@@ -15,6 +15,15 @@ $demos = [
             'icon' => 'tooltip'
         ],
     ],
+    'Button System' => [
+        [
+            'id' => 'button-sizes',
+            'title' => 'Button Sizes',
+            'file' => 'demo-button-sizes.php',
+            'description' => 'Four size variants (xs, sm, md, lg) for circular and rectangular buttons',
+            'icon' => 'button'
+        ],
+    ],
 ];
 
 /**

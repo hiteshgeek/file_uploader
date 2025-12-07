@@ -481,8 +481,8 @@ export class FileValidator {
    * @returns {string} - HTML string
    */
   formatAlertDetails(label, values) {
-    const labelClass = "file-uploader-alert-label";
-    const chipClass = "file-uploader-alert-chip";
+    const labelClass = "media-hub-alert-label";
+    const chipClass = "media-hub-alert-chip";
 
     if (Array.isArray(values)) {
       const chipsHtml = values

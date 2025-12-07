@@ -36,7 +36,7 @@
   background-color: var(--fu-color-bg);
   @include transition((box-shadow, transform, opacity, border-color));
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     animation: #{$component-prefix}-scaleIn $animation-duration-slow $ease-out;
   }
 
@@ -129,7 +129,7 @@
       opacity: 1;
       border-color: var(--fu-color-primary);
       box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
-      @if $file-uploader-enable-animations {
+      @if $media-hub-enable-animations {
         transform: scale(1.1);
       }
     }
@@ -174,7 +174,7 @@
   @include transition((transform, filter));
 
   .#{$component-prefix}-preview:hover & {
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: scale(1.05);
     }
   }
@@ -209,14 +209,14 @@
   pointer-events: none;
   @include transition((background-color, transform));
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(5px);
   }
 
   .#{$component-prefix}-preview:hover & {
     background-color: rgba(0, 0, 0, 0.85);
 
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: translate(-50%, -50%) scale(1.1);
     }
   }
@@ -250,7 +250,7 @@
   @include transition((transform, opacity));
 
   .#{$component-prefix}-preview:hover & {
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: scale(1.1);
       opacity: 1;
     }
@@ -274,7 +274,7 @@
   font-family: var(--fu-font-family-mono, "Courier New", monospace);
   letter-spacing: 0.5px;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(3px);
   }
 }
@@ -291,7 +291,7 @@
     @include transition((transform, color));
 
     .#{$component-prefix}-preview:hover & {
-      @if $file-uploader-enable-animations {
+      @if $media-hub-enable-animations {
         transform: scale(1.1);
       }
       color: var(--fu-color-primary);
@@ -307,7 +307,7 @@
   @include transition((transform, color));
 
   .#{$component-prefix}-preview:hover & {
-    @if $file-uploader-enable-animations {
+    @if $media-hub-enable-animations {
       transform: scale(1.1);
     }
     color: var(--fu-color-primary);

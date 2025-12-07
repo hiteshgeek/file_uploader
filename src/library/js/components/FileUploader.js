@@ -65,7 +65,7 @@ export default class FileUploader {
     }
 
     // Generate unique instance ID
-    this.instanceId = `file-uploader-${++instanceCounter}`;
+    this.instanceId = `media-hub-${++instanceCounter}`;
     uploaderRegistry.set(this.instanceId, this);
 
     // Merge user options with defaults

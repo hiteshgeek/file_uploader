@@ -6,8 +6,8 @@ include_once __DIR__ . '/includes/functions.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Uploader Library - Complete File Management Suite</title>
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <title>MediaHub - Complete File Management Suite</title>
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="src/assets/images/download.svg">
     <style>
         * {
@@ -109,13 +109,122 @@ include_once __DIR__ . '/includes/functions.php';
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .project-card.utils .project-icon {
-            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-        }
-
         .project-icon svg {
             fill: white;
             stroke: white;
+        }
+
+        /* Utils Section */
+        .utils-divider {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 50px 0 30px;
+        }
+
+        .utils-divider::before,
+        .utils-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .utils-divider span {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .utils-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        .util-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .util-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .util-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .util-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .util-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .util-icon.tooltip-icon {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+
+        .util-icon.button-icon {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+        }
+
+        .util-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .util-card p {
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0.6;
+            margin: 0 0 14px;
+        }
+
+        .util-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .util-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .util-link svg {
+            width: 12px;
+            height: 12px;
         }
 
         .project-card h2 {
@@ -243,7 +352,7 @@ include_once __DIR__ . '/includes/functions.php';
 </head>
 <body>
     <header class="hero">
-        <h1>File Uploader Library</h1>
+        <h1>MediaHub</h1>
         <p>A complete file management suite with upload, preview, and capture capabilities</p>
     </header>
 
@@ -328,26 +437,57 @@ include_once __DIR__ . '/includes/functions.php';
                 </div>
             </div>
 
-            <!-- Utils -->
-            <div class="project-card utils">
-                <div class="project-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </div>
-                <h2>Utils</h2>
-                <p>Shared utility components used across all projects. Includes TooltipManager for modern tooltips with themes, keyboard shortcuts, and smart positioning.</p>
-                <div class="project-links">
-                    <a href="projects/utils/" class="project-link">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        Home
-                    </a>
-                    <a href="projects/utils/usage/demo-tooltip.php" class="project-link">
+        </div>
+
+        <!-- Utils Section -->
+        <div class="utils-divider">
+            <span>Utility Components</span>
+        </div>
+
+        <div class="utils-grid">
+            <!-- Tooltip System -->
+            <div class="util-card">
+                <div class="util-card-header">
+                    <div class="util-icon tooltip-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                        Tooltip System
-                    </a>
+                    </div>
+                    <h3>Tooltip System</h3>
                 </div>
+                <p>Modern tooltips with fixed positioning, themes, keyboard shortcuts, and smart viewport detection.</p>
+                <a href="projects/utils/usage/demo-tooltip.php" class="util-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    View Demo
+                </a>
+            </div>
+
+            <!-- Button Sizes -->
+            <div class="util-card">
+                <div class="util-card-header">
+                    <div class="util-icon button-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 12h8"/></svg>
+                    </div>
+                    <h3>Button Sizes</h3>
+                </div>
+                <p>Four size variants (xs, sm, md, lg) for circular and rectangular buttons with CSS custom properties.</p>
+                <a href="projects/utils/usage/demo-button-sizes.php" class="util-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    View Demo
+                </a>
+            </div>
+
+            <!-- All Utils Link -->
+            <div class="util-card">
+                <div class="util-card-header">
+                    <div class="util-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <h3>All Utils</h3>
+                </div>
+                <p>Browse all shared utility components and documentation for the MediaHub library.</p>
+                <a href="projects/utils/" class="util-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    Browse All
+                </a>
             </div>
         </div>
 
@@ -413,7 +553,7 @@ include_once __DIR__ . '/includes/functions.php';
     </main>
 
     <footer>
-        <p>File Uploader Library &copy; <?= date('Y') ?> | <a href="DOCUMENTATION.md">Documentation</a></p>
+        <p>MediaHub &copy; <?= date('Y') ?> | <a href="DOCUMENTATION.md">Documentation</a></p>
     </footer>
 </body>
 </html>

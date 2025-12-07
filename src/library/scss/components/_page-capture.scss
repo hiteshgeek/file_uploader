@@ -5,7 +5,7 @@
 @use "../shared/variables" as *;
 @use "../shared/mixins" as *;
 
-$component-prefix: $file-uploader-prefix !default;
+$component-prefix: $media-hub-prefix !default;
 
 // ============================================================================
 // Theme Variables
@@ -27,7 +27,7 @@ $component-prefix: $file-uploader-prefix !default;
 }
 
 // Light theme adjustments
-@if $file-uploader-enable-dark-mode {
+@if $media-hub-enable-dark-mode {
   [data-theme="light"] {
     --#{$component-prefix}-page-capture-overlay-bg: rgba(0, 0, 0, 0.4);
     --#{$component-prefix}-page-capture-instructions-bg: rgba(30, 30, 30, 0.9);
@@ -50,7 +50,7 @@ $component-prefix: $file-uploader-prefix !default;
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='0' x2='16' y2='32' stroke='white' stroke-width='2'/%3E%3Cline x1='0' y1='16' x2='32' y2='16' stroke='white' stroke-width='2'/%3E%3Cline x1='16' y1='0' x2='16' y2='32' stroke='%236366f1' stroke-width='1'/%3E%3Cline x1='0' y1='16' x2='32' y2='16' stroke='%236366f1' stroke-width='1'/%3E%3C/svg%3E") 16 16, crosshair;
   user-select: none;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     animation: #{$component-prefix}-page-capture-fade-in 0.2s ease-out;
   }
 }
@@ -84,7 +84,7 @@ $component-prefix: $file-uploader-prefix !default;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   pointer-events: none;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(10px);
     animation: #{$component-prefix}-page-capture-slide-down 0.3s ease-out;
   }
@@ -257,7 +257,7 @@ $component-prefix: $file-uploader-prefix !default;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(10px);
   }
 
@@ -287,7 +287,7 @@ $component-prefix: $file-uploader-prefix !default;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.5px;
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(5px);
   }
 }
@@ -311,7 +311,7 @@ $component-prefix: $file-uploader-prefix !default;
   border-radius: var(--fu-radius-lg);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(10px);
   }
 }
@@ -343,7 +343,7 @@ $component-prefix: $file-uploader-prefix !default;
 
 .#{$component-prefix}-capture-page-btn,
 .#{$component-prefix}-capture-region-btn {
-  // These inherit from .file-uploader-capture-btn styles
+  // These inherit from .media-hub-capture-btn styles
   // Additional specific styles can be added here if needed
 }
 
@@ -400,7 +400,7 @@ $component-prefix: $file-uploader-prefix !default;
   border-radius: var(--fu-radius-lg);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
-  @if $file-uploader-enable-animations {
+  @if $media-hub-enable-animations {
     @include backdrop-blur(10px);
     animation: #{$component-prefix}-page-capture-toolbar-fade-in 0.2s ease-out;
   }

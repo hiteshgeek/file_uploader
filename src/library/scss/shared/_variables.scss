@@ -147,6 +147,30 @@
   --fu-spinner-border-width: 4px;
   --fu-limit-item-width: 105px;
   --fu-limit-item-width-large: 150px;
+
+  // Button Sizes (circular/icon buttons)
+  --fu-btn-size-xs: 24px;
+  --fu-btn-size-sm: 32px;
+  --fu-btn-size-md: 40px;
+  --fu-btn-size-lg: 48px;
+
+  // Button Icon Sizes (SVG inside buttons)
+  --fu-btn-icon-xs: 12px;
+  --fu-btn-icon-sm: 14px;
+  --fu-btn-icon-md: 18px;
+  --fu-btn-icon-lg: 22px;
+
+  // Button Padding (rectangular buttons)
+  --fu-btn-padding-xs: 4px 8px;
+  --fu-btn-padding-sm: 5px 12px;
+  --fu-btn-padding-md: 7px 15px;
+  --fu-btn-padding-lg: 10px 20px;
+
+  // Button Font Sizes
+  --fu-btn-font-xs: 11px;
+  --fu-btn-font-sm: 12px;
+  --fu-btn-font-md: 14px;
+  --fu-btn-font-lg: 16px;
 }
 
 // Dark Mode Theme
@@ -199,7 +223,7 @@ $ease-in-out: cubic-bezier(0.4, 0, 0.2, 1) !default;
 $ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55) !default;
 
 // Component Specific SCSS Variables
-$file-uploader-prefix: "file-uploader" !default;
-$file-uploader-enable-dark-mode: true !default;
-$file-uploader-enable-animations: true !default;
-$file-uploader-enable-bootstrap-compat: true !default;
+$media-hub-prefix: "media-hub" !default;
+$media-hub-enable-dark-mode: true !default;
+$media-hub-enable-animations: true !default;
+$media-hub-enable-bootstrap-compat: true !default;

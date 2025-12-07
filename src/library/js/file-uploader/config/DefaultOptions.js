@@ -205,7 +205,7 @@ export const DEFAULT_OPTIONS = {
   dragDrop: {
     enableCrossUploaderDrag: true,
     externalDropZone: null,
-    externalDropZoneActiveClass: "file-uploader-drop-active",
+    externalDropZoneActiveClass: "media-hub-drop-active",
   },
 
   // ============================================================================

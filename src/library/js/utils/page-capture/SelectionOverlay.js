@@ -10,13 +10,13 @@
  */
 export function createOverlayContent(isOvalMode) {
   return `
-    <div class="file-uploader-page-capture-instructions">
-      <span class="file-uploader-page-capture-instructions-text">Click and drag to select an area</span>
-      <div class="file-uploader-page-capture-instructions-shortcuts">
-        <span class="file-uploader-page-capture-shortcut${!isOvalMode ? ' active' : ''}" data-shape="rectangle"><kbd>1</kbd> Rectangle</span>
-        <span class="file-uploader-page-capture-shortcut${isOvalMode ? ' active' : ''}" data-shape="oval"><kbd>2</kbd> Oval</span>
-        <span class="file-uploader-page-capture-shortcut"><kbd>Ctrl</kbd> Square/Circle</span>
-        <span class="file-uploader-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
+    <div class="media-hub-page-capture-instructions">
+      <span class="media-hub-page-capture-instructions-text">Click and drag to select an area</span>
+      <div class="media-hub-page-capture-instructions-shortcuts">
+        <span class="media-hub-page-capture-shortcut${!isOvalMode ? ' active' : ''}" data-shape="rectangle"><kbd>1</kbd> Rectangle</span>
+        <span class="media-hub-page-capture-shortcut${isOvalMode ? ' active' : ''}" data-shape="oval"><kbd>2</kbd> Oval</span>
+        <span class="media-hub-page-capture-shortcut"><kbd>Ctrl</kbd> Square/Circle</span>
+        <span class="media-hub-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
       </div>
     </div>
   `;
@@ -28,11 +28,11 @@ export function createOverlayContent(isOvalMode) {
  */
 export function createRepositionInstructions() {
   return `
-    <span class="file-uploader-page-capture-instructions-text">Drag to reposition selection</span>
-    <div class="file-uploader-page-capture-instructions-shortcuts">
-      <span class="file-uploader-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
-      <span class="file-uploader-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
-      <span class="file-uploader-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
+    <span class="media-hub-page-capture-instructions-text">Drag to reposition selection</span>
+    <div class="media-hub-page-capture-instructions-shortcuts">
+      <span class="media-hub-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
+      <span class="media-hub-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
+      <span class="media-hub-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
     </div>
   `;
 }
@@ -45,17 +45,17 @@ export function createRepositionInstructions() {
 export function createSelectionElements(isOvalMode) {
   // Main overlay container (will have clip-path applied)
   const overlay = document.createElement('div');
-  overlay.className = 'file-uploader-page-capture-overlay';
+  overlay.className = 'media-hub-page-capture-overlay';
   overlay.innerHTML = createOverlayContent(isOvalMode);
 
   // Selection box must be a SIBLING of the overlay, not a child
   // This prevents it from being clipped when overlay gets clip-path
   const selectionBox = document.createElement('div');
-  selectionBox.className = 'file-uploader-page-capture-selection-box';
+  selectionBox.className = 'media-hub-page-capture-selection-box';
 
   // Shape feedback element - also a sibling to avoid clip-path issues
   const shapeFeedback = document.createElement('div');
-  shapeFeedback.className = 'file-uploader-page-capture-shape-feedback';
+  shapeFeedback.className = 'media-hub-page-capture-shape-feedback';
 
   return { overlay, selectionBox, shapeFeedback };
 }
@@ -120,8 +120,8 @@ export function updateShapeIndicator(overlay, shapeName) {
   if (!overlay) return;
 
   // Update active state on shortcut elements
-  const rectangleShortcut = overlay.querySelector('.file-uploader-page-capture-shortcut[data-shape="rectangle"]');
-  const ovalShortcut = overlay.querySelector('.file-uploader-page-capture-shortcut[data-shape="oval"]');
+  const rectangleShortcut = overlay.querySelector('.media-hub-page-capture-shortcut[data-shape="rectangle"]');
+  const ovalShortcut = overlay.querySelector('.media-hub-page-capture-shortcut[data-shape="oval"]');
 
   if (rectangleShortcut && ovalShortcut) {
     const isOval = shapeName === 'Oval' || shapeName === 'Circle';
@@ -136,7 +136,7 @@ export function updateShapeIndicator(overlay, shapeName) {
  * @param {boolean} visible - Whether instructions should be visible
  */
 export function setInstructionsVisibility(overlay, visible) {
-  const instructions = overlay?.querySelector('.file-uploader-page-capture-instructions');
+  const instructions = overlay?.querySelector('.media-hub-page-capture-instructions');
   if (instructions) {
     instructions.style.opacity = visible ? '1' : '0';
   }
@@ -149,11 +149,11 @@ export function setInstructionsVisibility(overlay, visible) {
  * @param {boolean} isConfirmationMode - Whether in confirmation mode
  */
 export function updateInstructionsContent(overlay, isOvalMode, isConfirmationMode) {
-  const instructions = overlay?.querySelector('.file-uploader-page-capture-instructions');
+  const instructions = overlay?.querySelector('.media-hub-page-capture-instructions');
   if (instructions) {
     instructions.innerHTML = isConfirmationMode
       ? createRepositionInstructions()
-      : createOverlayContent(isOvalMode).match(/<div class="file-uploader-page-capture-instructions">([\s\S]*?)<\/div>/)?.[0]?.replace(/<\/?div[^>]*>/g, '') || createOverlayContent(isOvalMode);
+      : createOverlayContent(isOvalMode).match(/<div class="media-hub-page-capture-instructions">([\s\S]*?)<\/div>/)?.[0]?.replace(/<\/?div[^>]*>/g, '') || createOverlayContent(isOvalMode);
     instructions.style.opacity = '1';
   }
 }

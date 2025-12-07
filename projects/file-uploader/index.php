@@ -8,7 +8,7 @@ include_once __DIR__ . '/usage/demos-config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FileUploader - Demo Gallery</title>
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="../../src/assets/images/download.svg">
     <style>
         * {

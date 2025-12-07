@@ -53,74 +53,82 @@
 // Download All & Clear All Buttons (Standalone)
 // ============================================================================
 
-.file-uploader-limits-toggle-btn:not([class*="btn"]),
-.#{$component-prefix}-download-all:not([class*="btn"]),
-.#{$component-prefix}-clear-all:not([class*="btn"]) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--fu-spacing-sm);
-  padding: 7px 15px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  pointer-events: auto;
-  @include transition((background-color, transform, box-shadow));
-  text-decoration: none;
-  white-space: nowrap;
-  user-select: none;
+// Standalone button base styles (not Bootstrap)
+// Note: Using attribute selector to exclude Bootstrap buttons (btn-primary, btn-secondary, etc.)
+// but allowing our size variants (btn-xs, btn-sm, btn-lg)
+.media-hub-limits-toggle-btn,
+.#{$component-prefix}-download-all,
+.#{$component-prefix}-clear-all {
+  // Skip if using Bootstrap button styles
+  &:not([class*="btn-primary"]):not([class*="btn-secondary"]):not([class*="btn-success"]):not([class*="btn-danger"]):not([class*="btn-warning"]):not([class*="btn-info"]):not([class*="btn-light"]):not([class*="btn-dark"]):not([class*="btn-outline"]):not([class*="btn-link"]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fu-spacing-sm);
+    @include btn-rect-size("md");
+    font-weight: 500;
+    line-height: 1.5;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    pointer-events: auto;
+    @include transition((background-color, transform, box-shadow));
+    text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
 
-  svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+    }
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-  }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
+    // Size variants
+    &.btn-xs { @include btn-rect-size("xs"); }
+    &.btn-sm { @include btn-rect-size("sm"); }
+    &.btn-lg { @include btn-rect-size("lg"); }
   }
 }
 
 // Download button styles
-.#{$component-prefix}-download-all:not([class*="btn"]) {
-  background-color: #4299e1;
-  color: white;
+.#{$component-prefix}-download-all {
+  &:not([class*="btn-primary"]):not([class*="btn-secondary"]):not([class*="btn-success"]):not([class*="btn-danger"]):not([class*="btn-warning"]):not([class*="btn-info"]):not([class*="btn-light"]):not([class*="btn-dark"]):not([class*="btn-outline"]):not([class*="btn-link"]) {
+    background-color: #4299e1;
+    color: white;
 
-  &:hover:not(:disabled) {
-    background-color: #3182ce;
-  }
+    &:hover:not(:disabled) {
+      background-color: #3182ce;
+    }
 
-  &:active:not(:disabled) {
-    background-color: #2c5aa0;
+    &:active:not(:disabled) {
+      background-color: #2c5aa0;
+    }
   }
 }
 
 // Clear button styles
-.#{$component-prefix}-clear-all:not([class*="btn"]) {
-  background-color: #f56565;
-  color: white;
+.#{$component-prefix}-clear-all {
+  &:not([class*="btn-primary"]):not([class*="btn-secondary"]):not([class*="btn-success"]):not([class*="btn-danger"]):not([class*="btn-warning"]):not([class*="btn-info"]):not([class*="btn-light"]):not([class*="btn-dark"]):not([class*="btn-outline"]):not([class*="btn-link"]) {
+    background-color: #f56565;
+    color: white;
 
-  &:hover:not(:disabled) {
-    background-color: #e53e3e;
-  }
+    &:hover:not(:disabled) {
+      background-color: #e53e3e;
+    }
 
-  &:active:not(:disabled) {
-    background-color: #c53030;
+    &:active:not(:disabled) {
+      background-color: #c53030;
+    }
   }
 }
 
@@ -128,71 +136,75 @@
 // Selected Files Action Buttons
 // ============================================================================
 
-.#{$component-prefix}-download-selected:not([class*="btn"]),
-.#{$component-prefix}-delete-selected:not([class*="btn"]) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--fu-spacing-sm);
-  padding: 7px 15px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  pointer-events: auto;
-  @include transition((background-color, transform, box-shadow));
-  text-decoration: none;
-  white-space: nowrap;
-  user-select: none;
+.#{$component-prefix}-download-selected,
+.#{$component-prefix}-delete-selected {
+  &:not([class*="btn-primary"]):not([class*="btn-secondary"]):not([class*="btn-success"]):not([class*="btn-danger"]):not([class*="btn-warning"]):not([class*="btn-info"]):not([class*="btn-light"]):not([class*="btn-dark"]):not([class*="btn-outline"]):not([class*="btn-link"]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fu-spacing-sm);
+    @include btn-rect-size("md");
+    font-weight: 500;
+    line-height: 1.5;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    pointer-events: auto;
+    @include transition((background-color, transform, box-shadow));
+    text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
 
-  svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+    }
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-  }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-  }
-}
-
-.#{$component-prefix}-download-selected:not([class*="btn"]) {
-  background-color: #4299e1;
-  color: white;
-
-  &:hover:not(:disabled) {
-    background-color: #3182ce;
-  }
-
-  &:active:not(:disabled) {
-    background-color: #2c5aa0;
+    // Size variants
+    &.btn-xs { @include btn-rect-size("xs"); }
+    &.btn-sm { @include btn-rect-size("sm"); }
+    &.btn-lg { @include btn-rect-size("lg"); }
   }
 }
 
-.#{$component-prefix}-delete-selected:not([class*="btn"]) {
-  background-color: #f56565;
-  color: white;
+.#{$component-prefix}-download-selected {
+  &:not([class*="btn-primary"]):not([class*="btn-secondary"]):not([class*="btn-success"]):not([class*="btn-danger"]):not([class*="btn-warning"]):not([class*="btn-info"]):not([class*="btn-light"]):not([class*="btn-dark"]):not([class*="btn-outline"]):not([class*="btn-link"]) {
+    background-color: #4299e1;
+    color: white;
 
-  &:hover:not(:disabled) {
-    background-color: #e53e3e;
+    &:hover:not(:disabled) {
+      background-color: #3182ce;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #2c5aa0;
+    }
   }
+}
 
-  &:active:not(:disabled) {
-    background-color: #c53030;
+.#{$component-prefix}-delete-selected {
+  &:not([class*="btn-primary"]):not([class*="btn-secondary"]):not([class*="btn-success"]):not([class*="btn-danger"]):not([class*="btn-warning"]):not([class*="btn-info"]):not([class*="btn-light"]):not([class*="btn-dark"]):not([class*="btn-outline"]):not([class*="btn-link"]) {
+    background-color: #f56565;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #e53e3e;
+    }
+
+    &:active:not(:disabled) {
+      background-color: #c53030;
+    }
   }
 }
 

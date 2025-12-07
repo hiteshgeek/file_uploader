@@ -7,7 +7,7 @@ include_once __DIR__ . '/../../../includes/functions.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tooltip System - Utils Documentation</title>
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <link rel="icon" type="image/svg+xml" href="../../../src/assets/images/download.svg">
     <style>
         * {
@@ -150,6 +150,8 @@ include_once __DIR__ . '/../../../includes/functions.php';
 
         .code-block code {
             color: inherit;
+            white-space: pre;
+            display: block;
         }
 
         .code-block .comment {
@@ -314,38 +316,51 @@ include_once __DIR__ . '/../../../includes/functions.php';
             font-size: 13px;
         }
 
-        /* Theme toggle in header */
-        .page-theme-toggle {
+        /* Theme Switcher */
+        .theme-switcher {
             position: fixed;
             top: 20px;
             right: 20px;
             display: flex;
-            gap: 8px;
-            background: white;
-            padding: 8px;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: rgba(99, 102, 241, 0.9);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             z-index: 1000;
         }
 
-        .page-theme-toggle button {
-            padding: 8px 16px;
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
             border: none;
             border-radius: 6px;
-            font-size: 13px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
-            transition: all 0.2s;
-            background: #f1f5f9;
-            color: #64748b;
+            transition: all 0.2s ease;
         }
 
-        .page-theme-toggle button.active {
-            background: #6366f1;
+        .theme-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
             color: white;
         }
 
-        .page-theme-toggle button:hover:not(.active) {
-            background: #e2e8f0;
+        .theme-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
         }
 
         /* Back link */
@@ -420,10 +435,142 @@ include_once __DIR__ . '/../../../includes/functions.php';
             color: #78350f;
             font-size: 14px;
         }
+
+        /* Dark theme styles */
+        body.dark-theme {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark-theme .demo-section {
+            background: #1e293b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-theme .demo-header {
+            border-bottom-color: #334155;
+        }
+
+        body.dark-theme .demo-header h1 {
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .demo-header p,
+        body.dark-theme .demo-section > p {
+            color: #94a3b8;
+        }
+
+        body.dark-theme .demo-section h2 {
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .feature-item {
+            background: #0f172a;
+        }
+
+        body.dark-theme .feature-item h5 {
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .feature-item p {
+            color: #94a3b8;
+        }
+
+        body.dark-theme .api-table th {
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .api-table td {
+            color: #cbd5e1;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-theme .api-table code {
+            background: #312e81;
+            color: #a5b4fc;
+        }
+
+        body.dark-theme .note-box {
+            background: #44403c;
+            border-left-color: #f59e0b;
+        }
+
+        body.dark-theme .note-box strong {
+            color: #fbbf24;
+        }
+
+        body.dark-theme .note-box p {
+            color: #fef3c7;
+        }
+
+        body.dark-theme .subsection {
+            border-top-color: #334155;
+        }
+
+        body.dark-theme .subsection h3 {
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .back-link {
+            color: #a5b4fc;
+        }
+
+        body.dark-theme .code-block {
+            background: #0f172a;
+        }
+
+        body.dark-theme .demo-btn {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .demo-btn:hover {
+            background: #475569;
+        }
+
+        body.dark-theme .demo-btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        body.dark-theme .demo-btn-primary:hover {
+            background: #4f46e5;
+        }
+
+        body.dark-theme .dynamic-demo-area {
+            background: #0f172a;
+        }
+
+        body.dark-theme .dynamic-demo-area p {
+            color: #94a3b8;
+        }
+
+        body.dark-theme .theme-demo-container.light {
+            background: #334155;
+            border-color: #475569;
+        }
+
+        body.dark-theme .theme-demo-container.light h4 {
+            color: #f1f5f9;
+        }
     </style>
 </head>
 <body>
     <?php include __DIR__ . '/sidebar.php'; ?>
+
+    <!-- Theme Switcher -->
+    <div class="theme-switcher" id="theme-switcher">
+        <button class="theme-btn active" data-theme="light" title="Light Mode">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="theme-btn" data-theme="dark" title="Dark Mode">
+            <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="theme-btn" data-theme="system" title="System Default">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </button>
+    </div>
 
     <main class="demo-content">
         <a href="../index.php" class="back-link">
@@ -813,7 +960,7 @@ TooltipManager.<span class="function">init</span>();</code>
     </main>
 
     <script type="module">
-        import { TooltipManager } from '<?= asset('file-uploader.js') ?>';
+        import { TooltipManager } from '<?= asset('media-hub.js') ?>';
 
         // Initialize tooltip system
         document.addEventListener('DOMContentLoaded', () => {
@@ -847,6 +994,43 @@ TooltipManager.<span class="function">init</span>();</code>
                 }, 5000);
             });
         });
+
+        // Theme Switcher
+        const themeSwitcher = document.getElementById('theme-switcher');
+        let currentTheme = localStorage.getItem('utils-demo-theme') || 'light';
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('utils-demo-theme', theme);
+
+            // Update button states
+            themeSwitcher.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+
+            // Apply theme
+            let effectiveTheme = theme;
+            if (theme === 'system') {
+                effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            document.body.classList.toggle('dark-theme', effectiveTheme === 'dark');
+            document.body.dataset.theme = effectiveTheme;
+        }
+
+        themeSwitcher.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+        });
+
+        // Listen for system theme changes when in system mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (currentTheme === 'system') {
+                applyTheme('system');
+            }
+        });
+
+        // Apply saved theme on load
+        applyTheme(currentTheme);
     </script>
 </body>
 </html>

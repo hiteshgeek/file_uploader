@@ -9,14 +9,14 @@
 // Global Keyframes & Animations
 // ============================================================================
 
-@if $file-uploader-enable-animations {
-  @keyframes #{$file-uploader-prefix}-spin {
+@if $media-hub-enable-animations {
+  @keyframes #{$media-hub-prefix}-spin {
     to {
       transform: rotate(360deg);
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-slideInDown {
+  @keyframes #{$media-hub-prefix}-slideInDown {
     from {
       opacity: 0;
       transform: translateY(-10px);
@@ -27,7 +27,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-fadeIn {
+  @keyframes #{$media-hub-prefix}-fadeIn {
     from {
       opacity: 0;
     }
@@ -36,7 +36,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-fadeOut {
+  @keyframes #{$media-hub-prefix}-fadeOut {
     from {
       opacity: 1;
     }
@@ -45,7 +45,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-scaleIn {
+  @keyframes #{$media-hub-prefix}-scaleIn {
     from {
       opacity: 0;
       transform: scale(0.95);
@@ -56,7 +56,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-pulse {
+  @keyframes #{$media-hub-prefix}-pulse {
     0%,
     100% {
       opacity: 1;
@@ -66,7 +66,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-bounce {
+  @keyframes #{$media-hub-prefix}-bounce {
     0%,
     100% {
       transform: translateY(0);
@@ -76,7 +76,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-progress-shimmer {
+  @keyframes #{$media-hub-prefix}-progress-shimmer {
     0% {
       background-position: 200% 0;
     }
@@ -85,7 +85,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-checkmark-scale {
+  @keyframes #{$media-hub-prefix}-checkmark-scale {
     0% {
       transform: scale(0);
       opacity: 0;
@@ -99,7 +99,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-slide-in-bottom {
+  @keyframes #{$media-hub-prefix}-slide-in-bottom {
     0% {
       transform: translateY(100%);
       opacity: 0;
@@ -110,7 +110,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-slide-out-top {
+  @keyframes #{$media-hub-prefix}-slide-out-top {
     0% {
       transform: translateY(0);
       opacity: 1;
@@ -121,7 +121,7 @@
     }
   }
 
-  @keyframes #{$file-uploader-prefix}-checkmark-pop {
+  @keyframes #{$media-hub-prefix}-checkmark-pop {
     0% {
       transform: scale(0);
       opacity: 0;
@@ -141,7 +141,7 @@
 // Base Reset & Normalization
 // ============================================================================
 
-.#{$file-uploader-prefix}-wrapper {
+.#{$media-hub-prefix}-wrapper {
   // Box sizing
   *,
   *::before,
@@ -210,16 +210,16 @@
 // ============================================================================
 
 // Hide elements (accessible)
-.#{$file-uploader-prefix}-sr-only {
+.#{$media-hub-prefix}-sr-only {
   @include visually-hidden;
 }
 
 // Text utilities
-.#{$file-uploader-prefix}-text-center {
+.#{$media-hub-prefix}-text-center {
   text-align: center;
 }
 
-.#{$file-uploader-prefix}-text-truncate {
+.#{$media-hub-prefix}-text-truncate {
   @include text-truncate;
 }
 
@@ -234,47 +234,47 @@
       "xl": var(--fu-spacing-xl)
     )
 {
-  .#{$file-uploader-prefix}-mt-#{$name} {
+  .#{$media-hub-prefix}-mt-#{$name} {
     margin-top: $size;
   }
 
-  .#{$file-uploader-prefix}-mb-#{$name} {
+  .#{$media-hub-prefix}-mb-#{$name} {
     margin-bottom: $size;
   }
 
-  .#{$file-uploader-prefix}-my-#{$name} {
+  .#{$media-hub-prefix}-my-#{$name} {
     margin-top: $size;
     margin-bottom: $size;
   }
 
-  .#{$file-uploader-prefix}-pt-#{$name} {
+  .#{$media-hub-prefix}-pt-#{$name} {
     padding-top: $size;
   }
 
-  .#{$file-uploader-prefix}-pb-#{$name} {
+  .#{$media-hub-prefix}-pb-#{$name} {
     padding-bottom: $size;
   }
 
-  .#{$file-uploader-prefix}-py-#{$name} {
+  .#{$media-hub-prefix}-py-#{$name} {
     padding-top: $size;
     padding-bottom: $size;
   }
 }
 
 // Display utilities
-.#{$file-uploader-prefix}-hidden {
+.#{$media-hub-prefix}-hidden {
   display: none !important;
 }
 
-.#{$file-uploader-prefix}-flex {
+.#{$media-hub-prefix}-flex {
   display: flex;
 }
 
-.#{$file-uploader-prefix}-flex-center {
+.#{$media-hub-prefix}-flex-center {
   @include flex-center;
 }
 
-.#{$file-uploader-prefix}-flex-between {
+.#{$media-hub-prefix}-flex-between {
   @include flex-between;
 }
 
@@ -283,7 +283,7 @@
 // ============================================================================
 
 // Focus visible support
-.#{$file-uploader-prefix}-wrapper {
+.#{$media-hub-prefix}-wrapper {
   button,
   a,
   input {
@@ -297,7 +297,7 @@
 
 // Reduced motion support
 @media (prefers-reduced-motion: reduce) {
-  .#{$file-uploader-prefix}-wrapper {
+  .#{$media-hub-prefix}-wrapper {
     *,
     *::before,
     *::after {
@@ -310,7 +310,7 @@
 
 // High contrast mode support
 @media (prefers-contrast: high) {
-  .#{$file-uploader-prefix}-wrapper {
+  .#{$media-hub-prefix}-wrapper {
     border-width: 2px;
 
     button {

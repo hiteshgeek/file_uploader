@@ -7,7 +7,7 @@
 @use "../shared/variables" as *;
 @use "../shared/mixins" as *;
 
-$component-prefix: $file-uploader-prefix !default;
+$component-prefix: $media-hub-prefix !default;
 
 // Alert Container - Fixed at top center
 .#{$component-prefix}-alert-container {
@@ -334,7 +334,7 @@ $component-prefix: $file-uploader-prefix !default;
 // These use darker solid backgrounds
 // ============================================================================
 
-@if $file-uploader-enable-dark-mode {
+@if $media-hub-enable-dark-mode {
   [data-theme="dark"] {
     .#{$component-prefix}-alert-error {
       background: #450a0a;

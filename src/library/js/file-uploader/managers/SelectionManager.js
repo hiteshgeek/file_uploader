@@ -32,7 +32,7 @@ export class SelectionManager {
   updateUI() {
     const selectedCount = this.uploader.selectedFiles.size;
     const selectionInfo = this.uploader.selectedActionContainer.querySelector(
-      ".file-uploader-selection-info"
+      ".media-hub-selection-info"
     );
 
     if (selectedCount > 0) {

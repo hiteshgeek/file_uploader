@@ -10,7 +10,7 @@ include_once __DIR__ . '/../../../includes/functions.php';
     <title>Download Button Configuration Demo - File Uploader</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?php echo asset('file-uploader.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('media-hub.css'); ?>" />
     <style>
         body {
             background-color: #f8f9fa;
@@ -355,7 +355,7 @@ new FileUploader('#uploader-icon', {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
-        import { FileUploader } from '<?= asset('file-uploader.js') ?>';
+        import { FileUploader } from '<?= asset('media-hub.js') ?>';
 
         // Common options
         const commonOptions = {

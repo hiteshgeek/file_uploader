@@ -143,8 +143,8 @@ export class UploadManager {
   updateProgress(fileObj, percent) {
     if (!fileObj.previewElement) return;
 
-    const progressBar = fileObj.previewElement.querySelector(".file-uploader-progress-bar");
-    const progressText = fileObj.previewElement.querySelector(".file-uploader-progress-text");
+    const progressBar = fileObj.previewElement.querySelector(".media-hub-progress-bar");
+    const progressText = fileObj.previewElement.querySelector(".media-hub-progress-text");
 
     if (progressBar) {
       progressBar.style.width = `${percent}%`;
@@ -166,11 +166,11 @@ export class UploadManager {
   updatePreviewState(fileObj, state) {
     if (!fileObj.previewElement) return;
 
-    const overlay = fileObj.previewElement.querySelector(".file-uploader-preview-overlay");
-    const successOverlay = fileObj.previewElement.querySelector(".file-uploader-success-overlay");
-    const spinner = fileObj.previewElement.querySelector(".file-uploader-spinner");
-    const progressContainer = fileObj.previewElement.querySelector(".file-uploader-progress-container");
-    const progressText = fileObj.previewElement.querySelector(".file-uploader-progress-text");
+    const overlay = fileObj.previewElement.querySelector(".media-hub-preview-overlay");
+    const successOverlay = fileObj.previewElement.querySelector(".media-hub-success-overlay");
+    const spinner = fileObj.previewElement.querySelector(".media-hub-spinner");
+    const progressContainer = fileObj.previewElement.querySelector(".media-hub-progress-container");
+    const progressText = fileObj.previewElement.querySelector(".media-hub-progress-text");
 
     fileObj.previewElement.classList.remove("uploading", "success", "error");
 
@@ -316,7 +316,7 @@ export class UploadManager {
     const originalHTML = this.uploader.downloadAllBtn.innerHTML;
     this.uploader.downloadAllBtn.disabled = true;
     this.uploader.downloadAllBtn.innerHTML = `
-      <div class="file-uploader-spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+      <div class="media-hub-spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
       <span>Preparing...</span>
     `;
 

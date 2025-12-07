@@ -33,15 +33,15 @@ export class UIBuilder {
   createStructure() {
     // Create wrapper
     this.uploader.wrapper = document.createElement("div");
-    this.uploader.wrapper.className = "file-uploader-wrapper";
+    this.uploader.wrapper.className = "media-hub-wrapper";
 
     // Create drop zone
     this.uploader.dropZone = document.createElement("div");
-    this.uploader.dropZone.className = "file-uploader-dropzone";
+    this.uploader.dropZone.className = "media-hub-dropzone";
 
     // Create dropzone header (upload prompt)
     this.uploader.dropZoneHeader = document.createElement("div");
-    this.uploader.dropZoneHeader.className = "file-uploader-dropzone-content";
+    this.uploader.dropZoneHeader.className = "media-hub-dropzone-content";
 
     this.hasAnyTypeLevelLimits =
       Object.keys(this.uploader.options.perFileMaxSizePerType || {}).length > 0 ||
@@ -51,15 +51,15 @@ export class UIBuilder {
     const showFallbackLimit = !this.hasAnyTypeLevelLimits;
 
     this.uploader.dropZoneHeader.innerHTML = `
-      ${getIcon("upload", { class: "file-uploader-icon" })}
-      <p class="file-uploader-text">Drag & drop files here or click to browse</p>
-      ${showFallbackLimit ? `<p class="file-uploader-subtext">Maximum file size: ${this.uploader.options.perFileMaxSizeDisplay}</p>` : ""}
+      ${getIcon("upload", { class: "media-hub-icon" })}
+      <p class="media-hub-text">Drag & drop files here or click to browse</p>
+      ${showFallbackLimit ? `<p class="media-hub-subtext">Maximum file size: ${this.uploader.options.perFileMaxSizeDisplay}</p>` : ""}
     `;
 
     // Create file input
     this.uploader.fileInput = document.createElement("input");
     this.uploader.fileInput.type = "file";
-    this.uploader.fileInput.className = "file-uploader-input";
+    this.uploader.fileInput.className = "media-hub-input";
     this.uploader.fileInput.multiple = this.uploader.options.multiple;
 
     if (this.uploader.options.allowedExtensions.length > 0) {
@@ -68,12 +68,12 @@ export class UIBuilder {
 
     // Create preview container
     this.uploader.previewContainer = document.createElement("div");
-    this.uploader.previewContainer.className = "file-uploader-preview-container";
+    this.uploader.previewContainer.className = "media-hub-preview-container";
 
     // Create limits display
     if (this.uploader.options.showLimits) {
       this.uploader.limitsContainer = document.createElement("div");
-      this.uploader.limitsContainer.className = "file-uploader-limits";
+      this.uploader.limitsContainer.className = "media-hub-limits";
       this.uploader.limitsManager.updateDisplay();
     }
 
@@ -90,7 +90,7 @@ export class UIBuilder {
 
     // Create action container
     this.uploader.actionContainer = document.createElement("div");
-    this.uploader.actionContainer.className = "file-uploader-action-container";
+    this.uploader.actionContainer.className = "media-hub-action-container";
 
     // Create limits toggle button (only if there are type-level limits to show)
     if (this.uploader.options.showLimits && this.uploader.options.showLimitsToggle && this.hasAnyTypeLevelLimits) {
@@ -103,7 +103,7 @@ export class UIBuilder {
       (this.uploader.clearAllBtn && this.uploader.options.showClearAllButton)
     ) {
       this.uploader.buttonContainer = document.createElement("div");
-      this.uploader.buttonContainer.className = "file-uploader-button-container";
+      this.uploader.buttonContainer.className = "media-hub-button-container";
       this.uploader.buttonContainer.style.display = "none";
 
       if (this.uploader.downloadAllBtn && this.uploader.options.showDownloadAllButton) {
@@ -164,7 +164,7 @@ export class UIBuilder {
       this.uploader.downloadAllBtn = document.createElement("button");
       this.uploader.downloadAllBtn.type = "button";
 
-      const classes = ["file-uploader-download-all"];
+      const classes = ["media-hub-download-all"];
       if (this.uploader.options.downloadAllButtonClasses?.length > 0) {
         classes.push(...this.uploader.options.downloadAllButtonClasses);
       }
@@ -208,7 +208,7 @@ export class UIBuilder {
       this.uploader.clearAllBtn = document.createElement("button");
       this.uploader.clearAllBtn.type = "button";
 
-      const classes = ["file-uploader-clear-all"];
+      const classes = ["media-hub-clear-all"];
       if (this.uploader.options.clearAllButtonClasses?.length > 0) {
         classes.push(...this.uploader.options.clearAllButtonClasses);
       }
@@ -236,11 +236,11 @@ export class UIBuilder {
   createLimitsToggleButton() {
     this.uploader.limitsToggleBtn = document.createElement("button");
     this.uploader.limitsToggleBtn.type = "button";
-    this.uploader.limitsToggleBtn.className = "file-uploader-limits-toggle-btn";
+    this.uploader.limitsToggleBtn.className = "media-hub-limits-toggle-btn";
 
     const iconWrapper = document.createElement("span");
-    iconWrapper.className = "file-uploader-toggle-icon-wrapper";
-    iconWrapper.innerHTML = getIcon("chevron_up", { class: "file-uploader-toggle-icon" });
+    iconWrapper.className = "media-hub-toggle-icon-wrapper";
+    iconWrapper.innerHTML = getIcon("chevron_up", { class: "media-hub-toggle-icon" });
     this.uploader.limitsToggleBtn.appendChild(iconWrapper);
 
     this.uploader.limitsToggleBtnText = document.createElement("span");
@@ -304,17 +304,17 @@ export class UIBuilder {
    */
   createSelectedActionContainer() {
     this.uploader.selectedActionContainer = document.createElement("div");
-    this.uploader.selectedActionContainer.className = "file-uploader-selected-action-container";
+    this.uploader.selectedActionContainer.className = "media-hub-selected-action-container";
     this.uploader.selectedActionContainer.style.display = "none";
 
     const selectionInfo = document.createElement("span");
-    selectionInfo.className = "file-uploader-selection-info";
+    selectionInfo.className = "media-hub-selection-info";
     selectionInfo.textContent = "0 selected";
     this.uploader.selectedActionContainer.appendChild(selectionInfo);
 
     const downloadSelectedBtn = document.createElement("button");
     downloadSelectedBtn.type = "button";
-    downloadSelectedBtn.className = "file-uploader-download-selected";
+    downloadSelectedBtn.className = "media-hub-download-selected";
     downloadSelectedBtn.innerHTML = `
       ${getIcon("download")}
       <span>Download</span>
@@ -328,7 +328,7 @@ export class UIBuilder {
 
     const deleteSelectedBtn = document.createElement("button");
     deleteSelectedBtn.type = "button";
-    deleteSelectedBtn.className = "file-uploader-delete-selected";
+    deleteSelectedBtn.className = "media-hub-delete-selected";
     deleteSelectedBtn.innerHTML = `
       ${getIcon("trash")}
       <span>Delete</span>

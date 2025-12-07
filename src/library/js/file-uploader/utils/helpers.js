@@ -83,8 +83,8 @@ export function capitalizeFirst(str) {
  * @returns {string} HTML string with label and chip elements
  */
 export function formatAlertDetails(label, values) {
-  const chipClass = "file-uploader-alert-details-chip";
-  const labelClass = "file-uploader-alert-details-label";
+  const chipClass = "media-hub-alert-details-chip";
+  const labelClass = "media-hub-alert-details-label";
 
   let chipsHtml;
   if (Array.isArray(values)) {

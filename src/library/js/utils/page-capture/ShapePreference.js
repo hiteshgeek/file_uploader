@@ -4,7 +4,7 @@
  */
 
 // Storage key for remembering shape preference
-export const SHAPE_STORAGE_KEY = 'file-uploader-capture-shape';
+export const SHAPE_STORAGE_KEY = 'media-hub-capture-shape';
 
 /**
  * Load shape preference from localStorage

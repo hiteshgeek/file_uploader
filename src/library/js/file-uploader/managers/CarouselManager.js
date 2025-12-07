@@ -37,7 +37,7 @@ export class CarouselManager {
 
     // Create carousel container (appended to body for proper z-index stacking)
     this.carouselContainer = document.createElement("div");
-    this.carouselContainer.className = "file-uploader-carousel-container";
+    this.carouselContainer.className = "media-hub-carousel-container";
     document.body.appendChild(this.carouselContainer);
 
     // Initialize carousel with empty files (will update when files are uploaded)
@@ -83,7 +83,7 @@ export class CarouselManager {
           thumbnail = url;
         } else if (fileType === "video" && f.previewElement) {
           const thumbImg = f.previewElement.querySelector(
-            ".file-uploader-video-thumbnail-img"
+            ".media-hub-video-thumbnail-img"
           );
           if (thumbImg) {
             thumbnail = thumbImg.src;

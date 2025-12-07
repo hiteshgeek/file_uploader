@@ -39,14 +39,14 @@ export function createConfirmationHandlers(instance) {
    * Update instructions for confirmation mode
    */
   function updateInstructionsForConfirmation() {
-    const instructions = instance.selectionOverlay?.querySelector('.file-uploader-page-capture-instructions');
+    const instructions = instance.selectionOverlay?.querySelector('.media-hub-page-capture-instructions');
     if (instructions) {
       instructions.innerHTML = `
-        <span class="file-uploader-page-capture-instructions-text">Drag to reposition selection</span>
-        <div class="file-uploader-page-capture-instructions-shortcuts">
-          <span class="file-uploader-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
-          <span class="file-uploader-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
-          <span class="file-uploader-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
+        <span class="media-hub-page-capture-instructions-text">Drag to reposition selection</span>
+        <div class="media-hub-page-capture-instructions-shortcuts">
+          <span class="media-hub-page-capture-shortcut"><kbd>Enter</kbd> Accept</span>
+          <span class="media-hub-page-capture-shortcut"><kbd>R</kbd> Recapture</span>
+          <span class="media-hub-page-capture-shortcut"><kbd>ESC</kbd> Cancel</span>
         </div>
       `;
       instructions.style.opacity = '1';
@@ -153,10 +153,10 @@ export function createConfirmationHandlers(instance) {
     resetSelectionBox(instance.selectionBox, instance.selectionOverlay);
     instance.selectionOverlay.classList.remove('selecting');
 
-    const instructions = instance.selectionOverlay?.querySelector('.file-uploader-page-capture-instructions');
+    const instructions = instance.selectionOverlay?.querySelector('.media-hub-page-capture-instructions');
     if (instructions) {
       const content = createOverlayContent(instance.isOvalMode);
-      const match = content.match(/<div class="file-uploader-page-capture-instructions">([\s\S]*?)<\/div>/);
+      const match = content.match(/<div class="media-hub-page-capture-instructions">([\s\S]*?)<\/div>/);
       instructions.innerHTML = match ? match[0] : content;
       instructions.style.opacity = '1';
     }
