@@ -205,3 +205,52 @@ $builder-prefix: "fu-config-builder" !default;
   width: 70px;
   flex-shrink: 0;
 }
+
+// Select with Custom Input (e.g., Bitrate, Max File Size with presets)
+.#{$builder-prefix}-select-with-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  // Preset dropdown takes available space
+  > .#{$builder-prefix}-select[data-role="preset"] {
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Custom value input - narrower
+  > .#{$builder-prefix}-custom-value {
+    width: 70px;
+    flex-shrink: 0;
+    display: none;
+
+    &.visible {
+      display: block;
+    }
+
+    &:disabled {
+      background: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  // Custom unit dropdown - narrower
+  > .#{$builder-prefix}-custom-unit {
+    width: 80px;
+    flex-shrink: 0;
+    display: none;
+
+    &.visible {
+      display: block;
+    }
+
+    &:disabled {
+      background: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+}

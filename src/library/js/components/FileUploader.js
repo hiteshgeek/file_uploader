@@ -118,7 +118,7 @@ export default class FileUploader {
    * Initialize all manager instances
    */
   initializeManagers() {
-    this.fileValidator = new FileValidator(this);
+    this.fileValidator = new FileValidator(this.options, () => this.files);
     this.uiBuilder = new UIBuilder(this);
     this.eventManager = new EventManager(this);
     this.uploadManager = new UploadManager(this);
@@ -194,7 +194,7 @@ export default class FileUploader {
 
     // Process each file
     files.forEach((file) => {
-      const validation = this.fileValidator.validate(file);
+      const validation = this.fileValidator.validateFile(file);
       if (!validation.valid) {
         this.showError(validation.error);
         return;
@@ -226,12 +226,13 @@ export default class FileUploader {
 
   /**
    * Handle captured file from screen/video/audio capture
-   * @param {Blob} blob - Captured data blob
-   * @param {string} filename - Suggested filename
-   * @param {string} captureType - Type of capture (screenshot, video, audio)
+   * @param {Blob|File} blobOrFile - Captured data blob or File object
+   * @param {string} captureType - Type of capture (screenshot, fullpage-screenshot, region-screenshot, recording, audio_recording)
    */
-  handleCapturedFile(blob, filename, captureType = "capture") {
-    const file = new File([blob], filename, { type: blob.type });
+  handleCapturedFile(blobOrFile, captureType = "capture") {
+    // If it's already a File, use it directly; otherwise create a File from blob
+    const file = blobOrFile instanceof File ? blobOrFile : new File([blobOrFile], `${captureType}.png`, { type: blobOrFile.type });
+    const filename = file.name;
 
     const fileObj = {
       id: Date.now() + Math.random().toString(36).slice(2, 11),
@@ -337,6 +338,42 @@ export default class FileUploader {
   }
 
   // ============================================================
+  // RECORDING DELEGATES (for RecordingUI compatibility)
+  // ============================================================
+
+  /**
+   * Get the video recorder instance from capture manager
+   * @returns {VideoRecorder|null}
+   */
+  get videoRecorder() {
+    return this.captureManager?.videoRecorder || null;
+  }
+
+  /**
+   * Get the audio recorder instance from capture manager
+   * @returns {AudioWorkletRecorder|null}
+   */
+  get audioRecorder() {
+    return this.captureManager?.audioRecorder || null;
+  }
+
+  /**
+   * Stop video recording (delegates to CaptureManager)
+   * @returns {Promise<void>}
+   */
+  async stopVideoRecording() {
+    return this.captureManager.stopVideoRecording();
+  }
+
+  /**
+   * Stop audio recording (delegates to CaptureManager)
+   * @returns {Promise<void>}
+   */
+  async stopAudioRecording() {
+    return this.captureManager.stopAudioRecording();
+  }
+
+  // ============================================================
   // PUBLIC API
   // ============================================================
 
@@ -428,6 +465,11 @@ export default class FileUploader {
    * Destroy the uploader instance
    */
   destroy() {
+    // Cleanup uploaded files from server if option is enabled
+    if (this.options.cleanupOnDestroy) {
+      this.cleanupUploadedFiles();
+    }
+
     // Remove from registry
     uploaderRegistry.delete(this.instanceId);
 

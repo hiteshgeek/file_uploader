@@ -1757,6 +1757,9 @@ export default class ConfigBuilder {
       `;
     }
 
+    // Custom inputs are always visible but disabled when not in custom mode
+    const customInputsDisabled = isDisabled || !isCustomValue;
+
     return `
       <div class="fu-config-builder-group ${isDisabled ? "disabled" : ""}">
         <label class="fu-config-builder-label">
@@ -1768,10 +1771,10 @@ export default class ConfigBuilder {
           <select class="fu-config-builder-select" data-role="preset" ${isDisabled ? "disabled" : ""}>
             ${options}
           </select>
-          <input type="number" class="fu-config-builder-input fu-config-builder-custom-value ${isCustomValue ? "visible" : ""}" data-role="custom-value"
-                 value="${inputValue}" placeholder="Value" ${isDisabled ? "disabled" : ""}
+          <input type="number" class="fu-config-builder-input fu-config-builder-custom-value visible" data-role="custom-value"
+                 value="${inputValue}" placeholder="Value" ${customInputsDisabled ? "disabled" : ""}
                  min="0" step="any">
-          ${unitOptions ? `<select class="fu-config-builder-select fu-config-builder-custom-unit ${isCustomValue ? "visible" : ""}" data-role="custom-unit" ${isDisabled ? "disabled" : ""}>${unitOptions}</select>` : ""}
+          ${unitOptions ? `<select class="fu-config-builder-select fu-config-builder-custom-unit visible" data-role="custom-unit" ${customInputsDisabled ? "disabled" : ""}>${unitOptions}</select>` : ""}
         </div>
         <div class="fu-config-builder-hint">${def.hint}</div>
       </div>
@@ -2999,13 +3002,23 @@ export default class ConfigBuilder {
           return numValue;
         };
 
-        // Helper to show/hide custom inputs
-        const showCustomInputs = (show) => {
+        // Helper to enable/disable custom inputs (always visible, but disabled when preset is selected)
+        const setCustomInputsEnabled = (enabled) => {
           if (customValueInput) {
-            customValueInput.classList.toggle("visible", show);
+            customValueInput.disabled = !enabled;
           }
           if (customUnitSelect) {
-            customUnitSelect.classList.toggle("visible", show);
+            customUnitSelect.disabled = !enabled;
+          }
+        };
+
+        // Helper to reset custom inputs to defaults
+        const resetCustomInputs = () => {
+          if (customValueInput) {
+            customValueInput.value = "";
+          }
+          if (customUnitSelect) {
+            customUnitSelect.value = formatType === "bitrate" ? "Mbps" : "MB";
           }
         };
 
@@ -3013,8 +3026,8 @@ export default class ConfigBuilder {
         presetSelect.addEventListener("change", () => {
           const selectedValue = presetSelect.value;
           if (selectedValue === "__custom__") {
-            // Show custom inputs
-            showCustomInputs(true);
+            // Enable custom inputs
+            setCustomInputsEnabled(true);
             // Set a default value if empty
             if (!customValueInput.value) {
               customValueInput.value = formatType === "bitrate" ? "1" : "10";
@@ -3026,8 +3039,9 @@ export default class ConfigBuilder {
             const unit = customUnitSelect ? customUnitSelect.value : "";
             this.config[optionKey] = convertToBaseUnit(customValueInput.value, unit);
           } else {
-            // Hide custom inputs and use preset value
-            showCustomInputs(false);
+            // Disable custom inputs and reset them
+            setCustomInputsEnabled(false);
+            resetCustomInputs();
             // Handle null value
             this.config[optionKey] = selectedValue === "null" ? null : parseFloat(selectedValue);
           }

@@ -187,3 +187,34 @@ $builder-prefix: "fu-config-builder" !default;
   display: grid;
   gap: 14px;
 }
+
+// Option Groups (e.g., Page Capture, Screen Recording, Audio Recording)
+.#{$builder-prefix}-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  // Add spacing between groups
+  & + & {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+}
+
+.#{$builder-prefix}-option-group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 6px;
+  border-left: 3px solid #6366f1;
+  margin-bottom: 4px;
+}
+
+.#{$builder-prefix}-option-group-content {
+  display: grid;
+  gap: 12px;
+  padding-left: 4px;
+}

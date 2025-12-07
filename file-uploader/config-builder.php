@@ -71,6 +71,18 @@ include_once __DIR__ . '/../includes/functions.php';
             }
         });
 
+        // Override default URLs for subfolder location
+        builder.config.uploadUrl = '../upload.php';
+        builder.config.deleteUrl = '../delete.php';
+        builder.config.downloadAllUrl = '../download-all.php';
+        builder.config.cleanupZipUrl = '../cleanup-zip.php';
+        builder.config.copyFileUrl = '../copy-file.php';
+        builder.config.fetchUrl = '../fetch.php';
+
+        // Refresh the UI and preview to apply URL changes
+        builder.updateCodeOutput();
+        builder.updatePreview();
+
         // Make it globally accessible for debugging
         window.configBuilder = builder;
     </script>
