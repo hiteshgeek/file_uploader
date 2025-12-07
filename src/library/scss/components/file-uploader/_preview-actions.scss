@@ -2,6 +2,8 @@
 // Preview Actions - Overlays, Progress, and Buttons
 // ============================================================================
 
+@use "shared" as *;
+
 // Upload Overlay (Loading)
 .#{$component-prefix}-preview-overlay {
   @include cover;

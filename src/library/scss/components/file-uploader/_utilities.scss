@@ -2,6 +2,8 @@
 // Responsive Adjustments
 // ============================================================================
 
+@use "shared" as *;
+
 @include respond-below("sm") {
   .#{$component-prefix}-dropzone {
     padding: var(--fu-spacing-3xl) var(--fu-spacing-lg);

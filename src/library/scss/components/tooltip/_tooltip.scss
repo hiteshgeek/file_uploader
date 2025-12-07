@@ -64,6 +64,7 @@ $component-prefix: $file-uploader-prefix !default;
   }
   padding: 5px 10px;
   border-radius: var(--fu-radius-md);
+  font-family: var(--fu-font-family);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;

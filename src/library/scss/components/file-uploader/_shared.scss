@@ -1,0 +1,18 @@
+// ============================================================================
+// File Uploader - Shared Variables and Mixins
+// ============================================================================
+//
+// This file provides all shared dependencies for file-uploader partials.
+// Each partial should @use this file to access variables and mixins.
+//
+// ============================================================================
+
+// Forward variables and mixins so they're available to files that @use this
+@forward "../../shared/variables";
+@forward "../../shared/mixins";
+
+// Import for local use to define $component-prefix
+@use "../../shared/variables" as vars;
+
+// Component-specific prefix (derived from shared variables)
+$component-prefix: vars.$file-uploader-prefix !default;

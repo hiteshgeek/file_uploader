@@ -2,6 +2,8 @@
 // Preview Item - Container and Media Types
 // ============================================================================
 
+@use "shared" as *;
+
 // Preview Container (Grid Layout)
 .#{$component-prefix}-preview-container {
   @include grid-auto-fill($grid-min-column-width, var(--fu-spacing-lg));

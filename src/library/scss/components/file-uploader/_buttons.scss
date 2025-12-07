@@ -2,6 +2,8 @@
 // Button Container & Action Container
 // ============================================================================
 
+@use "shared" as *;
+
 .#{$component-prefix}-action-container {
   display: flex;
   align-items: center;

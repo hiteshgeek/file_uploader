@@ -249,12 +249,23 @@ $builder-prefix: "fu-config-builder" !default;
   // Form Elements
   .#{$builder-prefix}-label {
     color: #e2e8f0;
+  }
 
-    code {
-      background: #312e81;
-      border: 1px solid #4338ca;
-      color: #a5b4fc;
-      font-weight: 600;
+  // Copyable Option Key (dark mode)
+  .#{$builder-prefix}-option-key {
+    background: #312e81;
+    border: 1px solid #4338ca;
+    color: #a5b4fc;
+
+    &:hover {
+      background: #3730a3;
+      border-color: #4f46e5;
+    }
+
+    &.copied {
+      background: #14532d;
+      border-color: #22c55e;
+      color: #86efac;
     }
   }
 
@@ -326,13 +337,6 @@ $builder-prefix: "fu-config-builder" !default;
 
   .#{$builder-prefix}-toggle-label {
     color: #e2e8f0;
-
-    code {
-      background: #312e81;
-      border: 1px solid #4338ca;
-      color: #a5b4fc;
-      font-weight: 600;
-    }
   }
 
   .#{$builder-prefix}-toggle-hint {

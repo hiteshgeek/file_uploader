@@ -2,6 +2,8 @@
 // Move/Copy Dialog
 // ============================================================================
 
+@use "shared" as *;
+
 .#{$component-prefix}-dialog-overlay {
   position: fixed;
   top: 0;

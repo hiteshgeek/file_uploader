@@ -1375,6 +1375,15 @@ export default class ConfigBuilder {
   }
 
   /**
+   * Render copyable option key code element
+   * @param {string} key - The option key to display
+   * @returns {string} HTML for the copyable code element
+   */
+  renderOptionKey(key) {
+    return `<code class="fu-config-builder-option-key has-tooltip tooltip-top" data-copy-key="${key}" data-tooltip="Click to copy">${key}<svg class="fu-config-builder-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></code>`;
+  }
+
+  /**
    * Render toggle (boolean) option
    */
   renderToggle(key, def, isDisabled = false, dependencyIndicator = "") {
@@ -1391,7 +1400,7 @@ export default class ConfigBuilder {
           <div class="fu-config-builder-toggle-label">
             ${def.label}
             ${dependencyIndicator}
-            <code>${key}</code>
+            ${this.renderOptionKey(key)}
           </div>
           <div class="fu-config-builder-toggle-hint">${def.hint}</div>
         </div>
@@ -1408,7 +1417,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <input type="text" class="fu-config-builder-input"
                data-option="${key}" data-type="text"
@@ -1439,7 +1448,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <input type="number" class="fu-config-builder-input"
                data-option="${key}" data-type="number"
@@ -1475,7 +1484,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-count-slider" data-option="${key}" data-type="countSlider">
           <div class="fu-config-builder-slider-row">
@@ -1549,7 +1558,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-size-slider" data-option="${key}" data-type="sizeSlider" data-unit="${displayUnit}">
           <!-- Single row: - slider + input + unit dropdown -->
@@ -1678,7 +1687,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <select class="fu-config-builder-select" data-option="${key}" data-type="select" ${
       isDisabled ? "disabled" : ""
@@ -1765,7 +1774,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-select-with-input" data-option="${key}" data-type="selectWithInput" data-format-type="${def.formatType || ""}">
           <select class="fu-config-builder-select" data-role="preset" ${isDisabled ? "disabled" : ""}>
@@ -1818,7 +1827,7 @@ export default class ConfigBuilder {
         <label class="fu-config-builder-label">
           ${def.label}
           ${dependencyIndicator}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-tags ${
           isDisabled ? "disabled" : ""
@@ -1861,7 +1870,7 @@ export default class ConfigBuilder {
       <div class="fu-config-builder-group">
         <label class="fu-config-builder-label">
           ${def.label}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
         <div data-option="${key}" data-type="extensions">
@@ -1912,7 +1921,7 @@ export default class ConfigBuilder {
       <div class="fu-config-builder-group">
         <label class="fu-config-builder-label">
           ${def.label}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
         <div class="fu-config-builder-type-sliders" data-option="${key}" data-type="typeSizeSlider">
@@ -1996,7 +2005,7 @@ export default class ConfigBuilder {
       <div class="fu-config-builder-group">
         <label class="fu-config-builder-label">
           ${def.label}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
         <div class="fu-config-builder-type-sliders" data-option="${key}" data-type="typeCountSlider">
@@ -2153,7 +2162,7 @@ export default class ConfigBuilder {
       <div class="fu-config-builder-group">
         <label class="fu-config-builder-label">
           ${def.label}
-          <code>${key}</code>
+          ${this.renderOptionKey(key)}
         </label>
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${def.hint}</div>
         <div data-option="${key}" data-type="mimeTypes">
@@ -2693,6 +2702,28 @@ export default class ConfigBuilder {
         nameEl.addEventListener("dblclick", (e) => {
           e.stopPropagation();
           this.editUploaderName(nameEl.dataset.uploaderId);
+        });
+      });
+
+    // Click-to-copy option keys
+    this.element
+      .querySelectorAll(".fu-config-builder-option-key")
+      .forEach((codeEl) => {
+        codeEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const key = codeEl.dataset.copyKey;
+          navigator.clipboard.writeText(key).then(() => {
+            // Add copied state and update tooltip
+            codeEl.classList.add("copied");
+            codeEl.dataset.tooltip = "Copied!";
+            // Reset after delay
+            setTimeout(() => {
+              codeEl.classList.remove("copied");
+              codeEl.dataset.tooltip = "Click to copy";
+            }, 1500);
+          }).catch((err) => {
+            console.error("Failed to copy:", err);
+          });
         });
       });
 

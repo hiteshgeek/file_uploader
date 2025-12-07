@@ -2,6 +2,8 @@
 // Limits Display - Detailed View
 // ============================================================================
 
+@use "shared" as *;
+
 // Limits Toggle Button (in action container)
 .#{$component-prefix}-limits-toggle-btn {
   display: inline-flex;

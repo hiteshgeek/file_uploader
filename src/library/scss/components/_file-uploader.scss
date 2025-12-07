@@ -2,22 +2,9 @@
 // File Uploader Component
 // ============================================================================
 //
-// This file has been modularized into smaller partials.
+// This file forwards the file-uploader module.
 // See ./file-uploader/ directory for individual modules.
 //
 // ============================================================================
 
-@use "../variables" as *;
-@use "../mixins" as *;
-
-// Component prefix variable
-$component-prefix: $file-uploader-prefix !default;
-
-// Import all partials
-@import "file-uploader/dropzone";
-@import "file-uploader/limits";
-@import "file-uploader/buttons";
-@import "file-uploader/preview";
-@import "file-uploader/capture";
-@import "file-uploader/dialog";
-@import "file-uploader/utilities";
+@forward "file-uploader/index";

@@ -2,6 +2,8 @@
 // Capture Buttons Container
 // ============================================================================
 
+@use "shared" as *;
+
 .#{$component-prefix}-capture-container {
   @include flex(row, flex-end, center);
   gap: var(--fu-spacing-sm);

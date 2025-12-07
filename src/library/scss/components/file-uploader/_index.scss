@@ -16,17 +16,11 @@
 //
 // ============================================================================
 
-@use "../../variables" as *;
-@use "../../mixins" as *;
-
-// Component prefix variable
-$component-prefix: $file-uploader-prefix !default;
-
-// Import partials
-@import "dropzone";
-@import "limits";
-@import "buttons";
-@import "preview";
-@import "capture";
-@import "dialog";
-@import "utilities";
+// Import partials using @use (modern Sass - no deprecation warnings)
+@use "dropzone";
+@use "limits";
+@use "buttons";
+@use "preview";
+@use "capture";
+@use "dialog";
+@use "utilities";

@@ -2,6 +2,8 @@
 // Dropzone Section
 // ============================================================================
 
+@use "shared" as *;
+
 // Main Wrapper
 .#{$component-prefix}-wrapper {
   width: 100%;

@@ -52,17 +52,6 @@ $builder-prefix: "fu-config-builder" !default;
   font-size: 13px;
   font-weight: 500;
   color: #374151;
-
-  code {
-    font-family: "SF Mono", Monaco, monospace;
-    font-size: 10px;
-    padding: 2px 6px;
-    background: #eef2ff;
-    border: 1px solid #c7d2fe;
-    border-radius: 4px;
-    color: #4f46e5;
-    font-weight: 600;
-  }
 }
 
 .#{$builder-prefix}-hint {
@@ -172,23 +161,63 @@ $builder-prefix: "fu-config-builder" !default;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-
-  code {
-    font-family: "SF Mono", Monaco, monospace;
-    font-size: 10px;
-    padding: 2px 6px;
-    background: #eef2ff;
-    border: 1px solid #c7d2fe;
-    border-radius: 4px;
-    color: #4f46e5;
-    font-weight: 600;
-  }
 }
 
 .#{$builder-prefix}-toggle-hint {
   font-size: 11px;
   color: #6b7280;
   margin-top: 2px;
+}
+
+// Copyable Option Key
+.#{$builder-prefix}-option-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 10px;
+  padding: 2px 6px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+
+  &:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // Copy icon
+  .#{$builder-prefix}-copy-icon {
+    width: 10px;
+    height: 10px;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover .#{$builder-prefix}-copy-icon {
+    opacity: 1;
+  }
+
+  // Copied state
+  &.copied {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #16a34a;
+
+    .#{$builder-prefix}-copy-icon {
+      opacity: 0;
+    }
+  }
 }
 
 // Number Input with Unit
