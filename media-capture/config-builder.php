@@ -25,41 +25,99 @@ include_once __DIR__ . '/../includes/functions.php';
         .builder-header {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            padding: 20px 30px;
+            padding: 16px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .builder-header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
+        .builder-header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
-        .builder-header h1 svg {
+        .builder-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .builder-header-title svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+        }
+
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 32px;
             height: 32px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .theme-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
         }
 
         .builder-header-actions {
             display: flex;
-            gap: 12px;
+            align-items: center;
+            gap: 8px;
         }
 
         .builder-header-actions a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             color: white;
             text-decoration: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             background: rgba(255, 255, 255, 0.15);
             transition: background 0.2s;
+        }
+
+        .builder-header-actions a svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
         }
 
         .builder-header-actions a:hover {
@@ -321,16 +379,39 @@ include_once __DIR__ . '/../includes/functions.php';
 </head>
 <body>
     <header class="builder-header">
-        <h1>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-            </svg>
-            MediaCapture Config Builder
-        </h1>
+        <div class="builder-header-left">
+            <div class="builder-header-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span>MediaCapture Config Builder</span>
+            </div>
+            <div class="theme-switcher" id="theme-switcher">
+                <button class="theme-btn" data-theme="light" title="Light Mode">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </button>
+                <button class="theme-btn active" data-theme="dark" title="Dark Mode">
+                    <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+                <button class="theme-btn" data-theme="system" title="System Default">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </button>
+            </div>
+        </div>
         <div class="builder-header-actions">
-            <a href="index.php">Back to Demos</a>
-            <a href="../index.php">All Projects</a>
+            <a href="index.php">
+                <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Home
+            </a>
+            <a href="usage/demo-screenshots.php">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Demos
+            </a>
+            <a href="../index.php">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                All Projects
+            </a>
         </div>
     </header>
 
@@ -595,6 +676,34 @@ include_once __DIR__ . '/../includes/functions.php';
         document.querySelectorAll('input, select').forEach(el => {
             el.addEventListener('change', generateCode);
         });
+
+        // Theme Switcher
+        const themeSwitcher = document.getElementById('theme-switcher');
+        let currentTheme = localStorage.getItem('mc-config-builder-theme') || 'system';
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('mc-config-builder-theme', theme);
+
+            // Update button states
+            themeSwitcher.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+
+            // Apply theme (for future dark mode support)
+            let effectiveTheme = theme;
+            if (theme === 'system') {
+                effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.body.dataset.theme = effectiveTheme;
+        }
+
+        themeSwitcher.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+        });
+
+        // Apply saved theme on load
+        applyTheme(currentTheme);
 
         // Initialize
         generateCode();

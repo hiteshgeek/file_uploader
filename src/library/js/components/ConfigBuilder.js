@@ -357,9 +357,10 @@ export default class ConfigBuilder {
       <div class="fu-config-builder theme-${this.getEffectiveThemeMode()}" data-theme="${this.theme}">
         <div class="fu-config-builder-header">
           <div class="fu-config-builder-header-left">
-            <a href="index.php" class="fu-config-builder-home-link" data-tooltip-text="Back to Home" data-tooltip-position="bottom">
-              <svg viewBox="0 0 576 512" fill="currentColor"><path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 0 160c0 35.3-28.7 64-64 64l-320 0c-35.3 0-64-28.7-64-64l0-160-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
-            </a>
+            <div class="fu-config-builder-header-title">
+              <svg viewBox="0 0 640 640" fill="currentColor"><path d="M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 306.7L246.6 265.3C234.1 252.8 213.8 252.8 201.3 265.3C188.8 277.8 188.8 298.1 201.3 310.6L297.3 406.6C309.8 419.1 330.1 419.1 342.6 406.6L438.6 310.6C451.1 298.1 451.1 277.8 438.6 265.3C426.1 252.8 405.8 252.8 393.3 265.3L352 306.7L352 96zM160 384C124.7 384 96 412.7 96 448L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 448C544 412.7 515.3 384 480 384L433.1 384L376.5 440.6C345.3 471.8 294.6 471.8 263.4 440.6L206.9 384L160 384zM464 440C477.3 440 488 450.7 488 464C488 477.3 477.3 488 464 488C450.7 488 440 477.3 440 464C440 450.7 450.7 440 464 440z"/></svg>
+              <span>FileUploader Config Builder</span>
+            </div>
             <div class="fu-config-builder-theme-switcher" id="theme-switcher">
               <button class="fu-config-builder-theme-btn ${
                 this.theme === "light" ? "active" : ""
@@ -378,9 +379,19 @@ export default class ConfigBuilder {
               </button>
             </div>
           </div>
-          <div class="fu-config-builder-header-text">
-            <h1>FileUploader Configuration Builder</h1>
-            <p>Explore all options and generate configuration code for your uploader</p>
+          <div class="fu-config-builder-header-actions">
+            <a href="index.php" data-tooltip-text="FileUploader Home" data-tooltip-position="bottom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              Home
+            </a>
+            <a href="usage/demo-modular-library.php" data-tooltip-text="View Demos" data-tooltip-position="bottom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Demos
+            </a>
+            <a href="../index.php" data-tooltip-text="All Projects" data-tooltip-position="bottom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              All Projects
+            </a>
           </div>
         </div>
 
