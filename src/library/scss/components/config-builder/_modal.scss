@@ -1,0 +1,617 @@
+/**
+ * Config Builder - Modal
+ * Modal dialogs, modal preview, modal subtabs, file badges
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Modal Subtabs (HTML, CSS, JS tabs within Modal code tab)
+// ============================================================================
+
+.#{$builder-prefix}-modal-subtabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.#{$builder-prefix}-modal-subtab-btns {
+  display: flex;
+  gap: 4px;
+  padding: 0 0 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.#{$builder-prefix}-modal-subtab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+  }
+
+  &.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: white;
+
+    svg {
+      stroke: white;
+    }
+  }
+}
+
+.#{$builder-prefix}-modal-subtab-content {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+// ============================================================================
+// Modal Preview Styles
+// ============================================================================
+
+.#{$builder-prefix}-modal-preview {
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 8px;
+  min-height: 100px;
+  margin: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.#{$builder-prefix}-modal-minimal-preview,
+.#{$builder-prefix}-modal-detailed-preview {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.#{$builder-prefix}-modal-minimal-preview {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+// Buttons row for detailed preview
+.#{$builder-prefix}-modal-buttons-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.#{$builder-prefix}-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: auto;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(59, 130, 246, 0.25);
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.#{$builder-prefix}-preview-hint {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+}
+
+// ============================================================================
+// Modal Dialog
+// ============================================================================
+
+.#{$builder-prefix}-modal-hidden {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.#{$builder-prefix}-modal-dialog {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.#{$builder-prefix}-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+
+  h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.#{$builder-prefix}-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #111827;
+  }
+}
+
+.#{$builder-prefix}-modal-body {
+  padding: 20px;
+  max-height: calc(90vh - 140px);
+  overflow-y: auto;
+}
+
+.#{$builder-prefix}-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.#{$builder-prefix}-modal-close-btn {
+  padding: 8px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+// Modal size variants
+.#{$builder-prefix}-modal-sm {
+  max-width: 400px;
+}
+
+.#{$builder-prefix}-modal-md {
+  max-width: 600px;
+}
+
+.#{$builder-prefix}-modal-lg {
+  max-width: 800px;
+}
+
+.#{$builder-prefix}-modal-xl {
+  max-width: 1000px;
+}
+
+// Modal info display (shows Size and Bootstrap version)
+.#{$builder-prefix}-modal-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  background: #f1f5f9;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.#{$builder-prefix}-modal-info-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  strong {
+    color: #1e40af;
+    font-weight: 600;
+  }
+}
+
+// ============================================================================
+// Modal Code Sections (3-panel layout for HTML/CSS/JS)
+// ============================================================================
+
+.#{$builder-prefix}-modal-section {
+  margin-top: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+
+  .#{$builder-prefix}-code-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 10px 14px;
+  }
+
+  .#{$builder-prefix}-code-content {
+    max-height: 250px;
+    overflow-y: auto;
+
+    pre {
+      margin: 0;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  }
+}
+
+.#{$builder-prefix}-code-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+
+  svg {
+    color: #6b7280;
+  }
+}
+
+// ============================================================================
+// File Badge and Summary
+// ============================================================================
+
+.#{$builder-prefix}-file-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+
+  .badge-text {
+    font-style: italic;
+  }
+
+  .badge-count {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  .badge-separator {
+    color: #cbd5e1;
+    margin: 0 2px;
+  }
+
+  .badge-size {
+    color: #64748b;
+  }
+
+  &.has-files {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+
+  // Pulse animation when files are added
+  &.file-added-pulse {
+    animation: file-added-pulse 0.6s ease-out;
+  }
+}
+
+@keyframes file-added-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.#{$builder-prefix}-file-summary {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 12px;
+  min-width: 200px;
+  max-width: 320px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  .summary-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    color: #94a3b8;
+    text-align: center;
+
+    svg {
+      opacity: 0.4;
+      width: 28px;
+      height: 28px;
+    }
+
+    span {
+      font-size: 12px;
+      font-style: italic;
+    }
+  }
+
+  .summary-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+
+    .summary-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+
+      svg {
+        width: 14px;
+        height: 14px;
+        fill: white;
+      }
+    }
+
+    .summary-title {
+      font-weight: 600;
+      font-size: 13px;
+    }
+  }
+
+  .summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 12px 14px;
+  }
+
+  .summary-stats {
+    display: flex;
+    gap: 16px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .summary-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .summary-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .summary-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #475569;
+
+    .type-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.8;
+
+      &.icon-image { color: #8b5cf6; }
+      &.icon-video { color: #ef4444; }
+      &.icon-audio { color: #f59e0b; }
+      &.icon-document { color: #3b82f6; }
+      &.icon-archive { color: #6366f1; }
+      &.icon-other { color: #6b7280; }
+    }
+
+    .type-name {
+      font-weight: 500;
+      color: #64748b;
+    }
+
+    .type-count {
+      font-weight: 700;
+      color: #1e293b;
+      background: white;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+  }
+}
+
+// ============================================================================
+// Expandable media capture buttons
+// ============================================================================
+
+.file-uploader-capture-expandable {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+// Toggle button for expandable media buttons
+.file-uploader-capture-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--fu-color-primary, #6366f1);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    background-color: var(--fu-color-primary-hover, #4f46e5);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .toggle-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+  }
+}
+
+// Wrapper for the sliding media buttons
+.file-uploader-capture-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.3s ease, opacity 0.25s ease;
+
+  .file-uploader-capture-container {
+    transform: translateX(-10px);
+    pointer-events: none;
+    transition: transform 0.3s ease;
+  }
+}
+
+// Allow tooltip overflow only when expanded
+.file-uploader-capture-expandable.expanded .file-uploader-capture-buttons-wrapper {
+  overflow: visible;
+}
+
+// Expanded state
+.file-uploader-capture-expandable.expanded {
+  .file-uploader-capture-toggle .toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  .file-uploader-capture-buttons-wrapper {
+    max-width: 300px;
+    opacity: 1;
+
+    .file-uploader-capture-container {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+  }
+}
+
+// Media capture buttons container
+.file-uploader-capture-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}

@@ -1,0 +1,13 @@
+// ============================================================
+// SHARED STYLES INDEX
+// Common styles used across all projects
+//
+// Contents:
+// 1. Variables - CSS custom properties and SCSS variables
+// 2. Mixins - Reusable utility mixins
+// 3. Base - Reset, keyframes, and utilities
+// ============================================================
+
+@forward "variables";
+@forward "mixins";
+@forward "base";

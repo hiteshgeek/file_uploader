@@ -1,0 +1,227 @@
+// ============================================================================
+// Preview Actions - Overlays, Progress, and Buttons
+// ============================================================================
+
+// Upload Overlay (Loading)
+.#{$component-prefix}-preview-overlay {
+  @include cover;
+  @include flex(column, center, center);
+  gap: var(--fu-spacing-md);
+  background-color: rgba(0, 0, 0, 0.7);
+  display: none;
+  z-index: var(--fu-z-overlay);
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(5px);
+  }
+
+  .#{$component-prefix}-preview.uploading & {
+    display: flex;
+  }
+}
+
+// ============================================================================
+// Progress Bar
+// ============================================================================
+
+.#{$component-prefix}-progress-container {
+  width: 80%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+}
+
+.#{$component-prefix}-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4299e1 0%, #48bb78 100%);
+  width: 0%;
+  @include transition((width));
+  transition-duration: 0.3s;
+  border-radius: 0;
+
+  @if $file-uploader-enable-animations {
+    background-size: 200% 100%;
+    animation: #{$component-prefix}-progress-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+.#{$component-prefix}-progress-text {
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-semibold);
+  color: white;
+  display: none;
+}
+
+// ============================================================================
+// Success Overlay
+// ============================================================================
+
+.#{$component-prefix}-success-overlay {
+  @include cover;
+  @include flex-center;
+  background-color: rgba(72, 187, 120, 0.95);
+  z-index: calc(var(--fu-z-overlay) + 1);
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+  display: flex !important;
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(8px);
+  }
+
+  &.slide-in {
+    pointer-events: auto;
+    animation: #{$component-prefix}-slide-in-bottom 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  &.slide-out {
+    pointer-events: none;
+    animation: #{$component-prefix}-slide-out-top 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+}
+
+.#{$component-prefix}-success-icon {
+  width: var(--fu-icon-size-2xl);
+  height: var(--fu-icon-size-2xl);
+  color: white;
+  transform: scale(0);
+
+  .#{$component-prefix}-success-overlay.slide-in & {
+    @if $file-uploader-enable-animations {
+      animation: #{$component-prefix}-checkmark-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards;
+    }
+  }
+}
+
+// ============================================================================
+// Loading Spinner
+// ============================================================================
+
+.#{$component-prefix}-spinner {
+  width: var(--fu-spinner-size);
+  height: var(--fu-spinner-size);
+  border: var(--fu-spinner-border-width) solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: var(--fu-radius-round);
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-spin 0.8s linear infinite;
+  }
+
+  &--sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+// ============================================================================
+// File Info Section
+// ============================================================================
+
+.#{$component-prefix}-info {
+  @include flex(row, space-between, center);
+  gap: var(--fu-spacing-sm);
+  padding: var(--fu-spacing-md);
+}
+
+.#{$component-prefix}-info-text {
+  flex: 1;
+  min-width: 0;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity $animation-duration-slow ease,
+    visibility $animation-duration-slow ease;
+}
+
+.#{$component-prefix}-filename {
+  @include text-truncate;
+  font-size: var(--fu-font-size-base);
+  font-weight: var(--fu-font-weight-medium);
+  color: var(--fu-color-text);
+  margin-bottom: var(--fu-spacing-xs);
+}
+
+.#{$component-prefix}-meta {
+  @include flex(row, flex-start, center);
+  gap: var(--fu-spacing-sm);
+  font-size: var(--fu-font-size-xs);
+  color: var(--fu-color-text-muted);
+
+  span.file-uploader-size {
+    margin-left: auto;
+  }
+}
+
+.#{$component-prefix}-type {
+  font-weight: var(--fu-font-weight-semibold);
+}
+
+// ============================================================================
+// Action Buttons Container
+// ============================================================================
+
+.#{$component-prefix}-actions {
+  @include flex(row, center, center);
+  gap: var(--fu-spacing-lg);
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 1;
+  width: calc(100% - var(--fu-spacing-md) * 2);
+  transition: opacity $animation-duration-slow ease,
+    visibility $animation-duration-slow ease;
+}
+
+// ============================================================================
+// Action Buttons (Download & Delete)
+// ============================================================================
+
+%action-button {
+  @include flex-center;
+  flex-shrink: 0;
+  width: var(--fu-button-size);
+  height: var(--fu-button-size);
+  padding: var(--fu-spacing-sm);
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  border: none;
+  border-radius: var(--fu-radius-sm);
+  cursor: pointer;
+  color: #ffffff;
+  border-radius: 50%;
+  @include transition((background-color, color, transform));
+  box-shadow: 0 0 3px #fff;
+
+  svg {
+    width: var(--fu-icon-size-md);
+    height: var(--fu-icon-size-md);
+    fill: #ffffff;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.#{$component-prefix}-download {
+  @extend %action-button;
+
+  &:hover {
+    background-color: var(--fu-success-600) !important;
+    color: #ffffff;
+  }
+}
+
+.#{$component-prefix}-delete {
+  @extend %action-button;
+
+  &:hover {
+    background-color: var(--fu-error-600) !important;
+    color: #ffffff;
+  }
+}

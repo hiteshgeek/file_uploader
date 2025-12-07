@@ -1,0 +1,319 @@
+// ============================================================================
+// Preview Item - Container and Media Types
+// ============================================================================
+
+// Preview Container (Grid Layout)
+.#{$component-prefix}-preview-container {
+  @include grid-auto-fill($grid-min-column-width, var(--fu-spacing-lg));
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  align-content: start;
+
+  &:empty {
+    display: none;
+  }
+
+  @include respond-below("sm") {
+    @include grid-auto-fill(
+      $grid-min-column-width-mobile,
+      var(--fu-spacing-md)
+    );
+  }
+}
+
+// ============================================================================
+// Single Preview Item
+// ============================================================================
+
+.#{$component-prefix}-preview {
+  position: relative;
+  border: 1px solid var(--fu-color-border-light);
+  border-radius: var(--fu-radius-lg);
+  overflow: hidden;
+  background-color: var(--fu-color-bg);
+  @include transition((box-shadow, transform, opacity, border-color));
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-scaleIn $animation-duration-slow $ease-out;
+  }
+
+  &:hover {
+    @include shadow("md");
+
+    .#{$component-prefix}-actions {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .#{$component-prefix}-info-text {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+  }
+
+  // States
+  &.uploading {
+    opacity: 0.7;
+  }
+
+  &.success {
+    border-color: var(--fu-color-success);
+  }
+
+  &.error {
+    border-color: var(--fu-color-error);
+    background-color: var(--fu-error-50);
+  }
+
+  &.selected {
+    border-color: var(--fu-color-primary);
+    border-width: 2px;
+    @include shadow("md");
+
+    .#{$component-prefix}-selection-checkbox input {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+// ============================================================================
+// Preview Inner (Image/Video/File Container)
+// ============================================================================
+
+.#{$component-prefix}-preview-inner {
+  position: relative;
+  width: 100%;
+  height: var(--fu-preview-height);
+  @include flex-center;
+  background-color: var(--fu-color-bg-light);
+  overflow: hidden;
+
+  @include respond-below("sm") {
+    height: var(--fu-preview-height-mobile);
+  }
+}
+
+// ============================================================================
+// Selection Checkbox
+// ============================================================================
+
+.#{$component-prefix}-selection-checkbox {
+  position: absolute;
+  top: var(--fu-spacing-sm);
+  left: var(--fu-spacing-sm);
+  z-index: 10;
+  pointer-events: auto;
+
+  input[type="checkbox"] {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    outline: none;
+    @include transition((border-color, background-color, transform, box-shadow));
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+      border-color: var(--fu-color-primary);
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+      @if $file-uploader-enable-animations {
+        transform: scale(1.1);
+      }
+    }
+
+    &:checked {
+      opacity: 1;
+      background-color: var(--fu-color-primary);
+      border-color: var(--fu-color-primary);
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+      }
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.3);
+    }
+  }
+
+  .#{$component-prefix}-preview:hover & input {
+    opacity: 1;
+  }
+}
+
+// ============================================================================
+// Preview Media Types
+// ============================================================================
+
+// Image preview
+.#{$component-prefix}-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  @include transition((transform, filter));
+
+  .#{$component-prefix}-preview:hover & {
+    @if $file-uploader-enable-animations {
+      transform: scale(1.05);
+    }
+  }
+}
+
+// Video preview
+.#{$component-prefix}-preview-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// Video thumbnail
+.#{$component-prefix}-video-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// Video play overlay
+.#{$component-prefix}-video-play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  @include flex-center;
+  width: 60px;
+  height: 60px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: var(--fu-radius-round);
+  z-index: 5;
+  pointer-events: none;
+  @include transition((background-color, transform));
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(5px);
+  }
+
+  .#{$component-prefix}-preview:hover & {
+    background-color: rgba(0, 0, 0, 0.85);
+
+    @if $file-uploader-enable-animations {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+  }
+}
+
+.#{$component-prefix}-video-play-icon {
+  width: 28px;
+  height: 28px;
+  color: white;
+  margin-left: 3px;
+}
+
+// Audio preview
+.#{$component-prefix}-preview-audio {
+  @include flex(column, center, center);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--fu-color-primary-light) 0%,
+    var(--fu-color-primary) 100%
+  );
+  position: relative;
+}
+
+.#{$component-prefix}-audio-icon {
+  width: 64px;
+  height: 64px;
+  color: white;
+  opacity: 0.9;
+  @include transition((transform, opacity));
+
+  .#{$component-prefix}-preview:hover & {
+    @if $file-uploader-enable-animations {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+}
+
+// Media duration badge
+.#{$component-prefix}-media-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 2px 6px;
+  border-radius: var(--fu-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  z-index: 6;
+  pointer-events: none;
+  font-family: var(--fu-font-family-mono, "Courier New", monospace);
+  letter-spacing: 0.5px;
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(3px);
+  }
+}
+
+// File icon preview
+.#{$component-prefix}-preview-file {
+  @include flex(column, center, center);
+  color: var(--fu-color-text-light);
+
+  svg {
+    width: var(--fu-icon-size-xl);
+    height: var(--fu-icon-size-xl);
+    margin-bottom: var(--fu-spacing-sm);
+    @include transition((transform, color));
+
+    .#{$component-prefix}-preview:hover & {
+      @if $file-uploader-enable-animations {
+        transform: scale(1.1);
+      }
+      color: var(--fu-color-primary);
+    }
+  }
+}
+
+.#{$component-prefix}-file-icon {
+  width: var(--fu-icon-size-xl);
+  height: var(--fu-icon-size-xl);
+  margin-bottom: var(--fu-spacing-sm);
+  fill: currentColor;
+  @include transition((transform, color));
+
+  .#{$component-prefix}-preview:hover & {
+    @if $file-uploader-enable-animations {
+      transform: scale(1.1);
+    }
+    color: var(--fu-color-primary);
+  }
+}
+
+.#{$component-prefix}-extension {
+  font-size: var(--fu-font-size-base);
+  font-weight: var(--fu-font-weight-semibold);
+  text-transform: uppercase;
+}

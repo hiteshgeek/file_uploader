@@ -1,0 +1,242 @@
+// ============================================================================
+// ConfigBuilder Layout Styles
+// Main container, panels, header, resizer
+// ============================================================================
+
+$builder-prefix: "fu-config-builder" !default;
+
+// Main Container - Full width with resizable panels
+.#{$builder-prefix} {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+// Header
+.#{$builder-prefix}-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  position: relative;
+}
+
+// Header Left Section (home link + theme switcher)
+.#{$builder-prefix}-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: absolute;
+  left: 24px;
+}
+
+.#{$builder-prefix}-home-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  &:hover {
+    background: #6366f1;
+    color: #ffffff;
+  }
+}
+
+// Theme Switcher
+.#{$builder-prefix}-theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+
+.#{$builder-prefix}-theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.5);
+    color: #374151;
+  }
+
+  &.active {
+    background: #ffffff;
+    color: #6366f1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.#{$builder-prefix}-header-text {
+  text-align: center;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+// Main Layout Container
+.#{$builder-prefix}-main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// Panels Container (holds options and preview with resizer)
+.#{$builder-prefix}-panels {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// Panels
+.#{$builder-prefix}-panel {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.#{$builder-prefix}-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+}
+
+.#{$builder-prefix}-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+// Options Panel (Left side) - with vertical tabs
+.#{$builder-prefix}-options {
+  width: 480px;
+  min-width: 400px;
+  max-width: 700px;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  .#{$builder-prefix}-panel-content {
+    display: flex;
+    padding: 0;
+    gap: 0;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+// Preview Panel (Right side)
+.#{$builder-prefix}-preview {
+  flex: 1;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+// Resizer Handle
+.#{$builder-prefix}-resizer {
+  width: 6px;
+  background: #e5e7eb;
+  cursor: col-resize;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+  position: relative;
+
+  &:hover,
+  &.active {
+    background: #6366f1;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 40px;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 3px,
+      currentColor 3px,
+      currentColor 6px
+    );
+    color: #9ca3af;
+    opacity: 0.5;
+  }
+
+  &:hover::before,
+  &.active::before {
+    color: #ffffff;
+    opacity: 1;
+  }
+}

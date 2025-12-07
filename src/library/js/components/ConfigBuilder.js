@@ -5,7 +5,67 @@
  */
 
 import Tooltip from "./tooltip/Tooltip.js";
-import { FileUploader } from "./FileUploader.js";
+import FileUploader from "./FileUploader.js";
+
+// Import from modular config-builder components
+import { getVarToSelectorMap, getVarSourceMap } from "./config-builder/VarMaps.js";
+import {
+  getThemeVars,
+  getEffectiveTheme,
+  applyThemeToContainer,
+  loadSavedTheme,
+  saveTheme
+} from "./config-builder/ThemeManager.js";
+import {
+  buildSearchIndex as buildSearchIndexFn,
+  fuzzySearch as fuzzySearchFn,
+  highlightMatch
+} from "./config-builder/SearchEngine.js";
+import {
+  OPTION_TO_GROUP,
+  GROUP_TITLES,
+  GROUP_ORDER,
+  PHP_GROUP_TITLES,
+  MEDIA_CAPTURE_ICONS,
+  MEDIA_CAPTURE_TITLES,
+  FILE_TYPE_ICONS,
+  MODAL_BUTTON_ICONS,
+  PHP_RELEVANT_KEYS,
+  PHP_RELEVANT_GROUPS,
+  groupChangedConfig
+} from "./config-builder/Constants.js";
+import {
+  getFileTypeIcon as getFileTypeIconFn,
+  capitalizeFirst as capitalizeFirstFn,
+  renderPerTypeLimitsByFileType as renderPerTypeLimitsByFileTypeFn,
+  rerenderPerTypeLimitsPanel as rerenderPerTypeLimitsPanelFn,
+  attachTypeSizeSliderEvents as attachTypeSizeSliderEventsFn,
+  attachTypeCountSliderEvents as attachTypeCountSliderEventsFn,
+  attachPerTypeByFileTypeEvents as attachPerTypeByFileTypeEventsFn
+} from "./config-builder/PerTypeLimits.js";
+import { getCategoryIcon as getCategoryIconFn } from "./config-builder/Icons.js";
+import { getOptionDefinitions as getOptionDefinitionsFn, getDefaultConfig as getDefaultConfigFn } from "./config-builder/OptionDefinitions.js";
+import { getStyleDefinitions as getStyleDefinitionsFn, getDefaultStyleValues as getDefaultStyleValuesFn } from "./config-builder/StyleDefinitions.js";
+import {
+  renderUploaderTabs as renderUploaderTabsFn,
+  refreshAllPreviews as refreshAllPreviewsFn,
+  addUploader as addUploaderFn,
+  duplicateUploader as duplicateUploaderFn,
+  selectUploader as selectUploaderFn,
+  removeUploader as removeUploaderFn,
+  isNameDuplicate as isNameDuplicateFn,
+  editUploaderName as editUploaderNameFn,
+  updatePreviewHeader as updatePreviewHeaderFn,
+  updateUploaderTabsUI as updateUploaderTabsUIFn
+} from "./config-builder/UploaderManager.js";
+import {
+  attachSearchEvents as attachSearchEventsFn,
+  buildSearchIndexForBuilder as buildSearchIndexForBuilderFn,
+  fuzzySearchForBuilder as fuzzySearchForBuilderFn,
+  renderSearchResults as renderSearchResultsFn,
+  hideSearchResults as hideSearchResultsFn,
+  navigateToOption as navigateToOptionFn
+} from "./config-builder/SearchUI.js";
 
 /**
  * Get FileUploader's default options (flattened)
@@ -117,1638 +177,61 @@ export default class ConfigBuilder {
 
   /**
    * Get all option definitions with metadata
+   * Delegates to OptionDefinitions module
    */
   getOptionDefinitions() {
-    return {
-      // URL Configuration
-      urls: {
-        title: "URL Configuration",
-        icon: "link",
-        options: {
-          uploadUrl: {
-            type: "text",
-            default: "./upload.php",
-            label: "Upload URL",
-            hint: "Server endpoint for file uploads",
-          },
-          deleteUrl: {
-            type: "text",
-            default: "./delete.php",
-            label: "Delete URL",
-            hint: "Server endpoint for file deletion",
-          },
-          downloadAllUrl: {
-            type: "text",
-            default: "./download-all.php",
-            label: "Download All URL",
-            hint: "Server endpoint for downloading all files as ZIP",
-          },
-          cleanupZipUrl: {
-            type: "text",
-            default: "./cleanup-zip.php",
-            label: "Cleanup ZIP URL",
-            hint: "Server endpoint for cleaning up temporary ZIP files",
-          },
-          copyFileUrl: {
-            type: "text",
-            default: "./copy-file.php",
-            label: "Copy File URL",
-            hint: "Server endpoint for copying files between directories",
-          },
-          configUrl: {
-            type: "text",
-            default: "./get-config.php",
-            label: "Config URL",
-            hint: "Server endpoint to fetch configuration",
-          },
-          uploadDir: {
-            type: "text",
-            default: "",
-            label: "Upload Directory",
-            hint: "Target folder for uploads (e.g., 'profile_pictures')",
-          },
-        },
-      },
-
-      // File Size Limits
-      sizeLimits: {
-        title: "File Size Limits",
-        icon: "size",
-        options: {
-          perFileMaxSize: {
-            type: "size",
-            default: 10 * 1024 * 1024,
-            label: "Per File Max Size",
-            hint: "Maximum size for a single file",
-          },
-          totalMaxSize: {
-            type: "size",
-            default: 100 * 1024 * 1024,
-            label: "Total Max Size",
-            hint: "Maximum total size for all files combined",
-          },
-          maxFiles: {
-            type: "number",
-            default: 10,
-            min: 1,
-            max: 100,
-            label: "Max Files",
-            hint: "Maximum number of files allowed",
-          },
-        },
-      },
-
-      // Per-Type Size Limits
-      perTypeLimits: {
-        title: "Per-Type Limits",
-        icon: "layers",
-        options: {
-          perFileMaxSizePerType: {
-            type: "typeSize",
-            default: {},
-            label: "Per File Max Size (by type)",
-            hint: "Maximum size for a single file of each type",
-            types: ["image", "video", "audio", "document", "archive"],
-          },
-          perTypeMaxTotalSize: {
-            type: "typeSize",
-            default: {},
-            label: "Max Total Size (by type)",
-            hint: "Maximum total size for all files of each type",
-            types: ["image", "video", "audio", "document", "archive"],
-          },
-          perTypeMaxFileCount: {
-            type: "typeCount",
-            default: {},
-            label: "Max File Count (by type)",
-            hint: "Maximum number of files per type",
-            types: ["image", "video", "audio", "document", "archive"],
-          },
-        },
-      },
-
-      // File Type Configuration
-      fileTypes: {
-        title: "Allowed File Types",
-        icon: "file",
-        options: {
-          allowedExtensions: {
-            type: "extensions",
-            default: [],
-            label: "Allowed Extensions",
-            hint: "Leave empty to allow all types, or select specific extensions",
-          },
-        },
-      },
-
-      // MIME Type Validation (PHP only)
-      mimeTypes: {
-        title: "MIME Type Validation (PHP)",
-        icon: "shield",
-        options: {
-          allowedMimeTypes: {
-            type: "mimeTypes",
-            default: [],
-            label: "Allowed MIME Types",
-            hint: "Server-side MIME type validation. Leave empty to allow all types, or select specific MIME types. This is used for PHP validation only.",
-          },
-        },
-      },
-
-      // Upload Behavior
-      behavior: {
-        title: "Upload Behavior",
-        icon: "settings",
-        options: {
-          multiple: {
-            type: "boolean",
-            default: true,
-            label: "Multiple Files",
-            hint: "Allow selecting multiple files at once",
-            affectsOptions: ["maxFiles"], // When false, maxFiles becomes 1
-          },
-          autoFetchConfig: {
-            type: "boolean",
-            default: true,
-            label: "Auto Fetch Config",
-            hint: "Automatically fetch configuration from server on init",
-            affectsOptions: ["configUrl"],
-          },
-          confirmBeforeDelete: {
-            type: "boolean",
-            default: false,
-            label: "Confirm Before Delete",
-            hint: "Show confirmation dialog before deleting files",
-          },
-          preventDuplicates: {
-            type: "boolean",
-            default: false,
-            label: "Prevent Duplicates",
-            hint: "Prevent uploading the same file again",
-            affectsOptions: ["duplicateCheckBy"],
-          },
-          duplicateCheckBy: {
-            type: "select",
-            default: "name-size",
-            label: "Duplicate Check Method",
-            hint: "How to detect duplicate files",
-            options: [
-              { value: "name", label: "File Name Only" },
-              { value: "size", label: "File Size Only" },
-              { value: "name-size", label: "Name + Size" },
-              { value: "hash", label: "File Hash (slower)" },
-            ],
-            dependsOn: "preventDuplicates",
-          },
-          cleanupOnUnload: {
-            type: "boolean",
-            default: true,
-            label: "Cleanup On Unload",
-            hint: "Delete uploaded files from server when leaving the page",
-          },
-          cleanupOnDestroy: {
-            type: "boolean",
-            default: true,
-            label: "Cleanup On Destroy",
-            hint: "Delete uploaded files from server when the uploader instance is destroyed",
-          },
-        },
-      },
-
-      // Limits Display
-      limitsDisplay: {
-        title: "Limits Display",
-        icon: "eye",
-        options: {
-          showLimits: {
-            type: "boolean",
-            default: true,
-            label: "Show Limits",
-            hint: "Display file limits section",
-            affectsOptions: [
-              "showProgressBar",
-              "showTypeProgressBar",
-              "showPerFileLimit",
-              "showTypeGroupSize",
-              "showTypeGroupCount",
-              "defaultLimitsView",
-              "allowLimitsViewToggle",
-              "showLimitsToggle",
-              "defaultLimitsVisible",
-            ],
-          },
-          showProgressBar: {
-            type: "boolean",
-            default: false,
-            label: "Show Summary Progress Bar",
-            hint: "Show progress bar for Total Size and File Count summary",
-            dependsOn: "showLimits",
-          },
-          showTypeProgressBar: {
-            type: "boolean",
-            default: true,
-            label: "Show Type Progress Bar",
-            hint: "Show progress bar in type grid cards",
-            dependsOn: "showLimits",
-          },
-          showPerFileLimit: {
-            type: "boolean",
-            default: true,
-            label: "Show Per File Limit",
-            hint: "Show per file size limit in type groups",
-            dependsOn: "showLimits",
-          },
-          showTypeGroupSize: {
-            type: "boolean",
-            default: true,
-            label: "Show Type Group Size",
-            hint: "Show total uploaded size per type group",
-            dependsOn: "showLimits",
-          },
-          showTypeGroupCount: {
-            type: "boolean",
-            default: true,
-            label: "Show Type Group Count",
-            hint: "Show file count per type group",
-            dependsOn: "showLimits",
-          },
-          defaultLimitsView: {
-            type: "select",
-            default: "concise",
-            label: "Default Limits View",
-            hint: "Default view mode for limits section",
-            options: [
-              { value: "concise", label: "Concise" },
-              { value: "detailed", label: "Detailed" },
-            ],
-            dependsOn: "showLimits",
-          },
-          allowLimitsViewToggle: {
-            type: "boolean",
-            default: true,
-            label: "Allow Limits View Toggle",
-            hint: "Allow toggling between concise and detailed view",
-            dependsOn: "showLimits",
-          },
-          showLimitsToggle: {
-            type: "boolean",
-            default: true,
-            label: "Show Limits Toggle",
-            hint: "Show button to hide/show limits section",
-            dependsOn: "showLimits",
-          },
-          defaultLimitsVisible: {
-            type: "boolean",
-            default: true,
-            label: "Default Limits Visible",
-            hint: "Show limits section by default",
-            dependsOn: "showLimits",
-          },
-        },
-      },
-
-      // Alert Notifications
-      alerts: {
-        title: "Alert Notifications",
-        icon: "bell",
-        options: {
-          alertAnimation: {
-            type: "select",
-            default: "shake",
-            label: "Alert Animation",
-            hint: "Animation style for alert notifications",
-            options: [
-              { value: "fade", label: "Fade" },
-              { value: "shake", label: "Shake" },
-              { value: "bounce", label: "Bounce" },
-              { value: "slideDown", label: "Slide Down" },
-              { value: "pop", label: "Pop" },
-              { value: "flip", label: "Flip" },
-            ],
-          },
-          alertDuration: {
-            type: "number",
-            default: 5000,
-            min: 0,
-            max: 30000,
-            step: 500,
-            label: "Alert Duration (ms)",
-            hint: "Auto-dismiss duration (0 = no auto-dismiss)",
-          },
-        },
-      },
-
-      // Buttons Configuration
-      buttons: {
-        title: "Buttons",
-        icon: "button",
-        options: {
-          showDownloadAllButton: {
-            type: "boolean",
-            default: true,
-            label: "Show Download All Button",
-            hint: "Show internal download-all button",
-            affectsOptions: ["downloadAllButtonText"],
-          },
-          downloadAllButtonText: {
-            type: "text",
-            default: "Download All",
-            label: "Download All Button Text",
-            hint: "Text for download-all button",
-            dependsOn: "showDownloadAllButton",
-          },
-          showClearAllButton: {
-            type: "boolean",
-            default: true,
-            label: "Show Clear All Button",
-            hint: "Show internal clear-all button",
-            affectsOptions: ["clearAllButtonText"],
-          },
-          clearAllButtonText: {
-            type: "text",
-            default: "Clear All",
-            label: "Clear All Button Text",
-            hint: "Text for clear-all button",
-            dependsOn: "showClearAllButton",
-          },
-        },
-      },
-
-      // Media Capture
-      mediaCapture: {
-        title: "Media Capture",
-        icon: "camera",
-        options: {
-          // Page Capture Group
-          enableFullPageCapture: {
-            type: "boolean",
-            default: true,
-            label: "Enable Full Page Capture",
-            hint: "Enable full page screenshot capture button (captures entire scrollable page)",
-            affectsOptions: ["modalMediaButtons", "collapsibleCaptureButtons"],
-            group: "Page Capture",
-          },
-          enableRegionCapture: {
-            type: "boolean",
-            default: true,
-            label: "Enable Region Capture",
-            hint: "Enable region selection screenshot capture button (user selects area to capture)",
-            affectsOptions: ["modalMediaButtons", "collapsibleCaptureButtons"],
-            group: "Page Capture",
-          },
-          regionCaptureShowDimensions: {
-            type: "boolean",
-            default: true,
-            label: "Show Region Dimensions",
-            hint: "Display width × height dimensions while selecting a region to capture",
-            dependsOn: "enableRegionCapture",
-            group: "Page Capture",
-          },
-          regionCaptureDimensionsPosition: {
-            type: "select",
-            default: "center",
-            label: "Dimensions Position",
-            hint: "Position of the dimensions display relative to the selection box",
-            dependsOn: "enableRegionCapture",
-            options: [
-              { value: "top-left", label: "Top Left" },
-              { value: "top-center", label: "Top Center" },
-              { value: "top-right", label: "Top Right" },
-              { value: "center-left", label: "Center Left" },
-              { value: "center", label: "Center" },
-              { value: "center-right", label: "Center Right" },
-              { value: "bottom-left", label: "Bottom Left" },
-              { value: "bottom-center", label: "Bottom Center" },
-              { value: "bottom-right", label: "Bottom Right" },
-            ],
-            group: "Page Capture",
-          },
-          regionCaptureImmediateCapture: {
-            type: "boolean",
-            default: true,
-            label: "Immediate Capture",
-            hint: "When enabled, captures immediately after selection. When disabled, shows a confirmation toolbar allowing repositioning before capture.",
-            dependsOn: "enableRegionCapture",
-            group: "Page Capture",
-          },
-
-          // Screen Recording Group
-          enableScreenCapture: {
-            type: "boolean",
-            default: true,
-            label: "Enable Screenshot Capture",
-            hint: "Enable screenshot capture button (uses display media API)",
-            affectsOptions: ["enableMicrophoneAudio", "enableSystemAudio", "modalMediaButtons", "collapsibleCaptureButtons"],
-            group: "Screen Recording",
-          },
-          enableVideoRecording: {
-            type: "boolean",
-            default: true,
-            label: "Enable Screen Recording",
-            hint: "Enable screen recording button",
-            affectsOptions: [
-              "maxVideoRecordingDuration",
-              "recordingCountdownDuration",
-              "modalMediaButtons",
-              "collapsibleCaptureButtons",
-            ],
-            group: "Screen Recording",
-          },
-          maxVideoRecordingDuration: {
-            type: "number",
-            default: 300,
-            min: 10,
-            max: 3600,
-            label: "Max Video Duration (sec)",
-            hint: "Maximum video recording duration in seconds",
-            dependsOn: "enableVideoRecording",
-            group: "Screen Recording",
-          },
-          recordingCountdownDuration: {
-            type: "number",
-            default: 3,
-            min: 0,
-            max: 10,
-            label: "Recording Countdown (sec)",
-            hint: "Countdown duration before recording starts",
-            dependsOn: "enableVideoRecording",
-            group: "Screen Recording",
-          },
-          enableMicrophoneAudio: {
-            type: "boolean",
-            default: true,
-            label: "Enable Microphone Audio",
-            hint: "Record microphone audio during screen capture",
-            dependsOn: "enableScreenCapture",
-            group: "Screen Recording",
-          },
-          enableSystemAudio: {
-            type: "boolean",
-            default: true,
-            label: "Enable System Audio",
-            hint: "Record system audio during screen capture",
-            dependsOn: "enableScreenCapture",
-            group: "Screen Recording",
-          },
-          videoBitsPerSecond: {
-            type: "selectWithInput",
-            default: 2500000,
-            label: "Video Bitrate",
-            hint: "Video quality/bitrate for screen recording. Select a preset or enter a custom value.",
-            dependsOn: "enableVideoRecording",
-            formatType: "bitrate",
-            options: [
-              { value: 1000000, label: "Low (1 Mbps)" },
-              { value: 2500000, label: "Medium (2.5 Mbps)" },
-              { value: 5000000, label: "High (5 Mbps)" },
-              { value: 8000000, label: "Ultra (8 Mbps)" },
-            ],
-            group: "Screen Recording",
-          },
-          maxVideoRecordingFileSize: {
-            type: "selectWithInput",
-            default: null,
-            label: "Max Video File Size",
-            hint: "Maximum file size for screen/video recordings (auto-stops when reached). Select a preset or enter a custom value.",
-            dependsOn: "enableVideoRecording",
-            formatType: "size",
-            options: [
-              { value: null, label: "No Limit (use per-file limit)" },
-              { value: 5242880, label: "5 MB" },
-              { value: 10485760, label: "10 MB" },
-              { value: 26214400, label: "25 MB" },
-              { value: 52428800, label: "50 MB" },
-              { value: 104857600, label: "100 MB" },
-              { value: 262144000, label: "250 MB" },
-              { value: 524288000, label: "500 MB" },
-            ],
-            group: "Screen Recording",
-          },
-
-          // Audio Recording Group
-          enableAudioRecording: {
-            type: "boolean",
-            default: true,
-            label: "Enable Audio Recording",
-            hint: "Enable audio recording button",
-            affectsOptions: ["maxAudioRecordingDuration", "modalMediaButtons", "collapsibleCaptureButtons"],
-            group: "Audio Recording",
-          },
-          maxAudioRecordingDuration: {
-            type: "number",
-            default: 300,
-            min: 10,
-            max: 3600,
-            label: "Max Audio Duration (sec)",
-            hint: "Maximum audio recording duration in seconds",
-            dependsOn: "enableAudioRecording",
-            group: "Audio Recording",
-          },
-          audioBitsPerSecond: {
-            type: "selectWithInput",
-            default: 128000,
-            label: "Audio Bitrate",
-            hint: "Audio quality/bitrate for recordings. Select a preset or enter a custom value.",
-            dependsOn: "enableAudioRecording",
-            formatType: "bitrate",
-            options: [
-              { value: 64000, label: "Low (64 Kbps)" },
-              { value: 128000, label: "Medium (128 Kbps)" },
-              { value: 192000, label: "High (192 Kbps)" },
-              { value: 320000, label: "Ultra (320 Kbps)" },
-            ],
-            group: "Audio Recording",
-          },
-          maxAudioRecordingFileSize: {
-            type: "selectWithInput",
-            default: null,
-            label: "Max Audio File Size",
-            hint: "Maximum file size for audio recordings (auto-stops when reached). Select a preset or enter a custom value.",
-            dependsOn: "enableAudioRecording",
-            formatType: "size",
-            options: [
-              { value: null, label: "No Limit (use per-file limit)" },
-              { value: 1048576, label: "1 MB" },
-              { value: 5242880, label: "5 MB" },
-              { value: 10485760, label: "10 MB" },
-              { value: 26214400, label: "25 MB" },
-              { value: 52428800, label: "50 MB" },
-              { value: 104857600, label: "100 MB" },
-            ],
-            group: "Audio Recording",
-          },
-
-          // Display Options Group
-          collapsibleCaptureButtons: {
-            type: "boolean",
-            default: false,
-            label: "Collapsible Capture Buttons",
-            hint: "Show capture buttons in a collapsible/expandable format with toggle button",
-            showWhen: (config) =>
-              config.enableFullPageCapture ||
-              config.enableRegionCapture ||
-              config.enableScreenCapture ||
-              config.enableVideoRecording ||
-              config.enableAudioRecording,
-            group: "Display Options",
-          },
-          showRecordingSize: {
-            type: "boolean",
-            default: true,
-            label: "Show Recording Size",
-            hint: "Show approximate file size during recording",
-            showWhen: (config) => config.enableVideoRecording || config.enableAudioRecording,
-            group: "Display Options",
-          },
-        },
-      },
-
-      // Carousel Preview
-      carousel: {
-        title: "Carousel Preview",
-        icon: "image",
-        options: {
-          enableCarouselPreview: {
-            type: "boolean",
-            default: true,
-            label: "Enable Carousel Preview",
-            hint: "Enable carousel preview modal on file click",
-            affectsOptions: [
-              "carouselAutoPreload",
-              "carouselEnableManualLoading",
-              "carouselShowDownloadButton",
-              "carouselMaxPreviewRows",
-              "carouselMaxTextPreviewChars",
-              "carouselVisibleTypes",
-              "carouselPreviewableTypes",
-            ],
-          },
-          carouselAutoPreload: {
-            type: "boolean",
-            default: true,
-            label: "Auto Preload Files",
-            hint: "Automatically preload files in carousel",
-            dependsOn: "enableCarouselPreview",
-          },
-          carouselEnableManualLoading: {
-            type: "boolean",
-            default: true,
-            label: "Enable Manual Loading",
-            hint: 'Show "Load All" button in carousel',
-            dependsOn: "enableCarouselPreview",
-          },
-          carouselShowDownloadButton: {
-            type: "boolean",
-            default: true,
-            label: "Show Download Button",
-            hint: "Show download button in carousel preview",
-            dependsOn: "enableCarouselPreview",
-          },
-          carouselMaxPreviewRows: {
-            type: "number",
-            default: 100,
-            min: 10,
-            max: 1000,
-            label: "Max Preview Rows",
-            hint: "Max rows to show for CSV/Excel preview",
-            dependsOn: "enableCarouselPreview",
-          },
-          carouselMaxTextPreviewChars: {
-            type: "number",
-            default: 50000,
-            min: 1000,
-            max: 500000,
-            label: "Max Text Preview Chars",
-            hint: "Max characters for text file preview",
-            dependsOn: "enableCarouselPreview",
-          },
-          carouselVisibleTypes: {
-            type: "multiSelect",
-            default: ["image", "video", "audio", "pdf", "excel", "csv", "text"],
-            label: "Visible Types",
-            hint: "File types visible in carousel",
-            options: [
-              "image",
-              "video",
-              "audio",
-              "pdf",
-              "excel",
-              "csv",
-              "text",
-              "document",
-              "archive",
-            ],
-            dependsOn: "enableCarouselPreview",
-          },
-          carouselPreviewableTypes: {
-            type: "multiSelect",
-            default: ["image", "video", "audio", "pdf", "csv", "excel", "text"],
-            label: "Previewable Types",
-            hint: "File types that can be previewed",
-            options: [
-              "image",
-              "video",
-              "audio",
-              "pdf",
-              "excel",
-              "csv",
-              "text",
-              "document",
-              "archive",
-            ],
-            dependsOn: "enableCarouselPreview",
-          },
-        },
-      },
-
-      // Display Mode
-      displayMode: {
-        title: "Display Mode",
-        icon: "layout",
-        options: {
-          displayMode: {
-            type: "select",
-            default: "inline",
-            label: "Display Mode",
-            hint: "How the uploader is displayed on the page",
-            options: [
-              { value: "inline", label: "Inline (default)" },
-              { value: "modal-minimal", label: "Modal with Minimal Preview" },
-              { value: "modal-detailed", label: "Modal with Detailed Preview" },
-            ],
-            affectsOptions: [
-              "modalButtonText",
-              "modalButtonIcon",
-              "modalTitle",
-              "modalSize",
-              "bootstrapVersion",
-            ],
-          },
-          modalButtonText: {
-            type: "text",
-            default: "Upload Files",
-            label: "Modal Button Text",
-            hint: "Text for the button that opens the modal",
-            dependsOn: "displayMode",
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-          modalButtonIcon: {
-            type: "select",
-            default: "upload",
-            label: "Modal Button Icon",
-            hint: "Icon to show on the modal trigger button",
-            options: [
-              { value: "upload", label: "Upload Cloud" },
-              { value: "plus", label: "Plus" },
-              { value: "folder", label: "Folder" },
-              { value: "none", label: "No Icon" },
-            ],
-            dependsOn: "displayMode",
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-          modalTitle: {
-            type: "text",
-            default: "Upload Files",
-            label: "Modal Title",
-            hint: "Title shown in the modal header",
-            dependsOn: "displayMode",
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-          modalSize: {
-            type: "select",
-            default: "lg",
-            label: "Modal Size",
-            hint: "Size of the modal dialog",
-            options: [
-              { value: "sm", label: "Small" },
-              { value: "md", label: "Medium" },
-              { value: "lg", label: "Large" },
-              { value: "xl", label: "Extra Large" },
-            ],
-            dependsOn: "displayMode",
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-          bootstrapVersion: {
-            type: "select",
-            default: "5",
-            label: "Bootstrap Version",
-            hint: "Bootstrap version for modal markup",
-            options: [
-              { value: "3", label: "Bootstrap 3" },
-              { value: "4", label: "Bootstrap 4" },
-              { value: "5", label: "Bootstrap 5" },
-            ],
-            dependsOn: "displayMode",
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-          modalMediaButtons: {
-            type: "multiSelect",
-            default: [],
-            label: "Media Capture Buttons",
-            hint: "Show media capture buttons alongside the modal button for quick access (only enabled options from Media Capture section are available)",
-            options: ["fullpage", "region", "screenshot", "video", "audio"],
-            optionLabels: {
-              fullpage: "Full Page Capture",
-              region: "Region Capture",
-              screenshot: "Screenshot Capture",
-              video: "Screen Recording",
-              audio: "Audio Recording",
-            },
-            filterOptions: (config) => {
-              // Only show options that are enabled in Media Capture settings
-              const available = [];
-              if (config.enableFullPageCapture) available.push("fullpage");
-              if (config.enableRegionCapture) available.push("region");
-              if (config.enableScreenCapture) available.push("screenshot");
-              if (config.enableVideoRecording) available.push("video");
-              if (config.enableAudioRecording) available.push("audio");
-              return available;
-            },
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-          enableModalDropZone: {
-            type: "boolean",
-            default: true,
-            label: "Enable Drop Zone on Button",
-            hint: "Allow drag and drop files directly onto the modal trigger button",
-            showWhen: (config) =>
-              config.displayMode === "modal-minimal" ||
-              config.displayMode === "modal-detailed",
-          },
-        },
-      },
-
-      // Cross-Uploader
-      crossUploader: {
-        title: "Cross-Uploader Drag & Drop",
-        icon: "move",
-        options: {
-          enableCrossUploaderDrag: {
-            type: "boolean",
-            default: true,
-            label: "Enable Cross-Uploader Drag",
-            hint: "Allow dragging files between uploaders",
-          },
-        },
-      },
-    };
+    return getOptionDefinitionsFn();
   }
 
   /**
    * Get the default value for an option
-   * Prioritizes FileUploader defaults, falls back to hardcoded default in option definition
-   * @param {string} key - Option key
-   * @param {*} fallbackDefault - Fallback default value from option definition
-   * @returns {*} The default value
+   * Prioritizes FileUploader defaults, falls back to hardcoded default
    */
   getOptionDefault(key, fallbackDefault) {
-    // Check if FileUploader has a default for this option
     if (this.fileUploaderDefaults && key in this.fileUploaderDefaults) {
       return structuredClone(this.fileUploaderDefaults[key]);
     }
-    // Fall back to hardcoded default
     return structuredClone(fallbackDefault);
   }
 
   /**
    * Get default config values
+   * Uses optionDefinitions and fileUploaderDefaults
    */
   getDefaultConfig() {
-    const config = {};
-    for (const category of Object.values(this.optionDefinitions)) {
-      for (const [key, def] of Object.entries(category.options)) {
-        config[key] = this.getOptionDefault(key, def.default);
-      }
-    }
-    return config;
+    return getDefaultConfigFn(this.optionDefinitions, this.fileUploaderDefaults);
   }
 
   /**
    * Get style variable definitions organized by section
+   * Delegates to StyleDefinitions module
    */
   getStyleDefinitions() {
-    return {
-      primaryColors: {
-        title: "Primary Colors",
-        icon: "palette",
-        variables: {
-          "--fu-primary-50": {
-            type: "color",
-            default: "#ebf8ff",
-            label: "Primary 50",
-          },
-          "--fu-primary-100": {
-            type: "color",
-            default: "#bee3f8",
-            label: "Primary 100",
-          },
-          "--fu-primary-200": {
-            type: "color",
-            default: "#90cdf4",
-            label: "Primary 200",
-          },
-          "--fu-primary-300": {
-            type: "color",
-            default: "#63b3ed",
-            label: "Primary 300",
-          },
-          "--fu-primary-400": {
-            type: "color",
-            default: "#4299e1",
-            label: "Primary 400",
-          },
-          "--fu-primary-500": {
-            type: "color",
-            default: "#3182ce",
-            label: "Primary 500",
-          },
-          "--fu-primary-600": {
-            type: "color",
-            default: "#2b6cb0",
-            label: "Primary 600",
-          },
-          "--fu-primary-700": {
-            type: "color",
-            default: "#2c5282",
-            label: "Primary 700",
-          },
-          "--fu-primary-800": {
-            type: "color",
-            default: "#2a4365",
-            label: "Primary 800",
-          },
-          "--fu-primary-900": {
-            type: "color",
-            default: "#1a365d",
-            label: "Primary 900",
-          },
-        },
-      },
-      grayColors: {
-        title: "Gray Colors",
-        icon: "palette",
-        variables: {
-          "--fu-gray-50": {
-            type: "color",
-            default: "#f7fafc",
-            label: "Gray 50",
-          },
-          "--fu-gray-100": {
-            type: "color",
-            default: "#edf2f7",
-            label: "Gray 100",
-          },
-          "--fu-gray-200": {
-            type: "color",
-            default: "#e2e8f0",
-            label: "Gray 200",
-          },
-          "--fu-gray-300": {
-            type: "color",
-            default: "#cbd5e0",
-            label: "Gray 300",
-          },
-          "--fu-gray-400": {
-            type: "color",
-            default: "#a0aec0",
-            label: "Gray 400",
-          },
-          "--fu-gray-500": {
-            type: "color",
-            default: "#718096",
-            label: "Gray 500",
-          },
-          "--fu-gray-600": {
-            type: "color",
-            default: "#4a5568",
-            label: "Gray 600",
-          },
-          "--fu-gray-700": {
-            type: "color",
-            default: "#2d3748",
-            label: "Gray 700",
-          },
-          "--fu-gray-800": {
-            type: "color",
-            default: "#1a202c",
-            label: "Gray 800",
-          },
-          "--fu-gray-900": {
-            type: "color",
-            default: "#171923",
-            label: "Gray 900",
-          },
-        },
-      },
-      statusColors: {
-        title: "Status Colors",
-        icon: "check",
-        variables: {
-          "--fu-success-50": {
-            type: "color",
-            default: "#f0fff4",
-            label: "Success 50",
-          },
-          "--fu-success-100": {
-            type: "color",
-            default: "#c6f6d5",
-            label: "Success 100",
-          },
-          "--fu-success-500": {
-            type: "color",
-            default: "#48bb78",
-            label: "Success 500",
-          },
-          "--fu-success-600": {
-            type: "color",
-            default: "#38a169",
-            label: "Success 600",
-          },
-          "--fu-success-700": {
-            type: "color",
-            default: "#2f855a",
-            label: "Success 700",
-          },
-          "--fu-success-800": {
-            type: "color",
-            default: "#276749",
-            label: "Success 800",
-          },
-          "--fu-error-50": {
-            type: "color",
-            default: "#fff5f5",
-            label: "Error 50",
-          },
-          "--fu-error-100": {
-            type: "color",
-            default: "#fed7d7",
-            label: "Error 100",
-          },
-          "--fu-error-500": {
-            type: "color",
-            default: "#fc8181",
-            label: "Error 500",
-          },
-          "--fu-error-600": {
-            type: "color",
-            default: "#e53e3e",
-            label: "Error 600",
-          },
-          "--fu-error-700": {
-            type: "color",
-            default: "#c53030",
-            label: "Error 700",
-          },
-          "--fu-error-800": {
-            type: "color",
-            default: "#9b2c2c",
-            label: "Error 800",
-          },
-          "--fu-warning-50": {
-            type: "color",
-            default: "#fffbeb",
-            label: "Warning 50",
-          },
-          "--fu-warning-100": {
-            type: "color",
-            default: "#fef3c7",
-            label: "Warning 100",
-          },
-          "--fu-warning-400": {
-            type: "color",
-            default: "#fbbf24",
-            label: "Warning 400",
-          },
-          "--fu-warning-500": {
-            type: "color",
-            default: "#f59e0b",
-            label: "Warning 500",
-          },
-          "--fu-warning-600": {
-            type: "color",
-            default: "#d97706",
-            label: "Warning 600",
-          },
-          "--fu-warning-700": {
-            type: "color",
-            default: "#b45309",
-            label: "Warning 700",
-          },
-        },
-      },
-      semanticColorsLight: {
-        title: "Semantic Colors (Light Mode)",
-        icon: "sun",
-        mode: "light",
-        variables: {
-          "--fu-color-primary": {
-            type: "color",
-            default: "#4299e1",
-            label: "Primary",
-          },
-          "--fu-color-primary-hover": {
-            type: "color",
-            default: "#3182ce",
-            label: "Primary Hover",
-          },
-          "--fu-color-primary-light": {
-            type: "color",
-            default: "#ebf8ff",
-            label: "Primary Light",
-          },
-          "--fu-color-text": {
-            type: "color",
-            default: "#2d3748",
-            label: "Text",
-          },
-          "--fu-color-text-muted": {
-            type: "color",
-            default: "#718096",
-            label: "Text Muted",
-          },
-          "--fu-color-text-light": {
-            type: "color",
-            default: "#4a5568",
-            label: "Text Light",
-          },
-          "--fu-color-bg": {
-            type: "color",
-            default: "#ffffff",
-            label: "Background",
-          },
-          "--fu-color-bg-light": {
-            type: "color",
-            default: "#f7fafc",
-            label: "Background Light",
-          },
-          "--fu-color-bg-hover": {
-            type: "color",
-            default: "#ebf8ff",
-            label: "Background Hover",
-          },
-          "--fu-color-border": {
-            type: "color",
-            default: "#cbd5e0",
-            label: "Border",
-          },
-          "--fu-color-border-light": {
-            type: "color",
-            default: "#e2e8f0",
-            label: "Border Light",
-          },
-          "--fu-color-border-hover": {
-            type: "color",
-            default: "#4299e1",
-            label: "Border Hover",
-          },
-          "--fu-color-success": {
-            type: "color",
-            default: "#48bb78",
-            label: "Success",
-          },
-          "--fu-color-success-bg": {
-            type: "color",
-            default: "#c6f6d5",
-            label: "Success Background",
-          },
-          "--fu-color-success-text": {
-            type: "color",
-            default: "#2f855a",
-            label: "Success Text",
-          },
-          "--fu-color-error": {
-            type: "color",
-            default: "#fc8181",
-            label: "Error",
-          },
-          "--fu-color-error-bg": {
-            type: "color",
-            default: "#fed7d7",
-            label: "Error Background",
-          },
-          "--fu-color-error-text": {
-            type: "color",
-            default: "#c53030",
-            label: "Error Text",
-          },
-          "--fu-color-error-hover": {
-            type: "color",
-            default: "#9b2c2c",
-            label: "Error Hover",
-          },
-        },
-      },
-      semanticColorsDark: {
-        title: "Semantic Colors (Dark Mode)",
-        icon: "moon",
-        mode: "dark",
-        variables: {
-          // Same variables as light mode, but with dark mode default values
-          // These override the light mode values via @media (prefers-color-scheme: dark)
-          "--fu-color-text": {
-            type: "color",
-            default: "#e2e8f0",
-            label: "Text",
-          },
-          "--fu-color-text-muted": {
-            type: "color",
-            default: "#a0aec0",
-            label: "Text Muted",
-          },
-          "--fu-color-text-light": {
-            type: "color",
-            default: "#cbd5e0",
-            label: "Text Light",
-          },
-          "--fu-color-bg": {
-            type: "color",
-            default: "#1a202c",
-            label: "Background",
-          },
-          "--fu-color-bg-light": {
-            type: "color",
-            default: "#2d3748",
-            label: "Background Light",
-          },
-          "--fu-color-bg-hover": {
-            type: "color",
-            default: "#1a365d",
-            label: "Background Hover",
-          },
-          "--fu-color-border": {
-            type: "color",
-            default: "#4a5568",
-            label: "Border",
-          },
-          "--fu-color-border-light": {
-            type: "color",
-            default: "#2d3748",
-            label: "Border Light",
-          },
-          "--fu-color-border-hover": {
-            type: "color",
-            default: "#4299e1",
-            label: "Border Hover",
-          },
-        },
-      },
-      spacing: {
-        title: "Spacing",
-        icon: "size",
-        variables: {
-          "--fu-spacing-xs": {
-            type: "size",
-            default: "4px",
-            label: "Extra Small",
-          },
-          "--fu-spacing-sm": { type: "size", default: "8px", label: "Small" },
-          "--fu-spacing-md": { type: "size", default: "12px", label: "Medium" },
-          "--fu-spacing-lg": { type: "size", default: "16px", label: "Large" },
-          "--fu-spacing-xl": {
-            type: "size",
-            default: "20px",
-            label: "Extra Large",
-          },
-          "--fu-spacing-2xl": {
-            type: "size",
-            default: "24px",
-            label: "2X Large",
-          },
-          "--fu-spacing-3xl": {
-            type: "size",
-            default: "32px",
-            label: "3X Large",
-          },
-          "--fu-spacing-4xl": {
-            type: "size",
-            default: "40px",
-            label: "4X Large",
-          },
-        },
-      },
-      typography: {
-        title: "Typography",
-        icon: "text",
-        variables: {
-          "--fu-font-size-xs": {
-            type: "size",
-            default: "12px",
-            label: "Font Size XS",
-          },
-          "--fu-font-size-sm": {
-            type: "size",
-            default: "13px",
-            label: "Font Size SM",
-          },
-          "--fu-font-size-base": {
-            type: "size",
-            default: "14px",
-            label: "Font Size Base",
-          },
-          "--fu-font-size-md": {
-            type: "size",
-            default: "16px",
-            label: "Font Size MD",
-          },
-          "--fu-font-size-lg": {
-            type: "size",
-            default: "18px",
-            label: "Font Size LG",
-          },
-          "--fu-font-size-xl": {
-            type: "size",
-            default: "20px",
-            label: "Font Size XL",
-          },
-          "--fu-font-weight-normal": {
-            type: "number",
-            default: "400",
-            label: "Weight Normal",
-          },
-          "--fu-font-weight-medium": {
-            type: "number",
-            default: "500",
-            label: "Weight Medium",
-          },
-          "--fu-font-weight-semibold": {
-            type: "number",
-            default: "600",
-            label: "Weight Semibold",
-          },
-          "--fu-font-weight-bold": {
-            type: "number",
-            default: "700",
-            label: "Weight Bold",
-          },
-        },
-      },
-      borderRadius: {
-        title: "Border Radius",
-        icon: "window",
-        variables: {
-          "--fu-radius-xs": {
-            type: "size",
-            default: "3px",
-            label: "Extra Small",
-          },
-          "--fu-radius-sm": { type: "size", default: "4px", label: "Small" },
-          "--fu-radius-md": { type: "size", default: "6px", label: "Medium" },
-          "--fu-radius-lg": { type: "size", default: "8px", label: "Large" },
-          "--fu-radius-xl": {
-            type: "size",
-            default: "12px",
-            label: "Extra Large",
-          },
-          "--fu-radius-round": { type: "size", default: "50%", label: "Round" },
-        },
-      },
-      shadows: {
-        title: "Shadows",
-        icon: "layers",
-        variables: {
-          "--fu-shadow-sm": {
-            type: "text",
-            default: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-            label: "Small Shadow",
-          },
-          "--fu-shadow-md": {
-            type: "text",
-            default:
-              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-            label: "Medium Shadow",
-          },
-          "--fu-shadow-lg": {
-            type: "text",
-            default:
-              "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-            label: "Large Shadow",
-          },
-          "--fu-shadow-xl": {
-            type: "text",
-            default:
-              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-            label: "XL Shadow",
-          },
-        },
-      },
-      transitions: {
-        title: "Transitions",
-        icon: "settings",
-        variables: {
-          "--fu-transition-fast": {
-            type: "text",
-            default: "all 0.15s ease",
-            label: "Fast",
-          },
-          "--fu-transition-base": {
-            type: "text",
-            default: "all 0.2s ease",
-            label: "Base",
-          },
-          "--fu-transition-slow": {
-            type: "text",
-            default: "all 0.3s ease",
-            label: "Slow",
-          },
-        },
-      },
-      components: {
-        title: "Component Sizes",
-        icon: "settings",
-        variables: {
-          "--fu-dropzone-border-width": {
-            type: "size",
-            default: "2px",
-            label: "Dropzone Border",
-          },
-          "--fu-preview-height": {
-            type: "size",
-            default: "150px",
-            label: "Preview Height",
-          },
-          "--fu-preview-height-mobile": {
-            type: "size",
-            default: "120px",
-            label: "Preview Height Mobile",
-          },
-          "--fu-icon-size-sm": {
-            type: "size",
-            default: "18px",
-            label: "Icon Small",
-          },
-          "--fu-icon-size-md": {
-            type: "size",
-            default: "20px",
-            label: "Icon Medium",
-          },
-          "--fu-icon-size-lg": {
-            type: "size",
-            default: "40px",
-            label: "Icon Large",
-          },
-          "--fu-icon-size-xl": {
-            type: "size",
-            default: "48px",
-            label: "Icon XL",
-          },
-          "--fu-icon-size-2xl": {
-            type: "size",
-            default: "64px",
-            label: "Icon 2XL",
-          },
-          "--fu-button-size": {
-            type: "size",
-            default: "40px",
-            label: "Button Size",
-          },
-          "--fu-spinner-size": {
-            type: "size",
-            default: "40px",
-            label: "Spinner Size",
-          },
-          "--fu-spinner-border-width": {
-            type: "size",
-            default: "4px",
-            label: "Spinner Border",
-          },
-          "--fu-limit-item-width": {
-            type: "size",
-            default: "105px",
-            label: "Limit Item Width",
-          },
-          "--fu-limit-item-width-large": {
-            type: "size",
-            default: "150px",
-            label: "Limit Item Width Large",
-          },
-        },
-      },
-    };
+    return getStyleDefinitionsFn();
   }
 
   /**
-   * Get default style values from definitions
+   * Get default style values
+   * Delegates to StyleDefinitions module
    */
   getDefaultStyleValues() {
-    const values = {};
-    for (const section of Object.values(this.styleDefinitions)) {
-      for (const [varName, def] of Object.entries(section.variables)) {
-        values[varName] = def.default;
-      }
-    }
-    return values;
+    return getDefaultStyleValuesFn(this.styleDefinitions);
   }
 
   /**
-   * Get mapping of CSS variables to selectors for highlighting
+   * Get mapping of CSS variables to their associated selectors
+   * Delegates to VarMaps module
    */
   getVarToSelectorMap() {
-    return {
-      // Primary colors - dropzone, buttons, links
-      "--fu-primary-50": ".file-uploader-dropzone",
-      "--fu-primary-100": ".file-uploader-limits-summary",
-      "--fu-primary-400": ".file-uploader-dropzone, .file-uploader-btn",
-      "--fu-primary-500":
-        ".file-uploader-dropzone:hover, .file-uploader-btn:hover",
-      "--fu-primary-600": ".file-uploader-type-icon",
-      "--fu-color-primary":
-        ".file-uploader-dropzone, .file-uploader-btn, .file-uploader-file-link",
-      "--fu-color-primary-hover": ".file-uploader-dropzone:hover",
-      "--fu-color-primary-light": ".file-uploader-dropzone",
-
-      // Text colors
-      "--fu-color-text": ".file-uploader, .file-uploader-file-name, .file-uploader-limits-title",
-      "--fu-color-text-muted": ".file-uploader-hint, .file-uploader-file-size",
-      "--fu-color-text-light": ".file-uploader-dropzone-text",
-
-      // Background colors
-      "--fu-color-bg": ".file-uploader, .file-uploader-file, .file-uploader-type-card",
-      "--fu-color-bg-light": ".file-uploader-dropzone, .file-uploader-limits",
-      "--fu-color-bg-hover": ".file-uploader-file:hover, .file-uploader-limits-summary, .file-uploader-compact-progress, .file-uploader-type-progress, .file-uploader-general-card-progress",
-
-      // Border colors
-      "--fu-color-border": ".file-uploader, .file-uploader-file",
-      "--fu-color-border-light": ".file-uploader-dropzone, .file-uploader-limits, .file-uploader-type-card, .file-uploader-type-header",
-      "--fu-color-border-hover": ".file-uploader-dropzone:hover",
-
-      // Success colors (palette level)
-      "--fu-success-50": ".file-uploader-download",
-      "--fu-success-500": ".file-uploader-progress-fill, .file-uploader-type-progress-fill, .file-uploader-limit-progress-fill",
-      "--fu-success-600": ".file-uploader-download:hover",
-      "--fu-success-700": ".file-uploader-download:active",
-
-      // Status colors (semantic)
-      "--fu-color-success":
-        ".file-uploader-file-success, .file-uploader-progress-bar",
-      "--fu-color-success-bg": ".file-uploader-file-success",
-      "--fu-color-success-text": ".file-uploader-file-success",
-      "--fu-color-error": ".file-uploader-file-error, .file-uploader-error",
-      "--fu-color-error-bg": ".file-uploader-file-error",
-      "--fu-color-error-text": ".file-uploader-file-error",
-      "--fu-color-error-hover": ".file-uploader-remove:hover",
-
-      // Error colors (palette level)
-      "--fu-error-50": ".file-uploader-error-message",
-      "--fu-error-100": ".file-uploader-error-details",
-      "--fu-error-300": ".file-uploader-type-card.error",
-      "--fu-error-500": ".file-uploader-remove",
-      "--fu-error-600": ".file-uploader-remove:hover, .file-uploader-type-card.error",
-      "--fu-error-700": ".file-uploader-error-icon, .file-uploader-type-card.error",
-      "--fu-error-800": ".file-uploader-remove:active",
-
-      // Warning colors (palette level)
-      "--fu-warning-400": ".file-uploader-warning-icon",
-      "--fu-warning-500": ".file-uploader-type-card.warning",
-      "--fu-warning-600": ".file-uploader-type-card.warning",
-
-      // Gray colors (palette level)
-      "--fu-gray-50": ".file-uploader-type-card",
-      "--fu-gray-100": ".file-uploader-type-header",
-      "--fu-gray-200": ".file-uploader-type-divider",
-      "--fu-gray-300": ".file-uploader-type-card",
-      "--fu-gray-400": ".file-uploader-type-icon.empty",
-      "--fu-gray-500": ".file-uploader-file-meta",
-      "--fu-gray-600": ".file-uploader-limits-text",
-
-      // Spacing
-      "--fu-spacing-xs": ".file-uploader-limits-toggle",
-      "--fu-spacing-sm": ".file-uploader-file, .file-uploader-type-header",
-      "--fu-spacing-md": ".file-uploader-dropzone, .file-uploader-files, .file-uploader-limits, .file-uploader-type-card",
-      "--fu-spacing-lg": ".file-uploader, .file-uploader-limits, .file-uploader-limits-grid",
-      "--fu-spacing-xl": ".file-uploader-dropzone",
-      "--fu-spacing-2xl": ".file-uploader-files",
-
-      // Typography
-      "--fu-font-size-xs": ".file-uploader-limits-toggle, .file-uploader-type-value",
-      "--fu-font-size-sm": ".file-uploader-file-size, .file-uploader-hint, .file-uploader-limits-title, .file-uploader-type-name",
-      "--fu-font-size-base": ".file-uploader, .file-uploader-file-name",
-      "--fu-font-weight-medium": ".file-uploader-limits-title, .file-uploader-type-name",
-      "--fu-font-weight-semibold": ".file-uploader-file-name",
-
-      // Border radius
-      "--fu-radius-xs": ".file-uploader-compact-progress, .file-uploader-type-progress, .file-uploader-limit-progress",
-      "--fu-radius-sm": ".file-uploader-limits-toggle, .file-uploader-type-icon",
-      "--fu-radius-md": ".file-uploader-btn, .file-uploader-file, .file-uploader-limits, .file-uploader-type-card",
-      "--fu-radius-lg": ".file-uploader, .file-uploader-dropzone",
-      "--fu-radius-round": ".file-uploader-remove",
-
-      // Shadows
-      "--fu-shadow-sm": ".file-uploader-file",
-      "--fu-shadow-md": ".file-uploader-file:hover, .file-uploader-type-card:hover",
-
-      // Transitions
-      "--fu-transition-base": ".file-uploader-file, .file-uploader-btn",
-      "--fu-transition-fast": ".file-uploader-remove",
-
-      // Component specific
-      "--fu-dropzone-padding": ".file-uploader-dropzone",
-      "--fu-dropzone-border-width": ".file-uploader-dropzone",
-      "--fu-preview-height": ".file-uploader-file-preview",
-      "--fu-preview-height-mobile": ".file-uploader-file-preview",
-      "--fu-icon-size-sm": ".file-uploader-file-icon",
-      "--fu-icon-size-md": ".file-uploader-type-icon",
-      "--fu-icon-size-lg": ".file-uploader-dropzone-icon",
-      "--fu-icon-size-xl": ".file-uploader-empty-icon",
-      "--fu-button-size": ".file-uploader-btn",
-      "--fu-spinner-size": ".file-uploader-spinner",
-      "--fu-spinner-border-width": ".file-uploader-spinner",
-      "--fu-limit-item-width": ".file-uploader-limit-item",
-      "--fu-limit-item-width-large": ".file-uploader-limit-item.large",
-    };
+    return getVarToSelectorMap();
   }
 
   /**
    * Get mapping of semantic variables to their source palette variables
-   * This matches the CSS definitions in _variables.scss
+   * Delegates to VarMaps module
    */
   getVarSourceMap() {
-    return {
-      // Light mode semantic -> palette mappings
-      light: {
-        "--fu-color-primary": "--fu-primary-400",
-        "--fu-color-primary-hover": "--fu-primary-500",
-        "--fu-color-primary-light": "--fu-primary-50",
-        "--fu-color-text": "--fu-gray-700",
-        "--fu-color-text-muted": "--fu-gray-500",
-        "--fu-color-text-light": "--fu-gray-600",
-        "--fu-color-bg-light": "--fu-gray-50",
-        "--fu-color-bg-hover": "--fu-primary-50",
-        "--fu-color-border": "--fu-gray-300",
-        "--fu-color-border-light": "--fu-gray-200",
-        "--fu-color-border-hover": "--fu-primary-400",
-        "--fu-color-success": "--fu-success-500",
-        "--fu-color-success-bg": "--fu-success-100",
-        "--fu-color-success-text": "--fu-success-700",
-        "--fu-color-error": "--fu-error-500",
-        "--fu-color-error-bg": "--fu-error-100",
-        "--fu-color-error-text": "--fu-error-700",
-        "--fu-color-error-hover": "--fu-error-800",
-      },
-      // Dark mode semantic -> palette mappings
-      dark: {
-        "--fu-color-text": "--fu-gray-200",
-        "--fu-color-text-muted": "--fu-gray-400",
-        "--fu-color-text-light": "--fu-gray-300",
-        "--fu-color-bg": "--fu-gray-800",
-        "--fu-color-bg-light": "--fu-gray-700",
-        "--fu-color-bg-hover": "--fu-primary-900",
-        "--fu-color-border": "--fu-gray-600",
-        "--fu-color-border-light": "--fu-gray-700",
-        "--fu-color-border-hover": "--fu-primary-400",
-      },
-    };
+    return getVarSourceMap();
   }
 
   /**
@@ -1813,36 +296,10 @@ export default class ConfigBuilder {
 
   /**
    * Get theme variable overrides for light/dark mode
+   * Delegates to ThemeManager module
    */
   getThemeVars(effectiveTheme) {
-    // Define dark mode CSS variable overrides (matching _variables.scss dark mode)
-    // Using actual hex values to ensure proper override regardless of media query state
-    const darkModeVars = {
-      "--fu-color-text": "#e2e8f0", // --fu-gray-200
-      "--fu-color-text-muted": "#a0aec0", // --fu-gray-400
-      "--fu-color-text-light": "#cbd5e0", // --fu-gray-300
-      "--fu-color-bg": "#1a202c", // --fu-gray-800
-      "--fu-color-bg-light": "#374151", // Slightly lighter than container for contrast
-      "--fu-color-bg-hover": "#1a365d", // --fu-primary-900
-      "--fu-color-border": "#4a5568", // --fu-gray-600
-      "--fu-color-border-light": "#4a5568", // Visible border in dark mode
-      "--fu-color-border-hover": "#4299e1", // --fu-primary-400
-    };
-
-    // Define light mode CSS variable values (defaults from _variables.scss)
-    const lightModeVars = {
-      "--fu-color-text": "#2d3748", // --fu-gray-700
-      "--fu-color-text-muted": "#718096", // --fu-gray-500
-      "--fu-color-text-light": "#4a5568", // --fu-gray-600
-      "--fu-color-bg": "#ffffff",
-      "--fu-color-bg-light": "#f7fafc", // --fu-gray-50
-      "--fu-color-bg-hover": "#ebf8ff", // --fu-primary-50
-      "--fu-color-border": "#cbd5e0", // --fu-gray-300
-      "--fu-color-border-light": "#e2e8f0", // --fu-gray-200
-      "--fu-color-border-hover": "#4299e1", // --fu-primary-400
-    };
-
-    return effectiveTheme === "dark" ? darkModeVars : lightModeVars;
+    return getThemeVars(effectiveTheme);
   }
 
   /**
@@ -2661,525 +1118,66 @@ export default class ConfigBuilder {
 
   /**
    * Render per-type limits grouped by file type
+   * Delegates to PerTypeLimits module
    */
   renderPerTypeLimitsByFileType(options) {
-    const types = ["image", "video", "audio", "document", "archive"];
-    const perFileMaxSizeValues = this.config.perFileMaxSizePerType || {};
-    const perTypeMaxTotalSizeValues = this.config.perTypeMaxTotalSize || {};
-    const perTypeMaxFileCountValues = this.config.perTypeMaxFileCount || {};
-    const perFileMaxSizePerTypeDef = options.perFileMaxSizePerType || {};
-    const perTypeMaxTotalSizeDef = options.perTypeMaxTotalSize || {};
-    const perTypeMaxFileCountDef = options.perTypeMaxFileCount || {};
-
-    const maxBytes = this.getSliderMaxBytes();
-    const units = ["bytes", "KB", "MB", "GB"];
-
-    const minusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>`;
-    const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
-
-    let html = '<div class="fu-config-builder-pertype-by-filetype">';
-
-    for (const type of types) {
-      const typeIcon = this.getFileTypeIcon(type);
-      const perFileSizeBytes = perFileMaxSizeValues[type] || 0;
-      const totalSizeBytes = perTypeMaxTotalSizeValues[type] || 0;
-      const fileCount = perTypeMaxFileCountValues[type] || 0;
-
-      // Calculate display values for sizes
-      const perFileDisplay = perFileSizeBytes > 0 ? this.bytesToBestUnit(perFileSizeBytes) : { value: 0, unit: this.sliderConfig.unit };
-      const totalSizeDisplay = totalSizeBytes > 0 ? this.bytesToBestUnit(totalSizeBytes) : { value: 0, unit: this.sliderConfig.unit };
-      const perFileMaxValue = this.bytesToUnit(maxBytes, perFileDisplay.unit);
-      const totalSizeMaxValue = this.bytesToUnit(maxBytes, totalSizeDisplay.unit);
-      const stepBytes = this.getSliderStepBytes();
-      const perFileStepValue = Math.max(1, this.bytesToUnit(stepBytes, perFileDisplay.unit));
-      const totalSizeStepValue = Math.max(1, this.bytesToUnit(stepBytes, totalSizeDisplay.unit));
-
-      const perFileUnitOptions = units.map(u =>
-        `<option value="${u}" ${perFileDisplay.unit === u ? "selected" : ""}>${u}</option>`
-      ).join("");
-      const totalSizeUnitOptions = units.map(u =>
-        `<option value="${u}" ${totalSizeDisplay.unit === u ? "selected" : ""}>${u}</option>`
-      ).join("");
-
-      html += `
-        <div class="fu-config-builder-filetype-card" data-file-type="${type}">
-          <div class="fu-config-builder-filetype-card-header">
-            ${typeIcon}
-            <span class="fu-config-builder-filetype-card-title">${this.capitalizeFirst(type)}</span>
-          </div>
-          <div class="fu-config-builder-filetype-card-content">
-            <!-- Per File Max Size -->
-            <div class="fu-config-builder-filetype-limit-row">
-              <label class="fu-config-builder-filetype-limit-label">
-                Per File Max
-                <code>perFileMaxSizePerType.${type}</code>
-              </label>
-              <div class="fu-config-builder-type-slider-controls" data-option="perFileMaxSizePerType" data-type-key="${type}" data-unit="${perFileDisplay.unit}">
-                <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="decrease">
-                  ${minusIcon}
-                </button>
-                <input type="range"
-                       class="fu-config-builder-slider-input"
-                       data-slider-type="${type}"
-                       value="${perFileDisplay.value}"
-                       min="0"
-                       max="${perFileMaxValue}"
-                       step="${perFileStepValue}">
-                <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="increase">
-                  ${plusIcon}
-                </button>
-                <input type="number"
-                       class="fu-config-builder-slider-value-input fu-config-builder-slider-value-input-sm"
-                       data-value-type="${type}"
-                       value="${perFileDisplay.value || ""}"
-                       min="0"
-                       max="${perFileMaxValue}"
-                       placeholder="0">
-                <select class="fu-config-builder-unit-dropdown fu-config-builder-unit-dropdown-sm" data-unit-type="${type}">
-                  ${perFileUnitOptions}
-                </select>
-              </div>
-              <div class="fu-config-builder-slider-labels fu-config-builder-slider-labels-sm">
-                <span class="fu-config-builder-slider-label">0 ${perFileDisplay.unit}</span>
-                <span class="fu-config-builder-slider-label">${perFileMaxValue} ${perFileDisplay.unit}</span>
-              </div>
-            </div>
-            <!-- Total Size Max -->
-            <div class="fu-config-builder-filetype-limit-row">
-              <label class="fu-config-builder-filetype-limit-label">
-                Total Max Size
-                <code>perTypeMaxTotalSize.${type}</code>
-              </label>
-              <div class="fu-config-builder-type-slider-controls" data-option="perTypeMaxTotalSize" data-type-key="${type}" data-unit="${totalSizeDisplay.unit}">
-                <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="decrease">
-                  ${minusIcon}
-                </button>
-                <input type="range"
-                       class="fu-config-builder-slider-input"
-                       data-slider-type="${type}"
-                       value="${totalSizeDisplay.value}"
-                       min="0"
-                       max="${totalSizeMaxValue}"
-                       step="${totalSizeStepValue}">
-                <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="increase">
-                  ${plusIcon}
-                </button>
-                <input type="number"
-                       class="fu-config-builder-slider-value-input fu-config-builder-slider-value-input-sm"
-                       data-value-type="${type}"
-                       value="${totalSizeDisplay.value || ""}"
-                       min="0"
-                       max="${totalSizeMaxValue}"
-                       placeholder="0">
-                <select class="fu-config-builder-unit-dropdown fu-config-builder-unit-dropdown-sm" data-unit-type="${type}">
-                  ${totalSizeUnitOptions}
-                </select>
-              </div>
-              <div class="fu-config-builder-slider-labels fu-config-builder-slider-labels-sm">
-                <span class="fu-config-builder-slider-label">0 ${totalSizeDisplay.unit}</span>
-                <span class="fu-config-builder-slider-label">${totalSizeMaxValue} ${totalSizeDisplay.unit}</span>
-              </div>
-            </div>
-            <!-- Max File Count -->
-            <div class="fu-config-builder-filetype-limit-row">
-              <label class="fu-config-builder-filetype-limit-label">
-                Max Files
-                <code>perTypeMaxFileCount.${type}</code>
-              </label>
-              <div class="fu-config-builder-type-slider-controls fu-config-builder-type-count-controls" data-option="perTypeMaxFileCount" data-type-key="${type}">
-                <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="decrease">
-                  ${minusIcon}
-                </button>
-                <input type="range"
-                       class="fu-config-builder-slider-input"
-                       data-slider-type="${type}"
-                       value="${fileCount}"
-                       min="0"
-                       max="100"
-                       step="1">
-                <button type="button" class="fu-config-builder-slider-btn fu-config-builder-slider-btn-sm" data-action="increase">
-                  ${plusIcon}
-                </button>
-                <input type="number"
-                       class="fu-config-builder-slider-value-input fu-config-builder-slider-value-input-sm"
-                       data-value-type="${type}"
-                       value="${fileCount || ""}"
-                       min="0"
-                       max="100"
-                       placeholder="0">
-                <span class="fu-config-builder-count-label">files</span>
-              </div>
-              <div class="fu-config-builder-slider-labels fu-config-builder-slider-labels-sm">
-                <span class="fu-config-builder-slider-label">0</span>
-                <span class="fu-config-builder-slider-label">100 files</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    html += '</div>';
-    return html;
+    return renderPerTypeLimitsByFileTypeFn(this, options);
   }
 
   /**
    * Get file type icon
+   * Delegates to PerTypeLimits module
    */
   getFileTypeIcon(type) {
-    const icons = {
-      image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
-      video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
-      audio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
-      document: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
-      archive: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`
-    };
-    return icons[type] || icons.document;
+    return getFileTypeIconFn(type);
   }
 
   /**
    * Capitalize first letter
+   * Delegates to PerTypeLimits module
    */
   capitalizeFirst(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return capitalizeFirstFn(str);
   }
 
   /**
    * Re-render the perTypeLimits panel content when view mode changes
+   * Delegates to PerTypeLimits module
    */
   rerenderPerTypeLimitsPanel() {
-    const panel = this.element.querySelector('[data-category-panel="perTypeLimits"]');
-    if (!panel) return;
-
-    const optionsContainer = panel.querySelector('.fu-config-builder-category-options');
-    if (!optionsContainer) return;
-
-    const category = this.optionDefinitions.perTypeLimits;
-    optionsContainer.innerHTML = this.renderPerTypeLimitsContent(category.options);
-
-    // Re-attach events for the new content
-    this.attachPerTypeByFileTypeEvents();
-
-    // Also re-attach the original type slider events for "By Limit Type" view
-    if (this.perTypeLimitsViewMode !== "byFileType") {
-      // Re-attach type size slider events
-      panel.querySelectorAll('[data-type="typeSizeSlider"]').forEach((container) => {
-        this.attachTypeSizeSliderEvents(container);
-      });
-      // Re-attach type count slider events
-      panel.querySelectorAll('[data-type="typeCountSlider"]').forEach((container) => {
-        this.attachTypeCountSliderEvents(container);
-      });
-    }
+    return rerenderPerTypeLimitsPanelFn(this);
   }
 
   /**
    * Attach events for type size sliders within a container
+   * Delegates to PerTypeLimits module
    */
   attachTypeSizeSliderEvents(container) {
-    const optionKey = container.dataset.option;
-
-    container.querySelectorAll(".fu-config-builder-type-slider-block").forEach((block) => {
-      const typeKey = block.dataset.typeKey;
-      const slider = block.querySelector(".fu-config-builder-slider-input");
-      const valueInput = block.querySelector(".fu-config-builder-slider-value-input");
-      const unitDropdown = block.querySelector(".fu-config-builder-unit-dropdown");
-      const decreaseBtn = block.querySelector('[data-action="decrease"]');
-      const increaseBtn = block.querySelector('[data-action="increase"]');
-
-      if (!slider || !valueInput || !decreaseBtn || !increaseBtn || !unitDropdown) return;
-
-      const getCurrentUnit = () => unitDropdown.value;
-
-      const updateTypeValue = (value, unit) => {
-        const maxValue = this.bytesToUnit(this.getSliderMaxBytes(), unit);
-        value = Math.max(0, Math.min(maxValue, value));
-
-        slider.value = value;
-        valueInput.value = value || "";
-
-        if (!this.config[optionKey]) {
-          this.config[optionKey] = {};
-        }
-
-        const displayKey = optionKey + "Display";
-        if (!this.config[displayKey]) {
-          this.config[displayKey] = {};
-        }
-
-        if (value > 0) {
-          const bytes = this.unitToBytes(value, unit);
-          this.config[optionKey][typeKey] = bytes;
-          this.config[displayKey][typeKey] = value + " " + unit;
-        } else {
-          delete this.config[optionKey][typeKey];
-          delete this.config[displayKey][typeKey];
-        }
-        this.onConfigChange();
-      };
-
-      unitDropdown.addEventListener("change", () => {
-        const newUnit = unitDropdown.value;
-        const currentBytes = this.config[optionKey]?.[typeKey] || 0;
-        const newValue = currentBytes > 0 ? this.bytesToUnit(currentBytes, newUnit) : 0;
-        slider.value = newValue;
-        valueInput.value = newValue || "";
-        block.dataset.unit = newUnit;
-      });
-
-      slider.addEventListener("input", () => {
-        updateTypeValue(parseInt(slider.value) || 0, getCurrentUnit());
-      });
-
-      valueInput.addEventListener("input", () => {
-        updateTypeValue(parseInt(valueInput.value) || 0, getCurrentUnit());
-      });
-
-      decreaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const unit = getCurrentUnit();
-        const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
-        const currentValue = parseInt(valueInput.value) || 0;
-        updateTypeValue(currentValue - buttonStep, unit);
-      });
-
-      increaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const unit = getCurrentUnit();
-        const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
-        const currentValue = parseInt(valueInput.value) || 0;
-        updateTypeValue(currentValue + buttonStep, unit);
-      });
-    });
+    return attachTypeSizeSliderEventsFn(this, container);
   }
 
   /**
    * Attach events for type count sliders within a container
+   * Delegates to PerTypeLimits module
    */
   attachTypeCountSliderEvents(container) {
-    const optionKey = container.dataset.option;
-
-    container.querySelectorAll(".fu-config-builder-type-slider-block").forEach((block) => {
-      const typeKey = block.dataset.typeKey;
-      const slider = block.querySelector(".fu-config-builder-slider-input");
-      const valueInput = block.querySelector(".fu-config-builder-slider-value-input");
-      const decreaseBtn = block.querySelector('[data-action="decrease"]');
-      const increaseBtn = block.querySelector('[data-action="increase"]');
-
-      if (!slider || !valueInput || !decreaseBtn || !increaseBtn) return;
-
-      const updateTypeValue = (value) => {
-        value = Math.max(0, Math.min(100, value));
-
-        slider.value = value;
-        valueInput.value = value || "";
-
-        if (!this.config[optionKey]) {
-          this.config[optionKey] = {};
-        }
-
-        if (value > 0) {
-          this.config[optionKey][typeKey] = value;
-        } else {
-          delete this.config[optionKey][typeKey];
-        }
-        this.onConfigChange();
-      };
-
-      slider.addEventListener("input", () => {
-        updateTypeValue(parseInt(slider.value) || 0);
-      });
-
-      valueInput.addEventListener("input", () => {
-        updateTypeValue(parseInt(valueInput.value) || 0);
-      });
-
-      decreaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        updateTypeValue((parseInt(valueInput.value) || 0) - 1);
-      });
-
-      increaseBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        updateTypeValue((parseInt(valueInput.value) || 0) + 1);
-      });
-    });
+    return attachTypeCountSliderEventsFn(this, container);
   }
 
   /**
    * Attach events for "By File Type" view sliders
+   * Delegates to PerTypeLimits module
    */
   attachPerTypeByFileTypeEvents() {
-    // Handle slider controls in the "By File Type" view
-    this.element.querySelectorAll('.fu-config-builder-pertype-by-filetype .fu-config-builder-type-slider-controls').forEach((controls) => {
-      const optionKey = controls.dataset.option;
-      const typeKey = controls.dataset.typeKey;
-      const isCountSlider = controls.classList.contains('fu-config-builder-type-count-controls');
-
-      const slider = controls.querySelector(".fu-config-builder-slider-input");
-      const valueInput = controls.querySelector(".fu-config-builder-slider-value-input");
-      const unitDropdown = controls.querySelector(".fu-config-builder-unit-dropdown");
-      const decreaseBtn = controls.querySelector('[data-action="decrease"]');
-      const increaseBtn = controls.querySelector('[data-action="increase"]');
-
-      if (!slider || !valueInput || !decreaseBtn || !increaseBtn) return;
-
-      if (isCountSlider) {
-        // Count slider logic
-        const updateTypeValue = (value) => {
-          value = Math.max(0, Math.min(100, value));
-          slider.value = value;
-          valueInput.value = value || "";
-
-          if (!this.config[optionKey]) {
-            this.config[optionKey] = {};
-          }
-
-          if (value > 0) {
-            this.config[optionKey][typeKey] = value;
-          } else {
-            delete this.config[optionKey][typeKey];
-          }
-          this.onConfigChange();
-        };
-
-        slider.addEventListener("input", () => updateTypeValue(parseInt(slider.value) || 0));
-        valueInput.addEventListener("input", () => updateTypeValue(parseInt(valueInput.value) || 0));
-        decreaseBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          updateTypeValue((parseInt(valueInput.value) || 0) - 1);
-        });
-        increaseBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          updateTypeValue((parseInt(valueInput.value) || 0) + 1);
-        });
-      } else {
-        // Size slider logic
-        const getCurrentUnit = () => unitDropdown?.value || this.sliderConfig.unit;
-
-        const updateTypeValue = (value, unit) => {
-          const maxValue = this.bytesToUnit(this.getSliderMaxBytes(), unit);
-          value = Math.max(0, Math.min(maxValue, value));
-
-          slider.value = value;
-          valueInput.value = value || "";
-
-          if (!this.config[optionKey]) {
-            this.config[optionKey] = {};
-          }
-
-          const displayKey = optionKey + "Display";
-          if (!this.config[displayKey]) {
-            this.config[displayKey] = {};
-          }
-
-          if (value > 0) {
-            const bytes = this.unitToBytes(value, unit);
-            this.config[optionKey][typeKey] = bytes;
-            this.config[displayKey][typeKey] = value + " " + unit;
-          } else {
-            delete this.config[optionKey][typeKey];
-            delete this.config[displayKey][typeKey];
-          }
-          this.onConfigChange();
-        };
-
-        if (unitDropdown) {
-          unitDropdown.addEventListener("change", () => {
-            const newUnit = unitDropdown.value;
-            const currentBytes = this.config[optionKey]?.[typeKey] || 0;
-            const newValue = currentBytes > 0 ? this.bytesToUnit(currentBytes, newUnit) : 0;
-            slider.value = newValue;
-            valueInput.value = newValue || "";
-            controls.dataset.unit = newUnit;
-          });
-        }
-
-        slider.addEventListener("input", () => {
-          updateTypeValue(parseInt(slider.value) || 0, getCurrentUnit());
-        });
-
-        valueInput.addEventListener("input", () => {
-          updateTypeValue(parseInt(valueInput.value) || 0, getCurrentUnit());
-        });
-
-        decreaseBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const unit = getCurrentUnit();
-          const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
-          const currentValue = parseInt(valueInput.value) || 0;
-          updateTypeValue(currentValue - buttonStep, unit);
-        });
-
-        increaseBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const unit = getCurrentUnit();
-          const buttonStep = this.bytesToUnit(this.sliderConfig.buttonStep * 1024 * 1024, unit);
-          const currentValue = parseInt(valueInput.value) || 0;
-          updateTypeValue(currentValue + buttonStep, unit);
-        });
-      }
-    });
+    return attachPerTypeByFileTypeEventsFn(this);
   }
 
   /**
    * Render uploader tabs for preview selector
+   * Delegates to UploaderManager module
    */
   renderUploaderTabs() {
-    // Initialize first uploader if none exist
-    if (Object.keys(this.uploaderInstances).length === 0) {
-      this.uploaderCounter = 1;
-      this.activeUploaderId = "uploader-1";
-      this.uploaderInstances["uploader-1"] = {
-        name: "Uploader 1",
-        config: { ...this.config },
-        preset: this.currentPreset,
-        instance: null,
-      };
-    }
-
-    let html = "";
-    for (const [id, data] of Object.entries(this.uploaderInstances)) {
-      const isActive = id === this.activeUploaderId;
-      html += `
-        <div class="fu-config-builder-uploader-tab ${
-          isActive ? "active" : ""
-        }" data-uploader-id="${id}">
-          <span class="fu-config-builder-uploader-tab-name" data-uploader-id="${id}">${
-        data.name
-      }</span>
-          <div class="fu-config-builder-uploader-tab-actions">
-            <button class="fu-config-builder-uploader-tab-duplicate" data-uploader-id="${id}" data-tooltip-text="Duplicate uploader" data-tooltip-position="bottom">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-              </svg>
-            </button>
-            ${
-              Object.keys(this.uploaderInstances).length > 1
-                ? `
-              <button class="fu-config-builder-uploader-tab-close" data-uploader-id="${id}" data-tooltip-text="Remove uploader" data-tooltip-position="bottom">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            `
-                : ""
-            }
-          </div>
-        </div>
-      `;
-    }
-    return html;
+    return renderUploaderTabsFn(this);
   }
 
   /**
@@ -4190,62 +2188,10 @@ export default class ConfigBuilder {
 
   /**
    * Get category icon SVG - Using filled Font Awesome style icons
+   * Delegates to Icons module
    */
   getCategoryIcon(icon) {
-    const icons = {
-      // URL Configuration - Link icon
-      link: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>',
-      // File Size Limits - Ruler/scale icon
-      size: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M177.9 494.1c-18.7 18.7-49.1 18.7-67.9 0L17.9 402.1c-18.7-18.7-18.7-49.1 0-67.9l50.7-50.7 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 41.4-41.4 48 48c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6l-48-48 50.7-50.7c18.7-18.7 49.1-18.7 67.9 0l92.1 92.1c18.7 18.7 18.7 49.1 0 67.9L177.9 494.1z"/></svg>',
-      // Per-Type Limits - Layers/stack icon
-      layers:
-        '<svg viewBox="0 0 576 512" fill="currentColor"><path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/></svg>',
-      // Allowed File Types - File icon
-      file: '<svg viewBox="0 0 384 512" fill="currentColor"><path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 288c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128z"/></svg>',
-      // Upload Behavior - Gear/cog icon
-      settings:
-        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>',
-      // Limits Display - Eye icon
-      eye: '<svg viewBox="0 0 576 512" fill="currentColor"><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/></svg>',
-      // Alert Notifications - Bell icon
-      bell: '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M224 0c-17.7 0-32 14.3-32 32l0 19.2C119 66 64 130.6 64 208l0 18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416l384 0c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8l0-18.8c0-77.4-55-142-128-156.8L256 32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3l-64 0-64 0c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z"/></svg>',
-      // Buttons - Square with plus
-      button:
-        '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM200 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/></svg>',
-      // Media Capture - Camera icon
-      camera:
-        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>',
-      // Carousel Preview - Image/photo icon
-      image:
-        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6l96 0 32 0 208 0c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>',
-      // MIME Type Validation - Shield with check
-      shield:
-        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8l0 378.1C394 378 431.1 230.1 432 141.4L256 66.8z"/></svg>',
-      // Sun icon - Light mode
-      sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
-      // Moon icon - Dark mode
-      moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
-      // Palette icon - Colors
-      palette:
-        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M512 256c0 .9 0 1.8 0 2.7c-.4 36.5-33.6 61.3-70.1 61.3L344 320c-26.5 0-48 21.5-48 48c0 3.4 .4 6.7 1 9.9c2.1 10.2 6.5 20 10.8 29.9c6.1 13.8 12.1 27.5 12.1 42c0 31.8-21.6 60.7-53.4 62c-3.5 .1-7 .2-10.6 .2C114.6 512 0 397.4 0 256S114.6 0 256 0S512 114.6 512 256zM128 288a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm0-96a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM288 96a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm96 96a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>',
-      // Check icon
-      check:
-        '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>',
-      // Text/Typography icon
-      text: '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M254 52.8C249.3 40.3 237.3 32 224 32s-25.3 8.3-30 20.8L57.8 416L32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-1.8 0 18-48 159.6 0 18 48-1.8 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-25.8 0L254 52.8zM279.8 304l-111.6 0L224 155.1 279.8 304z"/></svg>',
-      // Window/Border radius icon
-      window:
-        '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM96 96l320 0c17.7 0 32 14.3 32 32l0 256c0 17.7-14.3 32-32 32L96 416c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32z"/></svg>',
-      // Move/Cross-uploader icon
-      move: '<svg viewBox="0 0 512 512" fill="currentColor"><path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"/></svg>',
-      // Layout/Display Mode icon - Grid with sidebar
-      layout:
-        '<svg viewBox="0 0 448 512" fill="currentColor"><path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32l0 320c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32L0 96zM352 352l0-192-96 0 0 192 96 0zM320 128l-256 0 0 256 256 0 0-256z"/></svg>',
-    };
-
-    return `<span class="fu-config-builder-category-icon">${
-      icons[icon] || icons.settings
-    }</span>`;
+    return getCategoryIconFn(icon);
   }
 
   /**
@@ -6398,9 +4344,9 @@ export default class ConfigBuilder {
     code += `const ${varName} = new FileUploader('#${containerId}', {\n`;
 
     // Output grouped config
-    const groupKeys = ConfigBuilder.GROUP_ORDER.filter(g => groupedConfig[g]);
+    const groupKeys = GROUP_ORDER.filter(g => groupedConfig[g]);
     groupKeys.forEach((groupKey, groupIndex) => {
-      const groupTitle = ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+      const groupTitle = GROUP_TITLES[groupKey] || groupKey;
       const groupEntries = Object.entries(groupedConfig[groupKey]);
       const isLastGroup = groupIndex === groupKeys.length - 1;
 
@@ -6463,7 +4409,7 @@ export default class ConfigBuilder {
     // Group all defaults by category
     const groupedDefaults = {};
     Object.entries(defaults).forEach(([key, defaultValue]) => {
-      const group = ConfigBuilder.OPTION_TO_GROUP[key] || "other";
+      const group = OPTION_TO_GROUP[key] || "other";
       if (!groupedDefaults[group]) {
         groupedDefaults[group] = {};
       }
@@ -6480,7 +4426,7 @@ export default class ConfigBuilder {
       comment += " * Default configuration values for reference (server-relevant options):\n";
       comment += " * [\n";
 
-      ConfigBuilder.GROUP_ORDER.forEach(groupKey => {
+      GROUP_ORDER.forEach(groupKey => {
         // Skip non-PHP relevant groups
         if (!phpRelevantGroups.includes(groupKey)) return;
         if (!groupedDefaults[groupKey]) return;
@@ -6492,7 +4438,7 @@ export default class ConfigBuilder {
         // Skip group if no PHP-relevant keys
         if (phpKeysInGroup.length === 0) return;
 
-        const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+        const groupTitle = PHP_GROUP_TITLES[groupKey] || GROUP_TITLES[groupKey] || groupKey;
         comment += ` *   // ${groupTitle}\n`;
         comment += ` *   '${groupKey}' => [\n`;
 
@@ -6513,10 +4459,10 @@ export default class ConfigBuilder {
       comment += " * Default configuration values for reference (grouped):\n";
       comment += " * {\n";
 
-      ConfigBuilder.GROUP_ORDER.forEach(groupKey => {
+      GROUP_ORDER.forEach(groupKey => {
         if (!groupedDefaults[groupKey]) return;
 
-        const groupTitle = ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+        const groupTitle = GROUP_TITLES[groupKey] || groupKey;
         comment += ` *   // ${groupTitle}\n`;
         comment += ` *   ${groupKey}: {\n`;
 
@@ -7168,7 +5114,7 @@ export default class ConfigBuilder {
     const phpRelevantGroups = ["urls", "limits", "perTypeLimits", "fileTypes"];
     const groupKeys = phpRelevantGroups.filter(g => groupedConfig[g]);
     groupKeys.forEach((groupKey, groupIndex) => {
-      const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+      const groupTitle = PHP_GROUP_TITLES[groupKey] || GROUP_TITLES[groupKey] || groupKey;
       const groupEntries = Object.entries(groupedConfig[groupKey]);
       const isLastGroup = groupIndex === groupKeys.length - 1;
 
@@ -7271,14 +5217,14 @@ export default class ConfigBuilder {
     if (!buttonTypes || buttonTypes.length === 0) return '';
 
     const buttons = buttonTypes.map(btnType => {
-      const icon = ConfigBuilder.MEDIA_CAPTURE_ICONS[btnType];
-      const title = ConfigBuilder.MEDIA_CAPTURE_TITLES[btnType];
+      const icon = MEDIA_CAPTURE_ICONS[btnType];
+      const title = MEDIA_CAPTURE_TITLES[btnType];
       if (!icon) return '';
 
       return `<button type="button" class="file-uploader-capture-btn has-tooltip" data-capture-type="${btnType}" data-uploader-id="${uploaderId}" data-tooltip="${title}" data-tooltip-position="top">${icon}</button>`;
     }).join('');
 
-    const chevronIcon = ConfigBuilder.MEDIA_CAPTURE_ICONS.chevron_right;
+    const chevronIcon = MEDIA_CAPTURE_ICONS.chevron_right;
 
     return `
       <div class="file-uploader-capture-expandable" data-uploader-id="${uploaderId}">
@@ -7808,162 +5754,14 @@ export default class ConfigBuilder {
    * Mapping of option keys to their category groups
    * Used to organize changed config into grouped format
    */
-  static OPTION_TO_GROUP = {
-    // URLs
-    uploadUrl: "urls",
-    deleteUrl: "urls",
-    downloadAllUrl: "urls",
-    cleanupZipUrl: "urls",
-    copyFileUrl: "urls",
-    configUrl: "urls",
-    uploadDir: "urls",
-    // Limits
-    perFileMaxSize: "limits",
-    perFileMaxSizeDisplay: "limits",
-    totalMaxSize: "limits",
-    totalMaxSizeDisplay: "limits",
-    maxFiles: "limits",
-    // Per-Type Limits
-    perFileMaxSizePerType: "perTypeLimits",
-    perFileMaxSizePerTypeDisplay: "perTypeLimits",
-    perTypeMaxTotalSize: "perTypeLimits",
-    perTypeMaxTotalSizeDisplay: "perTypeLimits",
-    perTypeMaxFileCount: "perTypeLimits",
-    // File Types
-    allowedExtensions: "fileTypes",
-    allowedMimeTypes: "fileTypes",
-    imageExtensions: "fileTypes",
-    videoExtensions: "fileTypes",
-    audioExtensions: "fileTypes",
-    documentExtensions: "fileTypes",
-    archiveExtensions: "fileTypes",
-    // Behavior
-    multiple: "behavior",
-    autoFetchConfig: "behavior",
-    confirmBeforeDelete: "behavior",
-    preventDuplicates: "behavior",
-    duplicateCheckBy: "behavior",
-    cleanupOnUnload: "behavior",
-    cleanupOnDestroy: "behavior",
-    // Limits Display
-    showLimits: "limitsDisplay",
-    showProgressBar: "limitsDisplay",
-    showTypeProgressBar: "limitsDisplay",
-    showPerFileLimit: "limitsDisplay",
-    showTypeGroupSize: "limitsDisplay",
-    showTypeGroupCount: "limitsDisplay",
-    defaultLimitsView: "limitsDisplay",
-    allowLimitsViewToggle: "limitsDisplay",
-    showLimitsToggle: "limitsDisplay",
-    defaultLimitsVisible: "limitsDisplay",
-    // Alerts
-    alertAnimation: "alerts",
-    alertDuration: "alerts",
-    // Buttons
-    showDownloadAllButton: "buttons",
-    downloadAllButtonText: "buttons",
-    downloadAllButtonClasses: "buttons",
-    downloadAllButtonElement: "buttons",
-    showClearAllButton: "buttons",
-    clearAllButtonText: "buttons",
-    clearAllButtonClasses: "buttons",
-    clearAllButtonElement: "buttons",
-    // Media Capture
-    enableFullPageCapture: "mediaCapture",
-    enableRegionCapture: "mediaCapture",
-    enableScreenCapture: "mediaCapture",
-    enableVideoRecording: "mediaCapture",
-    enableAudioRecording: "mediaCapture",
-    collapsibleCaptureButtons: "mediaCapture",
-    maxVideoRecordingDuration: "mediaCapture",
-    maxAudioRecordingDuration: "mediaCapture",
-    recordingCountdownDuration: "mediaCapture",
-    enableMicrophoneAudio: "mediaCapture",
-    enableSystemAudio: "mediaCapture",
-    showRecordingSize: "mediaCapture",
-    videoBitsPerSecond: "mediaCapture",
-    audioBitsPerSecond: "mediaCapture",
-    maxVideoRecordingFileSize: "mediaCapture",
-    maxAudioRecordingFileSize: "mediaCapture",
-    externalRecordingToolbarContainer: "mediaCapture",
-    regionCaptureShowDimensions: "mediaCapture",
-    regionCaptureDimensionsPosition: "mediaCapture",
-    regionCaptureImmediateCapture: "mediaCapture",
-    // Carousel
-    enableCarouselPreview: "carousel",
-    carouselAutoPreload: "carousel",
-    carouselEnableManualLoading: "carousel",
-    carouselVisibleTypes: "carousel",
-    carouselPreviewableTypes: "carousel",
-    carouselMaxPreviewRows: "carousel",
-    carouselMaxTextPreviewChars: "carousel",
-    carouselShowDownloadButton: "carousel",
-    // Drag & Drop
-    enableCrossUploaderDrag: "dragDrop",
-    externalDropZone: "dragDrop",
-    externalDropZoneActiveClass: "dragDrop",
-    // Callbacks
-    onUploadStart: "callbacks",
-    onUploadSuccess: "callbacks",
-    onUploadError: "callbacks",
-    onDeleteSuccess: "callbacks",
-    onDeleteError: "callbacks",
-    onDuplicateFile: "callbacks",
-  };
-
-  /**
-   * Human-readable group names for code comments
-   */
-  static GROUP_TITLES = {
-    urls: "URL Configuration",
-    limits: "File Size Limits",
-    perTypeLimits: "Per-Type Limits",
-    fileTypes: "Allowed File Types",
-    behavior: "Upload Behavior",
-    limitsDisplay: "Limits Display",
-    alerts: "Alert Notifications",
-    buttons: "Buttons",
-    mediaCapture: "Media Capture",
-    carousel: "Carousel Preview",
-    dragDrop: "Drag & Drop",
-    callbacks: "Callbacks",
-  };
-
-  /**
-   * Group order for consistent code output
-   */
-  static GROUP_ORDER = [
-    "urls",
-    "limits",
-    "perTypeLimits",
-    "fileTypes",
-    "behavior",
-    "limitsDisplay",
-    "alerts",
-    "buttons",
-    "mediaCapture",
-    "carousel",
-    "dragDrop",
-    "callbacks",
-  ];
-
   /**
    * Group changed config options by their category
+   * Delegates to Constants module
    * @param {Object} changedConfig - Flat changed config object
    * @returns {Object} - Config grouped by category
    */
   groupChangedConfig(changedConfig) {
-    const grouped = {};
-
-    for (const [key, value] of Object.entries(changedConfig)) {
-      const group = ConfigBuilder.OPTION_TO_GROUP[key] || "other";
-      if (!grouped[group]) {
-        grouped[group] = {};
-      }
-      grouped[group][key] = value;
-    }
-
-    return grouped;
+    return groupChangedConfig(changedConfig);
   }
 
   /**
@@ -7998,7 +5796,7 @@ export default class ConfigBuilder {
           .replace(/[^a-z0-9]+/g, "_")
           .replace(/^_|_$/g, "") || `uploader${uploaderIndex + 1}`;
 
-      const groupKeys = ConfigBuilder.GROUP_ORDER.filter(g => groupedConfig[g]);
+      const groupKeys = GROUP_ORDER.filter(g => groupedConfig[g]);
 
       if (groupKeys.length === 0) {
         code += `const ${varName} = new FileUploader('#${varName}');\n`;
@@ -8007,7 +5805,7 @@ export default class ConfigBuilder {
 
         groupKeys.forEach((groupKey, groupIndex) => {
           const groupOptions = groupedConfig[groupKey];
-          const groupTitle = ConfigBuilder.GROUP_TITLES[groupKey] || groupKey;
+          const groupTitle = GROUP_TITLES[groupKey] || groupKey;
           const isLastGroup = groupIndex === groupKeys.length - 1;
 
           // Add group comment
@@ -8125,7 +5923,7 @@ export default class ConfigBuilder {
       } else {
         groupKeys.forEach((groupKey, groupIndex) => {
           const groupOptions = groupedConfig[groupKey];
-          const groupTitle = ConfigBuilder.PHP_GROUP_TITLES[groupKey] || groupKey;
+          const groupTitle = PHP_GROUP_TITLES[groupKey] || groupKey;
           const isLastGroup = groupIndex === groupKeys.length - 1;
 
           // Add group comment
@@ -9482,331 +7280,74 @@ export default class ConfigBuilder {
 
   /**
    * Refresh all uploader previews (used after add/remove)
+   * Delegates to UploaderManager module
    */
   refreshAllPreviews() {
-    this.updatePreview(true);
+    return refreshAllPreviewsFn(this);
   }
 
   /**
    * Add a new uploader to the preview
+   * Delegates to UploaderManager module
    */
   addUploader() {
-    // Save current config and preset first
-    if (
-      this.activeUploaderId &&
-      this.uploaderInstances[this.activeUploaderId]
-    ) {
-      this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
-      this.uploaderInstances[this.activeUploaderId].preset = this.currentPreset;
-    }
-
-    this.uploaderCounter++;
-    const newId = `uploader-${this.uploaderCounter}`;
-
-    this.uploaderInstances[newId] = {
-      name: `Uploader ${this.uploaderCounter}`,
-      config: { ...this.getDefaultConfig() },
-      preset: "default",
-      instance: null,
-      containerId: null,
-    };
-
-    // Switch to the new uploader
-    this.activeUploaderId = newId;
-    this.config = { ...this.uploaderInstances[newId].config };
-    this.currentPreset = "default";
-
-    // Update UI
-    this.updateUploaderTabsUI();
-    this.render();
-    this.attachEvents();
-    this.initTooltips();
-    this.refreshAllPreviews(); // Refresh all to show the new uploader
-    this.updateCodeOutput();
+    return addUploaderFn(this);
   }
 
   /**
    * Duplicate an existing uploader with its config
+   * Delegates to UploaderManager module
    */
   duplicateUploader(uploaderId) {
-    if (!this.uploaderInstances[uploaderId]) return;
-
-    // Save current config and preset first
-    if (
-      this.activeUploaderId &&
-      this.uploaderInstances[this.activeUploaderId]
-    ) {
-      this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
-      this.uploaderInstances[this.activeUploaderId].preset = this.currentPreset;
-    }
-
-    // Get the source uploader's config and preset
-    const sourceData = this.uploaderInstances[uploaderId];
-
-    this.uploaderCounter++;
-    const newId = `uploader-${this.uploaderCounter}`;
-
-    // Deep copy the config to avoid reference issues
-    const copiedConfig = JSON.parse(JSON.stringify(sourceData.config));
-
-    this.uploaderInstances[newId] = {
-      name: `${sourceData.name} (Copy)`,
-      config: copiedConfig,
-      preset: sourceData.preset || null,
-      instance: null,
-      containerId: null,
-    };
-
-    // Switch to the new uploader
-    this.activeUploaderId = newId;
-    this.config = { ...this.uploaderInstances[newId].config };
-    this.currentPreset = this.uploaderInstances[newId].preset;
-
-    // Update UI
-    this.updateUploaderTabsUI();
-    this.render();
-    this.attachEvents();
-    this.initTooltips();
-    this.refreshAllPreviews(); // Refresh all to show the new uploader
-    this.updateCodeOutput();
+    return duplicateUploaderFn(this, uploaderId);
   }
 
   /**
    * Select an uploader and load its config
+   * Delegates to UploaderManager module
    */
   selectUploader(uploaderId) {
-    if (!this.uploaderInstances[uploaderId]) return;
-    if (this.activeUploaderId === uploaderId) return; // Already selected
-
-    // Save current config and preset to the current uploader before switching
-    if (
-      this.activeUploaderId &&
-      this.uploaderInstances[this.activeUploaderId]
-    ) {
-      this.uploaderInstances[this.activeUploaderId].config = { ...this.config };
-      this.uploaderInstances[this.activeUploaderId].preset = this.currentPreset;
-    }
-
-    // Switch to new uploader
-    this.activeUploaderId = uploaderId;
-    this.config = { ...this.uploaderInstances[uploaderId].config };
-    this.currentPreset = this.uploaderInstances[uploaderId].preset || null;
-
-    // Update the uploader tab list UI
-    this.updateUploaderTabsUI();
-
-    // Re-render options to reflect new config
-    this.render();
-    this.attachEvents();
-    this.initTooltips();
-    this.refreshAllPreviews(); // Refresh all to update active states
-    this.updateCodeOutput();
+    return selectUploaderFn(this, uploaderId);
   }
 
   /**
    * Remove an uploader from the preview
+   * Delegates to UploaderManager module
    */
   removeUploader(uploaderId) {
-    if (Object.keys(this.uploaderInstances).length <= 1) return;
-
-    // Destroy the instance and disconnect observer
-    const data = this.uploaderInstances[uploaderId];
-    if (data) {
-      // Disconnect file change observer
-      if (data.fileChangeObserver) {
-        data.fileChangeObserver.disconnect();
-        data.fileChangeObserver = null;
-      }
-      if (data.instance && typeof data.instance.destroy === "function") {
-        data.instance.destroy();
-      }
-    }
-
-    delete this.uploaderInstances[uploaderId];
-
-    // If we removed the active uploader, switch to another one
-    if (this.activeUploaderId === uploaderId) {
-      const remainingIds = Object.keys(this.uploaderInstances);
-      this.activeUploaderId = remainingIds[0];
-      this.config = { ...this.uploaderInstances[this.activeUploaderId].config };
-      this.currentPreset =
-        this.uploaderInstances[this.activeUploaderId].preset || null;
-    }
-
-    // Update UI
-    this.updateUploaderTabsUI();
-    this.render();
-    this.attachEvents();
-    this.initTooltips();
-    this.refreshAllPreviews();
-    this.updateCodeOutput();
+    return removeUploaderFn(this, uploaderId);
   }
 
   /**
    * Check if an uploader name is already in use
+   * Delegates to UploaderManager module
    */
   isNameDuplicate(name, excludeUploaderId = null) {
-    const normalizedName = name.trim().toLowerCase();
-    for (const [id, data] of Object.entries(this.uploaderInstances)) {
-      if (
-        id !== excludeUploaderId &&
-        data.name.trim().toLowerCase() === normalizedName
-      ) {
-        return true;
-      }
-    }
-    return false;
+    return isNameDuplicateFn(this, name, excludeUploaderId);
   }
 
   /**
    * Edit uploader name
+   * Delegates to UploaderManager module
    */
   editUploaderName(uploaderId) {
-    const nameEl = this.element.querySelector(
-      `.fu-config-builder-uploader-tab-name[data-uploader-id="${uploaderId}"]`
-    );
-    if (!nameEl) return;
-
-    const currentName = this.uploaderInstances[uploaderId].name;
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = currentName;
-    input.className = "fu-config-builder-uploader-tab-input";
-
-    // Error message element
-    const errorEl = document.createElement("span");
-    errorEl.className = "fu-config-builder-name-error";
-    errorEl.style.display = "none";
-    errorEl.textContent = "Name already exists";
-
-    const validateName = () => {
-      const newName = input.value.trim();
-      if (newName && this.isNameDuplicate(newName, uploaderId)) {
-        input.classList.add("error");
-        errorEl.style.display = "";
-        return false;
-      } else {
-        input.classList.remove("error");
-        errorEl.style.display = "none";
-        return true;
-      }
-    };
-
-    const finishEdit = (save = true) => {
-      if (save) {
-        const newName = input.value.trim();
-        if (!newName) {
-          // Empty name - keep current
-          this.uploaderInstances[uploaderId].name = currentName;
-          nameEl.textContent = currentName;
-        } else if (this.isNameDuplicate(newName, uploaderId)) {
-          // Duplicate name - show error and don't close
-          input.classList.add("error");
-          errorEl.style.display = "";
-          input.focus();
-          return;
-        } else {
-          // Valid name
-          this.uploaderInstances[uploaderId].name = newName;
-          nameEl.textContent = newName;
-          // Update preview header
-          this.updatePreviewHeader(uploaderId, newName);
-          // Update code output
-          this.updateCodeOutput();
-        }
-      }
-      nameEl.style.display = "";
-      input.remove();
-      errorEl.remove();
-    };
-
-    input.addEventListener("input", validateName);
-    input.addEventListener("blur", () => finishEdit(true));
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        if (validateName()) {
-          finishEdit(true);
-        }
-      } else if (e.key === "Escape") {
-        finishEdit(false);
-      }
-    });
-
-    nameEl.style.display = "none";
-    nameEl.parentNode.insertBefore(input, nameEl);
-    nameEl.parentNode.insertBefore(errorEl, input.nextSibling);
-    input.focus();
-    input.select();
+    return editUploaderNameFn(this, uploaderId);
   }
 
   /**
    * Update preview header with new name
+   * Delegates to UploaderManager module
    */
   updatePreviewHeader(uploaderId, newName) {
-    const wrapper = this.element.querySelector(
-      `[data-uploader-wrapper="${uploaderId}"]`
-    );
-    if (wrapper) {
-      const label = wrapper.querySelector(".fu-config-builder-uploader-label");
-      if (label) {
-        label.textContent = newName;
-      }
-    }
+    return updatePreviewHeaderFn(this, uploaderId, newName);
   }
 
   /**
    * Update uploader tabs UI without full re-render
+   * Delegates to UploaderManager module
    */
   updateUploaderTabsUI() {
-    const listEl = this.element.querySelector("#uploader-list");
-    if (listEl) {
-      listEl.innerHTML = this.renderUploaderTabs();
-
-      // Re-attach uploader tab events
-      this.element
-        .querySelectorAll(".fu-config-builder-uploader-tab")
-        .forEach((tab) => {
-          tab.addEventListener("click", (e) => {
-            if (
-              !e.target.closest(".fu-config-builder-uploader-tab-close") &&
-              !e.target.closest(".fu-config-builder-uploader-tab-duplicate")
-            ) {
-              this.selectUploader(tab.dataset.uploaderId);
-            }
-          });
-        });
-
-      this.element
-        .querySelectorAll(".fu-config-builder-uploader-tab-close")
-        .forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.removeUploader(btn.dataset.uploaderId);
-          });
-        });
-
-      this.element
-        .querySelectorAll(".fu-config-builder-uploader-tab-duplicate")
-        .forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.duplicateUploader(btn.dataset.uploaderId);
-          });
-        });
-
-      this.element
-        .querySelectorAll(".fu-config-builder-uploader-tab-name")
-        .forEach((nameEl) => {
-          nameEl.addEventListener("dblclick", (e) => {
-            e.stopPropagation();
-            this.editUploaderName(nameEl.dataset.uploaderId);
-          });
-        });
-
-      // Initialize tooltips for new uploader tab elements
-      Tooltip.initAll(listEl);
-    }
+    return updateUploaderTabsUIFn(this);
   }
 
   /**
@@ -9847,395 +7388,62 @@ export default class ConfigBuilder {
   }
 
   // ============================================================================
-  // Search Functionality
+  // Search Functionality - Delegates to SearchUI module
   // ============================================================================
 
   /**
    * Attach search event handlers
+   * Delegates to SearchUI module
    */
   attachSearchEvents() {
-    const searchInput = this.element.querySelector("#option-search");
-    const clearBtn = this.element.querySelector("#search-clear");
-    const resultsContainer = this.element.querySelector("#search-results");
-
-    if (!searchInput) return;
-
-    // Build search index on first focus
-    searchInput.addEventListener("focus", () => {
-      if (!this.searchIndex) {
-        this.buildSearchIndex();
-      }
-    });
-
-    // Handle input with debounce
-    let debounceTimer;
-    searchInput.addEventListener("input", (e) => {
-      const query = e.target.value.trim();
-
-      // Show/hide clear button
-      if (clearBtn) {
-        clearBtn.style.display = query ? "flex" : "none";
-      }
-
-      // Debounce search
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        if (query.length >= 1) {
-          const results = this.fuzzySearch(query);
-          this.renderSearchResults(results, query);
-        } else {
-          this.hideSearchResults();
-        }
-      }, 150);
-    });
-
-    // Clear button
-    if (clearBtn) {
-      clearBtn.addEventListener("click", () => {
-        searchInput.value = "";
-        clearBtn.style.display = "none";
-        this.hideSearchResults();
-        searchInput.focus();
-      });
-    }
-
-    // Handle keyboard navigation
-    searchInput.addEventListener("keydown", (e) => {
-      if (!resultsContainer || resultsContainer.style.display === "none") return;
-
-      const items = resultsContainer.querySelectorAll(".fu-config-builder-search-result-item");
-      const activeItem = resultsContainer.querySelector(".fu-config-builder-search-result-item.active");
-      let activeIndex = Array.from(items).indexOf(activeItem);
-
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          if (activeIndex < items.length - 1) {
-            items[activeIndex]?.classList.remove("active");
-            items[activeIndex + 1]?.classList.add("active");
-            items[activeIndex + 1]?.scrollIntoView({ block: "nearest" });
-          }
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          if (activeIndex > 0) {
-            items[activeIndex]?.classList.remove("active");
-            items[activeIndex - 1]?.classList.add("active");
-            items[activeIndex - 1]?.scrollIntoView({ block: "nearest" });
-          }
-          break;
-        case "Enter":
-          e.preventDefault();
-          if (activeItem) {
-            activeItem.click();
-          }
-          break;
-        case "Escape":
-          this.hideSearchResults();
-          searchInput.blur();
-          break;
-      }
-    });
-
-    // Close results when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".fu-config-builder-search")) {
-        this.hideSearchResults();
-      }
-    });
+    return attachSearchEventsFn(this);
   }
 
   /**
    * Build search index from option definitions
+   * Delegates to SearchUI module
    */
   buildSearchIndex() {
-    this.searchIndex = [];
-
-    // Index config options
-    for (const [categoryKey, category] of Object.entries(this.optionDefinitions)) {
-      for (const [optionKey, option] of Object.entries(category.options)) {
-        this.searchIndex.push({
-          key: optionKey,
-          label: option.label || optionKey,
-          hint: option.hint || "",
-          category: category.title,
-          categoryKey: categoryKey,
-          icon: category.icon,
-          type: "config",
-          searchText: `${option.label || optionKey} ${option.hint || ""} ${optionKey}`.toLowerCase()
-        });
-      }
-    }
-
-    // Index style options
-    for (const [sectionKey, section] of Object.entries(this.styleDefinitions)) {
-      // Handle variables as object (key-value pairs)
-      if (section.variables && typeof section.variables === 'object') {
-        for (const [varKey, variable] of Object.entries(section.variables)) {
-          this.searchIndex.push({
-            key: varKey,
-            label: variable.label || varKey,
-            hint: variable.hint || "",
-            category: section.title,
-            categoryKey: sectionKey,
-            icon: section.icon,
-            type: "style",
-            searchText: `${variable.label || varKey} ${variable.hint || ""} ${varKey}`.toLowerCase()
-          });
-        }
-      }
-    }
+    return buildSearchIndexForBuilderFn(this);
   }
 
   /**
    * Fuzzy search implementation
-   * @param {string} query - Search query
-   * @returns {Array} Matching results sorted by relevance
+   * Delegates to SearchUI module
    */
   fuzzySearch(query) {
-    if (!this.searchIndex) return [];
-
-    const queryLower = query.toLowerCase();
-    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 0);
-    const results = [];
-
-    for (const item of this.searchIndex) {
-      const score = this.calculateFuzzyScore(item, queryWords, queryLower);
-      if (score > 0) {
-        results.push({ ...item, score });
-      }
-    }
-
-    // Sort by score (higher is better) and limit results
-    return results
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 15);
-  }
-
-  /**
-   * Calculate fuzzy match score for an item
-   * @param {Object} item - Search index item
-   * @param {Array} queryWords - Query split into words
-   * @param {string} queryLower - Lowercase query
-   * @returns {number} Match score (0 = no match)
-   */
-  calculateFuzzyScore(item, queryWords, queryLower) {
-    let score = 0;
-    const labelLower = item.label.toLowerCase();
-    const keyLower = item.key.toLowerCase();
-    const hintLower = item.hint.toLowerCase();
-
-    // Exact match in label (highest priority)
-    if (labelLower === queryLower) {
-      score += 100;
-    } else if (labelLower.startsWith(queryLower)) {
-      score += 80;
-    } else if (labelLower.includes(queryLower)) {
-      score += 60;
-    }
-
-    // Match in key
-    if (keyLower.includes(queryLower)) {
-      score += 40;
-    }
-
-    // Match in hint
-    if (hintLower.includes(queryLower)) {
-      score += 20;
-    }
-
-    // Word-by-word matching for multi-word queries
-    if (queryWords.length > 1) {
-      let wordMatches = 0;
-      for (const word of queryWords) {
-        if (labelLower.includes(word) || keyLower.includes(word) || hintLower.includes(word)) {
-          wordMatches++;
-        }
-      }
-      if (wordMatches === queryWords.length) {
-        score += 30; // All words found
-      } else if (wordMatches > 0) {
-        score += wordMatches * 5;
-      }
-    }
-
-    // Fuzzy character matching (for typos)
-    if (score === 0) {
-      const fuzzyScore = this.fuzzyCharMatch(queryLower, labelLower);
-      if (fuzzyScore > 0.6) {
-        score += fuzzyScore * 30;
-      }
-    }
-
-    return score;
-  }
-
-  /**
-   * Fuzzy character matching using Levenshtein-like approach
-   * @param {string} query - Query string
-   * @param {string} target - Target string to match against
-   * @returns {number} Match ratio (0-1)
-   */
-  fuzzyCharMatch(query, target) {
-    if (query.length === 0) return 0;
-    if (target.length === 0) return 0;
-
-    let matchCount = 0;
-    let targetIndex = 0;
-
-    for (const char of query) {
-      const foundIndex = target.indexOf(char, targetIndex);
-      if (foundIndex !== -1) {
-        matchCount++;
-        targetIndex = foundIndex + 1;
-      }
-    }
-
-    return matchCount / query.length;
+    return fuzzySearchForBuilderFn(this, query);
   }
 
   /**
    * Render search results dropdown
-   * @param {Array} results - Search results
-   * @param {string} query - Original query for highlighting
+   * Delegates to SearchUI module
    */
   renderSearchResults(results, query) {
-    const container = this.element.querySelector("#search-results");
-    if (!container) return;
-
-    if (results.length === 0) {
-      container.innerHTML = `
-        <div class="fu-config-builder-search-empty">
-          No options found for "${query}"
-        </div>
-      `;
-      container.style.display = "block";
-      return;
-    }
-
-    const html = results.map((result, index) => {
-      const highlightedLabel = this.highlightMatch(result.label, query);
-      // Use category icon if available, otherwise fall back to type-based icon
-      const iconHtml = result.icon
-        ? this.getCategoryIcon(result.icon)
-        : (result.type === "config"
-          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/></svg>`
-          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25"/></svg>`);
-
-      return `
-        <div class="fu-config-builder-search-result-item ${index === 0 ? "active" : ""}"
-             data-option-key="${result.key}"
-             data-category-key="${result.categoryKey}"
-             data-type="${result.type}">
-          <div class="fu-config-builder-search-result-icon">${iconHtml}</div>
-          <div class="fu-config-builder-search-result-content">
-            <div class="fu-config-builder-search-result-label">${highlightedLabel}</div>
-            <div class="fu-config-builder-search-result-key">${result.key}</div>
-            ${result.hint ? `<div class="fu-config-builder-search-result-hint">${result.hint}</div>` : ""}
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    container.innerHTML = html;
-    container.style.display = "block";
-
-    // Add click handlers
-    container.querySelectorAll(".fu-config-builder-search-result-item").forEach(item => {
-      item.addEventListener("click", () => {
-        this.navigateToOption(
-          item.dataset.optionKey,
-          item.dataset.categoryKey,
-          item.dataset.type
-        );
-      });
-    });
+    return renderSearchResultsFn(this, results, query);
   }
 
   /**
    * Highlight matching parts of text
-   * @param {string} text - Text to highlight
-   * @param {string} query - Query to highlight
-   * @returns {string} HTML with highlighted matches
+   * Delegates to SearchEngine module
    */
   highlightMatch(text, query) {
-    if (!query) return text;
-
-    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-    return text.replace(regex, "<mark>$1</mark>");
+    return highlightMatch(text, query);
   }
 
   /**
    * Hide search results dropdown
+   * Delegates to SearchUI module
    */
   hideSearchResults() {
-    const container = this.element.querySelector("#search-results");
-    if (container) {
-      container.style.display = "none";
-    }
+    return hideSearchResultsFn(this);
   }
 
   /**
    * Navigate to a specific option
-   * @param {string} optionKey - Option key
-   * @param {string} categoryKey - Category key
-   * @param {string} type - 'config' or 'style'
+   * Delegates to SearchUI module
    */
   navigateToOption(optionKey, categoryKey, type) {
-    // Hide search results and clear input
-    this.hideSearchResults();
-    const searchInput = this.element.querySelector("#option-search");
-    if (searchInput) {
-      searchInput.value = "";
-      const clearBtn = this.element.querySelector("#search-clear");
-      if (clearBtn) clearBtn.style.display = "none";
-    }
-
-    // Switch to correct main tab
-    const mainTab = type === "style" ? "styles" : "config";
-    const mainTabBtn = this.element.querySelector(`[data-main-tab="${mainTab}"]`);
-    if (mainTabBtn && !mainTabBtn.classList.contains("active")) {
-      mainTabBtn.click();
-    }
-
-    // Small delay to allow tab switch animation
-    setTimeout(() => {
-      if (type === "config") {
-        // Switch to correct category tab
-        const categoryTab = this.element.querySelector(`[data-category="${categoryKey}"]`);
-        if (categoryTab && !categoryTab.classList.contains("active")) {
-          categoryTab.click();
-        }
-
-        // Find and highlight the option
-        setTimeout(() => {
-          const optionEl = this.element.querySelector(`[data-option="${optionKey}"]`);
-          if (optionEl) {
-            const row = optionEl.closest(".fu-config-builder-option-row");
-            if (row) {
-              row.scrollIntoView({ behavior: "smooth", block: "center" });
-              row.classList.add("fu-config-builder-highlight");
-              setTimeout(() => row.classList.remove("fu-config-builder-highlight"), 2000);
-            }
-          }
-        }, 100);
-      } else {
-        // Style option - switch to correct style section
-        const styleTab = this.element.querySelector(`[data-style-section="${categoryKey}"]`);
-        if (styleTab && !styleTab.classList.contains("active")) {
-          styleTab.click();
-        }
-
-        // Find and highlight the variable
-        setTimeout(() => {
-          const varItem = this.element.querySelector(`[data-css-var="${optionKey}"]`);
-          if (varItem) {
-            varItem.scrollIntoView({ behavior: "smooth", block: "center" });
-            varItem.classList.add("fu-config-builder-highlight");
-            setTimeout(() => varItem.classList.remove("fu-config-builder-highlight"), 2000);
-          }
-        }, 100);
-      }
-    }, 50);
+    return navigateToOptionFn(this, optionKey, categoryKey, type);
   }
 }

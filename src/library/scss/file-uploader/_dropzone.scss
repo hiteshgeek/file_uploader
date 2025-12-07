@@ -1,0 +1,187 @@
+// ============================================================
+// FILE UPLOADER - DROPZONE STYLES
+// Drop zone area, drag states, and icons
+//
+// Contents:
+// 1. Main Wrapper
+// 2. Drop Zone Section
+// 3. Drop Zone Icon & Text
+// 4. Hidden File Input
+// 5. Error Message Section
+// ============================================================
+
+@use "../shared/variables" as *;
+@use "../shared/mixins" as *;
+
+$component-prefix: $file-uploader-prefix !default;
+
+// ------------------------------------------------------------
+// 1. MAIN WRAPPER
+// Container for the entire uploader component
+// ------------------------------------------------------------
+
+.#{$component-prefix}-wrapper {
+  width: 100%;
+  font-family: var(--fu-font-family);
+}
+
+// ------------------------------------------------------------
+// 2. DROP ZONE SECTION
+// Main drag-and-drop area for file uploads
+// ------------------------------------------------------------
+
+.#{$component-prefix}-dropzone {
+  position: relative;
+  border: var(--fu-dropzone-border-width) dashed var(--fu-color-border);
+  border-radius: var(--fu-radius-lg);
+  padding: var(--fu-dropzone-padding);
+  padding-bottom: var(--fu-spacing-xl);
+  background-color: var(--fu-color-bg-light);
+  cursor: pointer;
+  @include transition((border-color, background-color));
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  // Hover state
+  &:hover {
+    border-color: var(--fu-color-border-hover);
+    background-color: var(--fu-color-bg-hover);
+  }
+
+  // Drag over state
+  &.#{$component-prefix}-dragover {
+    border-color: var(--fu-color-border-hover);
+    background-color: var(--fu-color-bg-hover);
+    border-style: solid;
+
+    @if $file-uploader-enable-animations {
+      animation: #{$component-prefix}-pulse 1s ease-in-out infinite;
+    }
+  }
+
+  // Disabled state
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // When files are uploaded, reduce top padding
+  &:has(.#{$component-prefix}-preview) {
+    padding-top: var(--fu-spacing-xl);
+    padding-bottom: var(--fu-spacing-xl);
+  }
+}
+
+.#{$component-prefix}-dropzone-content {
+  pointer-events: none;
+  text-align: center;
+  margin-bottom: var(--fu-spacing-lg);
+
+  // Hide dropzone header when files exist (using :has selector)
+  &:has(+ .#{$component-prefix}-preview-container:not(:empty)) {
+    display: none;
+  }
+}
+
+// ------------------------------------------------------------
+// 3. DROP ZONE ICON & TEXT
+// Visual elements in the dropzone
+// ------------------------------------------------------------
+
+.#{$component-prefix}-icon {
+  width: var(--fu-icon-size-xl);
+  height: var(--fu-icon-size-xl);
+  margin: 0 auto var(--fu-spacing-lg);
+  color: var(--fu-color-primary);
+  @include transition((color, transform));
+
+  .#{$component-prefix}-dropzone:hover & {
+    color: var(--fu-color-primary-hover);
+  }
+}
+
+.#{$component-prefix}-text {
+  margin: 0 0 var(--fu-spacing-sm);
+  font-size: var(--fu-font-size-md);
+  font-weight: var(--fu-font-weight-medium);
+  color: var(--fu-color-text);
+}
+
+.#{$component-prefix}-subtext {
+  margin: 0;
+  font-size: var(--fu-font-size-base);
+  color: var(--fu-color-text-muted);
+}
+
+// ------------------------------------------------------------
+// 4. HIDDEN FILE INPUT
+// Visually hidden input for accessibility
+// ------------------------------------------------------------
+
+.#{$component-prefix}-input {
+  @include visually-hidden;
+}
+
+// ------------------------------------------------------------
+// 5. ERROR MESSAGE SECTION
+// Error notifications for validation failures
+// ------------------------------------------------------------
+
+.#{$component-prefix}-error {
+  @include flex(row, flex-start, center);
+  gap: var(--fu-spacing-md);
+  margin: var(--fu-spacing-lg) 0;
+  padding: var(--fu-spacing-md) var(--fu-spacing-lg);
+  background-color: var(--fu-color-error-bg);
+  color: var(--fu-color-error-text);
+  border-radius: var(--fu-radius-md);
+  font-size: var(--fu-font-size-base);
+  border-left: 4px solid var(--fu-color-error-text);
+  opacity: 1;
+  transition: opacity $animation-duration-slow ease;
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-slideInDown $animation-duration-slow ease;
+  }
+
+  @include shadow("sm");
+
+  // Error icon
+  &-icon {
+    width: var(--fu-icon-size-md);
+    height: var(--fu-icon-size-md);
+    flex-shrink: 0;
+  }
+
+  // Fade out state (for JavaScript removal)
+  &.is-fading {
+    opacity: 0;
+  }
+}
+
+// ------------------------------------------------------------
+// RESPONSIVE ADJUSTMENTS
+// ------------------------------------------------------------
+
+@include respond-below("sm") {
+  .#{$component-prefix}-dropzone {
+    padding: var(--fu-spacing-3xl) var(--fu-spacing-lg);
+  }
+
+  .#{$component-prefix}-icon {
+    width: var(--fu-icon-size-lg);
+    height: var(--fu-icon-size-lg);
+  }
+
+  .#{$component-prefix}-text {
+    font-size: var(--fu-font-size-base);
+  }
+
+  .#{$component-prefix}-subtext {
+    font-size: var(--fu-font-size-xs);
+  }
+}

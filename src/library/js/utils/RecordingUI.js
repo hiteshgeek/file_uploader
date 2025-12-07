@@ -3,7 +3,7 @@
  * Manages all video and audio recording UI components and interactions
  */
 
-import { getIcon } from "./icons.js";
+import { getIcon } from "../shared/icons.js";
 import Tooltip from "../components/tooltip/index.js";
 
 export default class RecordingUI {

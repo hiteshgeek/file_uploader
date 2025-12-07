@@ -1,0 +1,22 @@
+// ============================================================
+// FILE UPLOADER STYLES INDEX
+// Main file upload component styles
+//
+// Contents:
+// 1. Dropzone - Drop zone and drag states
+// 2. Limits - Limits display section
+// 3. Preview - File preview grid and items
+// 4. Buttons - Action buttons (download, delete, etc.)
+// 5. Progress - Progress bars and overlays
+// 6. States - Success, error, loading states
+// 7. Utilities - Utility classes and modes
+// ============================================================
+
+// Import all partials (using @use to compile styles, not re-export)
+@use "dropzone";
+@use "limits";
+@use "preview";
+@use "buttons";
+@use "progress";
+@use "states";
+@use "utilities";

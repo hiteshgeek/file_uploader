@@ -1,0 +1,225 @@
+// ============================================================================
+// ConfigBuilder Search Styles
+// Search input, results, and highlighting
+// ============================================================================
+
+$builder-prefix: "fu-config-builder" !default;
+
+.#{$builder-prefix}-search {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.#{$builder-prefix}-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.#{$builder-prefix}-search-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.#{$builder-prefix}-search-input {
+  width: 100%;
+  padding: 10px 36px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  outline: none;
+  transition: all 0.15s ease;
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  &:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+}
+
+.#{$builder-prefix}-search-clear {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #9ca3af;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.#{$builder-prefix}-search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.#{$builder-prefix}-search-empty {
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.#{$builder-prefix}-search-result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+
+  &:hover,
+  &.active {
+    background: #f3f4f6;
+
+    .#{$builder-prefix}-search-result-icon {
+      background: #ffffff;
+      border-color: #e5e7eb;
+    }
+  }
+
+  &.active {
+    background: #eef2ff;
+
+    .#{$builder-prefix}-search-result-icon {
+      background: #ffffff;
+      border-color: #c7d2fe;
+    }
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+  }
+}
+
+.#{$builder-prefix}-search-result-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #6b7280;
+  transition: background 0.1s ease, border-color 0.1s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.#{$builder-prefix}-search-result-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+// Line 1: Option title
+.#{$builder-prefix}-search-result-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.3;
+
+  mark {
+    background: #fef08a;
+    color: inherit;
+    padding: 0;
+    border-radius: 2px;
+  }
+}
+
+// Line 2: Option key
+.#{$builder-prefix}-search-result-key {
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 11px;
+  color: #6366f1;
+  background: #ffffff;
+  border: 1px solid #e0e7ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+// Line 3: Option description
+.#{$builder-prefix}-search-result-hint {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Category badge (shown after key)
+.#{$builder-prefix}-search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.#{$builder-prefix}-search-result-category {
+  background: #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+// Highlight animation for navigated options
+.#{$builder-prefix}-highlight {
+  animation: configBuilderHighlight 2s ease;
+}
+
+@keyframes configBuilderHighlight {
+  0% {
+    background: rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  }
+  100% {
+    background: transparent;
+    box-shadow: none;
+  }
+}

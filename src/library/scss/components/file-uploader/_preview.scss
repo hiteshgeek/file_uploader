@@ -1,0 +1,12 @@
+// ============================================================================
+// Preview Section
+// ============================================================================
+//
+// This file imports all preview-related partials:
+// - _preview-item.scss    (~280 lines) - Container, preview item, media types
+// - _preview-actions.scss (~200 lines) - Overlays, progress, info, action buttons
+//
+// ============================================================================
+
+@import "preview-item";
+@import "preview-actions";

@@ -1,0 +1,19 @@
+// ============================================================================
+// ConfigBuilder SCSS Index
+// Imports all partials in the correct order
+// ============================================================================
+
+@forward "layout";
+@forward "tabs";
+@forward "search";
+@forward "forms";
+@forward "sliders";
+@forward "extensions";
+@forward "code-output";
+@forward "preview";
+@forward "uploaders";
+@forward "css-vars";
+@forward "styles-editor";
+@forward "modal";
+@forward "tooltips";
+@forward "dark-theme";

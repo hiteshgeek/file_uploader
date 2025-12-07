@@ -1,0 +1,135 @@
+/**
+ * Config Builder - Tooltip Overrides
+ * Tooltip positioning and z-index fixes
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Tooltip Overrides for Config Builder
+// ============================================================================
+
+// Ensure tooltip elements have proper positioning
+.#{$builder-prefix} {
+  // Elements with tooltips need position:relative
+  .has-tooltip {
+    position: relative;
+  }
+
+  // Ensure tooltips appear above all other elements
+  .has-tooltip::before,
+  .has-tooltip::after {
+    z-index: 10000;
+  }
+
+  // Tooltip wrapper (JS-based with shortcut) also needs high z-index
+  .tooltip-wrapper {
+    z-index: 10000;
+  }
+
+  // Header elements need overflow visible for tooltips
+  .#{$builder-prefix}-header {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-header-left {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-theme-switcher {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-theme-btn {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-home-link {
+    overflow: visible;
+  }
+
+  // Vertical tabs need overflow visible for right-positioned tooltips
+  .#{$builder-prefix}-vertical-tabs {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-vertical-tab {
+    overflow: visible;
+  }
+
+  // Style tabs container
+  .#{$builder-prefix}-style-tabs {
+    overflow: visible;
+  }
+
+  // Uploader selector elements
+  .#{$builder-prefix}-uploader-selector {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-uploader-list {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-uploader-tab {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-uploader-tab-actions {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-add-uploader {
+    overflow: visible;
+  }
+
+  // Code header and actions
+  .#{$builder-prefix}-code-header {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-code-actions {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-code-btn {
+    overflow: visible;
+  }
+
+  // Reset styles button
+  .#{$builder-prefix}-reset-styles-btn {
+    overflow: visible;
+  }
+
+  // Dependency indicators
+  .#{$builder-prefix}-depends-on {
+    overflow: visible;
+  }
+
+  // CSS variable items
+  .#{$builder-prefix}-css-vars-items {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-css-var-item {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-css-var-source {
+    overflow: visible;
+  }
+
+  // Panel header
+  .#{$builder-prefix}-panel-header {
+    overflow: visible;
+  }
+
+  // Main tabs
+  .#{$builder-prefix}-main-tabs {
+    overflow: visible;
+  }
+
+  .#{$builder-prefix}-main-tab {
+    overflow: visible;
+  }
+}

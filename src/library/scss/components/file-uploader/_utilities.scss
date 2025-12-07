@@ -1,0 +1,218 @@
+// ============================================================================
+// Responsive Adjustments
+// ============================================================================
+
+@include respond-below("sm") {
+  .#{$component-prefix}-dropzone {
+    padding: var(--fu-spacing-3xl) var(--fu-spacing-lg);
+  }
+
+  .#{$component-prefix}-icon {
+    width: var(--fu-icon-size-lg);
+    height: var(--fu-icon-size-lg);
+  }
+
+  .#{$component-prefix}-text {
+    font-size: var(--fu-font-size-base);
+  }
+
+  .#{$component-prefix}-subtext {
+    font-size: var(--fu-font-size-xs);
+  }
+
+  .#{$component-prefix}-capture-container {
+    bottom: var(--fu-spacing-sm);
+    right: var(--fu-spacing-sm);
+  }
+
+  .#{$component-prefix}-capture-btn {
+    width: 40px;
+    height: 40px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .#{$component-prefix}-recording-indicator {
+    font-size: var(--fu-font-size-xs);
+    padding: var(--fu-spacing-xs) var(--fu-spacing-sm);
+  }
+}
+
+// ============================================================================
+// Bootstrap Form Integration
+// ============================================================================
+
+@if $file-uploader-enable-bootstrap-compat {
+  .form-group .#{$component-prefix}-wrapper,
+  .mb-3 .#{$component-prefix}-wrapper {
+    margin-top: 0;
+  }
+
+  .form-group .#{$component-prefix}-error {
+    margin-top: 0;
+  }
+
+  .was-validated
+    .#{$component-prefix}-wrapper
+    .#{$component-prefix}-preview.error,
+  .is-invalid
+    ~ .#{$component-prefix}-wrapper
+    .#{$component-prefix}-preview.error {
+    border-color: #dc3545;
+  }
+}
+
+// ============================================================================
+// Dark Mode Support
+// ============================================================================
+
+@if $file-uploader-enable-dark-mode {
+  @media (prefers-color-scheme: dark) {
+    .#{$component-prefix}-dropzone {
+      background-color: var(--fu-color-bg-light);
+      border-color: var(--fu-color-border);
+
+      &:hover,
+      &.#{$component-prefix}-dragover {
+        background-color: var(--fu-color-bg-hover);
+        border-color: var(--fu-color-border-hover);
+      }
+    }
+
+    .#{$component-prefix}-text {
+      color: var(--fu-color-text);
+    }
+
+    .#{$component-prefix}-subtext {
+      color: var(--fu-color-text-muted);
+    }
+
+    .#{$component-prefix}-preview {
+      background-color: var(--fu-color-bg);
+      border-color: var(--fu-color-border);
+    }
+
+    .#{$component-prefix}-preview-inner {
+      background-color: var(--fu-color-bg-light);
+    }
+
+    .#{$component-prefix}-filename {
+      color: var(--fu-color-text);
+    }
+
+    .#{$component-prefix}-meta {
+      color: var(--fu-color-text-muted);
+    }
+
+    .#{$component-prefix}-preview-file {
+      color: var(--fu-color-text-light);
+    }
+  }
+}
+
+// ============================================================================
+// Print Styles
+// ============================================================================
+
+@media print {
+  .#{$component-prefix}-dropzone,
+  .#{$component-prefix}-actions {
+    display: none;
+  }
+
+  .#{$component-prefix}-preview {
+    break-inside: avoid;
+  }
+}
+
+// ============================================================================
+// Utility Classes
+// ============================================================================
+
+// Compact mode
+.#{$component-prefix}-wrapper--compact {
+  .#{$component-prefix}-dropzone {
+    padding: var(--fu-spacing-xl) var(--fu-spacing-md);
+  }
+
+  .#{$component-prefix}-preview-inner {
+    height: 100px;
+  }
+}
+
+// Inline mode
+.#{$component-prefix}-wrapper--inline {
+  .#{$component-prefix}-preview-container {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+  }
+
+  .#{$component-prefix}-preview {
+    width: 150px;
+  }
+}
+
+// Large mode
+.#{$component-prefix}-wrapper--large {
+  .#{$component-prefix}-preview-inner {
+    height: 250px;
+  }
+}
+
+// ============================================================================
+// Cross-Uploader Drag & Drop
+// ============================================================================
+
+.#{$component-prefix}-preview.#{$component-prefix}-dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.#{$component-prefix}-preview[draggable="true"] {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// ============================================================================
+// External Drop Zone
+// ============================================================================
+
+.#{$component-prefix}-drop-active {
+  position: relative;
+  outline: 3px dashed var(--fu-color-primary) !important;
+  outline-offset: 3px;
+  transform: scale(1.03);
+  transition: all 0.2s ease;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.15) 100%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+}
+
+// ============================================================================
+// Animations
+// ============================================================================
+
+@if $file-uploader-enable-animations {
+  @keyframes #{$component-prefix}-blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+}

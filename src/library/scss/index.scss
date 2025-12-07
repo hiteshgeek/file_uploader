@@ -1,14 +1,47 @@
-// Base
-@use "variables";
-@use "mixins" as *;
-@use "base";
+// ============================================================
+// FILE UPLOADER LIBRARY - MAIN STYLES ENTRY
+//
+// This file imports all styles for the library.
+// Structure: Shared styles first, then individual project styles.
+// ============================================================
 
-// Components
+// ------------------------------------------------------------
+// SHARED STYLES
+// Variables, mixins, and base styles used across all projects
+// ------------------------------------------------------------
+@use "shared/variables";
+@use "shared/mixins" as *;
+@use "shared/base";
+
+// ------------------------------------------------------------
+// PROJECT 1: FILE UPLOADER
+// Main file upload component
+// ------------------------------------------------------------
+@use "file-uploader";
+
+// ------------------------------------------------------------
+// PROJECT 2: FILE CAROUSEL
+// Media carousel/gallery viewer
+// ------------------------------------------------------------
+@use "components/carousel/carousel";
+
+// ------------------------------------------------------------
+// PROJECT 3: MEDIA CAPTURE
+// Screen capture and recording utilities
+// ------------------------------------------------------------
+@use "components/page-capture";
 @use "components/recording";
+
+// ------------------------------------------------------------
+// CONFIG BUILDER (Standalone tool)
+// Visual configuration interface
+// ------------------------------------------------------------
+@use "components/config-builder";
+
+// ------------------------------------------------------------
+// SHARED COMPONENTS
+// Alert and tooltip systems
+// ------------------------------------------------------------
 @use "components/tooltip"; // Old info icon tooltip
 @use "components/tooltip/tooltip" as modern-tooltip; // Modern tooltip system
 @use "components/alert"; // Alert notification system
-@use "components/file-uploader";
-@use "components/carousel/carousel"; // Carousel preview modal
-@use "components/config-builder"; // Config builder UI
-@use "components/page-capture"; // Page capture overlay and region selector

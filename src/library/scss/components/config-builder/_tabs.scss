@@ -1,0 +1,189 @@
+// ============================================================================
+// ConfigBuilder Tabs Styles
+// Main tabs, vertical tabs, category panels
+// ============================================================================
+
+$builder-prefix: "fu-config-builder" !default;
+
+// Main Tabs (Config / Styles)
+.#{$builder-prefix}-main-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+
+.#{$builder-prefix}-main-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.5);
+    color: #374151;
+  }
+
+  &.active {
+    background: #ffffff;
+    color: #6366f1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    svg {
+      stroke: #6366f1;
+    }
+  }
+}
+
+// Main Tab Content
+.#{$builder-prefix}-main-tab-content {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
+  &.active {
+    display: flex;
+  }
+}
+
+// Vertical Tabs Container
+.#{$builder-prefix}-vertical-tabs {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  width: 44px;
+  min-width: 44px;
+  background: #f3f4f6;
+  border-right: 1px solid #e5e7eb;
+  border-radius: 0 0 8px 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.#{$builder-prefix}-vertical-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #9ca3af;
+
+  &:hover {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  &.active {
+    background: #6366f1;
+    border-left-color: #4f46e5;
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+
+    svg {
+      fill: #ffffff;
+    }
+
+    .#{$builder-prefix}-vertical-tab-label {
+      font-weight: 600;
+    }
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+}
+
+.#{$builder-prefix}-vertical-tab-label {
+  font-size: 7px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 36px;
+  word-wrap: break-word;
+}
+
+// Options Content Area - Independently scrollable
+.#{$builder-prefix}-options-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  min-height: 0;
+
+  // Custom scrollbar for options content
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+
+    &:hover {
+      background: #a1a1a1;
+    }
+  }
+}
+
+// Category Content (shown when vertical tab is active)
+.#{$builder-prefix}-category-panel {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.#{$builder-prefix}-category-panel-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+.#{$builder-prefix}-category-options {
+  display: grid;
+  gap: 14px;
+}

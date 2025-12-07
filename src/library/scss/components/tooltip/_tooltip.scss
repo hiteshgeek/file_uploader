@@ -2,8 +2,8 @@
 // Modern Tooltip System - Adapted for File Uploader
 // ============================================================================
 
-@use "../../variables" as *;
-@use "../../mixins" as *;
+@use "../../shared/variables" as *;
+@use "../../shared/mixins" as *;
 
 $component-prefix: $file-uploader-prefix !default;
 

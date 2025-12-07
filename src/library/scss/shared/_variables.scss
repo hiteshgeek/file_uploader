@@ -1,0 +1,204 @@
+// ============================================================================
+// CSS Custom Properties (CSS Variables) for Theming
+// ============================================================================
+
+:root {
+  // Color Palette - Primary
+  --fu-primary-50: #ebf8ff;
+  --fu-primary-100: #bee3f8;
+  --fu-primary-200: #90cdf4;
+  --fu-primary-300: #63b3ed;
+  --fu-primary-400: #4299e1;
+  --fu-primary-500: #3182ce;
+  --fu-primary-600: #2b6cb0;
+  --fu-primary-700: #2c5282;
+  --fu-primary-800: #2a4365;
+  --fu-primary-900: #1a365d;
+
+  // Color Palette - Neutral/Gray
+  --fu-gray-50: #f7fafc;
+  --fu-gray-100: #edf2f7;
+  --fu-gray-200: #e2e8f0;
+  --fu-gray-300: #cbd5e0;
+  --fu-gray-400: #a0aec0;
+  --fu-gray-500: #718096;
+  --fu-gray-600: #4a5568;
+  --fu-gray-700: #2d3748;
+  --fu-gray-800: #1a202c;
+  --fu-gray-900: #171923;
+
+  // Color Palette - Success
+  --fu-success-50: #f0fff4;
+  --fu-success-100: #c6f6d5;
+  --fu-success-500: #48bb78;
+  --fu-success-600: #38a169;
+  --fu-success-700: #2f855a;
+  --fu-success-800: #276749;
+
+  // Color Palette - Error/Danger
+  --fu-error-50: #fff5f5;
+  --fu-error-100: #fed7d7;
+  --fu-error-500: #fc8181;
+  --fu-error-600: #e53e3e;
+  --fu-error-700: #c53030;
+  --fu-error-800: #9b2c2c;
+
+  // Color Palette - Warning
+  --fu-warning-50: #fffbeb;
+  --fu-warning-100: #fef3c7;
+  --fu-warning-400: #fbbf24;
+  --fu-warning-500: #f59e0b;
+  --fu-warning-600: #d97706;
+  --fu-warning-700: #b45309;
+
+  // Semantic Colors
+  --fu-color-primary: var(--fu-primary-400);
+  --fu-color-primary-hover: var(--fu-primary-500);
+  --fu-color-primary-light: var(--fu-primary-50);
+
+  --fu-color-text: var(--fu-gray-700);
+  --fu-color-text-muted: var(--fu-gray-500);
+  --fu-color-text-light: var(--fu-gray-600);
+
+  --fu-color-bg: #ffffff;
+  --fu-color-bg-light: var(--fu-gray-50);
+  --fu-color-bg-hover: var(--fu-primary-50);
+
+  --fu-color-border: var(--fu-gray-300);
+  --fu-color-border-light: var(--fu-gray-200);
+  --fu-color-border-hover: var(--fu-primary-400);
+
+  --fu-color-success: var(--fu-success-500);
+  --fu-color-success-bg: var(--fu-success-100);
+  --fu-color-success-text: var(--fu-success-700);
+
+  --fu-color-error: var(--fu-error-500);
+  --fu-color-error-bg: var(--fu-error-100);
+  --fu-color-error-text: var(--fu-error-700);
+  --fu-color-error-hover: var(--fu-error-800);
+
+  // Spacing Scale
+  --fu-spacing-xs: 4px;
+  --fu-spacing-sm: 8px;
+  --fu-spacing-md: 12px;
+  --fu-spacing-lg: 16px;
+  --fu-spacing-xl: 20px;
+  --fu-spacing-2xl: 24px;
+  --fu-spacing-3xl: 32px;
+  --fu-spacing-4xl: 40px;
+
+  // Typography
+  --fu-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --fu-font-size-xs: 12px;
+  --fu-font-size-sm: 13px;
+  --fu-font-size-base: 14px;
+  --fu-font-size-md: 16px;
+  --fu-font-size-lg: 18px;
+  --fu-font-size-xl: 20px;
+
+  --fu-font-weight-normal: 400;
+  --fu-font-weight-medium: 500;
+  --fu-font-weight-semibold: 600;
+  --fu-font-weight-bold: 700;
+
+  // Border Radius
+  --fu-radius-xs: 3px;
+  --fu-radius-sm: 4px;
+  --fu-radius-md: 6px;
+  --fu-radius-lg: 8px;
+  --fu-radius-xl: 12px;
+  --fu-radius-round: 50%;
+
+  // Shadows
+  --fu-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --fu-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --fu-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --fu-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  // Transitions
+  --fu-transition-base: all 0.2s ease;
+  --fu-transition-slow: all 0.3s ease;
+  --fu-transition-fast: all 0.15s ease;
+
+  // Z-Index Scale
+  --fu-z-base: 1;
+  --fu-z-dropdown: 10;
+  --fu-z-overlay: 50;
+  --fu-z-modal: 100;
+  --fu-z-tooltip: 200;
+
+  // Component Specific
+  --fu-dropzone-padding: var(--fu-spacing-4xl) var(--fu-spacing-xl);
+  --fu-dropzone-border-width: 2px;
+  --fu-preview-height: 150px;
+  --fu-preview-height-mobile: 120px;
+  --fu-icon-size-sm: 18px;
+  --fu-icon-size-md: 20px;
+  --fu-icon-size-lg: 40px;
+  --fu-icon-size-xl: 48px;
+  --fu-icon-size-2xl: 64px;
+  --fu-button-size: 40px;
+  --fu-spinner-size: 40px;
+  --fu-spinner-border-width: 4px;
+  --fu-limit-item-width: 105px;
+  --fu-limit-item-width-large: 150px;
+}
+
+// Dark Mode Theme
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fu-color-text: var(--fu-gray-200);
+    --fu-color-text-muted: var(--fu-gray-400);
+    --fu-color-text-light: var(--fu-gray-300);
+
+    --fu-color-bg: var(--fu-gray-800);
+    --fu-color-bg-light: var(--fu-gray-700);
+    --fu-color-bg-hover: var(--fu-primary-900);
+
+    --fu-color-border: var(--fu-gray-600);
+    --fu-color-border-light: var(--fu-gray-700);
+    --fu-color-border-hover: var(--fu-primary-400);
+  }
+}
+
+// ============================================================================
+// SCSS Variables (for compile-time usage)
+// ============================================================================
+
+// Breakpoints
+$breakpoints: (
+  "xs": 0,
+  "sm": 576px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px,
+  "xxl": 1400px,
+) !default;
+
+// Grid
+$grid-columns: 12 !default;
+$grid-gap: 16px !default;
+$grid-min-column-width: 200px !default;
+$grid-min-column-width-mobile: 150px !default;
+
+// Animation Durations
+$animation-duration-fast: 0.15s !default;
+$animation-duration-base: 0.2s !default;
+$animation-duration-slow: 0.3s !default;
+$animation-duration-slower: 0.5s !default;
+
+// Animation Easings
+$ease-in: cubic-bezier(0.4, 0, 1, 1) !default;
+$ease-out: cubic-bezier(0, 0, 0.2, 1) !default;
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55) !default;
+
+// Component Specific SCSS Variables
+$file-uploader-prefix: "file-uploader" !default;
+$file-uploader-enable-dark-mode: true !default;
+$file-uploader-enable-animations: true !default;
+$file-uploader-enable-bootstrap-compat: true !default;

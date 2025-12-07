@@ -1,0 +1,518 @@
+/**
+ * Config Builder - Styles Editor
+ * Style tabs, color picker, size inputs, highlight toggle
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Style Editor Components
+// ============================================================================
+
+// Style Tabs - extends vertical tabs to full height with reset at bottom
+.#{$builder-prefix}-style-tabs {
+  align-self: stretch !important;
+  display: flex;
+  flex-direction: column;
+}
+
+// Mode-specific vertical tabs (light/dark mode indicators)
+.#{$builder-prefix}-vertical-tab.mode-light {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    background: #fbbf24;
+    border-radius: 50%;
+    border: 1px solid #f59e0b;
+  }
+}
+
+.#{$builder-prefix}-vertical-tab.mode-dark {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    background: #6366f1;
+    border-radius: 50%;
+    border: 1px solid #4f46e5;
+  }
+}
+
+// Mode badge for style section headers
+.#{$builder-prefix}-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+  }
+
+  &.mode-light {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border: 1px solid #fbbf24;
+  }
+
+  &.mode-dark {
+    background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+    color: #c7d2fe;
+    border: 1px solid #6366f1;
+  }
+}
+
+// Spacer to push reset button to bottom
+.#{$builder-prefix}-vertical-tabs-spacer {
+  flex: 1;
+  min-height: 16px;
+}
+
+// Reset button in vertical tabs (at bottom)
+.#{$builder-prefix}-reset-styles-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 4px;
+  margin: 8px 4px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #dc2626;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+  }
+
+  span {
+    font-size: 7px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  &:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+  }
+}
+
+// Custom indicator dot on Styles tab
+.#{$builder-prefix}-custom-indicator {
+  display: none;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  margin-left: 4px;
+  animation: pulse-indicator 2s infinite;
+
+  &.visible {
+    display: inline-block;
+  }
+}
+
+@keyframes pulse-indicator {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+// Styles tab with custom styles
+.#{$builder-prefix}-main-tab.has-custom {
+  position: relative;
+}
+
+// Style Toolbar (contains highlight toggle)
+.#{$builder-prefix}-style-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+// Highlight Toggle Switch
+.#{$builder-prefix}-highlight-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    display: none;
+  }
+}
+
+.#{$builder-prefix}-highlight-toggle-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: #d1d5db;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.#{$builder-prefix}-highlight-toggle input:checked + .#{$builder-prefix}-highlight-toggle-slider {
+  background: #6366f1;
+
+  &::after {
+    transform: translateX(16px);
+  }
+}
+
+.#{$builder-prefix}-highlight-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+  }
+}
+
+.#{$builder-prefix}-highlight-toggle input:checked ~ .#{$builder-prefix}-highlight-toggle-label {
+  color: #6366f1;
+}
+
+// Style Variables Container
+.#{$builder-prefix}-style-variables {
+  display: grid;
+  gap: 12px;
+}
+
+// Individual Style Variable Row
+.#{$builder-prefix}-style-var {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.#{$builder-prefix}-style-var-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.#{$builder-prefix}-style-var-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.#{$builder-prefix}-style-var-name {
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 10px;
+  padding: 3px 6px;
+  background: #eef2ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 4px;
+  color: #6366f1;
+}
+
+.#{$builder-prefix}-style-var-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Color Picker Input
+.#{$builder-prefix}-color-picker {
+  width: 40px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #ffffff;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 2px;
+  }
+
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+  }
+
+  &::-moz-color-swatch {
+    border: none;
+    border-radius: 4px;
+  }
+}
+
+// Color Text Input
+.#{$builder-prefix}-color-text {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+}
+
+// Size Input
+.#{$builder-prefix}-size-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+}
+
+// Text Input (for shadows, transitions, etc.)
+.#{$builder-prefix}-text-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+}
+
+// Number Input
+.#{$builder-prefix}-number-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  // Hide spinners
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+// ============================================================================
+// Highlight Glow Effect for Preview Elements
+// ============================================================================
+
+.fu-highlight-glow {
+  position: relative;
+  animation: highlight-pulse 1s ease-in-out infinite;
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 2px;
+  z-index: 10;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: rgba(99, 102, 241, 0.15);
+    pointer-events: none;
+    animation: highlight-glow 1s ease-in-out infinite;
+  }
+}
+
+@keyframes highlight-pulse {
+  0%,
+  100% {
+    outline-color: #6366f1;
+  }
+  50% {
+    outline-color: #818cf8;
+  }
+}
+
+@keyframes highlight-glow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.02);
+  }
+}
+
+// ============================================================================
+// Tooltip for options
+// ============================================================================
+
+.#{$builder-prefix}-info {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  cursor: help;
+
+  &:hover {
+    color: #6366f1;
+  }
+}
+
+// ============================================================================
+// Dependency & Disabled States
+// ============================================================================
+
+// Dependency indicator icon
+.#{$builder-prefix}-depends-on {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: #9ca3af;
+  margin-left: 4px;
+  cursor: help;
+  vertical-align: middle;
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+// Option wrapper for dependencies
+.#{$builder-prefix}-option-wrapper {
+  transition: opacity 0.2s ease, max-height 0.3s ease, margin 0.3s ease;
+
+  &.fu-config-builder-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &.fu-config-builder-hidden {
+    display: none;
+  }
+}
+
+// Disabled states for various elements
+.#{$builder-prefix}-group.disabled,
+.#{$builder-prefix}-toggle.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.#{$builder-prefix}-toggle.disabled {
+  cursor: not-allowed;
+
+  .#{$builder-prefix}-toggle-switch {
+    background: #e5e7eb;
+  }
+}
+
+.#{$builder-prefix}-tag.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.#{$builder-prefix}-tags.disabled {
+  background: #f3f4f6;
+  pointer-events: none;
+}
+
+// Affects indicator (shows which options this controls)
+.#{$builder-prefix}-affects-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 500;
+  margin-left: 6px;
+
+  svg {
+    width: 8px;
+    height: 8px;
+  }
+}

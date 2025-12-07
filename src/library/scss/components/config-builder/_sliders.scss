@@ -1,0 +1,467 @@
+/**
+ * Config Builder - Sliders
+ * Size slider, count slider, per-type sliders, and related controls
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Size Slider Component
+// ============================================================================
+
+// Slider Configuration Panel
+.#{$builder-prefix}-slider-config {
+  display: grid;
+  grid-template-columns: auto repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.#{$builder-prefix}-slider-config-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  input {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #1f2937;
+    text-align: center;
+
+    &:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+  }
+
+  // Unit dropdown in slider config
+  &.#{$builder-prefix}-slider-config-unit-item {
+    select {
+      width: 100%;
+      padding: 6px 28px 6px 8px;
+      font-size: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      background: #ffffff;
+      color: #1f2937;
+      cursor: pointer;
+      min-width: 70px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+
+      &:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+      }
+    }
+  }
+}
+
+// Input group for slider config with unit dropdown
+.#{$builder-prefix}-slider-config-input-group {
+  display: flex;
+  gap: 4px;
+
+  input {
+    flex: 1;
+    min-width: 50px;
+  }
+
+  select {
+    width: auto;
+    padding: 6px 4px;
+    font-size: 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #1f2937;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+  }
+}
+
+// Size Slider Container - Card Style
+.#{$builder-prefix}-size-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+// Count Slider Container - Card Style (same as size slider)
+.#{$builder-prefix}-count-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+// Slider Row with +/- buttons
+.#{$builder-prefix}-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// +/- Step Buttons
+.#{$builder-prefix}-slider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    fill: #6b7280;
+  }
+
+  &:hover {
+    border-color: #6366f1;
+    background: #eef2ff;
+
+    svg {
+      fill: #6366f1;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      border-color: #d1d5db;
+      background: #ffffff;
+
+      svg {
+        fill: #6b7280;
+      }
+    }
+  }
+}
+
+// The Slider Input
+.#{$builder-prefix}-slider-input {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-top: -6px;
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 3px 6px rgba(99, 102, 241, 0.4);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #6366f1;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: #e5e7eb;
+  }
+
+  &::-moz-range-track {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Value Input (inline with slider)
+.#{$builder-prefix}-slider-value-input {
+  width: 70px;
+  min-width: 70px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+  text-align: center;
+  font-weight: 500;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  &:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  // Hide number input spinners
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+.#{$builder-prefix}-slider-value-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+// Slider Range Labels
+.#{$builder-prefix}-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 40px;
+  padding: 0;
+  margin-top: 4px;
+}
+
+// Size slider labels offset
+.#{$builder-prefix}-size-slider .#{$builder-prefix}-slider-labels {
+  margin-right: 196px;
+}
+
+// Count slider labels offset
+.#{$builder-prefix}-count-slider .#{$builder-prefix}-slider-labels {
+  margin-right: 150px;
+}
+
+.#{$builder-prefix}-slider-label {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+// Unit Dropdown
+.#{$builder-prefix}-unit-dropdown {
+  width: 70px;
+  min-width: 70px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 14px;
+  padding-right: 24px;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  &:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+// Type slider unit dropdown - same size as main sliders
+.#{$builder-prefix}-unit-dropdown-sm {
+  width: 70px;
+  min-width: 70px;
+  padding: 6px 8px;
+  font-size: 12px;
+  padding-right: 24px;
+  background-size: 14px;
+}
+
+// ============================================================================
+// Per-Type Size/Count Sliders
+// ============================================================================
+
+.#{$builder-prefix}-type-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Block layout with title on separate row
+.#{$builder-prefix}-type-slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+// Header with icon and title
+.#{$builder-prefix}-type-slider-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-bottom: 1px solid #e5e7eb;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: #6366f1;
+    fill: none;
+  }
+}
+
+.#{$builder-prefix}-type-slider-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+// Slider controls container (below header)
+.#{$builder-prefix}-type-slider-block > .#{$builder-prefix}-type-slider-controls {
+  padding: 0 14px;
+}
+
+.#{$builder-prefix}-type-slider-block > .#{$builder-prefix}-slider-labels-sm {
+  padding: 0 14px 14px 14px;
+}
+
+.#{$builder-prefix}-type-slider-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Legacy row layout (kept for backwards compatibility)
+.#{$builder-prefix}-type-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.#{$builder-prefix}-type-label {
+  width: 70px;
+  min-width: 70px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-transform: capitalize;
+}
+
+// Type slider button - same size as main sliders
+.#{$builder-prefix}-slider-btn-sm {
+  width: 32px;
+  height: 32px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Type slider value input - same size as main sliders
+.#{$builder-prefix}-slider-value-input-sm {
+  width: 70px;
+  min-width: 70px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+// Type slider labels - aligned with full-size controls
+.#{$builder-prefix}-slider-labels-sm {
+  margin-left: 40px;
+  margin-right: 196px;
+}
+
+// Type count sliders have "files" label instead of dropdown
+.#{$builder-prefix}-type-slider-block:not([data-unit]) .#{$builder-prefix}-slider-labels-sm {
+  margin-right: 150px;
+}
+
+// Count label (for "files" text)
+.#{$builder-prefix}-count-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  flex-shrink: 0;
+  min-width: 35px;
+}

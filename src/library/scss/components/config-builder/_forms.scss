@@ -1,0 +1,207 @@
+// ============================================================================
+// ConfigBuilder Form Styles
+// Presets, inputs, toggles, selects
+// ============================================================================
+
+$builder-prefix: "fu-config-builder" !default;
+
+// Presets
+.#{$builder-prefix}-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.#{$builder-prefix}-preset {
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+
+  &.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+  }
+}
+
+// Form Groups
+.#{$builder-prefix}-group {
+  display: grid;
+  gap: 6px;
+}
+
+.#{$builder-prefix}-label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+
+  code {
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 4px;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+}
+
+.#{$builder-prefix}-hint {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+// Input Styles
+.#{$builder-prefix}-input,
+.#{$builder-prefix}-select {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+
+  &:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+.#{$builder-prefix}-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 36px;
+}
+
+// Checkbox/Toggle Styles
+.#{$builder-prefix}-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+  }
+
+  &.active {
+    background: #eef2ff;
+    border-color: #6366f1;
+  }
+}
+
+.#{$builder-prefix}-toggle-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: #d1d5db;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+  }
+
+  .#{$builder-prefix}-toggle.active & {
+    background: #6366f1;
+
+    &::after {
+      transform: translateX(16px);
+    }
+  }
+}
+
+.#{$builder-prefix}-toggle-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.#{$builder-prefix}-toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  code {
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 4px;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+}
+
+.#{$builder-prefix}-toggle-hint {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+// Number Input with Unit
+.#{$builder-prefix}-number-group {
+  display: flex;
+  gap: 6px;
+}
+
+.#{$builder-prefix}-number-input {
+  flex: 1;
+}
+
+.#{$builder-prefix}-unit-select {
+  width: 70px;
+  flex-shrink: 0;
+}

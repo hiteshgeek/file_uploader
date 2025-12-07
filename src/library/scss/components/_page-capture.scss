@@ -2,8 +2,8 @@
 // Page Capture Component - Full Page & Region Screenshot
 // ============================================================================
 
-@use "../variables" as *;
-@use "../mixins" as *;
+@use "../shared/variables" as *;
+@use "../shared/mixins" as *;
 
 $component-prefix: $file-uploader-prefix !default;
 

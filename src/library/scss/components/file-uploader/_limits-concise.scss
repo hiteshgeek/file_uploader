@@ -1,0 +1,268 @@
+// ============================================================================
+// Limits Display - Concise View Styles
+// ============================================================================
+
+// File type chips container
+.#{$component-prefix}-type-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--fu-spacing-sm);
+}
+
+// Expanded type chip with info
+.#{$component-prefix}-type-chip-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--fu-color-bg);
+  border: 1px solid var(--fu-color-border-light);
+  border-radius: var(--fu-radius-md);
+  cursor: default;
+  min-width: 100px;
+  @include transition((border-color, background-color, box-shadow, transform));
+
+  &:hover {
+    border-color: var(--fu-color-primary);
+    background-color: rgba(66, 153, 225, 0.04);
+    box-shadow: 0 2px 8px rgba(66, 153, 225, 0.12);
+
+    @if $file-uploader-enable-animations {
+      transform: translateY(-1px);
+    }
+
+    .#{$component-prefix}-chip-header svg {
+      fill: var(--fu-color-primary);
+    }
+
+    .#{$component-prefix}-chip-name {
+      color: var(--fu-color-primary);
+    }
+  }
+}
+
+.#{$component-prefix}-chip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--fu-color-text-muted);
+    flex-shrink: 0;
+    @include transition((fill));
+  }
+}
+
+.#{$component-prefix}-chip-name {
+  font-size: 13px;
+  font-weight: var(--fu-font-weight-semibold);
+  color: var(--fu-color-text);
+  @include transition((color));
+}
+
+.#{$component-prefix}-chip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: var(--fu-font-weight-semibold);
+  color: white;
+  background-color: var(--fu-color-primary);
+  border-radius: 8px;
+  margin-left: auto;
+}
+
+.#{$component-prefix}-chip-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--fu-color-text-muted);
+}
+
+.#{$component-prefix}-chip-limit,
+.#{$component-prefix}-chip-max {
+  font-weight: var(--fu-font-weight-normal);
+  white-space: nowrap;
+  letter-spacing: 0.03rem;
+}
+
+.#{$component-prefix}-chip-separator {
+  opacity: 0.5;
+}
+
+// ============================================================================
+// Compact Summary Section
+// ============================================================================
+
+.#{$component-prefix}-compact-summary {
+  display: flex;
+  align-items: stretch;
+  gap: var(--fu-spacing-md);
+  padding: 10px 12px;
+  background-color: var(--fu-color-bg);
+  border: 1px solid var(--fu-color-border-light);
+  border-radius: var(--fu-radius-sm);
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
+
+// Compact item (Size or Files)
+.#{$component-prefix}-compact-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.#{$component-prefix}-compact-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--fu-spacing-sm);
+}
+
+.#{$component-prefix}-compact-item-label {
+  font-size: 11px;
+  font-weight: var(--fu-font-weight-medium);
+  color: var(--fu-color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.#{$component-prefix}-compact-item-value {
+  font-size: 12px;
+  font-weight: var(--fu-font-weight-semibold);
+  color: var(--fu-color-text);
+  white-space: nowrap;
+}
+
+// Compact progress bar
+.#{$component-prefix}-compact-progress {
+  width: 100%;
+  height: 6px;
+  background-color: var(--fu-color-bg-hover);
+  border-radius: var(--fu-radius-xs);
+  overflow: hidden;
+}
+
+.#{$component-prefix}-compact-progress-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--fu-color-primary) 0%,
+    var(--fu-success-500) 100%
+  );
+  border-radius: var(--fu-radius-xs);
+  @include transition((width));
+  transition-duration: 0.5s;
+}
+
+// Legacy compact stats section
+.#{$component-prefix}-compact-progress-wrapper {
+  flex: 1;
+  min-width: 80px;
+}
+
+.#{$component-prefix}-compact-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-spacing-sm);
+  flex-shrink: 0;
+}
+
+.#{$component-prefix}-compact-stat {
+  font-size: 11px;
+  color: var(--fu-color-text-muted);
+  white-space: nowrap;
+
+  strong {
+    color: var(--fu-color-text);
+    font-weight: var(--fu-font-weight-semibold);
+  }
+}
+
+.#{$component-prefix}-compact-divider {
+  color: var(--fu-color-border);
+  font-size: 11px;
+}
+
+// ============================================================================
+// Legacy Limit Items (backwards compatibility)
+// ============================================================================
+
+.#{$component-prefix}-limit-item {
+  @include flex-between;
+  padding: var(--fu-spacing-sm) var(--fu-spacing-md);
+  background-color: var(--fu-color-bg);
+  border-radius: var(--fu-radius-sm);
+  font-size: var(--fu-font-size-sm);
+  width: var(--fu-limit-item-width);
+  flex-shrink: 0;
+  @include transition((background-color, transform));
+}
+
+.#{$component-prefix}-limit-label {
+  color: var(--fu-color-text-light);
+  font-weight: var(--fu-font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--fu-spacing-xs);
+  z-index: 2;
+}
+
+.#{$component-prefix}-limit-value {
+  color: var(--fu-color-text);
+  font-weight: var(--fu-font-weight-semibold);
+  z-index: 2;
+}
+
+// Progress bar for limit items (legacy)
+.#{$component-prefix}-limit-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background-color: rgba(66, 153, 225, 0.15);
+  border-radius: 0 0 var(--fu-radius-sm) var(--fu-radius-sm);
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.#{$component-prefix}-limit-progress-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--fu-color-primary) 0%,
+    var(--fu-success-500) 100%
+  );
+  @include transition((width));
+  transition-duration: 0.5s;
+  border-radius: 0;
+}
+
+// Mini progress bar for detailed limit items (legacy)
+.#{$component-prefix}-limit-progress-mini {
+  width: 100%;
+  height: 4px;
+  background-color: var(--fu-color-bg-hover);
+  border-radius: var(--fu-radius-xs);
+  overflow: hidden;
+  margin-top: 4px;
+
+  .#{$component-prefix}-limit-progress-bar {
+    height: 100%;
+    border-radius: var(--fu-radius-xs);
+  }
+}

@@ -1,0 +1,260 @@
+/**
+ * Config Builder - Uploaders
+ * Uploader selector, uploader wrappers, multiple uploaders support
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Uploader Selector (Multiple Uploaders)
+// ============================================================================
+
+.#{$builder-prefix}-uploader-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.#{$builder-prefix}-uploader-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+
+.#{$builder-prefix}-uploader-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  &.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+
+    .#{$builder-prefix}-uploader-tab-close,
+    .#{$builder-prefix}-uploader-tab-duplicate {
+      color: rgba(255, 255, 255, 0.7);
+
+      &:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+.#{$builder-prefix}-uploader-tab-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.#{$builder-prefix}-uploader-tab-input {
+  width: 100px;
+  padding: 2px 6px;
+  border: 1px solid #6366f1;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  outline: none;
+
+  &.error {
+    border-color: #ef4444;
+    background: #fef2f2;
+  }
+}
+
+.#{$builder-prefix}-name-error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  padding: 3px 6px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 3px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.#{$builder-prefix}-uploader-tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 2px;
+}
+
+.#{$builder-prefix}-uploader-tab-close,
+.#{$builder-prefix}-uploader-tab-duplicate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.#{$builder-prefix}-uploader-tab-close {
+  &:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.#{$builder-prefix}-uploader-tab-duplicate {
+  &:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+  }
+}
+
+.#{$builder-prefix}-add-uploader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px dashed #d1d5db;
+  background: transparent;
+  border-radius: 4px;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+
+  &:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+    z-index: 10;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ============================================================================
+// Uploader Preview Wrappers (Vertical Stack)
+// ============================================================================
+
+.#{$builder-prefix}-uploader-wrapper {
+  margin-bottom: 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.active {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  &:not(.active):hover {
+    border-color: #d1d5db;
+  }
+}
+
+.#{$builder-prefix}-uploader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+
+  .active & {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border-bottom-color: transparent;
+  }
+}
+
+.#{$builder-prefix}-uploader-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+
+  .active & {
+    color: #ffffff;
+  }
+}
+
+.#{$builder-prefix}-uploader-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border-radius: 16px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.#{$builder-prefix}-uploader-edit-btn {
+  padding: 5px 12px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+  }
+}
+
+.#{$builder-prefix}-uploader-container {
+  padding: 14px;
+  background: #ffffff;
+}
+
+// Limits styling override
+.file-uploader-limits {
+  margin-bottom: 0;
+}

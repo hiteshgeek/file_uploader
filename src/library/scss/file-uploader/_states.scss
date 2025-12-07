@@ -1,0 +1,167 @@
+// ============================================================
+// FILE UPLOADER - STATE STYLES
+// Success, error, loading, and other state styles
+//
+// Contents:
+// 1. Success Overlay
+// 2. Dark Mode Support
+// 3. Print Styles
+// 4. Bootstrap Form Integration
+// ============================================================
+
+@use "../shared/variables" as *;
+@use "../shared/mixins" as *;
+
+$component-prefix: $file-uploader-prefix !default;
+
+// ------------------------------------------------------------
+// 1. SUCCESS OVERLAY
+// Animated checkmark overlay after successful upload
+// ------------------------------------------------------------
+
+.#{$component-prefix}-success-overlay {
+  @include cover;
+  @include flex-center;
+  background-color: rgba(72, 187, 120, 0.95);
+  z-index: calc(var(--fu-z-overlay) + 1);
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+  display: flex !important;
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(8px);
+  }
+
+  // Slide in from bottom
+  &.slide-in {
+    pointer-events: auto;
+    animation: #{$component-prefix}-slide-in-bottom 0.25s cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      ) forwards;
+  }
+
+  // Slide out to top
+  &.slide-out {
+    pointer-events: none;
+    animation: #{$component-prefix}-slide-out-top 0.3s cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      ) forwards;
+  }
+}
+
+.#{$component-prefix}-success-icon {
+  width: var(--fu-icon-size-2xl);
+  height: var(--fu-icon-size-2xl);
+  color: white;
+  transform: scale(0);
+
+  .#{$component-prefix}-success-overlay.slide-in & {
+    @if $file-uploader-enable-animations {
+      animation: #{$component-prefix}-checkmark-pop
+        0.3s
+        cubic-bezier(0.175, 0.885, 0.32, 1.275)
+        0.1s
+        forwards;
+    }
+  }
+}
+
+// ------------------------------------------------------------
+// 2. DARK MODE SUPPORT
+// Styles for dark color scheme
+// ------------------------------------------------------------
+
+@if $file-uploader-enable-dark-mode {
+  @media (prefers-color-scheme: dark) {
+    .#{$component-prefix}-dropzone {
+      background-color: var(--fu-color-bg-light);
+      border-color: var(--fu-color-border);
+
+      &:hover,
+      &.#{$component-prefix}-dragover {
+        background-color: var(--fu-color-bg-hover);
+        border-color: var(--fu-color-border-hover);
+      }
+    }
+
+    .#{$component-prefix}-text {
+      color: var(--fu-color-text);
+    }
+
+    .#{$component-prefix}-subtext {
+      color: var(--fu-color-text-muted);
+    }
+
+    .#{$component-prefix}-preview {
+      background-color: var(--fu-color-bg);
+      border-color: var(--fu-color-border);
+    }
+
+    .#{$component-prefix}-preview-inner {
+      background-color: var(--fu-color-bg-light);
+    }
+
+    .#{$component-prefix}-filename {
+      color: var(--fu-color-text);
+    }
+
+    .#{$component-prefix}-meta {
+      color: var(--fu-color-text-muted);
+    }
+
+    .#{$component-prefix}-preview-file {
+      color: var(--fu-color-text-light);
+    }
+  }
+}
+
+// ------------------------------------------------------------
+// 3. PRINT STYLES
+// Styles for printing
+// ------------------------------------------------------------
+
+@media print {
+  .#{$component-prefix}-dropzone,
+  .#{$component-prefix}-actions {
+    display: none;
+  }
+
+  .#{$component-prefix}-preview {
+    break-inside: avoid;
+  }
+}
+
+// ------------------------------------------------------------
+// 4. BOOTSTRAP FORM INTEGRATION
+// Bootstrap compatibility styles
+// ------------------------------------------------------------
+
+@if $file-uploader-enable-bootstrap-compat {
+  // Bootstrap 3-5 compatibility
+  .form-group .#{$component-prefix}-wrapper,
+  .mb-3 .#{$component-prefix}-wrapper {
+    margin-top: 0;
+  }
+
+  // Bootstrap 3 compatibility
+  .form-group .#{$component-prefix}-error {
+    margin-top: 0;
+  }
+
+  // Bootstrap 4/5 validation states
+  .was-validated
+    .#{$component-prefix}-wrapper
+    .#{$component-prefix}-preview.error,
+  .is-invalid
+    ~ .#{$component-prefix}-wrapper
+    .#{$component-prefix}-preview.error {
+    border-color: #dc3545;
+  }
+}

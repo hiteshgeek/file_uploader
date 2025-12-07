@@ -1,0 +1,12 @@
+// ============================================================================
+// Limits Display Section
+// ============================================================================
+//
+// This file imports all limits-related partials:
+// - _limits-detailed.scss (~410 lines) - Detailed view, type cards, summary bar
+// - _limits-concise.scss  (~220 lines) - Concise view, chips, compact summary
+//
+// ============================================================================
+
+@import "limits-detailed";
+@import "limits-concise";

@@ -1,0 +1,265 @@
+// ============================================================================
+// Capture Buttons Container
+// ============================================================================
+
+.#{$component-prefix}-capture-container {
+  @include flex(row, flex-end, center);
+  gap: var(--fu-spacing-sm);
+  z-index: var(--fu-z-overlay);
+  justify-content: center;
+  pointer-events: auto;
+  margin-left: auto;
+}
+
+.#{$component-prefix}-capture-btn {
+  @include flex-center;
+  width: 40px;
+  aspect-ratio: 1;
+  border-radius: var(--fu-radius-round);
+  border: none;
+  background-color: var(--fu-color-primary);
+  color: white;
+  cursor: pointer;
+  @include transition((background-color, transform, box-shadow));
+  @include shadow("md");
+
+  svg {
+    width: 18px;
+    aspect-ratio: 1;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--fu-color-primary-hover);
+    @include shadow("lg");
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.recording {
+    background-color: var(--fu-error-600);
+    animation: #{$component-prefix}-pulse 1.5s ease-in-out infinite;
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-error-600);
+    }
+  }
+}
+
+.#{$component-prefix}-toolbar-btn {
+  @include flex-center;
+  padding: var(--fu-spacing-sm) var(--fu-spacing-md);
+  background-color: white;
+  border: 2px solid var(--fu-color-border);
+  border-radius: var(--fu-radius-md);
+  color: var(--fu-color-text);
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-medium);
+  cursor: pointer;
+  @include transition((all));
+  transition-duration: 0.2s;
+  @include shadow("sm");
+  gap: var(--fu-spacing-xs);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--fu-color-bg-hover);
+    border-color: var(--fu-color-primary);
+    @include shadow("md");
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    @include shadow("sm");
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.muted {
+    background-color: var(--fu-error-50);
+    border-color: var(--fu-error-300);
+    color: var(--fu-error-700);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-error-100);
+      border-color: var(--fu-error-400);
+    }
+  }
+
+  &.paused {
+    background-color: var(--fu-color-primary-light);
+    border-color: var(--fu-color-primary);
+    color: var(--fu-color-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-color-primary);
+      color: white;
+    }
+  }
+}
+
+.#{$component-prefix}-toolbar-stop {
+  background-color: var(--fu-error-600);
+  border-color: var(--fu-error-700);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: var(--fu-error-700);
+    border-color: var(--fu-error-800);
+    @include shadow("lg");
+  }
+}
+
+// ============================================================================
+// Capture Indicator Badge
+// ============================================================================
+
+.#{$component-prefix}-capture-indicator {
+  position: absolute !important;
+  top: var(--fu-spacing-sm);
+  right: var(--fu-spacing-sm);
+  width: 25px;
+  aspect-ratio: 1;
+  @include flex-center;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: var(--fu-radius-sm);
+  color: white;
+  z-index: 10;
+  @include shadow("sm");
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(5px);
+  }
+
+  svg {
+    width: 15px;
+    aspect-ratio: 1;
+    fill: currentColor;
+  }
+}
+
+// ============================================================================
+// Collapsible Capture Buttons
+// ============================================================================
+
+.#{$component-prefix}-capture-expandable {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: auto;
+}
+
+.#{$component-prefix}-capture-toggle {
+  @include flex-center;
+  width: 40px;
+  aspect-ratio: 1;
+  border-radius: var(--fu-radius-round);
+  border: none;
+  background-color: var(--fu-color-primary);
+  color: white;
+  cursor: pointer;
+  @include transition((background-color, transform, box-shadow));
+  @include shadow("md");
+  z-index: 2;
+
+  .toggle-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include transition((transform));
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--fu-color-primary-hover);
+    @include shadow("lg");
+  }
+}
+
+.#{$component-prefix}-capture-buttons-wrapper {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  @include transition((max-width, opacity, padding));
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+  .#{$component-prefix}-capture-container {
+    margin-left: 0;
+  }
+}
+
+.#{$component-prefix}-capture-expandable.expanded {
+  .#{$component-prefix}-capture-toggle .toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  .#{$component-prefix}-capture-buttons-wrapper {
+    max-width: 300px;
+    opacity: 1;
+    padding-left: var(--fu-spacing-sm);
+  }
+}
+
+// ============================================================================
+// Recording Indicator
+// ============================================================================
+
+.#{$component-prefix}-recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-spacing-sm);
+  padding: var(--fu-spacing-xs) var(--fu-spacing-md);
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: var(--fu-radius-md);
+  color: white;
+  font-size: var(--fu-font-size-sm);
+  font-weight: var(--fu-font-weight-medium);
+
+  @if $file-uploader-enable-animations {
+    @include backdrop-blur(5px);
+  }
+}
+
+.#{$component-prefix}-recording-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--fu-error-500);
+  border-radius: var(--fu-radius-round);
+
+  @if $file-uploader-enable-animations {
+    animation: #{$component-prefix}-blink 1s ease-in-out infinite;
+  }
+}
+
+.#{$component-prefix}-recording-time {
+  font-family: var(--fu-font-family-mono, "Courier New", monospace);
+  letter-spacing: 0.5px;
+}
+
+.#{$component-prefix}-recording-size {
+  font-family: var(--fu-font-family-mono, "Courier New", monospace);
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+  font-size: 0.9em;
+}

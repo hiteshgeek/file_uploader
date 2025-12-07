@@ -1,0 +1,32 @@
+// ============================================================================
+// File Uploader Component - Main Entry
+// ============================================================================
+//
+// This file imports all file uploader partials in the correct order.
+// Each partial is under 500 lines for maintainability.
+//
+// Partials:
+// - _dropzone.scss    (~130 lines) - Dropzone, wrapper, input, error
+// - _limits.scss      (~490 lines) - Limits display, toggle, cards, chips
+// - _buttons.scss     (~200 lines) - Action buttons, download/clear
+// - _preview.scss     (~400 lines) - Preview items, media, progress
+// - _capture.scss     (~250 lines) - Capture buttons, recording
+// - _dialog.scss      (~110 lines) - Move/copy dialog
+// - _utilities.scss   (~180 lines) - Responsive, dark mode, print, utilities
+//
+// ============================================================================
+
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+// Component prefix variable
+$component-prefix: $file-uploader-prefix !default;
+
+// Import partials
+@import "dropzone";
+@import "limits";
+@import "buttons";
+@import "preview";
+@import "capture";
+@import "dialog";
+@import "utilities";

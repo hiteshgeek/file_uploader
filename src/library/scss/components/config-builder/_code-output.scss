@@ -1,0 +1,216 @@
+/**
+ * Config Builder - Code Output
+ * Code display, syntax highlighting, code cards
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Code Output
+// ============================================================================
+
+.#{$builder-prefix}-code-container {
+  position: relative;
+}
+
+.#{$builder-prefix}-code {
+  background: #1f2937;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.#{$builder-prefix}-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+.#{$builder-prefix}-code-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.#{$builder-prefix}-code-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.#{$builder-prefix}-code-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: #374151;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #4b5563;
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.#{$builder-prefix}-code-content {
+  padding: 14px;
+  max-height: 280px;
+  overflow: auto;
+
+  pre {
+    margin: 0;
+    font-family: "SF Mono", Monaco, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #e5e7eb;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  // Syntax highlighting
+  .code-keyword {
+    color: #c084fc;
+  }
+  .code-string {
+    color: #86efac;
+  }
+  .code-number {
+    color: #fcd34d;
+  }
+  .code-boolean {
+    color: #f472b6;
+  }
+  .code-property {
+    color: #60a5fa;
+  }
+  .code-comment {
+    color: #6b7280;
+    font-style: italic;
+  }
+}
+
+// ============================================================================
+// Code Cards (Multiple Uploaders)
+// ============================================================================
+
+.#{$builder-prefix}-code-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.#{$builder-prefix}-code-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &.active {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  .#{$builder-prefix}-code {
+    border: none;
+    border-radius: 0;
+  }
+
+  .#{$builder-prefix}-code-header {
+    border-radius: 0;
+  }
+
+  &.active .#{$builder-prefix}-code-header {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+
+    .#{$builder-prefix}-code-title {
+      color: #ffffff;
+    }
+  }
+}
+
+.#{$builder-prefix}-code-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  margin-left: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.#{$builder-prefix}-code-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 8px 8px 0 0;
+}
+
+// ============================================================================
+// Code Syntax Highlighting
+// ============================================================================
+
+.code-comment {
+  color: #6b7280;
+  font-style: italic;
+}
+
+// Syntax highlighting for HTML
+.#{$builder-prefix}-code-tag {
+  color: #e11d48;
+}
+
+.#{$builder-prefix}-code-attr {
+  color: #7c3aed;
+}
+
+// Syntax highlighting for CSS
+.#{$builder-prefix}-code-selector {
+  color: #2563eb;
+}
+
+.#{$builder-prefix}-code-property {
+  color: #7c3aed;
+}
+
+.#{$builder-prefix}-code-value {
+  color: #0891b2;
+}
+
+// ============================================================================
+// Copy success animation
+// ============================================================================
+
+.#{$builder-prefix}-copy-success {
+  animation: copySuccess 0.3s ease;
+}
+
+@keyframes copySuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    background: #10b981;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
