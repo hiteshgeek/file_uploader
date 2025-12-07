@@ -67,14 +67,34 @@ $builder-prefix: "fu-config-builder" !default;
 .#{$builder-prefix}-vertical-tabs {
   display: flex;
   flex-direction: column;
-  align-self: flex-start;
-  width: 44px;
-  min-width: 44px;
-  background: #f3f4f6;
-  border-right: 1px solid #e5e7eb;
-  border-radius: 0 0 8px 0;
+  align-self: stretch;
+  width: 72px;
+  min-width: 72px;
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
   overflow-y: auto;
+  overflow-x: hidden;
   flex-shrink: 0;
+  padding: 8px 0;
+  gap: 4px;
+
+  // Custom scrollbar for vertical tabs
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+
+    &:hover {
+      background: #94a3b8;
+    }
+  }
 }
 
 .#{$builder-prefix}-vertical-tab {
@@ -82,25 +102,29 @@ $builder-prefix: "fu-config-builder" !default;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 4px;
+  gap: 6px;
+  padding: 12px 8px;
+  margin: 0 6px;
   background: transparent;
   border: none;
-  border-left: 3px solid transparent;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #9ca3af;
+  color: #64748b;
 
   &:hover {
-    background: #e5e7eb;
-    color: #374151;
+    background: #e2e8f0;
+    color: #334155;
+
+    svg {
+      transform: scale(1.1);
+    }
   }
 
   &.active {
-    background: #6366f1;
-    border-left-color: #4f46e5;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     color: #ffffff;
-    box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 
     svg {
       fill: #ffffff;
@@ -112,19 +136,21 @@ $builder-prefix: "fu-config-builder" !default;
   }
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     fill: currentColor;
+    transition: transform 0.2s ease;
   }
 }
 
 .#{$builder-prefix}-vertical-tab-label {
-  font-size: 7px;
+  font-size: 10px;
   font-weight: 500;
   text-align: center;
-  line-height: 1.1;
-  max-width: 36px;
+  line-height: 1.2;
+  max-width: 60px;
   word-wrap: break-word;
+  letter-spacing: 0.01em;
 }
 
 // Options Content Area - Independently scrollable

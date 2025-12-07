@@ -5,6 +5,7 @@
  */
 
 import Tooltip from "./tooltip/Tooltip.js";
+import TooltipManager from "../utils/TooltipManager.js";
 import FileUploader from "./FileUploader.js";
 
 // Import from modular config-builder components
@@ -639,7 +640,7 @@ export default class ConfigBuilder {
       html += `
         <button class="fu-config-builder-vertical-tab ${
           isActive ? "active" : ""
-        }" data-category="${categoryKey}" data-tooltip-text="${category.title}" data-tooltip-position="right">
+        }" data-category="${categoryKey}" data-tooltip="${category.title}" data-tooltip-position="right">
           ${this.getCategoryIcon(category.icon)}
           <span class="fu-config-builder-vertical-tab-label">${this.getShortCategoryName(
             category.title
@@ -685,7 +686,7 @@ export default class ConfigBuilder {
       html += `
         <button class="fu-config-builder-vertical-tab ${
           isActive ? "active" : ""
-        } ${modeClass}" data-style-section="${sectionKey}" data-tooltip-text="${section.title}" data-tooltip-position="right">
+        } ${modeClass}" data-style-section="${sectionKey}" data-tooltip="${section.title}" data-tooltip-position="right">
           ${this.getCategoryIcon(section.icon)}
           <span class="fu-config-builder-vertical-tab-label">${this.getShortStyleName(
             section.title
@@ -1381,6 +1382,15 @@ export default class ConfigBuilder {
    */
   renderOptionKey(key) {
     return `<code class="fu-config-builder-option-key has-tooltip tooltip-top" data-copy-key="${key}" data-tooltip="Click to copy">${key}<svg class="fu-config-builder-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></code>`;
+  }
+
+  /**
+   * Setup tooltips for vertical tabs using the global TooltipManager
+   * This uses fixed positioning to escape scrollable containers
+   */
+  setupVerticalTabTooltips() {
+    // Initialize TooltipManager for elements with data-tooltip attribute
+    TooltipManager.init(this.element);
   }
 
   /**
@@ -2368,6 +2378,9 @@ export default class ConfigBuilder {
           localStorage.setItem("fu-config-builder-style-section", sectionKey);
         });
       });
+
+    // Setup tooltips for vertical tabs (using fixed positioning to escape scroll container)
+    this.setupVerticalTabTooltips();
 
     // Modal subtab switching (HTML, CSS, JS within Modal tab)
     this.element

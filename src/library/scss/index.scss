@@ -42,6 +42,5 @@
 // SHARED COMPONENTS
 // Alert and tooltip systems
 // ------------------------------------------------------------
-@use "components/tooltip"; // Old info icon tooltip
-@use "components/tooltip/tooltip" as modern-tooltip; // Modern tooltip system
+@use "components/tooltip/tooltip" as tooltip; // Modern tooltip system
 @use "components/alert"; // Alert notification system

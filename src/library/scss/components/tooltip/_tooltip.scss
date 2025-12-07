@@ -292,3 +292,204 @@ $component-prefix: $file-uploader-prefix !default;
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
+
+/* ============================================
+   Global Fixed Tooltip (JS-positioned)
+   ============================================
+   This tooltip uses position:fixed and is positioned
+   via JavaScript. It can escape any overflow:hidden
+   or scrollable container.
+
+   Usage: Add data-tooltip="text" to any element
+   For elements in scroll containers, also add data-tooltip-fixed="true"
+   ============================================ */
+
+.fu-global-tooltip {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Tooltip content */
+  &__content {
+    background: var(--#{$component-prefix}-modern-tooltip-bg);
+    color: var(--#{$component-prefix}-modern-tooltip-text);
+    border: 1px solid var(--#{$component-prefix}-modern-tooltip-border);
+    box-shadow: var(--#{$component-prefix}-modern-tooltip-shadow);
+    @if $file-uploader-enable-animations {
+      @include backdrop-blur(10px);
+    }
+    padding: 6px 12px;
+    border-radius: var(--fu-radius-md);
+    font-family: var(--fu-font-family);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Arrow */
+  &__arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Visible state */
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Position: Right (arrow points left) */
+  &[data-position="right"] {
+    transform: translateX(-8px); /* Start offset for animation */
+
+    &.visible {
+      transform: translateX(0);
+    }
+
+    .fu-global-tooltip__arrow {
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: var(--#{$component-prefix}-modern-tooltip-bg);
+      border-left: none;
+    }
+  }
+
+  /* Position: Left (arrow points right) */
+  &[data-position="left"] {
+    transform: translateX(8px); /* Start offset for animation */
+
+    &.visible {
+      transform: translateX(0);
+    }
+
+    .fu-global-tooltip__arrow {
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: var(--#{$component-prefix}-modern-tooltip-bg);
+      border-right: none;
+    }
+  }
+
+  /* Position: Top (arrow points down) */
+  &[data-position="top"] {
+    transform: translateY(8px); /* Start offset for animation */
+
+    &.visible {
+      transform: translateY(0);
+    }
+
+    .fu-global-tooltip__arrow {
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: var(--#{$component-prefix}-modern-tooltip-bg);
+      border-bottom: none;
+    }
+  }
+
+  /* Position: Bottom (arrow points up) */
+  &[data-position="bottom"] {
+    transform: translateY(-8px); /* Start offset for animation */
+
+    &.visible {
+      transform: translateY(0);
+    }
+
+    .fu-global-tooltip__arrow {
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: var(--#{$component-prefix}-modern-tooltip-bg);
+      border-top: none;
+    }
+  }
+
+  /* Shortcut badge inside tooltip */
+  .fu-global-tooltip__shortcut {
+    background: var(--#{$component-prefix}-modern-tooltip-shortcut-bg);
+    color: var(--#{$component-prefix}-modern-tooltip-shortcut-text);
+    border: 1px solid var(--#{$component-prefix}-modern-tooltip-shortcut-border);
+    padding: 2px 6px;
+    border-radius: var(--fu-radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--fu-font-family-mono, 'Courier New', monospace);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* Dark Theme - explicit dark theme styles */
+  &[data-theme="dark"],
+  &.theme-dark {
+    .fu-global-tooltip__content {
+      background: rgba(28, 28, 28, 0.92);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .fu-global-tooltip__shortcut {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Arrow colors for dark theme */
+    &[data-position="right"] .fu-global-tooltip__arrow {
+      border-right-color: rgba(28, 28, 28, 0.92);
+    }
+    &[data-position="left"] .fu-global-tooltip__arrow {
+      border-left-color: rgba(28, 28, 28, 0.92);
+    }
+    &[data-position="top"] .fu-global-tooltip__arrow {
+      border-top-color: rgba(28, 28, 28, 0.92);
+    }
+    &[data-position="bottom"] .fu-global-tooltip__arrow {
+      border-bottom-color: rgba(28, 28, 28, 0.92);
+    }
+  }
+
+  /* Light Theme - applies when tooltip has data-theme="light" or .theme-light class */
+  &[data-theme="light"],
+  &.theme-light {
+    .fu-global-tooltip__content {
+      background: rgba(255, 255, 255, 0.92);
+      color: #1a1a1a;
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .fu-global-tooltip__shortcut {
+      background: rgba(0, 0, 0, 0.08);
+      color: #333333;
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Arrow colors for light theme */
+    &[data-position="right"] .fu-global-tooltip__arrow {
+      border-right-color: rgba(255, 255, 255, 0.92);
+    }
+    &[data-position="left"] .fu-global-tooltip__arrow {
+      border-left-color: rgba(255, 255, 255, 0.92);
+    }
+    &[data-position="top"] .fu-global-tooltip__arrow {
+      border-top-color: rgba(255, 255, 255, 0.92);
+    }
+    &[data-position="bottom"] .fu-global-tooltip__arrow {
+      border-bottom-color: rgba(255, 255, 255, 0.92);
+    }
+  }
+}

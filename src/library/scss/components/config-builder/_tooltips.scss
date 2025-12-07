@@ -48,13 +48,17 @@ $builder-prefix: "fu-config-builder" !default;
     overflow: visible;
   }
 
-  // Vertical tabs need overflow visible for right-positioned tooltips
-  .#{$builder-prefix}-vertical-tabs {
-    overflow: visible;
-  }
-
+  // Vertical tabs - disable CSS pseudo-element tooltips
+  // Uses global TooltipManager with fixed positioning instead
   .#{$builder-prefix}-vertical-tab {
     overflow: visible;
+
+    // Disable CSS pseudo-element tooltips for vertical tabs
+    // The global .fu-global-tooltip handles these with fixed positioning
+    &::before,
+    &::after {
+      display: none !important;
+    }
   }
 
   // Style tabs container
