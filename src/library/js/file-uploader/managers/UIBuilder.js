@@ -8,7 +8,7 @@
  */
 
 import { getIcon } from "../../shared/icons.js";
-import Tooltip from "../../components/tooltip/index.js";
+import TooltipManager from "../../utils/TooltipManager.js";
 
 // ============================================================
 // UI BUILDER CLASS
@@ -256,7 +256,7 @@ export class UIBuilder {
     });
 
     this.uploader.actionContainer.appendChild(this.uploader.limitsToggleBtn);
-    Tooltip.initAll(this.uploader.limitsToggleBtn);
+    TooltipManager.init(this.uploader.limitsToggleBtn);
   }
 
   /**
@@ -272,7 +272,7 @@ export class UIBuilder {
     }
 
     this.uploader.limitsToggleBtn.setAttribute(
-      "data-tooltip-text",
+      "data-tooltip",
       this.uploader.limitsVisible ? "Hide upload limits" : "Show upload limits"
     );
     this.uploader.limitsToggleBtn.setAttribute("data-tooltip-position", "top");
@@ -291,7 +291,7 @@ export class UIBuilder {
     this.updateLimitsToggleButton();
 
     if (this.uploader.limitsToggleBtn) {
-      Tooltip.initAll(this.uploader.limitsToggleBtn);
+      TooltipManager.init(this.uploader.limitsToggleBtn);
     }
   }
 

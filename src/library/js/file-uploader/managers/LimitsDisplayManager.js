@@ -8,7 +8,7 @@
  */
 
 import { getIcon } from "../../shared/icons.js";
-import Tooltip from "../../components/tooltip/index.js";
+import TooltipManager from "../../utils/TooltipManager.js";
 import { formatFileSize, capitalizeFirst, getFileType } from "../utils/helpers.js";
 
 // ============================================================
@@ -79,7 +79,7 @@ export class LimitsDisplayManager {
 
     this.uploader.limitsContainer.innerHTML = limitsHTML;
     this.attachLimitsToggleEvents();
-    Tooltip.initAll(this.uploader.limitsContainer);
+    TooltipManager.init(this.uploader.limitsContainer);
 
     // Show/hide button container based on file count
     const hasFiles = fileCount > 0;
@@ -101,7 +101,7 @@ export class LimitsDisplayManager {
   createViewModeToggle(isDetailed) {
     return `
       <button type="button" class="file-uploader-limits-toggle${isDetailed ? " is-expanded" : ""}"
-              data-tooltip-text="${isDetailed ? "Switch to concise view" : "Switch to detailed view"}"
+              data-tooltip="${isDetailed ? "Switch to concise view" : "Switch to detailed view"}"
               data-tooltip-position="top">
         ${getIcon(isDetailed ? "grid_view" : "list_view", { class: "file-uploader-toggle-icon" })}
         <span>${isDetailed ? "Concise" : "Details"}</span>
@@ -153,7 +153,7 @@ export class LimitsDisplayManager {
     const perFileLimitDisplay = this.uploader.options.perFileMaxSizePerTypeDisplay[type] || this.uploader.options.perFileMaxSizeDisplay || "";
 
     return `
-      <div class="file-uploader-type-card" ${tooltipText ? `data-tooltip-text="${tooltipText}" data-tooltip-position="top"` : ""}>
+      <div class="file-uploader-type-card" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
         <div class="file-uploader-type-card-header">
           <div class="file-uploader-type-icon-wrapper">${typeIcon}</div>
           <span class="file-uploader-type-name">${capitalizeFirst(type)}</span>
@@ -206,7 +206,7 @@ export class LimitsDisplayManager {
       : "";
 
     return `
-      <div class="file-uploader-type-card" ${tooltipText ? `data-tooltip-text="${tooltipText}" data-tooltip-position="top"` : ""}>
+      <div class="file-uploader-type-card" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
         <div class="file-uploader-type-card-header">
           <div class="file-uploader-type-icon-wrapper">${getIcon("other", { class: "file-uploader-type-icon" })}</div>
           <span class="file-uploader-type-name">Other</span>
@@ -228,7 +228,7 @@ export class LimitsDisplayManager {
           <span class="file-uploader-general-limits-title">General Limits</span>
         </div>
         <div class="file-uploader-general-limits-grid">
-          <div class="file-uploader-general-card" data-tooltip-text="Maximum total size for all uploaded files combined" data-tooltip-position="top">
+          <div class="file-uploader-general-card" data-tooltip="Maximum total size for all uploaded files combined" data-tooltip-position="top">
             <div class="file-uploader-general-card-icon">${getIcon("storage", { class: "file-uploader-general-icon" })}</div>
             <div class="file-uploader-general-card-content">
               <span class="file-uploader-general-card-label">Total Size</span>
@@ -240,7 +240,7 @@ export class LimitsDisplayManager {
               ` : ""}
             </div>
           </div>
-          <div class="file-uploader-general-card" data-tooltip-text="Maximum number of files that can be uploaded" data-tooltip-position="top">
+          <div class="file-uploader-general-card" data-tooltip="Maximum number of files that can be uploaded" data-tooltip-position="top">
             <div class="file-uploader-general-card-icon">${getIcon("calculator", { class: "file-uploader-general-icon" })}</div>
             <div class="file-uploader-general-card-content">
               <span class="file-uploader-general-card-label">Total Files</span>
@@ -300,7 +300,7 @@ export class LimitsDisplayManager {
     }
 
     return `
-      <div class="file-uploader-type-chip-expanded" ${tooltipText ? `data-tooltip-text="${tooltipText}" data-tooltip-position="top"` : ""}>
+      <div class="file-uploader-type-chip-expanded" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
         <div class="file-uploader-chip-header">
           ${typeIcon}
           <span class="file-uploader-chip-name">${capitalizeFirst(type)}</span>
@@ -332,7 +332,7 @@ export class LimitsDisplayManager {
     const otherPerFileLimit = this.uploader.options.perFileMaxSizeDisplay || "";
 
     return `
-      <div class="file-uploader-type-chip-expanded" ${tooltipText ? `data-tooltip-text="${tooltipText}" data-tooltip-position="top"` : ""}>
+      <div class="file-uploader-type-chip-expanded" ${tooltipText ? `data-tooltip="${tooltipText}" data-tooltip-position="top"` : ""}>
         <div class="file-uploader-chip-header">
           ${getIcon("other", { class: "file-uploader-chip-icon" })}
           <span class="file-uploader-chip-name">Other</span>

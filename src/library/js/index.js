@@ -45,11 +45,17 @@ import { MediaCapture } from "./media-capture/index.js";
 import ConfigBuilder from "./components/ConfigBuilder.js";
 
 // ============================================================
+// UTILITIES
+// Global tooltip system for all components
+// ============================================================
+import TooltipManager from "./utils/TooltipManager.js";
+
+// ============================================================
 // EXPORTS
 // ============================================================
 
 // Named exports for ES modules
-export { FileUploader, FileCarousel, MediaCapture, ConfigBuilder };
+export { FileUploader, FileCarousel, MediaCapture, ConfigBuilder, TooltipManager };
 
 // Expose classes globally for IIFE build
 if (typeof window !== "undefined") {
@@ -57,4 +63,5 @@ if (typeof window !== "undefined") {
   window.FileCarousel = FileCarousel;
   window.MediaCapture = MediaCapture;
   window.ConfigBuilder = ConfigBuilder;
+  window.TooltipManager = TooltipManager;
 }

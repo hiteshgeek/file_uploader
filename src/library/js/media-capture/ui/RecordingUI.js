@@ -8,7 +8,7 @@
  */
 
 import { getIcon } from "../../shared/icons.js";
-import Tooltip from "../../components/tooltip/index.js";
+import TooltipManager from "../../utils/TooltipManager.js";
 
 export default class RecordingUI {
   constructor(fileUploader) {
@@ -143,7 +143,7 @@ export default class RecordingUI {
     pauseBtn.type = "button";
     pauseBtn.className = "file-uploader-capture-btn";
     pauseBtn.setAttribute("data-action", "pause");
-    pauseBtn.setAttribute("data-tooltip-text", "Pause Recording");
+    pauseBtn.setAttribute("data-tooltip", "Pause Recording");
     pauseBtn.setAttribute("data-tooltip-position", "top");
     pauseBtn.innerHTML = getIcon("pause");
     pauseBtn.addEventListener("click", (e) => {
@@ -164,11 +164,11 @@ export default class RecordingUI {
       if (!hasSystemAudio) {
         systemAudioBtn.disabled = true;
         systemAudioBtn.classList.add("muted");
-        systemAudioBtn.setAttribute("data-tooltip-text", "No System Audio Available");
+        systemAudioBtn.setAttribute("data-tooltip", "No System Audio Available");
         systemAudioBtn.setAttribute("data-tooltip-position", "top");
         systemAudioBtn.innerHTML = getIcon("system_sound_mute");
       } else {
-        systemAudioBtn.setAttribute("data-tooltip-text", "Toggle System Audio");
+        systemAudioBtn.setAttribute("data-tooltip", "Toggle System Audio");
         systemAudioBtn.setAttribute("data-tooltip-position", "top");
         systemAudioBtn.innerHTML = getIcon("system_sound");
       }
@@ -192,11 +192,11 @@ export default class RecordingUI {
       if (!hasMic) {
         micBtn.disabled = true;
         micBtn.classList.add("muted");
-        micBtn.setAttribute("data-tooltip-text", "No Microphone Available");
+        micBtn.setAttribute("data-tooltip", "No Microphone Available");
         micBtn.setAttribute("data-tooltip-position", "top");
         micBtn.innerHTML = getIcon("mic_mute");
       } else {
-        micBtn.setAttribute("data-tooltip-text", "Toggle Microphone");
+        micBtn.setAttribute("data-tooltip", "Toggle Microphone");
         micBtn.setAttribute("data-tooltip-position", "top");
         micBtn.innerHTML = getIcon("mic");
       }
@@ -212,7 +212,7 @@ export default class RecordingUI {
     stopBtn.type = "button";
     stopBtn.className = "file-uploader-capture-btn file-uploader-capture-btn-stop";
     stopBtn.setAttribute("data-action", "stop");
-    stopBtn.setAttribute("data-tooltip-text", "Stop Recording");
+    stopBtn.setAttribute("data-tooltip", "Stop Recording");
     stopBtn.setAttribute("data-tooltip-position", "top");
     stopBtn.innerHTML = getIcon("stop");
     stopBtn.addEventListener("click", (e) => {
@@ -230,7 +230,7 @@ export default class RecordingUI {
     this.recordingToolbarButtons = [pauseBtn, systemAudioBtn, micBtn, stopBtn].filter(Boolean);
 
     // Initialize tooltips for recording toolbar buttons
-    Tooltip.initAll(captureContainer);
+    TooltipManager.init(captureContainer);
   }
 
   /**
@@ -254,7 +254,7 @@ export default class RecordingUI {
     pauseBtn.type = "button";
     pauseBtn.className = "file-uploader-capture-btn";
     pauseBtn.setAttribute("data-action", "pause");
-    pauseBtn.setAttribute("data-tooltip-text", "Pause Recording");
+    pauseBtn.setAttribute("data-tooltip", "Pause Recording");
     pauseBtn.setAttribute("data-tooltip-position", "top");
     pauseBtn.innerHTML = getIcon("pause");
     pauseBtn.addEventListener("click", (e) => {
@@ -275,11 +275,11 @@ export default class RecordingUI {
       if (!hasSystemAudio) {
         systemAudioBtn.disabled = true;
         systemAudioBtn.classList.add("muted");
-        systemAudioBtn.setAttribute("data-tooltip-text", "No System Audio Available");
+        systemAudioBtn.setAttribute("data-tooltip", "No System Audio Available");
         systemAudioBtn.setAttribute("data-tooltip-position", "top");
         systemAudioBtn.innerHTML = getIcon("system_sound_mute");
       } else {
-        systemAudioBtn.setAttribute("data-tooltip-text", "Toggle System Audio");
+        systemAudioBtn.setAttribute("data-tooltip", "Toggle System Audio");
         systemAudioBtn.setAttribute("data-tooltip-position", "top");
         systemAudioBtn.innerHTML = getIcon("system_sound");
       }
@@ -295,7 +295,7 @@ export default class RecordingUI {
     stopBtn.type = "button";
     stopBtn.className = "file-uploader-capture-btn file-uploader-capture-btn-stop";
     stopBtn.setAttribute("data-action", "stop");
-    stopBtn.setAttribute("data-tooltip-text", "Stop Recording");
+    stopBtn.setAttribute("data-tooltip", "Stop Recording");
     stopBtn.setAttribute("data-tooltip-position", "top");
     stopBtn.innerHTML = getIcon("stop");
     stopBtn.addEventListener("click", (e) => {
@@ -312,7 +312,7 @@ export default class RecordingUI {
     this.recordingToolbarButtons = [pauseBtn, systemAudioBtn, stopBtn].filter(Boolean);
 
     // Initialize tooltips for audio recording toolbar buttons
-    Tooltip.initAll(captureContainer);
+    TooltipManager.init(captureContainer);
   }
 
   /**
@@ -343,14 +343,14 @@ export default class RecordingUI {
       this.uploader.videoRecorder.resumeRecording();
       if (pauseBtn) {
         pauseBtn.innerHTML = getIcon("pause");
-        pauseBtn.setAttribute("data-tooltip-text", "Pause Recording");
+        pauseBtn.setAttribute("data-tooltip", "Pause Recording");
         pauseBtn.classList.remove("paused");
       }
     } else {
       this.uploader.videoRecorder.pauseRecording();
       if (pauseBtn) {
         pauseBtn.innerHTML = getIcon("play");
-        pauseBtn.setAttribute("data-tooltip-text", "Resume Recording");
+        pauseBtn.setAttribute("data-tooltip", "Resume Recording");
         pauseBtn.classList.add("paused");
       }
     }
@@ -369,14 +369,14 @@ export default class RecordingUI {
       this.uploader.audioRecorder.resumeRecording();
       if (pauseBtn) {
         pauseBtn.innerHTML = getIcon("pause");
-        pauseBtn.setAttribute("data-tooltip-text", "Pause Recording");
+        pauseBtn.setAttribute("data-tooltip", "Pause Recording");
         pauseBtn.classList.remove("paused");
       }
     } else {
       this.uploader.audioRecorder.pauseRecording();
       if (pauseBtn) {
         pauseBtn.innerHTML = getIcon("play");
-        pauseBtn.setAttribute("data-tooltip-text", "Resume Recording");
+        pauseBtn.setAttribute("data-tooltip", "Resume Recording");
         pauseBtn.classList.add("paused");
       }
     }
@@ -395,7 +395,7 @@ export default class RecordingUI {
       const iconName = enabled ? "system_sound" : "system_sound_mute";
       btn.innerHTML = getIcon(iconName);
       btn.classList.toggle("muted", !enabled);
-      btn.setAttribute("data-tooltip-text", enabled ? "Mute System Audio" : "Unmute System Audio");
+      btn.setAttribute("data-tooltip", enabled ? "Mute System Audio" : "Unmute System Audio");
     }
   }
 
@@ -412,7 +412,7 @@ export default class RecordingUI {
       const iconName = enabled ? "system_sound" : "system_sound_mute";
       btn.innerHTML = getIcon(iconName);
       btn.classList.toggle("muted", !enabled);
-      btn.setAttribute("data-tooltip-text", enabled ? "Mute System Audio" : "Unmute System Audio");
+      btn.setAttribute("data-tooltip", enabled ? "Mute System Audio" : "Unmute System Audio");
     }
   }
 
@@ -429,7 +429,7 @@ export default class RecordingUI {
       const iconName = enabled ? "mic" : "mic_mute";
       btn.innerHTML = getIcon(iconName);
       btn.classList.toggle("muted", !enabled);
-      btn.setAttribute("data-tooltip-text", enabled ? "Mute Microphone" : "Unmute Microphone");
+      btn.setAttribute("data-tooltip", enabled ? "Mute Microphone" : "Unmute Microphone");
     }
   }
 
@@ -618,7 +618,7 @@ export default class RecordingUI {
     const timeElement = this.externalRecordingIndicator.querySelector(".file-uploader-recording-time");
     if (timeElement) {
       timeElement.style.cursor = "pointer";
-      timeElement.setAttribute("data-tooltip-text", "Click to toggle time display");
+      timeElement.setAttribute("data-tooltip", "Click to toggle time display");
       timeElement.setAttribute("data-tooltip-position", "top");
       timeElement.dataset.showRemaining = "false";
       timeElement.addEventListener("click", (e) => {

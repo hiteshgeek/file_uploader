@@ -3,7 +3,7 @@
  * Manages multiple uploader instances (add, remove, duplicate, select)
  */
 
-import Tooltip from "../tooltip/Tooltip.js";
+import TooltipManager from "../../utils/TooltipManager.js";
 
 /**
  * Render uploader tabs for preview selector
@@ -34,7 +34,7 @@ export function renderUploaderTabs(builder) {
       data.name
     }</span>
         <div class="fu-config-builder-uploader-tab-actions">
-          <button class="fu-config-builder-uploader-tab-duplicate" data-uploader-id="${id}" data-tooltip-text="Duplicate uploader" data-tooltip-position="bottom">
+          <button class="fu-config-builder-uploader-tab-duplicate" data-uploader-id="${id}" data-tooltip="Duplicate uploader" data-tooltip-position="bottom">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
               <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
@@ -43,7 +43,7 @@ export function renderUploaderTabs(builder) {
           ${
             Object.keys(builder.uploaderInstances).length > 1
               ? `
-            <button class="fu-config-builder-uploader-tab-close" data-uploader-id="${id}" data-tooltip-text="Remove uploader" data-tooltip-position="bottom">
+            <button class="fu-config-builder-uploader-tab-close" data-uploader-id="${id}" data-tooltip="Remove uploader" data-tooltip-position="bottom">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
@@ -402,6 +402,6 @@ export function updateUploaderTabsUI(builder) {
       });
 
     // Initialize tooltips for new uploader tab elements
-    Tooltip.initAll(listEl);
+    TooltipManager.init(listEl);
   }
 }

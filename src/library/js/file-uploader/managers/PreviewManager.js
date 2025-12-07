@@ -8,7 +8,7 @@
  */
 
 import { getIcon } from "../../shared/icons.js";
-import Tooltip from "../../components/tooltip/index.js";
+import TooltipManager from "../../utils/TooltipManager.js";
 import { getFileType, formatFileSize } from "../utils/helpers.js";
 
 // ============================================================
@@ -159,7 +159,7 @@ export class PreviewManager {
     this.uploader.previewContainer.appendChild(preview);
 
     // Initialize tooltips for capture indicator
-    Tooltip.initAll(preview);
+    TooltipManager.init(preview);
 
     // Attach delete event
     const deleteBtn = preview.querySelector(".file-uploader-delete");
@@ -247,7 +247,7 @@ export class PreviewManager {
     if (!config) return "";
 
     return `
-      <div class="file-uploader-capture-indicator" data-tooltip-text="${config.tooltip}" data-tooltip-position="left">
+      <div class="file-uploader-capture-indicator" data-tooltip="${config.tooltip}" data-tooltip-position="left">
         ${getIcon(config.icon)}
       </div>
     `;

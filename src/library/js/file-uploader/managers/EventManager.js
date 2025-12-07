@@ -7,7 +7,7 @@
  * @module EventManager
  */
 
-import Tooltip from "../../components/tooltip/index.js";
+import TooltipManager from "../../utils/TooltipManager.js";
 
 // ============================================================
 // EVENT MANAGER CLASS
@@ -107,7 +107,7 @@ export class EventManager {
     this.externalDropZoneElement = dropZoneElement;
     const activeClass = this.uploader.options.externalDropZoneActiveClass;
 
-    dropZoneElement.setAttribute("data-tooltip-text", "Drop files here");
+    dropZoneElement.setAttribute("data-tooltip", "Drop files here");
     dropZoneElement.setAttribute("data-tooltip-position", "top");
 
     ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -140,7 +140,7 @@ export class EventManager {
       }
     });
 
-    Tooltip.init(dropZoneElement);
+    TooltipManager.init(dropZoneElement);
   }
 
   // ============================================================
