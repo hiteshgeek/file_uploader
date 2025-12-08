@@ -5222,14 +5222,10 @@ export default class ConfigBuilder {
     const phpDefaults = {
       uploadDir: "",
       perFileMaxSize: 10 * 1024 * 1024,
-      perFileMaxSizeDisplay: "10MB",
       totalMaxSize: 100 * 1024 * 1024,
-      totalMaxSizeDisplay: "100MB",
       maxFiles: 10,
       perFileMaxSizePerType: {},
-      perFileMaxSizePerTypeDisplay: {},
       perTypeMaxTotalSize: {},
-      perTypeMaxTotalSizeDisplay: {},
       perTypeMaxFileCount: {},
       allowedExtensions: [],
       imageExtensions: ["jpg", "jpeg", "png", "gif", "webp", "svg"],
@@ -5242,8 +5238,8 @@ export default class ConfigBuilder {
     // Define which keys belong to which PHP group
     const phpGroupKeys = {
       urls: ["uploadDir"],
-      limits: ["perFileMaxSize", "perFileMaxSizeDisplay", "totalMaxSize", "totalMaxSizeDisplay", "maxFiles"],
-      perTypeLimits: ["perFileMaxSizePerType", "perFileMaxSizePerTypeDisplay", "perTypeMaxTotalSize", "perTypeMaxTotalSizeDisplay", "perTypeMaxFileCount"],
+      limits: ["perFileMaxSize", "totalMaxSize", "maxFiles"],
+      perTypeLimits: ["perFileMaxSizePerType", "perTypeMaxTotalSize", "perTypeMaxFileCount"],
       fileTypes: ["allowedExtensions", "imageExtensions", "videoExtensions", "audioExtensions", "documentExtensions", "archiveExtensions"],
     };
 
@@ -6143,14 +6139,10 @@ export default class ConfigBuilder {
     const phpDefaults = {
       uploadDir: "",
       perFileMaxSize: 10 * 1024 * 1024,
-      perFileMaxSizeDisplay: "10MB",
       totalMaxSize: 100 * 1024 * 1024,
-      totalMaxSizeDisplay: "100MB",
       maxFiles: 10,
       perFileMaxSizePerType: {},
-      perFileMaxSizePerTypeDisplay: {},
       perTypeMaxTotalSize: {},
-      perTypeMaxTotalSizeDisplay: {},
       perTypeMaxFileCount: {},
       allowedExtensions: [],
       imageExtensions: ["jpg", "jpeg", "png", "gif", "webp", "svg"],
@@ -6166,8 +6158,8 @@ export default class ConfigBuilder {
     // Define which keys belong to which PHP group
     const phpGroupKeys = {
       urls: ["uploadDir"],
-      limits: ["perFileMaxSize", "perFileMaxSizeDisplay", "totalMaxSize", "totalMaxSizeDisplay", "maxFiles"],
-      perTypeLimits: ["perFileMaxSizePerType", "perFileMaxSizePerTypeDisplay", "perTypeMaxTotalSize", "perTypeMaxTotalSizeDisplay", "perTypeMaxFileCount"],
+      limits: ["perFileMaxSize", "totalMaxSize", "maxFiles"],
+      perTypeLimits: ["perFileMaxSizePerType", "perTypeMaxTotalSize", "perTypeMaxFileCount"],
       fileTypes: ["allowedExtensions", "imageExtensions", "videoExtensions", "audioExtensions", "documentExtensions", "archiveExtensions"],
     };
 
