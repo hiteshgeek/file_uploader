@@ -1,3 +1,6 @@
 - When screen or audio recording goes beyond the allowed limit (file size), stop automatically.
 - When the file count limit for such files is reached, stop recording immediately or disable the buttons.
 - stop addng files while recording to prevent conflict iof size calculation or implement complex algo to do both at the same time
+
+- remove config builder from production and dev
+-

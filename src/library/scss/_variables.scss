@@ -148,21 +148,53 @@
   --fu-limit-item-width-large: 150px;
 }
 
-// Dark Mode Theme
+// Dark Mode Theme Variables Mixin
+@mixin dark-theme-variables {
+  --fu-color-text: var(--fu-gray-200);
+  --fu-color-text-muted: var(--fu-gray-400);
+  --fu-color-text-light: var(--fu-gray-300);
+
+  --fu-color-bg: var(--fu-gray-800);
+  --fu-color-bg-light: var(--fu-gray-700);
+  --fu-color-bg-hover: var(--fu-primary-900);
+
+  --fu-color-border: var(--fu-gray-600);
+  --fu-color-border-light: var(--fu-gray-700);
+  --fu-color-border-hover: var(--fu-primary-400);
+}
+
+// Light Mode Theme Variables Mixin
+@mixin light-theme-variables {
+  --fu-color-text: var(--fu-gray-700);
+  --fu-color-text-muted: var(--fu-gray-500);
+  --fu-color-text-light: var(--fu-gray-600);
+
+  --fu-color-bg: #ffffff;
+  --fu-color-bg-light: var(--fu-gray-50);
+  --fu-color-bg-hover: var(--fu-primary-50);
+
+  --fu-color-border: var(--fu-gray-300);
+  --fu-color-border-light: var(--fu-gray-200);
+  --fu-color-border-hover: var(--fu-primary-400);
+}
+
+// Auto theme (follows system preference)
 @media (prefers-color-scheme: dark) {
   :root {
-    --fu-color-text: var(--fu-gray-200);
-    --fu-color-text-muted: var(--fu-gray-400);
-    --fu-color-text-light: var(--fu-gray-300);
-
-    --fu-color-bg: var(--fu-gray-800);
-    --fu-color-bg-light: var(--fu-gray-700);
-    --fu-color-bg-hover: var(--fu-primary-900);
-
-    --fu-color-border: var(--fu-gray-600);
-    --fu-color-border-light: var(--fu-gray-700);
-    --fu-color-border-hover: var(--fu-primary-400);
+    @include dark-theme-variables;
   }
+}
+
+// Force dark theme via data attribute
+[data-theme="dark"],
+.media-hub-wrapper[data-theme="dark"] {
+  @include dark-theme-variables;
+}
+
+// Force light theme via data attribute (overrides system dark mode)
+[data-theme="light"],
+.media-hub-wrapper[data-theme="light"] {
+  @include light-theme-variables;
 }
 
 // ============================================================================

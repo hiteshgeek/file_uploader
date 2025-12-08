@@ -35,6 +35,8 @@ export const OPTION_TO_GROUP = {
   audioExtensions: "fileTypes",
   documentExtensions: "fileTypes",
   archiveExtensions: "fileTypes",
+  // Theme
+  theme: "theme",
   // Behavior
   multiple: "behavior",
   autoFetchConfig: "behavior",
@@ -121,6 +123,7 @@ export const GROUP_TITLES = {
   limits: "File Size Limits",
   perTypeLimits: "Per-Type Limits",
   fileTypes: "Allowed File Types",
+  theme: "Theme",
   behavior: "Upload Behavior",
   limitsDisplay: "Limits Display",
   alerts: "Alert Notifications",
@@ -139,6 +142,7 @@ export const GROUP_ORDER = [
   "limits",
   "perTypeLimits",
   "fileTypes",
+  "theme",
   "behavior",
   "limitsDisplay",
   "alerts",

@@ -145,6 +145,25 @@ export function getOptionDefinitions() {
       },
     },
 
+    // Theme Configuration
+    theme: {
+      title: "Theme",
+      icon: "palette",
+      options: {
+        theme: {
+          type: "select",
+          default: "auto",
+          label: "Theme",
+          hint: "Control the visual theme of the uploader. 'Auto' follows system preference.",
+          options: [
+            { value: "auto", label: "Auto (System)" },
+            { value: "light", label: "Light" },
+            { value: "dark", label: "Dark" },
+          ],
+        },
+      },
+    },
+
     // Upload Behavior
     behavior: {
       title: "Upload Behavior",

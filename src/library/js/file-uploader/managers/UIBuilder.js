@@ -47,6 +47,12 @@ export class UIBuilder {
     this.uploader.wrapper = document.createElement("div");
     this.uploader.wrapper.className = "media-hub-wrapper";
 
+    // Set theme data attribute for CSS-based theming
+    const theme = this.uploader.options.theme;
+    if (theme && theme !== "auto") {
+      this.uploader.wrapper.dataset.theme = theme;
+    }
+
     // Set button size data attribute for CSS-based sizing
     const buttonSize = this.uploader.options.buttonSize;
     if (buttonSize && buttonSize !== "md") {

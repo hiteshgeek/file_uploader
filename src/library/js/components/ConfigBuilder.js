@@ -328,14 +328,32 @@ export default class ConfigBuilder {
 
   /**
    * Apply theme CSS variables to all file uploader preview containers
+   * Respects the FileUploader's theme option - only applies ConfigBuilder theme when uploader theme is "auto"
    */
   applyThemeToUploaders(effectiveTheme) {
-    // Get all uploader containers in the preview
-    const uploaderContainers = this.element.querySelectorAll(
-      ".fu-config-builder-uploader-container"
+    // Get all uploader wrappers in the preview
+    const uploaderWrappers = this.element.querySelectorAll(
+      "[data-uploader-wrapper]"
     );
-    uploaderContainers.forEach((container) => {
-      this.applyThemeToContainer(container, effectiveTheme);
+    uploaderWrappers.forEach((wrapper) => {
+      const uploaderId = wrapper.dataset.uploaderWrapper;
+      const uploaderData = this.uploaderInstances[uploaderId];
+      const container = wrapper.querySelector(
+        ".fu-config-builder-uploader-container"
+      );
+
+      if (!container) return;
+
+      // Check if this uploader has a fixed theme set
+      const uploaderTheme = uploaderData?.config?.theme;
+
+      if (uploaderTheme && uploaderTheme !== "auto") {
+        // FileUploader has a fixed theme - apply that theme instead
+        this.applyThemeToContainer(container, uploaderTheme);
+      } else {
+        // FileUploader uses auto theme - apply ConfigBuilder's effective theme
+        this.applyThemeToContainer(container, effectiveTheme);
+      }
     });
   }
 
