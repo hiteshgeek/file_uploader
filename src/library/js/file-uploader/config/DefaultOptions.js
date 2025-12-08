@@ -37,6 +37,7 @@ export const DEFAULT_OPTIONS = {
     deleteData: {}, // Data included only in delete requests
     downloadData: {}, // Data included only in download requests
     copyData: {}, // Data included only in copy file requests
+    cleanupData: {}, // Data included only in cleanup zip requests
   },
 
   // ============================================================================
@@ -106,6 +107,7 @@ export const DEFAULT_OPTIONS = {
     duplicateCheckBy: "name-size",
     cleanupOnUnload: true,
     cleanupOnDestroy: true,
+    showUploadProgress: true, // Show actual upload progress bar on file preview
   },
 
   // ============================================================================

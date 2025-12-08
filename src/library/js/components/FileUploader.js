@@ -157,7 +157,20 @@ export default class FileUploader {
     try {
       const response = await fetch(this.options.configUrl);
       const config = await response.json();
-      this.options = { ...this.options, ...config };
+
+      // Known category keys that should be flattened
+      const groupKeys = ["urls", "limits", "perTypeLimits", "fileTypes", "theme", "behavior", "limitsDisplay", "alerts", "buttons", "mediaCapture", "carousel", "displayMode", "crossUploader", "callbacks", "mimeTypes"];
+
+      // Flatten server config same as user options are flattened
+      for (const [key, value] of Object.entries(config)) {
+        if (groupKeys.includes(key) && value && typeof value === "object" && !Array.isArray(value)) {
+          // This is a category object - flatten it into options
+          Object.assign(this.options, value);
+        } else {
+          // Direct assignment for flat options, primitives, and arrays
+          this.options[key] = value;
+        }
+      }
     } catch (error) {
       console.warn(
         "FileUploader: Could not fetch config from server, using default options"

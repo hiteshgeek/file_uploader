@@ -1,43 +1,7 @@
 /**
  * Config Builder - Theme Manager
- * Theme switching and CSS variable application
+ * Theme switching via data-theme attribute (CSS-only approach)
  */
-
-/**
- * Get theme variable overrides for light/dark mode
- * @param {string} effectiveTheme - 'light' or 'dark'
- * @returns {Object} CSS variable overrides for the theme
- */
-export function getThemeVars(effectiveTheme) {
-  // Define dark mode CSS variable overrides (matching _variables.scss dark mode)
-  // Using actual hex values to ensure proper override regardless of media query state
-  const darkModeVars = {
-    "--fu-color-text": "#e2e8f0", // --fu-gray-200
-    "--fu-color-text-muted": "#a0aec0", // --fu-gray-400
-    "--fu-color-text-light": "#cbd5e0", // --fu-gray-300
-    "--fu-color-bg": "#1a202c", // --fu-gray-800
-    "--fu-color-bg-light": "#374151", // Slightly lighter than container for contrast
-    "--fu-color-bg-hover": "#1a365d", // --fu-primary-900
-    "--fu-color-border": "#4a5568", // --fu-gray-600
-    "--fu-color-border-light": "#4a5568", // Visible border in dark mode
-    "--fu-color-border-hover": "#4299e1", // --fu-primary-400
-  };
-
-  // Define light mode CSS variable values (defaults from _variables.scss)
-  const lightModeVars = {
-    "--fu-color-text": "#2d3748", // --fu-gray-700
-    "--fu-color-text-muted": "#718096", // --fu-gray-500
-    "--fu-color-text-light": "#4a5568", // --fu-gray-600
-    "--fu-color-bg": "#ffffff",
-    "--fu-color-bg-light": "#f7fafc", // --fu-gray-50
-    "--fu-color-bg-hover": "#ebf8ff", // --fu-primary-50
-    "--fu-color-border": "#cbd5e0", // --fu-gray-300
-    "--fu-color-border-light": "#e2e8f0", // --fu-gray-200
-    "--fu-color-border-hover": "#4299e1", // --fu-primary-400
-  };
-
-  return effectiveTheme === "dark" ? darkModeVars : lightModeVars;
-}
 
 /**
  * Get the effective theme based on theme setting
@@ -72,15 +36,25 @@ export function applyThemeClass(container, theme) {
 }
 
 /**
- * Apply theme CSS variables to a container element
+ * Apply theme to a container element via data-theme attribute
+ * CSS handles the actual styling based on the attribute
  * @param {HTMLElement} container - Container to apply theme to
  * @param {string} effectiveTheme - 'light' or 'dark'
  */
 export function applyThemeToContainer(container, effectiveTheme) {
-  const themeVars = getThemeVars(effectiveTheme);
-  for (const [varName, value] of Object.entries(themeVars)) {
-    container.style.setProperty(varName, value);
-  }
+  if (!container) return;
+  container.dataset.theme = effectiveTheme;
+}
+
+/**
+ * Get theme variable overrides for light/dark mode
+ * @deprecated Use CSS-only approach with data-theme attribute instead
+ * @param {string} effectiveTheme - 'light' or 'dark'
+ * @returns {Object} Empty object - CSS handles theming now
+ */
+export function getThemeVars(effectiveTheme) {
+  // Return empty - CSS handles theming via [data-theme] selectors
+  return {};
 }
 
 /**

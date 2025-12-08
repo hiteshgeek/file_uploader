@@ -19,16 +19,27 @@ $input = json_decode(file_get_contents('php://input'), true);
  * @return string Full path to upload directory
  */
 function getUploadDir($data, $config) {
-    $uploadSubDir = '';
     if (isset($data['uploadDir']) && !empty($data['uploadDir'])) {
-        // Sanitize the upload directory path to prevent directory traversal attacks
-        $uploadSubDir = trim($data['uploadDir'], '/\\');
+        $uploadDirRaw = trim($data['uploadDir']);
+
+        // Check if it's an absolute path (starts with /)
+        if (strpos($uploadDirRaw, '/') === 0) {
+            // Remove any directory traversal attempts
+            $uploadDirRaw = str_replace(['..', '\\'], ['', '/'], $uploadDirRaw);
+            // Ensure it ends with a slash
+            return rtrim($uploadDirRaw, '/') . '/';
+        }
+
+        // It's a relative path - sanitize and prepend config upload_dir
+        $uploadSubDir = trim($uploadDirRaw, '/\\');
         // Remove any directory traversal attempts
         $uploadSubDir = str_replace(['..', '\\'], ['', '/'], $uploadSubDir);
         // Ensure it ends with a slash
         $uploadSubDir = rtrim($uploadSubDir, '/') . '/';
+        return $config['upload_dir'] . $uploadSubDir;
     }
-    return $config['upload_dir'] . $uploadSubDir;
+
+    return $config['upload_dir'];
 }
 
 // Check if it's a bulk delete request (array of files)

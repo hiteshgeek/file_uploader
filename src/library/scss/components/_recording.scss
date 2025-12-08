@@ -20,7 +20,8 @@
 
     &:hover:not(:disabled) {
       background-color: var(--fu-error-700) !important;
-      box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4), 0 4px 6px -2px rgba(220, 38, 38, 0.2);
+      box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4),
+        0 4px 6px -2px rgba(220, 38, 38, 0.2);
       transform: translateY(-1px);
     }
 
@@ -67,12 +68,22 @@
   color: white;
   border-radius: 9999px; // Fully rounded pill shape
   font-weight: var(--fu-font-weight-medium);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   // Timer size variants - all use fully rounded corners
-  &.timer-xs { @include timer-size("xs"); gap: var(--fu-spacing-xs); }
-  &.timer-sm { @include timer-size("sm"); gap: var(--fu-spacing-xs); }
-  &.timer-lg { @include timer-size("lg"); gap: var(--fu-spacing-md); }
+  &.timer-xs {
+    @include timer-size("xs");
+    gap: var(--fu-spacing-xs);
+  }
+  &.timer-sm {
+    @include timer-size("sm");
+    gap: var(--fu-spacing-xs);
+  }
+  &.timer-lg {
+    @include timer-size("lg");
+    gap: var(--fu-spacing-md);
+  }
 }
 
 // Recording type icon (video/audio/webcam)
@@ -104,7 +115,8 @@
 }
 
 @keyframes media-hub-blink-paused {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -116,7 +128,15 @@
   // Base styles for all timer formats
   text-align: center;
   font-variant-numeric: tabular-nums;
-  font-family: var(--fu-font-family-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace);
+  font-family: var(
+    --fu-font-family-mono,
+    ui-monospace,
+    SFMono-Regular,
+    "SF Mono",
+    Menlo,
+    Consolas,
+    monospace
+  );
   letter-spacing: -0.5px;
 
   // Timer format: elapsed only (00:00) - smallest width
@@ -142,10 +162,18 @@
 
 .media-hub-recording-size {
   // Fixed width to prevent layout shift
-  min-width: 60px;
+  min-width: 80px;
   text-align: right;
   font-variant-numeric: tabular-nums;
-  font-family: var(--fu-font-family-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace);
+  font-family: var(
+    --fu-font-family-mono,
+    ui-monospace,
+    SFMono-Regular,
+    "SF Mono",
+    Menlo,
+    Consolas,
+    monospace
+  );
   padding-left: var(--fu-spacing-sm);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   opacity: 0.9;
@@ -221,7 +249,8 @@
 
 // Pulse animation for paused button
 @keyframes pulse-warning {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -350,7 +379,7 @@
     margin-left: var(--fu-spacing-xs);
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: calc(var(--fu-spacing-xs) * -0.5 - 1px);
       top: 20%;

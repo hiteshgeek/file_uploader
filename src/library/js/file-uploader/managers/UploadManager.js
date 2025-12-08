@@ -42,7 +42,7 @@ export class UploadManager {
       delete: options.deleteData,
       download: options.downloadData,
       copy: options.copyData,
-      cleanup: options.deleteData, // cleanup uses delete endpoint
+      cleanup: options.cleanupData, // cleanup uses separate cleanupData
     };
 
     // Merge: baseData + additionalData (global) + per-request data
@@ -260,9 +260,13 @@ export class UploadManager {
     if (state === "uploading") {
       fileObj.previewElement.classList.add("uploading");
       overlay.style.display = "flex";
-      if (spinner) spinner.style.display = "none";
-      if (progressContainer) progressContainer.style.display = "block";
-      if (progressText) progressText.style.display = "block";
+
+      // Show progress bar or spinner based on showUploadProgress option
+      const showProgress = this.uploader.options.showUploadProgress !== false;
+      if (spinner) spinner.style.display = showProgress ? "none" : "block";
+      if (progressContainer) progressContainer.style.display = showProgress ? "block" : "none";
+      if (progressText) progressText.style.display = showProgress ? "block" : "none";
+
       if (successOverlay) {
         successOverlay.classList.remove("slide-in", "slide-out");
       }
@@ -312,6 +316,16 @@ export class UploadManager {
     const fileObj = this.uploader.files.find((f) => f.id === fileId);
     if (!fileObj) return;
 
+    // Show deleting state
+    if (fileObj.previewElement) {
+      fileObj.previewElement.classList.add("deleting");
+      // Disable action buttons during delete
+      const deleteBtn = fileObj.previewElement.querySelector(".media-hub-delete");
+      const downloadBtn = fileObj.previewElement.querySelector(".media-hub-download");
+      if (deleteBtn) deleteBtn.disabled = true;
+      if (downloadBtn) downloadBtn.disabled = true;
+    }
+
     if (fileObj.uploaded && fileObj.serverFilename) {
       try {
         const baseData = { filename: fileObj.serverFilename };
@@ -339,6 +353,15 @@ export class UploadManager {
           this.uploader.options.onDeleteSuccess(fileObj, result);
         }
       } catch (error) {
+        // Remove deleting state on error
+        if (fileObj.previewElement) {
+          fileObj.previewElement.classList.remove("deleting");
+          const deleteBtn = fileObj.previewElement.querySelector(".media-hub-delete");
+          const downloadBtn = fileObj.previewElement.querySelector(".media-hub-download");
+          if (deleteBtn) deleteBtn.disabled = false;
+          if (downloadBtn) downloadBtn.disabled = false;
+        }
+
         this.uploader.showError(`Failed to delete ${fileObj.name}: ${error.message}`);
 
         if (this.uploader.options.onDeleteError) {
@@ -536,7 +559,8 @@ export class UploadManager {
       baseData.uploadDir = this.uploader.options.uploadDir;
     }
 
-    const payload = this.buildRequestData("cleanup", baseData, { files: uploadedFiles });
+    // Use "delete" type since this is deleting uploaded files (uses deleteData)
+    const payload = this.buildRequestData("delete", baseData, { files: uploadedFiles });
 
     if (navigator.sendBeacon) {
       const blob = new Blob([JSON.stringify(payload)], {

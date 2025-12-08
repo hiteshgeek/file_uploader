@@ -112,6 +112,170 @@
     .#{$component-prefix}-preview-file {
       color: var(--fu-color-text-light);
     }
+
+  }
+
+  // Override dark mode when light theme is explicitly set
+  // Must use explicit values since CSS vars inside media query inherit from :root
+  .#{$component-prefix}-wrapper[data-theme="light"] {
+    .#{$component-prefix}-dropzone {
+      background-color: var(--fu-gray-50);
+      border-color: var(--fu-gray-300);
+
+      &:hover,
+      &.#{$component-prefix}-dragover {
+        background-color: var(--fu-primary-50);
+        border-color: var(--fu-primary-400);
+      }
+    }
+
+    .#{$component-prefix}-text {
+      color: var(--fu-gray-700);
+    }
+
+    .#{$component-prefix}-subtext {
+      color: var(--fu-gray-500);
+    }
+
+    .#{$component-prefix}-preview {
+      background-color: #ffffff;
+      border-color: var(--fu-gray-300);
+    }
+
+    .#{$component-prefix}-preview-inner {
+      background-color: var(--fu-gray-50);
+    }
+
+    .#{$component-prefix}-filename {
+      color: var(--fu-gray-700);
+    }
+
+    .#{$component-prefix}-meta {
+      color: var(--fu-gray-500);
+    }
+
+    .#{$component-prefix}-preview-file {
+      color: var(--fu-gray-600);
+    }
+
+    // Limits section light theme overrides
+    .#{$component-prefix}-limits {
+      background-color: var(--fu-gray-50);
+      border-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-limits-title,
+    .#{$component-prefix}-type-name,
+    .#{$component-prefix}-type-stat-value,
+    .#{$component-prefix}-summary-value,
+    .#{$component-prefix}-general-limits-title,
+    .#{$component-prefix}-general-card-value {
+      color: var(--fu-gray-700);
+    }
+
+    .#{$component-prefix}-type-stat-label,
+    .#{$component-prefix}-general-card-label {
+      color: var(--fu-gray-500);
+    }
+
+    .#{$component-prefix}-summary-label {
+      color: var(--fu-gray-600);
+    }
+
+    .#{$component-prefix}-type-card,
+    .#{$component-prefix}-general-card {
+      background-color: #ffffff;
+      border-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-type-card-header {
+      border-bottom-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-general-limits-header {
+      border-bottom-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-limits-summary {
+      background-color: var(--fu-primary-50);
+      border-color: var(--fu-primary-100);
+    }
+
+    .#{$component-prefix}-type-progress,
+    .#{$component-prefix}-general-card-progress {
+      background-color: var(--fu-primary-50);
+    }
+
+    .#{$component-prefix}-summary-progress {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    // Concise view light theme overrides
+    .#{$component-prefix}-type-chip-expanded {
+      background-color: #ffffff;
+      border-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-chip-name {
+      color: var(--fu-gray-700);
+    }
+
+    .#{$component-prefix}-chip-header svg {
+      fill: var(--fu-gray-500);
+    }
+
+    .#{$component-prefix}-chip-info {
+      color: var(--fu-gray-500);
+    }
+
+    .#{$component-prefix}-compact-summary {
+      background-color: #ffffff;
+      border-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-compact-item + .#{$component-prefix}-compact-item {
+      border-left-color: var(--fu-gray-200);
+    }
+
+    .#{$component-prefix}-compact-item-label {
+      color: var(--fu-gray-500);
+    }
+
+    .#{$component-prefix}-compact-item-value {
+      color: var(--fu-gray-700);
+    }
+
+    .#{$component-prefix}-compact-progress {
+      background-color: var(--fu-primary-50);
+    }
+
+    .#{$component-prefix}-compact-stat {
+      color: var(--fu-gray-500);
+
+      strong {
+        color: var(--fu-gray-700);
+      }
+    }
+
+    .#{$component-prefix}-compact-divider {
+      color: var(--fu-gray-300);
+    }
+
+    .#{$component-prefix}-limit-item {
+      background-color: #ffffff;
+    }
+
+    .#{$component-prefix}-limit-label {
+      color: var(--fu-gray-600);
+    }
+
+    .#{$component-prefix}-limit-value {
+      color: var(--fu-gray-700);
+    }
+
+    .#{$component-prefix}-limit-progress-mini {
+      background-color: var(--fu-primary-50);
+    }
   }
 }
 

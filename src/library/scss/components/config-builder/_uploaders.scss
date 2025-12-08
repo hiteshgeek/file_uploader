@@ -252,6 +252,33 @@ $builder-prefix: "fu-config-builder" !default;
 .#{$builder-prefix}-uploader-container {
   padding: 14px;
   background: #ffffff;
+
+  // Light theme CSS variables - applied when container has data-theme="light"
+  &[data-theme="light"] {
+    --fu-color-text: var(--fu-gray-700);
+    --fu-color-text-muted: var(--fu-gray-500);
+    --fu-color-text-light: var(--fu-gray-600);
+    --fu-color-bg: #ffffff;
+    --fu-color-bg-light: var(--fu-gray-50);
+    --fu-color-bg-hover: var(--fu-primary-50);
+    --fu-color-border: var(--fu-gray-300);
+    --fu-color-border-light: var(--fu-gray-200);
+    --fu-color-border-hover: var(--fu-primary-400);
+  }
+
+  // Dark theme CSS variables - applied when container has data-theme="dark"
+  &[data-theme="dark"] {
+    --fu-color-text: var(--fu-gray-200);
+    --fu-color-text-muted: var(--fu-gray-400);
+    --fu-color-text-light: var(--fu-gray-300);
+    --fu-color-bg: var(--fu-gray-800);
+    --fu-color-bg-light: var(--fu-gray-700);
+    --fu-color-bg-hover: var(--fu-primary-900);
+    --fu-color-border: var(--fu-gray-600);
+    --fu-color-border-light: var(--fu-gray-700);
+    --fu-color-border-hover: var(--fu-primary-400);
+    background: var(--fu-gray-700);
+  }
 }
 
 // Limits styling override

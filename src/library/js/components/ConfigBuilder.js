@@ -7822,13 +7822,12 @@ export default class ConfigBuilder {
   }
 
   /**
-   * Apply theme CSS variables to a single container
+   * Apply theme to a single container via data-theme attribute
+   * CSS handles the actual styling based on the attribute
    */
   applyThemeToContainer(container, effectiveTheme) {
-    const varsToApply = this.getThemeVars(effectiveTheme);
-    for (const [varName, value] of Object.entries(varsToApply)) {
-      container.style.setProperty(varName, value);
-    }
+    if (!container) return;
+    container.dataset.theme = effectiveTheme;
   }
 
   /**

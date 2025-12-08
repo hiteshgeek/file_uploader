@@ -201,25 +201,8 @@ export class EventManager {
     }
 
     this.beforeUnloadHandler = () => {
-      const uploadedFiles = this.uploader.files.filter((f) => f.uploaded);
-
-      if (uploadedFiles.length > 0) {
-        const fileData = uploadedFiles.map((f) => ({
-          filename: f.serverFilename,
-        }));
-
-        const payload = { files: fileData };
-        if (this.uploader.options.uploadDir) {
-          payload.uploadDir = this.uploader.options.uploadDir;
-        }
-
-        if (navigator.sendBeacon) {
-          const blob = new Blob([JSON.stringify(payload)], {
-            type: "application/json",
-          });
-          navigator.sendBeacon(this.uploader.options.deleteUrl, blob);
-        }
-      }
+      // Use UploadManager's cleanupUploadedFiles which includes deleteData and additionalData
+      this.uploader.uploadManager.cleanupUploadedFiles();
     };
 
     window.addEventListener("beforeunload", this.beforeUnloadHandler);

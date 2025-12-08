@@ -197,6 +197,14 @@
   @include light-theme-variables;
 }
 
+// Ensure light theme overrides system dark preference
+@media (prefers-color-scheme: dark) {
+  [data-theme="light"],
+  .media-hub-wrapper[data-theme="light"] {
+    @include light-theme-variables;
+  }
+}
+
 // ============================================================================
 // SCSS Variables (for compile-time usage)
 // ============================================================================

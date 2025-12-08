@@ -20,6 +20,7 @@ export const OPTION_TO_GROUP = {
   deleteData: "urls",
   downloadData: "urls",
   copyData: "urls",
+  cleanupData: "urls",
   // Limits
   perFileMaxSize: "limits",
   perFileMaxSizeDisplay: "limits",
@@ -50,6 +51,7 @@ export const OPTION_TO_GROUP = {
   duplicateCheckBy: "behavior",
   cleanupOnUnload: "behavior",
   cleanupOnDestroy: "behavior",
+  showUploadProgress: "behavior",
   // Limits Display
   showLimits: "limitsDisplay",
   showProgressBar: "limitsDisplay",

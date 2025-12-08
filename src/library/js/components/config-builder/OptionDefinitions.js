@@ -92,6 +92,13 @@ export function getOptionDefinitions() {
           hint: "Only for copy file requests",
           group: "Request Data",
         },
+        cleanupData: {
+          type: "keyValue",
+          default: {},
+          label: "Cleanup Data",
+          hint: "Only for cleanup zip requests",
+          group: "Request Data",
+        },
       },
     },
 
@@ -257,6 +264,12 @@ export function getOptionDefinitions() {
           default: true,
           label: "Cleanup On Destroy",
           hint: "Delete uploaded files from server when the uploader instance is destroyed",
+        },
+        showUploadProgress: {
+          type: "boolean",
+          default: true,
+          label: "Show Upload Progress",
+          hint: "Show actual upload progress bar instead of spinner during file upload",
         },
       },
     },

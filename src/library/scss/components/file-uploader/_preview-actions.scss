@@ -270,3 +270,46 @@
     }
   }
 }
+
+// ============================================================================
+// Deleting State
+// ============================================================================
+
+.#{$component-prefix}-preview.deleting {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: calc(var(--fu-z-overlay) + 2);
+    border-radius: var(--fu-radius-lg);
+
+    @if $media-hub-enable-animations {
+      animation: #{$component-prefix}-pulse 1s ease-in-out infinite;
+    }
+  }
+
+  .#{$component-prefix}-delete,
+  .#{$component-prefix}-download {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@if $media-hub-enable-animations {
+  @keyframes #{$component-prefix}-pulse {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
