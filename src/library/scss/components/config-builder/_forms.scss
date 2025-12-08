@@ -399,3 +399,171 @@ $builder-prefix: "fu-config-builder" !default;
     }
   }
 }
+
+// ============================================================================
+// Key-Value Input
+// Dynamic key-value pair input for additionalData and similar options
+// ============================================================================
+
+.#{$builder-prefix}-keyvalue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.#{$builder-prefix}-keyvalue-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .#{$builder-prefix}-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .#{$builder-prefix}-keyvalue-key {
+    flex: 0.8;
+  }
+
+  .#{$builder-prefix}-keyvalue-value {
+    flex: 1.2;
+  }
+}
+
+.#{$builder-prefix}-keyvalue-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #dc2626;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.#{$builder-prefix}-keyvalue-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6366f1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  align-self: flex-start;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+    color: #4f46e5;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================================================
+// Key-Value Section Card Title
+// Section separator for grouping keyValue inputs
+// ============================================================================
+
+.#{$builder-prefix}-keyvalue-section {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+}
+
+.#{$builder-prefix}-keyvalue-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: #6366f1;
+  }
+}
+
+.#{$builder-prefix}-keyvalue-section-desc {
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+// ============================================================================
+// Section Divider
+// Visual separator for grouping related options within a category
+// Uses left border accent style matching existing category headers
+// ============================================================================
+
+.#{$builder-prefix}-section-divider {
+  margin: 20px 0 12px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-left: 3px solid #6366f1;
+  border-radius: 0 8px 8px 0;
+}
+
+.#{$builder-prefix}-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+
+  svg {
+    display: none; // Hide icon for cleaner look matching existing style
+  }
+}
+
+.#{$builder-prefix}-section-desc {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.5;
+}

@@ -1180,4 +1180,60 @@ $builder-prefix: "fu-config-builder" !default;
       background: #4338ca;
     }
   }
+
+  // Key-Value Input dark mode
+  .#{$builder-prefix}-keyvalue-remove {
+    background: #4a2c2c;
+    border-color: #7f1d1d;
+    color: #f87171;
+
+    &:hover {
+      background: #5c3030;
+      border-color: #dc2626;
+      color: #fca5a5;
+    }
+  }
+
+  .#{$builder-prefix}-keyvalue-add {
+    background: #312e81;
+    border-color: #4338ca;
+    color: #a5b4fc;
+
+    &:hover {
+      background: #3730a3;
+      border-color: #6366f1;
+      color: #c7d2fe;
+    }
+  }
+
+  // Key-Value Section dark mode
+  .#{$builder-prefix}-keyvalue-section {
+    border-color: #374151;
+  }
+
+  .#{$builder-prefix}-keyvalue-section-title {
+    color: #e5e7eb;
+
+    svg {
+      color: #a5b4fc;
+    }
+  }
+
+  .#{$builder-prefix}-keyvalue-section-desc {
+    color: #9ca3af;
+  }
+
+  // Section Divider dark mode
+  .#{$builder-prefix}-section-divider {
+    background: #1e293b;
+    border-left-color: #6366f1;
+  }
+
+  .#{$builder-prefix}-section-title {
+    color: #e5e7eb;
+  }
+
+  .#{$builder-prefix}-section-desc {
+    color: #9ca3af;
+  }
 }

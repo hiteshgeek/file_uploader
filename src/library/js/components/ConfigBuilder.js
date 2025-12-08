@@ -1480,6 +1480,17 @@ export default class ConfigBuilder {
           dependencyIndicator
         );
         break;
+      case "keyValue":
+        content = this.renderKeyValueInput(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator
+        );
+        break;
+      case "section":
+        content = this.renderSectionDivider(key, def);
+        break;
       default:
         return "";
     }
@@ -1557,6 +1568,64 @@ export default class ConfigBuilder {
                placeholder="${def.default || ""}"
                ${isDisabled ? "disabled" : ""}>
         <div class="fu-config-builder-hint">${def.hint}</div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render key-value input option for additionalData
+   */
+  renderKeyValueInput(key, def, isDisabled = false, dependencyIndicator = "") {
+    const currentValue = this.config[key] || {};
+    const entries = Object.entries(currentValue);
+
+    const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="14" height="14"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
+    const trashIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>`;
+
+    let entriesHtml = "";
+    entries.forEach(([k, v], index) => {
+      entriesHtml += `
+        <div class="fu-config-builder-keyvalue-row" data-index="${index}">
+          <input type="text" class="fu-config-builder-keyvalue-key" value="${k}" placeholder="key" ${isDisabled ? "disabled" : ""}>
+          <input type="text" class="fu-config-builder-keyvalue-value" value="${v}" placeholder="value" ${isDisabled ? "disabled" : ""}>
+          <button type="button" class="fu-config-builder-keyvalue-remove" ${isDisabled ? "disabled" : ""}>${trashIcon}</button>
+        </div>
+      `;
+    });
+
+    return `
+      <div class="fu-config-builder-group ${isDisabled ? "disabled" : ""}">
+        <label class="fu-config-builder-label">
+          ${def.label}
+          ${dependencyIndicator}
+          ${this.renderOptionKey(key)}
+        </label>
+        <div class="fu-config-builder-keyvalue-container" data-option="${key}" data-type="keyValue">
+          <div class="fu-config-builder-keyvalue-rows">
+            ${entriesHtml}
+          </div>
+          <button type="button" class="fu-config-builder-keyvalue-add" ${isDisabled ? "disabled" : ""}>
+            ${plusIcon} Add Entry
+          </button>
+        </div>
+        <div class="fu-config-builder-hint">${def.hint}</div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render a section divider/title for grouping related options
+   */
+  renderSectionDivider(key, def) {
+    const dataIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="16" height="16"><path fill="currentColor" d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 16 192 0 0-16c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-16-192 0 0 16c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM96 128l0-32-32 0 0 32 32 0zm352 0l32 0 0-32-32 0 0 32zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 16 192 0 0-16c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-16-192 0 0 16c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm96 48l0-32-32 0 0 32 32 0zm352 0l32 0 0-32-32 0 0 32z"/></svg>`;
+
+    return `
+      <div class="fu-config-builder-section-divider">
+        <div class="fu-config-builder-section-title">
+          ${dataIcon}
+          <span>${def.title}</span>
+        </div>
+        ${def.description ? `<div class="fu-config-builder-section-desc">${def.description}</div>` : ""}
       </div>
     `;
   }
@@ -3551,6 +3620,24 @@ export default class ConfigBuilder {
           });
       });
 
+    // Key-value inputs (for additionalData)
+    this.element
+      .querySelectorAll('[data-type="keyValue"]')
+      .forEach((container) => {
+        const optionKey = container.dataset.option;
+
+        // Add entry button
+        const addBtn = container.querySelector(".fu-config-builder-keyvalue-add");
+        if (addBtn) {
+          addBtn.addEventListener("click", () => {
+            this.addKeyValueRow(container, optionKey);
+          });
+        }
+
+        // Setup existing rows
+        this.setupKeyValueRowEvents(container, optionKey);
+      });
+
     // Type size slider inputs with unit dropdown
     this.element
       .querySelectorAll('[data-type="typeSizeSlider"]')
@@ -3895,6 +3982,82 @@ export default class ConfigBuilder {
       container.querySelectorAll(".fu-config-builder-mime.selected")
     ).map((m) => m.dataset.mime);
     this.config[container.dataset.option] = selected;
+    this.onConfigChange();
+  }
+
+  /**
+   * Add a new key-value row to the container
+   */
+  addKeyValueRow(container, optionKey) {
+    const rowsContainer = container.querySelector(".fu-config-builder-keyvalue-rows");
+    const trashIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>`;
+
+    const row = document.createElement("div");
+    row.className = "fu-config-builder-keyvalue-row";
+    row.innerHTML = `
+      <input type="text" class="fu-config-builder-keyvalue-key" value="" placeholder="key">
+      <input type="text" class="fu-config-builder-keyvalue-value" value="" placeholder="value">
+      <button type="button" class="fu-config-builder-keyvalue-remove">${trashIcon}</button>
+    `;
+
+    rowsContainer.appendChild(row);
+    this.setupKeyValueRowEvents(container, optionKey);
+    row.querySelector(".fu-config-builder-keyvalue-key").focus();
+  }
+
+  /**
+   * Setup event listeners for key-value rows
+   */
+  setupKeyValueRowEvents(container, optionKey) {
+    const rows = container.querySelectorAll(".fu-config-builder-keyvalue-row");
+
+    rows.forEach((row) => {
+      const keyInput = row.querySelector(".fu-config-builder-keyvalue-key");
+      const valueInput = row.querySelector(".fu-config-builder-keyvalue-value");
+      const removeBtn = row.querySelector(".fu-config-builder-keyvalue-remove");
+
+      // Remove existing listeners by replacing elements
+      const newKeyInput = keyInput.cloneNode(true);
+      const newValueInput = valueInput.cloneNode(true);
+      const newRemoveBtn = removeBtn.cloneNode(true);
+
+      keyInput.parentNode.replaceChild(newKeyInput, keyInput);
+      valueInput.parentNode.replaceChild(newValueInput, valueInput);
+      removeBtn.parentNode.replaceChild(newRemoveBtn, removeBtn);
+
+      // Add new listeners
+      newKeyInput.addEventListener("input", () => {
+        this.updateKeyValueFromUI(container, optionKey);
+      });
+
+      newValueInput.addEventListener("input", () => {
+        this.updateKeyValueFromUI(container, optionKey);
+      });
+
+      newRemoveBtn.addEventListener("click", () => {
+        row.remove();
+        this.updateKeyValueFromUI(container, optionKey);
+      });
+    });
+  }
+
+  /**
+   * Update key-value config from UI
+   */
+  updateKeyValueFromUI(container, optionKey) {
+    const rows = container.querySelectorAll(".fu-config-builder-keyvalue-row");
+    const result = {};
+
+    rows.forEach((row) => {
+      const key = row.querySelector(".fu-config-builder-keyvalue-key").value.trim();
+      const value = row.querySelector(".fu-config-builder-keyvalue-value").value;
+
+      if (key) {
+        result[key] = value;
+      }
+    });
+
+    this.config[optionKey] = result;
     this.onConfigChange();
   }
 

@@ -23,6 +23,86 @@ export class UploadManager {
   }
 
   // ============================================================
+  // REQUEST DATA HELPERS
+  // ============================================================
+
+  /**
+   * Build request data by merging global additionalData, per-request data, and onBeforeRequest callback
+   * @param {string} requestType - Type: 'upload', 'delete', 'download', 'copy', 'cleanup'
+   * @param {Object} baseData - Base data for the request
+   * @param {Object} context - Additional context (fileObj, files, etc.)
+   * @returns {Object} - Merged data object
+   */
+  buildRequestData(requestType, baseData = {}, context = {}) {
+    const options = this.uploader.options;
+
+    // Map request type to per-request data option
+    const perRequestDataMap = {
+      upload: options.uploadData,
+      delete: options.deleteData,
+      download: options.downloadData,
+      copy: options.copyData,
+      cleanup: options.deleteData, // cleanup uses delete endpoint
+    };
+
+    // Merge: baseData + additionalData (global) + per-request data
+    let data = {
+      ...baseData,
+      ...options.additionalData,
+      ...(perRequestDataMap[requestType] || {}),
+    };
+
+    // Call onBeforeRequest callback if provided
+    if (typeof options.onBeforeRequest === "function") {
+      const result = options.onBeforeRequest(requestType, data, context);
+      // If callback returns an object, use it as the new data
+      if (result && typeof result === "object") {
+        data = result;
+      }
+    }
+
+    return data;
+  }
+
+  /**
+   * Append request data to FormData for upload requests
+   * @param {FormData} formData - FormData to append to
+   * @param {string} requestType - Request type
+   * @param {Object} context - Additional context
+   */
+  appendRequestDataToFormData(formData, requestType, context = {}) {
+    const options = this.uploader.options;
+
+    // Map request type to per-request data option
+    const perRequestDataMap = {
+      upload: options.uploadData,
+      delete: options.deleteData,
+      download: options.downloadData,
+      copy: options.copyData,
+      cleanup: options.deleteData,
+    };
+
+    // Collect all additional data
+    let additionalFields = {
+      ...options.additionalData,
+      ...(perRequestDataMap[requestType] || {}),
+    };
+
+    // Call onBeforeRequest callback
+    if (typeof options.onBeforeRequest === "function") {
+      const result = options.onBeforeRequest(requestType, additionalFields, context);
+      if (result && typeof result === "object") {
+        additionalFields = result;
+      }
+    }
+
+    // Append each field to FormData
+    for (const [key, value] of Object.entries(additionalFields)) {
+      formData.append(key, value);
+    }
+  }
+
+  // ============================================================
   // UPLOAD OPERATIONS
   // ============================================================
 
@@ -44,6 +124,9 @@ export class UploadManager {
     if (this.uploader.options.uploadDir) {
       formData.append("uploadDir", this.uploader.options.uploadDir);
     }
+
+    // Add additional data to upload request (global + uploadData + onBeforeRequest)
+    this.appendRequestDataToFormData(formData, "upload", { fileObj });
 
     try {
       const xhr = new XMLHttpRequest();
@@ -231,13 +314,12 @@ export class UploadManager {
 
     if (fileObj.uploaded && fileObj.serverFilename) {
       try {
-        const deleteData = {
-          filename: fileObj.serverFilename,
-        };
-
+        const baseData = { filename: fileObj.serverFilename };
         if (this.uploader.options.uploadDir) {
-          deleteData.uploadDir = this.uploader.options.uploadDir;
+          baseData.uploadDir = this.uploader.options.uploadDir;
         }
+
+        const deleteData = this.buildRequestData("delete", baseData, { fileObj });
 
         const response = await fetch(this.uploader.options.deleteUrl, {
           method: "POST",
@@ -321,12 +403,14 @@ export class UploadManager {
     `;
 
     try {
+      const downloadData = this.buildRequestData("download", { files: uploadedFiles }, { files: uploadedFiles });
+
       const response = await fetch(this.uploader.options.downloadAllUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ files: uploadedFiles }),
+        body: JSON.stringify(downloadData),
       });
 
       const responseText = await response.text();
@@ -352,14 +436,14 @@ export class UploadManager {
       if (result.type === "zip" && result.cleanup) {
         setTimeout(async () => {
           try {
+            const cleanupData = this.buildRequestData("cleanup", { filename: result.cleanup }, {});
+
             await fetch(this.uploader.options.cleanupZipUrl, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                filename: result.cleanup,
-              }),
+              body: JSON.stringify(cleanupData),
             });
           } catch (error) {
             console.warn("Failed to cleanup temporary zip:", error);
@@ -447,10 +531,12 @@ export class UploadManager {
       filename: f.serverFilename,
     }));
 
-    const payload = { files: fileData };
+    const baseData = { files: fileData };
     if (this.uploader.options.uploadDir) {
-      payload.uploadDir = this.uploader.options.uploadDir;
+      baseData.uploadDir = this.uploader.options.uploadDir;
     }
+
+    const payload = this.buildRequestData("cleanup", baseData, { files: uploadedFiles });
 
     if (navigator.sendBeacon) {
       const blob = new Blob([JSON.stringify(payload)], {

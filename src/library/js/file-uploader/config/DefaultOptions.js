@@ -31,6 +31,12 @@ export const DEFAULT_OPTIONS = {
     copyFileUrl: "./copy-file.php",
     configUrl: "./get-config.php",
     uploadDir: "",
+    // Additional data to include in POST requests
+    additionalData: {}, // Data included in ALL POST requests
+    uploadData: {}, // Data included only in upload requests
+    deleteData: {}, // Data included only in delete requests
+    downloadData: {}, // Data included only in download requests
+    copyData: {}, // Data included only in copy file requests
   },
 
   // ============================================================================
@@ -228,6 +234,14 @@ export const DEFAULT_OPTIONS = {
     onDeleteSuccess: null,
     onDeleteError: null,
     onDuplicateFile: null,
+    /**
+     * Called before each request to allow dynamic data modification
+     * @param {string} requestType - Type of request: 'upload', 'delete', 'download', 'copy', 'cleanup'
+     * @param {Object} data - The data object that will be sent (can be modified)
+     * @param {Object} context - Additional context (fileObj, files array, etc.)
+     * @returns {Object|void} - Return modified data object, or modify in place
+     */
+    onBeforeRequest: null,
   },
 };
 

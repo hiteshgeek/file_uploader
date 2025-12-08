@@ -859,17 +859,19 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
 <span class="property">$filepath</span> = <span class="property">$uploadDir</span> . <span class="property">$filename</span>;
 
 <span class="keyword">if</span> (<span class="property">move_uploaded_file</span>(<span class="property">$file</span>[<span class="string">'tmp_name'</span>], <span class="property">$filepath</span>)) {
-    <span class="comment">// Success response (required fields)</span>
+    <span class="comment">// Success response - file data must be wrapped in 'file' object</span>
     <span class="keyword">echo</span> <span class="property">json_encode</span>([
         <span class="string">'success'</span> => <span class="keyword">true</span>,
-        <span class="string">'filename'</span> => <span class="property">$filename</span>,           <span class="comment">// Saved filename</span>
-        <span class="string">'originalName'</span> => <span class="property">$file</span>[<span class="string">'name'</span>],   <span class="comment">// Original filename</span>
-        <span class="string">'path'</span> => <span class="property">$filepath</span>,               <span class="comment">// Path for deletion</span>
-        <span class="string">'url'</span> => <span class="string">'/uploads/'</span> . <span class="property">$filename</span>   <span class="comment">// URL for preview/download</span>
+        <span class="string">'file'</span> => [
+            <span class="string">'filename'</span> => <span class="property">$filename</span>,           <span class="comment">// Saved filename</span>
+            <span class="string">'originalName'</span> => <span class="property">$file</span>[<span class="string">'name'</span>],   <span class="comment">// Original filename</span>
+            <span class="string">'path'</span> => <span class="property">$filepath</span>,               <span class="comment">// Path for deletion</span>
+            <span class="string">'url'</span> => <span class="string">'/uploads/'</span> . <span class="property">$filename</span>   <span class="comment">// URL for preview/download</span>
+        ]
     ]);
 } <span class="keyword">else</span> {
     <span class="property">http_response_code</span>(<span class="string">500</span>);
-    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'error'</span> => <span class="string">'Failed to save file'</span>]);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Failed to save file'</span>]);
 }
 <span class="tag">?&gt;</span></pre>
                 </div>
@@ -929,7 +931,7 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
 
 <span class="keyword">if</span> (<span class="property">$_SERVER</span>[<span class="string">'REQUEST_METHOD'</span>] !== <span class="string">'POST'</span>) {
     <span class="property">http_response_code</span>(<span class="string">405</span>);
-    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'error'</span> => <span class="string">'Method not allowed'</span>]);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Method not allowed'</span>]);
     <span class="keyword">exit</span>;
 }
 
@@ -939,18 +941,30 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
 
 <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="property">$files</span>)) {
     <span class="property">http_response_code</span>(<span class="string">400</span>);
-    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'error'</span> => <span class="string">'No files provided'</span>]);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'No files provided'</span>]);
     <span class="keyword">exit</span>;
 }
 
-<span class="comment">// Create ZIP file</span>
+<span class="comment">// Single file - return direct URL</span>
+<span class="keyword">if</span> (<span class="property">count</span>(<span class="property">$files</span>) === <span class="string">1</span>) {
+    <span class="property">$filename</span> = <span class="property">basename</span>(<span class="property">$files</span>[<span class="string">0</span>][<span class="string">'serverFilename'</span>]);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([
+        <span class="string">'success'</span> => <span class="keyword">true</span>,
+        <span class="string">'type'</span> => <span class="string">'single'</span>,
+        <span class="string">'url'</span> => <span class="string">'uploads/'</span> . <span class="property">$filename</span>,
+        <span class="string">'filename'</span> => <span class="property">$files</span>[<span class="string">0</span>][<span class="string">'originalName'</span>]
+    ]);
+    <span class="keyword">exit</span>;
+}
+
+<span class="comment">// Multiple files - create ZIP archive</span>
 <span class="property">$zipFilename</span> = <span class="string">'download_'</span> . <span class="property">time</span>() . <span class="string">'.zip'</span>;
-<span class="property">$zipPath</span> = <span class="string">'../temp/'</span> . <span class="property">$zipFilename</span>;
+<span class="property">$zipPath</span> = <span class="string">'../uploads/'</span> . <span class="property">$zipFilename</span>;
 
 <span class="property">$zip</span> = <span class="keyword">new</span> <span class="function">ZipArchive</span>();
 <span class="keyword">if</span> (<span class="property">$zip</span>-><span class="function">open</span>(<span class="property">$zipPath</span>, ZipArchive::<span class="string">CREATE</span>) === <span class="keyword">true</span>) {
     <span class="keyword">foreach</span> (<span class="property">$files</span> <span class="keyword">as</span> <span class="property">$file</span>) {
-        <span class="property">$filepath</span> = <span class="string">'../uploads/'</span> . <span class="property">basename</span>(<span class="property">$file</span>[<span class="string">'filename'</span>]);
+        <span class="property">$filepath</span> = <span class="string">'../uploads/'</span> . <span class="property">basename</span>(<span class="property">$file</span>[<span class="string">'serverFilename'</span>]);
         <span class="keyword">if</span> (<span class="property">file_exists</span>(<span class="property">$filepath</span>)) {
             <span class="property">$zip</span>-><span class="function">addFile</span>(<span class="property">$filepath</span>, <span class="property">$file</span>[<span class="string">'originalName'</span>] ?? <span class="property">basename</span>(<span class="property">$filepath</span>));
         }
@@ -959,11 +973,275 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
 
     <span class="keyword">echo</span> <span class="property">json_encode</span>([
         <span class="string">'success'</span> => <span class="keyword">true</span>,
-        <span class="string">'zipUrl'</span> => <span class="string">'/temp/'</span> . <span class="property">$zipFilename</span>
+        <span class="string">'type'</span> => <span class="string">'zip'</span>,
+        <span class="string">'url'</span> => <span class="string">'uploads/'</span> . <span class="property">$zipFilename</span>,
+        <span class="string">'filename'</span> => <span class="string">'files.zip'</span>,
+        <span class="string">'cleanup'</span> => <span class="property">$zipFilename</span>   <span class="comment">// For cleanup after download</span>
     ]);
 } <span class="keyword">else</span> {
     <span class="property">http_response_code</span>(<span class="string">500</span>);
-    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'error'</span> => <span class="string">'Failed to create ZIP'</span>]);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Failed to create ZIP'</span>]);
+}
+<span class="tag">?&gt;</span></pre>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">Cleanup ZIP Endpoint (cleanup-zip.php)</h3>
+            <div class="info-box info">
+                <div class="info-box-title">Cleanup After Download</div>
+                <p>FileUploader automatically calls this endpoint after downloading a ZIP file to clean up temporary files. This prevents accumulation of ZIP archives on the server.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PHP</span>
+                    <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-content">
+<pre><span class="tag">&lt;?php</span>
+<span class="comment">// api/cleanup-zip.php</span>
+<span class="property">header</span>(<span class="string">'Content-Type: application/json'</span>);
+
+<span class="comment">// Get JSON input</span>
+<span class="property">$input</span> = <span class="property">json_decode</span>(<span class="property">file_get_contents</span>(<span class="string">'php://input'</span>), <span class="keyword">true</span>);
+<span class="property">$filename</span> = <span class="property">$input</span>[<span class="string">'filename'</span>] ?? <span class="keyword">null</span>;
+
+<span class="keyword">if</span> (!<span class="property">$filename</span>) {
+    <span class="property">http_response_code</span>(<span class="string">400</span>);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Filename required'</span>]);
+    <span class="keyword">exit</span>;
+}
+
+<span class="comment">// Security: only allow .zip files matching our pattern</span>
+<span class="property">$filename</span> = <span class="property">basename</span>(<span class="property">$filename</span>);
+<span class="keyword">if</span> (!<span class="property">preg_match</span>(<span class="string">'/^download_\d+\.zip$/'</span>, <span class="property">$filename</span>)) {
+    <span class="property">http_response_code</span>(<span class="string">400</span>);
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Invalid filename'</span>]);
+    <span class="keyword">exit</span>;
+}
+
+<span class="property">$filepath</span> = <span class="string">'../uploads/'</span> . <span class="property">$filename</span>;
+
+<span class="keyword">if</span> (<span class="property">file_exists</span>(<span class="property">$filepath</span>) && <span class="property">unlink</span>(<span class="property">$filepath</span>)) {
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">true</span>]);
+} <span class="keyword">else</span> {
+    <span class="comment">// Don't fail if already deleted</span>
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">true</span>]);
+}
+<span class="tag">?&gt;</span></pre>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">Copy File Endpoint (copy-file.php) - For Cross-Uploader Drag</h3>
+            <div class="info-box info">
+                <div class="info-box-title">Cross-Uploader File Operations</div>
+                <p>When <code>enableCrossUploaderDrag: true</code>, users can drag files between different FileUploader instances. This endpoint handles copying files between upload directories.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PHP</span>
+                    <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-content">
+<pre><span class="tag">&lt;?php</span>
+<span class="comment">// api/copy-file.php</span>
+<span class="property">header</span>(<span class="string">'Content-Type: application/json'</span>);
+
+<span class="comment">// Get JSON input</span>
+<span class="property">$input</span> = <span class="property">json_decode</span>(<span class="property">file_get_contents</span>(<span class="string">'php://input'</span>), <span class="keyword">true</span>);
+
+<span class="comment">// Required fields</span>
+<span class="property">$sourceFilename</span> = <span class="property">$input</span>[<span class="string">'sourceFilename'</span>] ?? <span class="keyword">null</span>;
+<span class="property">$sourceUploadDir</span> = <span class="property">$input</span>[<span class="string">'sourceUploadDir'</span>] ?? <span class="string">''</span>;
+<span class="property">$targetUploadDir</span> = <span class="property">$input</span>[<span class="string">'targetUploadDir'</span>] ?? <span class="string">''</span>;
+
+<span class="keyword">if</span> (!<span class="property">$sourceFilename</span>) {
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Source filename required'</span>]);
+    <span class="keyword">exit</span>;
+}
+
+<span class="comment">// Security: sanitize paths</span>
+<span class="property">$sourceFilename</span> = <span class="property">basename</span>(<span class="property">$sourceFilename</span>);
+<span class="property">$baseUploadDir</span> = <span class="string">'../uploads/'</span>;
+
+<span class="comment">// Build source and target paths</span>
+<span class="property">$sourcePath</span> = <span class="property">$baseUploadDir</span> . <span class="property">trim</span>(<span class="property">$sourceUploadDir</span>, <span class="string">'/'</span>) . <span class="string">'/'</span> . <span class="property">$sourceFilename</span>;
+<span class="property">$targetDir</span> = <span class="property">$baseUploadDir</span> . <span class="property">trim</span>(<span class="property">$targetUploadDir</span>, <span class="string">'/'</span>) . <span class="string">'/'</span>;
+
+<span class="keyword">if</span> (!<span class="property">file_exists</span>(<span class="property">$sourcePath</span>)) {
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Source file not found'</span>]);
+    <span class="keyword">exit</span>;
+}
+
+<span class="comment">// Create target directory if needed</span>
+<span class="keyword">if</span> (!<span class="property">is_dir</span>(<span class="property">$targetDir</span>)) {
+    <span class="property">mkdir</span>(<span class="property">$targetDir</span>, <span class="string">0755</span>, <span class="keyword">true</span>);
+}
+
+<span class="comment">// Handle duplicate filenames</span>
+<span class="property">$targetFilename</span> = <span class="property">$sourceFilename</span>;
+<span class="property">$counter</span> = <span class="string">1</span>;
+<span class="keyword">while</span> (<span class="property">file_exists</span>(<span class="property">$targetDir</span> . <span class="property">$targetFilename</span>)) {
+    <span class="property">$ext</span> = <span class="property">pathinfo</span>(<span class="property">$sourceFilename</span>, <span class="string">PATHINFO_EXTENSION</span>);
+    <span class="property">$name</span> = <span class="property">pathinfo</span>(<span class="property">$sourceFilename</span>, <span class="string">PATHINFO_FILENAME</span>);
+    <span class="property">$targetFilename</span> = <span class="property">$name</span> . <span class="string">'_'</span> . <span class="property">$counter</span> . <span class="string">'.'</span> . <span class="property">$ext</span>;
+    <span class="property">$counter</span>++;
+}
+
+<span class="property">$targetPath</span> = <span class="property">$targetDir</span> . <span class="property">$targetFilename</span>;
+
+<span class="keyword">if</span> (<span class="property">copy</span>(<span class="property">$sourcePath</span>, <span class="property">$targetPath</span>)) {
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([
+        <span class="string">'success'</span> => <span class="keyword">true</span>,
+        <span class="string">'file'</span> => [
+            <span class="string">'filename'</span> => <span class="property">$targetFilename</span>,
+            <span class="string">'originalName'</span> => <span class="property">$sourceFilename</span>,
+            <span class="string">'path'</span> => <span class="property">$targetPath</span>,
+            <span class="string">'url'</span> => <span class="string">'/uploads/'</span> . <span class="property">trim</span>(<span class="property">$targetUploadDir</span>, <span class="string">'/'</span>) . <span class="string">'/'</span> . <span class="property">$targetFilename</span>
+        ],
+        <span class="string">'renamed'</span> => (<span class="property">$targetFilename</span> !== <span class="property">$sourceFilename</span>)
+    ]);
+} <span class="keyword">else</span> {
+    <span class="keyword">echo</span> <span class="property">json_encode</span>([<span class="string">'success'</span> => <span class="keyword">false</span>, <span class="string">'error'</span> => <span class="string">'Failed to copy file'</span>]);
+}
+<span class="tag">?&gt;</span></pre>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">Additional Data in Requests</h3>
+            <div class="info-box info">
+                <div class="info-box-title">Passing Custom Data to Endpoints</div>
+                <p>FileUploader provides three ways to include custom data in POST requests: global data for all requests, per-request type data, and a dynamic callback for runtime modifications.</p>
+            </div>
+
+            <h4 style="color: #94a3b8; margin: 20px 0 10px; font-size: 16px;">1. Global Additional Data (All Requests)</h4>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JavaScript</span>
+                    <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-content">
+<pre><span class="keyword">const</span> uploader = <span class="keyword">new</span> <span class="function">FileUploader</span>(<span class="string">'#file-uploader'</span>, {
+    <span class="comment">// URL Configuration</span>
+    <span class="property">urls</span>: {
+        <span class="property">uploadUrl</span>: <span class="string">'?urlq=files/upload'</span>,
+        <span class="property">deleteUrl</span>: <span class="string">'?urlq=files/delete'</span>,
+        <span class="property">downloadAllUrl</span>: <span class="string">'?urlq=files/download'</span>,
+        <span class="property">configUrl</span>: <span class="string">'?urlq=files/get-config'</span>,
+
+        <span class="comment">// Data included in ALL POST requests</span>
+        <span class="property">additionalData</span>: {
+            <span class="property">csrf_token</span>: <span class="string">'abc123'</span>,
+            <span class="property">user_id</span>: <span class="string">'42'</span>
+        }
+    }
+});</pre>
+                </div>
+            </div>
+
+            <h4 style="color: #94a3b8; margin: 20px 0 10px; font-size: 16px;">2. Per-Request Type Data</h4>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JavaScript</span>
+                    <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-content">
+<pre><span class="keyword">const</span> uploader = <span class="keyword">new</span> <span class="function">FileUploader</span>(<span class="string">'#file-uploader'</span>, {
+    <span class="comment">// URL Configuration</span>
+    <span class="property">urls</span>: {
+        <span class="property">uploadUrl</span>: <span class="string">'?urlq=files/upload'</span>,
+        <span class="property">deleteUrl</span>: <span class="string">'?urlq=files/delete'</span>,
+        <span class="property">downloadAllUrl</span>: <span class="string">'?urlq=files/download'</span>,
+
+        <span class="comment">// Data for ALL requests</span>
+        <span class="property">additionalData</span>: { <span class="property">csrf_token</span>: <span class="string">'abc123'</span> },
+
+        <span class="comment">// Data for specific request types only</span>
+        <span class="property">uploadData</span>: { <span class="property">submit</span>: <span class="string">'upload'</span>, <span class="property">category</span>: <span class="string">'documents'</span> },
+        <span class="property">deleteData</span>: { <span class="property">submit</span>: <span class="string">'delete'</span>, <span class="property">soft_delete</span>: <span class="string">'true'</span> },
+        <span class="property">downloadData</span>: { <span class="property">submit</span>: <span class="string">'download'</span> },
+        <span class="property">copyData</span>: { <span class="property">submit</span>: <span class="string">'copy'</span> }
+    }
+});</pre>
+                </div>
+            </div>
+
+            <h4 style="color: #94a3b8; margin: 20px 0 10px; font-size: 16px;">3. Dynamic Data with onBeforeRequest Callback</h4>
+            <div class="info-box tip">
+                <div class="info-box-title">Most Flexible Option</div>
+                <p>Use <code>onBeforeRequest</code> to dynamically modify request data at runtime. Perfect for adding timestamps, dynamic tokens, or file-specific metadata.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JavaScript</span>
+                    <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-content">
+<pre><span class="keyword">const</span> uploader = <span class="keyword">new</span> <span class="function">FileUploader</span>(<span class="string">'#file-uploader'</span>, {
+    <span class="comment">// URL Configuration</span>
+    <span class="property">urls</span>: {
+        <span class="property">uploadUrl</span>: <span class="string">'?urlq=files/upload'</span>,
+        <span class="property">deleteUrl</span>: <span class="string">'?urlq=files/delete'</span>
+    },
+
+    <span class="comment">// Callbacks</span>
+    <span class="property">callbacks</span>: {
+        <span class="comment">/**
+         * Called before each request
+         * @param {string} requestType - 'upload', 'delete', 'download', 'copy', 'cleanup'
+         * @param {Object} data - Current data object (modify or return new object)
+         * @param {Object} context - Contains fileObj, files array, etc.
+         */</span>
+        <span class="property">onBeforeRequest</span>: (requestType, data, context) => {
+            <span class="comment">// Add timestamp to all requests</span>
+            data.timestamp = Date.now();
+
+            <span class="comment">// Add different submit values based on request type</span>
+            data.submit = requestType;
+
+            <span class="comment">// Add file-specific data for uploads</span>
+            <span class="keyword">if</span> (requestType === <span class="string">'upload'</span> && context.fileObj) {
+                data.original_name = context.fileObj.name;
+                data.file_size = context.fileObj.size;
+            }
+
+            <span class="comment">// Add dynamic CSRF token</span>
+            data.csrf_token = document.querySelector(<span class="string">'meta[name="csrf-token"]'</span>)?.content;
+
+            <span class="keyword">return</span> data; <span class="comment">// Return modified data (or modify in place)</span>
+        }
+    }
+});</pre>
+                </div>
+            </div>
+
+            <h4 style="color: #94a3b8; margin: 20px 0 10px; font-size: 16px;">Data Merge Order</h4>
+            <div class="info-box info">
+                <div class="info-box-title">Priority (later values override earlier)</div>
+                <p>1. Base request data (filename, files, etc.) → 2. <code>additionalData</code> (global) → 3. Per-request data (<code>uploadData</code>, etc.) → 4. <code>onBeforeRequest</code> callback</p>
+            </div>
+
+            <h4 style="color: #94a3b8; margin: 20px 0 10px; font-size: 16px;">Accessing Data in PHP</h4>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PHP</span>
+                    <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                </div>
+                <div class="code-content">
+<pre><span class="tag">&lt;?php</span>
+<span class="comment">// For upload requests (FormData) - access via $_POST</span>
+<span class="property">$submit</span> = <span class="property">$_POST</span>[<span class="string">'submit'</span>] ?? <span class="keyword">null</span>;
+<span class="property">$csrfToken</span> = <span class="property">$_POST</span>[<span class="string">'csrf_token'</span>] ?? <span class="keyword">null</span>;
+
+<span class="comment">// For JSON requests (delete, download, copy) - access via php://input</span>
+<span class="property">$input</span> = <span class="property">json_decode</span>(<span class="property">file_get_contents</span>(<span class="string">'php://input'</span>), <span class="keyword">true</span>);
+<span class="property">$submit</span> = <span class="property">$input</span>[<span class="string">'submit'</span>] ?? <span class="keyword">null</span>;
+<span class="property">$csrfToken</span> = <span class="property">$input</span>[<span class="string">'csrf_token'</span>] ?? <span class="keyword">null</span>;
+
+<span class="comment">// Route based on submit parameter</span>
+<span class="keyword">switch</span> (<span class="property">$submit</span>) {
+    <span class="keyword">case</span> <span class="string">'upload'</span>: handleUpload(); <span class="keyword">break</span>;
+    <span class="keyword">case</span> <span class="string">'delete'</span>: handleDelete(); <span class="keyword">break</span>;
+    <span class="keyword">case</span> <span class="string">'download'</span>: handleDownload(); <span class="keyword">break</span>;
 }
 <span class="tag">?&gt;</span></pre>
                 </div>
@@ -1017,6 +1295,11 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
                 </thead>
                 <tbody>
                     <tr>
+                        <td><code>onBeforeRequest</code></td>
+                        <td><code>(requestType, data, context)</code></td>
+                        <td>Called before each POST request. Modify or return data object.</td>
+                    </tr>
+                    <tr>
                         <td><code>onUploadStart</code></td>
                         <td><code>(fileObj)</code></td>
                         <td>Called when a file upload begins</td>
@@ -1052,51 +1335,58 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
                 </div>
                 <div class="code-content">
 <pre><span class="keyword">const</span> uploader = <span class="keyword">new</span> <span class="function">FileUploader</span>(<span class="string">'#file-uploader'</span>, {
-    <span class="property">uploadUrl</span>: <span class="string">'/api/upload.php'</span>,
-    <span class="property">deleteUrl</span>: <span class="string">'/api/delete.php'</span>,
-
-    <span class="comment">// Upload started</span>
-    <span class="property">onUploadStart</span>: (fileObj) => {
-        console.log(<span class="string">'Starting upload:'</span>, fileObj.name);
-        <span class="comment">// Show loading indicator, disable form, etc.</span>
+    <span class="comment">// URL Configuration</span>
+    <span class="property">urls</span>: {
+        <span class="property">uploadUrl</span>: <span class="string">'?urlq=files/upload'</span>,
+        <span class="property">deleteUrl</span>: <span class="string">'?urlq=files/delete'</span>
     },
 
-    <span class="comment">// Upload succeeded</span>
-    <span class="property">onUploadSuccess</span>: (fileObj, response) => {
-        console.log(<span class="string">'Upload complete:'</span>, {
-            <span class="property">name</span>: fileObj.name,
-            <span class="property">size</span>: fileObj.size,
-            <span class="property">type</span>: fileObj.type,
-            <span class="property">serverResponse</span>: response
-        });
+    <span class="comment">// Callbacks</span>
+    <span class="property">callbacks</span>: {
+        <span class="comment">// Called before each POST request (upload, delete, download, copy, cleanup)</span>
+        <span class="property">onBeforeRequest</span>: (requestType, data, context) => {
+            <span class="comment">// Add routing key based on request type</span>
+            data.submit = requestType;
+            <span class="comment">// Add dynamic CSRF token</span>
+            data.csrf_token = document.querySelector(<span class="string">'meta[name="csrf-token"]'</span>)?.content;
+            <span class="keyword">return</span> data;
+        },
 
-        <span class="comment">// Example: Store file ID for form submission</span>
-        <span class="keyword">const</span> hiddenInput = document.createElement(<span class="string">'input'</span>);
-        hiddenInput.type = <span class="string">'hidden'</span>;
-        hiddenInput.name = <span class="string">'uploaded_files[]'</span>;
-        hiddenInput.value = response.filename;
-        document.querySelector(<span class="string">'form'</span>).appendChild(hiddenInput);
-    },
+        <span class="comment">// Upload started</span>
+        <span class="property">onUploadStart</span>: (fileObj) => {
+            console.log(<span class="string">'Starting upload:'</span>, fileObj.name);
+        },
 
-    <span class="comment">// Upload failed</span>
-    <span class="property">onUploadError</span>: (fileObj, error) => {
-        console.error(<span class="string">'Upload failed:'</span>, {
-            <span class="property">name</span>: fileObj.name,
-            <span class="property">error</span>: error.message || error
-        });
+        <span class="comment">// Upload succeeded</span>
+        <span class="property">onUploadSuccess</span>: (fileObj, response) => {
+            console.log(<span class="string">'Upload complete:'</span>, {
+                <span class="property">name</span>: fileObj.name,
+                <span class="property">size</span>: fileObj.size,
+                <span class="property">serverResponse</span>: response
+            });
 
-        <span class="comment">// Show error notification to user</span>
-        alert(<span class="string">`Failed to upload ${fileObj.name}: ${error.message}`</span>);
-    },
+            <span class="comment">// Store file ID for form submission</span>
+            <span class="keyword">const</span> hiddenInput = document.createElement(<span class="string">'input'</span>);
+            hiddenInput.type = <span class="string">'hidden'</span>;
+            hiddenInput.name = <span class="string">'uploaded_files[]'</span>;
+            hiddenInput.value = response.filename;
+            document.querySelector(<span class="string">'form'</span>).appendChild(hiddenInput);
+        },
 
-    <span class="comment">// Delete succeeded</span>
-    <span class="property">onDeleteSuccess</span>: (fileObj, response) => {
-        console.log(<span class="string">'File deleted:'</span>, fileObj.name);
-    },
+        <span class="comment">// Upload failed</span>
+        <span class="property">onUploadError</span>: (fileObj, error) => {
+            console.error(<span class="string">'Upload failed:'</span>, fileObj.name, error);
+        },
 
-    <span class="comment">// Delete failed</span>
-    <span class="property">onDeleteError</span>: (fileObj, error) => {
-        console.error(<span class="string">'Delete failed:'</span>, fileObj.name, error);
+        <span class="comment">// Delete succeeded</span>
+        <span class="property">onDeleteSuccess</span>: (fileObj, response) => {
+            console.log(<span class="string">'File deleted:'</span>, fileObj.name);
+        },
+
+        <span class="comment">// Delete failed</span>
+        <span class="property">onDeleteError</span>: (fileObj, error) => {
+            console.error(<span class="string">'Delete failed:'</span>, fileObj.name, error);
+        }
     }
 });</pre>
                 </div>
@@ -1131,12 +1421,15 @@ MediaHub.ConfigBuilder    <span class="comment">// Visual config builder</span><
                 </div>
                 <div class="code-content">
 <pre><span class="comment">// The response parameter from onUploadSuccess:</span>
+<span class="comment">// Note: File data MUST be wrapped in a 'file' object</span>
 {
     <span class="property">success</span>: <span class="keyword">true</span>,
-    <span class="property">filename</span>: <span class="string">"abc123.pdf"</span>,        <span class="comment">// Server-side filename</span>
-    <span class="property">originalName</span>: <span class="string">"document.pdf"</span>,  <span class="comment">// Original filename</span>
-    <span class="property">path</span>: <span class="string">"uploads/abc123.pdf"</span>,    <span class="comment">// Server path</span>
-    <span class="property">url</span>: <span class="string">"/uploads/abc123.pdf"</span>     <span class="comment">// Public URL</span>
+    <span class="property">file</span>: {
+        <span class="property">filename</span>: <span class="string">"abc123.pdf"</span>,        <span class="comment">// Server-side filename</span>
+        <span class="property">originalName</span>: <span class="string">"document.pdf"</span>,  <span class="comment">// Original filename</span>
+        <span class="property">path</span>: <span class="string">"uploads/abc123.pdf"</span>,    <span class="comment">// Server path</span>
+        <span class="property">url</span>: <span class="string">"/uploads/abc123.pdf"</span>     <span class="comment">// Public URL</span>
+    }
 }</pre>
                 </div>
             </div>

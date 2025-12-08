@@ -15,6 +15,11 @@ export const OPTION_TO_GROUP = {
   copyFileUrl: "urls",
   configUrl: "urls",
   uploadDir: "urls",
+  additionalData: "urls",
+  uploadData: "urls",
+  deleteData: "urls",
+  downloadData: "urls",
+  copyData: "urls",
   // Limits
   perFileMaxSize: "limits",
   perFileMaxSizeDisplay: "limits",

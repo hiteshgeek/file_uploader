@@ -92,12 +92,18 @@ export class SelectionManager {
 
     // For multiple files, create a zip (use existing downloadAll infrastructure)
     try {
+      const downloadData = this.uploader.uploadManager.buildRequestData(
+        "download",
+        { files: selectedFilesData },
+        { files: selectedFilesData }
+      );
+
       const response = await fetch(this.uploader.options.downloadAllUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ files: selectedFilesData }),
+        body: JSON.stringify(downloadData),
       });
 
       const responseText = await response.text();
@@ -128,14 +134,18 @@ export class SelectionManager {
       if (result.type === "zip" && result.cleanup) {
         setTimeout(async () => {
           try {
+            const cleanupData = this.uploader.uploadManager.buildRequestData(
+              "cleanup",
+              { filename: result.cleanup },
+              {}
+            );
+
             await fetch(this.uploader.options.cleanupZipUrl, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                filename: result.cleanup,
-              }),
+              body: JSON.stringify(cleanupData),
             });
           } catch (error) {
             console.warn("Failed to cleanup temporary zip:", error);

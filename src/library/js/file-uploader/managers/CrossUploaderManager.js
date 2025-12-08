@@ -314,16 +314,22 @@ export class CrossUploaderManager {
 
     if (needsServerCopy) {
       try {
+        const baseData = {
+          sourceFilename: sourceFileObj.serverFilename,
+          sourceUploadDir: sourceUploadDir,
+          targetUploadDir: targetUploadDir,
+        };
+        const copyData = this.uploader.uploadManager.buildRequestData("copy", baseData, {
+          sourceFileObj,
+          sourceUploader,
+        });
+
         const response = await fetch(this.uploader.options.copyFileUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            sourceFilename: sourceFileObj.serverFilename,
-            sourceUploadDir: sourceUploadDir,
-            targetUploadDir: targetUploadDir,
-          }),
+          body: JSON.stringify(copyData),
         });
 
         const result = await response.json();
