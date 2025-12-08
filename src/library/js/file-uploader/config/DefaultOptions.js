@@ -87,7 +87,9 @@ export const DEFAULT_OPTIONS = {
   // Theme Configuration
   // Control the visual theme of the uploader
   // ============================================================================
-  theme: "auto", // "auto" | "light" | "dark"
+  theme: {
+    theme: "auto", // "auto" | "light" | "dark"
+  },
 
   // ============================================================================
   // Upload Behavior
