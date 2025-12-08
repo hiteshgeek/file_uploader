@@ -979,6 +979,14 @@ export function getOptionDefinitions() {
  * @returns {*} The default value
  */
 export function getOptionDefault(fileUploaderDefaults, categoryKey, key, fallbackDefault) {
+  // Special case: theme is a top-level property, not nested
+  if (categoryKey === "theme" && key === "theme") {
+    if (fileUploaderDefaults && "theme" in fileUploaderDefaults) {
+      return fileUploaderDefaults.theme;
+    }
+    return fallbackDefault;
+  }
+
   if (fileUploaderDefaults && fileUploaderDefaults[categoryKey] && key in fileUploaderDefaults[categoryKey]) {
     return structuredClone(fileUploaderDefaults[categoryKey][key]);
   }
@@ -994,6 +1002,12 @@ export function getOptionDefault(fileUploaderDefaults, categoryKey, key, fallbac
 export function getDefaultConfig(optionDefinitions, fileUploaderDefaults) {
   const config = {};
   for (const [categoryKey, category] of Object.entries(optionDefinitions)) {
+    // Special case: theme is a top-level string property, not nested
+    if (categoryKey === "theme") {
+      config.theme = getOptionDefault(fileUploaderDefaults, categoryKey, "theme", "auto");
+      continue;
+    }
+
     config[categoryKey] = {};
     for (const [key, def] of Object.entries(category.options)) {
       config[categoryKey][key] = getOptionDefault(fileUploaderDefaults, categoryKey, key, def.default);
