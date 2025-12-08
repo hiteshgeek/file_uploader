@@ -16,18 +16,14 @@ $jsConfig = [
 
     // Use image-specific limits
     'perFileMaxSize' => $config['per_file_max_size_per_type']['image'] ?? $config['per_file_max_size'],
-    'perFileMaxSizeDisplay' => $config['per_file_max_size_per_type_display']['image'] ?? $config['per_file_max_size_display'],
 
     // No per-type limits needed since we only allow images
     'perFileMaxSizePerType' => [],
-    'perFileMaxSizePerTypeDisplay' => [],
     'perTypeMaxTotalSize' => [],
-    'perTypeMaxTotalSizeDisplay' => [],
     'perTypeMaxFileCount' => [],
 
     // Single file for profile picture
     'totalMaxSize' => $config['per_file_max_size_per_type']['image'] ?? $config['per_file_max_size'],
-    'totalMaxSizeDisplay' => $config['per_file_max_size_per_type_display']['image'] ?? $config['per_file_max_size_display'],
     'maxFiles' => 1,
 
     // File type extensions

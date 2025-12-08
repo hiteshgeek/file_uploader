@@ -20,18 +20,14 @@ $jsConfig = [
 
     // General per-file limit
     'perFileMaxSize' => $config['per_file_max_size'],
-    'perFileMaxSizeDisplay' => $config['per_file_max_size_display'],
 
     // Per-type limits
     'perFileMaxSizePerType' => $config['per_file_max_size_per_type'],
-    'perFileMaxSizePerTypeDisplay' => $config['per_file_max_size_per_type_display'],
     'perTypeMaxTotalSize' => $config['per_type_max_total_size'],
-    'perTypeMaxTotalSizeDisplay' => $config['per_type_max_total_size_display'],
     'perTypeMaxFileCount' => $config['per_type_max_file_count'],
 
     // Total limits
     'totalMaxSize' => $config['total_max_size'],
-    'totalMaxSizeDisplay' => $config['total_max_size_display'],
     'maxFiles' => $config['max_files'],
 
     // File type extensions
