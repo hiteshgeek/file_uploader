@@ -4025,13 +4025,15 @@ export default class ConfigBuilder {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    // Delay revoking the URL to give browser time to start download
+
+    // Clean up after download with longer delay
     setTimeout(() => {
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }, 100);
+    }, 1000);
   }
 
   /**
