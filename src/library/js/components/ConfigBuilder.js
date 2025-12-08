@@ -139,7 +139,7 @@ export default class ConfigBuilder {
     // All available options with metadata
     this.optionDefinitions = this.getOptionDefinitions();
 
-    // Current config values
+    // Current config values (grouped structure)
     this.config = this.getDefaultConfig();
     console.log(
       "ConfigBuilder: config initialized with defaults:",
@@ -214,6 +214,7 @@ export default class ConfigBuilder {
     }
     return structuredClone(fallbackDefault);
   }
+
 
   /**
    * Get default config values
@@ -4170,18 +4171,18 @@ export default class ConfigBuilder {
         break;
 
       case "minimal":
-        this.config.showLimits = false;
-        this.config.enableScreenCapture = false;
-        this.config.enableVideoRecording = false;
-        this.config.enableAudioRecording = false;
-        this.config.enableFullPageCapture = false;
-        this.config.enableRegionCapture = false;
-        this.config.showDownloadAllButton = false;
-        this.config.showClearAllButton = false;
+        this.config.limitsDisplay.showLimits = false;
+        this.config.mediaCapture.enableScreenCapture = false;
+        this.config.mediaCapture.enableVideoRecording = false;
+        this.config.mediaCapture.enableAudioRecording = false;
+        this.config.mediaCapture.enableFullPageCapture = false;
+        this.config.mediaCapture.enableRegionCapture = false;
+        this.config.buttons.showDownloadAllButton = false;
+        this.config.buttons.showClearAllButton = false;
         break;
 
       case "images-only":
-        this.config.allowedExtensions = [
+        this.config.fileTypes.allowedExtensions = [
           "jpg",
           "jpeg",
           "png",
@@ -4189,12 +4190,12 @@ export default class ConfigBuilder {
           "webp",
           "svg",
         ];
-        this.config.perFileMaxSize = 5 * 1024 * 1024;
-        this.config.maxFiles = 20;
+        this.config.limits.perFileMaxSize = 5 * 1024 * 1024;
+        this.config.limits.maxFiles = 20;
         break;
 
       case "documents":
-        this.config.allowedExtensions = [
+        this.config.fileTypes.allowedExtensions = [
           "pdf",
           "doc",
           "docx",
@@ -4205,16 +4206,16 @@ export default class ConfigBuilder {
           "txt",
           "csv",
         ];
-        this.config.perFileMaxSize = 25 * 1024 * 1024;
-        this.config.enableScreenCapture = false;
-        this.config.enableVideoRecording = false;
-        this.config.enableAudioRecording = false;
-        this.config.enableFullPageCapture = false;
-        this.config.enableRegionCapture = false;
+        this.config.limits.perFileMaxSize = 25 * 1024 * 1024;
+        this.config.mediaCapture.enableScreenCapture = false;
+        this.config.mediaCapture.enableVideoRecording = false;
+        this.config.mediaCapture.enableAudioRecording = false;
+        this.config.mediaCapture.enableFullPageCapture = false;
+        this.config.mediaCapture.enableRegionCapture = false;
         break;
 
       case "media":
-        this.config.allowedExtensions = [
+        this.config.fileTypes.allowedExtensions = [
           "jpg",
           "jpeg",
           "png",
@@ -4224,15 +4225,15 @@ export default class ConfigBuilder {
           "mp3",
           "wav",
         ];
-        this.config.perFileMaxSize = 100 * 1024 * 1024;
-        this.config.totalMaxSize = 500 * 1024 * 1024;
+        this.config.limits.perFileMaxSize = 100 * 1024 * 1024;
+        this.config.limits.totalMaxSize = 500 * 1024 * 1024;
         break;
 
       case "single-file":
-        this.config.multiple = false;
-        this.config.maxFiles = 1;
-        this.config.showDownloadAllButton = false;
-        this.config.showClearAllButton = false;
+        this.config.behavior.multiple = false;
+        this.config.limits.maxFiles = 1;
+        this.config.buttons.showDownloadAllButton = false;
+        this.config.buttons.showClearAllButton = false;
         break;
     }
 

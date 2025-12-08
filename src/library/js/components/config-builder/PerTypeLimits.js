@@ -50,9 +50,9 @@ export function capitalizeFirst(str) {
  */
 export function renderPerTypeLimitsByFileType(builder, options) {
   const types = ["image", "video", "audio", "document", "archive"];
-  const perFileMaxSizeValues = builder.config.perFileMaxSizePerType || {};
-  const perTypeMaxTotalSizeValues = builder.config.perTypeMaxTotalSize || {};
-  const perTypeMaxFileCountValues = builder.config.perTypeMaxFileCount || {};
+  const perFileMaxSizeValues = builder.config.perTypeLimits.perFileMaxSizePerType || {};
+  const perTypeMaxTotalSizeValues = builder.config.perTypeLimits.perTypeMaxTotalSize || {};
+  const perTypeMaxFileCountValues = builder.config.perTypeLimits.perTypeMaxFileCount || {};
 
   const maxBytes = builder.getSliderMaxBytes();
   const units = ["bytes", "KB", "MB", "GB"];
