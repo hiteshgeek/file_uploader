@@ -78,23 +78,17 @@ include_once __DIR__ . '/../../includes/functions.php';
         // ConfigBuilder is now exposed globally from config-builder.iife.js
         // FileUploader is exposed from media-hub.iife.js as window.FileUploader
 
-        // Initialize the config builder
+        // Initialize the config builder with correct URLs for subfolder location
         const builder = new ConfigBuilder('#configBuilder', {
+            uploadUrl: '../../api/upload.php',
+            deleteUrl: '../../api/delete.php',
+            downloadAllUrl: '../../api/download-all.php',
+            cleanupZipUrl: '../../api/cleanup-zip.php',
+            copyFileUrl: '../../api/copy-file.php',
             onConfigChange: (config) => {
                 console.log('Config changed:', config);
             }
         });
-
-        // Override default URLs for subfolder location
-        builder.config.uploadUrl = '../../api/upload.php';
-        builder.config.deleteUrl = '../../api/delete.php';
-        builder.config.downloadAllUrl = '../../api/download-all.php';
-        builder.config.cleanupZipUrl = '../../api/cleanup-zip.php';
-        builder.config.copyFileUrl = '../../api/copy-file.php';
-
-        // Refresh the UI and preview to apply URL changes
-        builder.updateCodeOutput();
-        builder.updatePreview();
 
         // Make it globally accessible for debugging
         window.configBuilder = builder;
