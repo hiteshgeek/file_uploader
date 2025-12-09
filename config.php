@@ -12,7 +12,7 @@ $totalMaxSize = 100 * 1024 * 1024;  // 100MB (total for all files combined)
 // Per file max size limit - maximum size for a SINGLE file of each type
 $perFileMaxSizePerType = [
     'image' => 10 * 1024 * 1024,      // 10MB per image file
-    'video' => 100 * 1024 * 1024,     // 100MB per video file
+    'video' => 50 * 1024 * 1024,     // 100MB per video file
     'audio' => 25 * 1024 * 1024,      // 25MB per audio file
     'document' => 10 * 1024 * 1024,   // 10MB per document file
     'archive' => 20 * 1024 * 1024,    // 20MB per archive file

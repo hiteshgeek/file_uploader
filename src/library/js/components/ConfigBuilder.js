@@ -228,6 +228,44 @@ export default class ConfigBuilder {
   }
 
   /**
+   * Set a config value in the grouped structure
+   * @param {string} categoryKey - The category (e.g., "limits", "behavior", "theme")
+   * @param {string} optionKey - The option key within the category
+   * @param {any} value - The value to set
+   */
+  setConfigValue(categoryKey, optionKey, value) {
+    // Special case: theme is a top-level string, not nested
+    if (categoryKey === "theme" || !categoryKey) {
+      this.config[optionKey] = value;
+      return;
+    }
+
+    // Ensure the category object exists
+    if (!this.config[categoryKey]) {
+      this.config[categoryKey] = {};
+    }
+
+    // Set the value in the grouped structure
+    this.config[categoryKey][optionKey] = value;
+  }
+
+  /**
+   * Get a config value from the grouped structure
+   * @param {string} categoryKey - The category (e.g., "limits", "behavior", "theme")
+   * @param {string} optionKey - The option key within the category
+   * @param {any} defaultValue - Default value if not found
+   * @returns {any} The config value
+   */
+  getConfigValue(categoryKey, optionKey, defaultValue = undefined) {
+    // Special case: theme is a top-level string, not nested
+    if (categoryKey === "theme" || !categoryKey) {
+      return this.config[optionKey] ?? defaultValue;
+    }
+
+    return this.config[categoryKey]?.[optionKey] ?? defaultValue;
+  }
+
+  /**
    * Get style variable definitions organized by section
    * Delegates to StyleDefinitions module
    */
@@ -1509,14 +1547,15 @@ export default class ConfigBuilder {
         );
         break;
       case "select":
-        content = this.renderSelect(key, def, isDisabled, dependencyIndicator);
+        content = this.renderSelect(key, def, isDisabled, dependencyIndicator, categoryKey);
         break;
       case "selectWithInput":
         content = this.renderSelectWithInput(
           key,
           def,
           isDisabled,
-          dependencyIndicator
+          dependencyIndicator,
+          categoryKey
         );
         break;
       case "multiSelect":
@@ -1524,11 +1563,12 @@ export default class ConfigBuilder {
           key,
           def,
           isDisabled,
-          dependencyIndicator
+          dependencyIndicator,
+          categoryKey
         );
         break;
       case "extensions":
-        content = this.renderExtensions(key, def);
+        content = this.renderExtensions(key, def, categoryKey);
         break;
       case "typeSize":
         content = this.renderTypeSizeInputs(key, def, categoryKey);
@@ -1537,14 +1577,15 @@ export default class ConfigBuilder {
         content = this.renderTypeCountInputs(key, def, categoryKey);
         break;
       case "mimeTypes":
-        content = this.renderMimeTypes(key, def);
+        content = this.renderMimeTypes(key, def, categoryKey);
         break;
       case "buttonSizeSelect":
         content = this.renderButtonSizeSelect(
           key,
           def,
           isDisabled,
-          dependencyIndicator
+          dependencyIndicator,
+          categoryKey
         );
         break;
       case "timerSizeSelect":
@@ -1552,7 +1593,8 @@ export default class ConfigBuilder {
           key,
           def,
           isDisabled,
-          dependencyIndicator
+          dependencyIndicator,
+          categoryKey
         );
         break;
       case "keyValue":
@@ -1560,7 +1602,8 @@ export default class ConfigBuilder {
           key,
           def,
           isDisabled,
-          dependencyIndicator
+          dependencyIndicator,
+          categoryKey
         );
         break;
       case "section":
@@ -1604,13 +1647,17 @@ export default class ConfigBuilder {
   /**
    * Render toggle (boolean) option
    */
-  renderToggle(key, def, isDisabled = false, dependencyIndicator = "") {
-    const isActive = this.config[key] === true;
+  renderToggle(key, def, isDisabled = false, dependencyIndicator = "", categoryKey = "") {
+    // Get value from grouped config structure
+    const configValue = categoryKey && categoryKey !== "theme"
+      ? this.config[categoryKey]?.[key]
+      : this.config[key];
+    const isActive = configValue === true;
     const disabledClass = isDisabled ? "disabled" : "";
     return `
       <div class="fu-config-builder-toggle ${
         isActive ? "active" : ""
-      } ${disabledClass}" data-option="${key}" data-type="boolean" ${
+      } ${disabledClass}" data-option="${key}" data-category="${categoryKey}" data-type="boolean" ${
       isDisabled ? 'data-disabled="true"' : ""
     }>
         <div class="fu-config-builder-toggle-switch"></div>
@@ -1629,7 +1676,11 @@ export default class ConfigBuilder {
   /**
    * Render text input option
    */
-  renderTextInput(key, def, isDisabled = false, dependencyIndicator = "") {
+  renderTextInput(key, def, isDisabled = false, dependencyIndicator = "", categoryKey = "") {
+    // Get value from grouped config structure
+    const configValue = categoryKey && categoryKey !== "theme"
+      ? this.config[categoryKey]?.[key]
+      : this.config[key];
     return `
       <div class="fu-config-builder-group ${isDisabled ? "disabled" : ""}">
         <label class="fu-config-builder-label">
@@ -1638,8 +1689,8 @@ export default class ConfigBuilder {
           ${this.renderOptionKey(key)}
         </label>
         <input type="text" class="fu-config-builder-input"
-               data-option="${key}" data-type="text"
-               value="${this.config[key] || ""}"
+               data-option="${key}" data-category="${categoryKey}" data-type="text"
+               value="${configValue || ""}"
                placeholder="${def.default || ""}"
                ${isDisabled ? "disabled" : ""}>
         <div class="fu-config-builder-hint">${def.hint}</div>
@@ -1650,8 +1701,8 @@ export default class ConfigBuilder {
   /**
    * Render key-value input option for additionalData
    */
-  renderKeyValueInput(key, def, isDisabled = false, dependencyIndicator = "") {
-    const currentValue = this.config[key] || {};
+  renderKeyValueInput(key, def, isDisabled = false, dependencyIndicator = "", categoryKey = "") {
+    const currentValue = this.getConfigValue(categoryKey, key, {});
     const entries = Object.entries(currentValue);
 
     const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="14" height="14"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
@@ -1675,7 +1726,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-keyvalue-container" data-option="${key}" data-type="keyValue">
+        <div class="fu-config-builder-keyvalue-container" data-option="${key}" data-category="${categoryKey}" data-type="keyValue">
           <div class="fu-config-builder-keyvalue-rows">
             ${entriesHtml}
           </div>
@@ -1730,7 +1781,7 @@ export default class ConfigBuilder {
           ${this.renderOptionKey(key)}
         </label>
         <input type="number" class="fu-config-builder-input"
-               data-option="${key}" data-type="number"
+               data-option="${key}" data-category="${categoryKey || ""}" data-type="number"
                value="${value}"
                min="${def.min || 0}"
                max="${def.max || 999999}"
@@ -1766,7 +1817,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-count-slider" data-option="${key}" data-type="countSlider">
+        <div class="fu-config-builder-count-slider" data-option="${key}" data-category="${categoryKey || ""}" data-type="countSlider">
           <div class="fu-config-builder-slider-row">
             <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${
               isDisabled ? "disabled" : ""
@@ -1840,7 +1891,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-size-slider" data-option="${key}" data-type="sizeSlider" data-unit="${displayUnit}">
+        <div class="fu-config-builder-size-slider" data-option="${key}" data-category="${categoryKey || ""}" data-type="sizeSlider" data-unit="${displayUnit}">
           <!-- Single row: - slider + input + unit dropdown -->
           <div class="fu-config-builder-slider-row">
             <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${
@@ -1955,12 +2006,16 @@ export default class ConfigBuilder {
   /**
    * Render select dropdown
    */
-  renderSelect(key, def, isDisabled = false, dependencyIndicator = "") {
+  renderSelect(key, def, isDisabled = false, dependencyIndicator = "", categoryKey = "") {
+    // Get value from grouped config structure
+    const configValue = categoryKey && categoryKey !== "theme"
+      ? this.config[categoryKey]?.[key]
+      : this.config[key];
     const options = def.options
       .map(
         (opt) =>
           `<option value="${opt.value}" ${
-            this.config[key] === opt.value ? "selected" : ""
+            configValue === opt.value ? "selected" : ""
           }>${opt.label}</option>`
       )
       .join("");
@@ -1972,7 +2027,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <select class="fu-config-builder-select" data-option="${key}" data-type="select" ${
+        <select class="fu-config-builder-select" data-option="${key}" data-category="${categoryKey}" data-type="select" ${
       isDisabled ? "disabled" : ""
     }>
           ${options}
@@ -1990,9 +2045,10 @@ export default class ConfigBuilder {
     key,
     def,
     isDisabled = false,
-    dependencyIndicator = ""
+    dependencyIndicator = "",
+    categoryKey = ""
   ) {
-    const currentValue = this.config[key] || def.default;
+    const currentValue = this.getConfigValue(categoryKey, key, def.default);
 
     // Camera icon SVG for circular buttons
     const cameraIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`;
@@ -2032,7 +2088,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-button-size-selector" data-option="${key}" data-type="buttonSizeSelect">
+        <div class="fu-config-builder-button-size-selector" data-option="${key}" data-category="${categoryKey}" data-type="buttonSizeSelect">
           ${buttons}
         </div>
         <div class="fu-config-builder-hint">${def.hint}</div>
@@ -2047,9 +2103,10 @@ export default class ConfigBuilder {
     key,
     def,
     isDisabled = false,
-    dependencyIndicator = ""
+    dependencyIndicator = "",
+    categoryKey = ""
   ) {
-    const currentValue = this.config[key] || def.default;
+    const currentValue = this.getConfigValue(categoryKey, key, def.default);
 
     // Recording dot SVG
     const dotSvg = `<span class="media-hub-recording-dot"></span>`;
@@ -2083,7 +2140,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-button-size-selector fu-config-builder-timer-size-selector" data-option="${key}" data-type="timerSizeSelect">
+        <div class="fu-config-builder-button-size-selector fu-config-builder-timer-size-selector" data-option="${key}" data-category="${categoryKey}" data-type="timerSizeSelect">
           ${buttons}
         </div>
         <div class="fu-config-builder-hint">${def.hint}</div>
@@ -2099,9 +2156,10 @@ export default class ConfigBuilder {
     key,
     def,
     isDisabled = false,
-    dependencyIndicator = ""
+    dependencyIndicator = "",
+    categoryKey = ""
   ) {
-    const currentValue = this.config[key];
+    const currentValue = this.getConfigValue(categoryKey, key, null);
     const isCustomValue =
       currentValue !== null &&
       !def.options.some((opt) => opt.value === currentValue);
@@ -2117,7 +2175,7 @@ export default class ConfigBuilder {
         (opt) =>
           `<option value="${opt.value}" ${
             (opt.value === "__custom__" && isCustomValue) ||
-            (!isCustomValue && this.config[key] === opt.value)
+            (!isCustomValue && currentValue === opt.value)
               ? "selected"
               : ""
           }>${opt.label}</option>`
@@ -2185,7 +2243,7 @@ export default class ConfigBuilder {
           ${dependencyIndicator}
           ${this.renderOptionKey(key)}
         </label>
-        <div class="fu-config-builder-select-with-input" data-option="${key}" data-type="selectWithInput" data-format-type="${
+        <div class="fu-config-builder-select-with-input" data-option="${key}" data-category="${categoryKey}" data-type="selectWithInput" data-format-type="${
       def.formatType || ""
     }">
           <select class="fu-config-builder-select" data-role="preset" ${
@@ -2214,8 +2272,8 @@ export default class ConfigBuilder {
   /**
    * Render multi-select tags
    */
-  renderMultiSelect(key, def, isDisabled = false, dependencyIndicator = "") {
-    const selected = this.config[key] || [];
+  renderMultiSelect(key, def, isDisabled = false, dependencyIndicator = "", categoryKey = "") {
+    const selected = this.getConfigValue(categoryKey, key, []);
 
     // Get available options - use filterOptions if defined, otherwise use all options
     const availableOptions = def.filterOptions
@@ -2226,7 +2284,7 @@ export default class ConfigBuilder {
     const validSelected = selected.filter((s) => availableOptions.includes(s));
     if (validSelected.length !== selected.length) {
       // Update config to remove invalid selections
-      this.config[key] = validSelected;
+      this.setConfigValue(categoryKey, key, validSelected);
     }
 
     const tags = def.options
@@ -2256,7 +2314,7 @@ export default class ConfigBuilder {
         </label>
         <div class="fu-config-builder-tags ${
           isDisabled ? "disabled" : ""
-        }" data-option="${key}" data-type="multiSelect" ${
+        }" data-option="${key}" data-category="${categoryKey}" data-type="multiSelect" ${
       isDisabled ? 'data-disabled="true"' : ""
     }>
           ${tags}
@@ -2269,7 +2327,7 @@ export default class ConfigBuilder {
   /**
    * Render extensions selector
    */
-  renderExtensions(key, def) {
+  renderExtensions(key, def, categoryKey = "") {
     const allExtensions = {
       image: ["bmp", "gif", "ico", "jpeg", "jpg", "png", "svg", "webp"],
       video: ["avi", "flv", "mkv", "mov", "mp4", "mpeg", "webm"],
@@ -2289,7 +2347,7 @@ export default class ConfigBuilder {
       archive: ["7z", "bz2", "gz", "rar", "tar", "zip"],
     };
 
-    const selected = this.config[key] || [];
+    const selected = this.getConfigValue(categoryKey, key, []);
 
     let html = `
       <div class="fu-config-builder-group">
@@ -2300,7 +2358,7 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
           def.hint
         }</div>
-        <div data-option="${key}" data-type="extensions">
+        <div data-option="${key}" data-category="${categoryKey}" data-type="extensions">
     `;
 
     for (const [group, exts] of Object.entries(allExtensions)) {
@@ -2335,9 +2393,9 @@ export default class ConfigBuilder {
   /**
    * Render per-type size inputs with sliders (title on separate row)
    */
-  renderTypeSizeInputs(key, def, categoryKey = null) {
+  renderTypeSizeInputs(key, def, categoryKey = "") {
     const types = def.types || [];
-    const values = categoryKey ? (this.config[categoryKey][key] || {}) : (this.config[key] || {});
+    const values = this.getConfigValue(categoryKey, key, {});
 
     const minusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>`;
     const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
@@ -2353,7 +2411,7 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
           def.hint
         }</div>
-        <div class="fu-config-builder-type-sliders" data-option="${key}" data-type="typeSizeSlider">
+        <div class="fu-config-builder-type-sliders" data-option="${key}" data-category="${categoryKey}" data-type="typeSizeSlider">
     `;
 
     for (const type of types) {
@@ -2427,9 +2485,9 @@ export default class ConfigBuilder {
   /**
    * Render per-type count inputs with sliders (title on separate row)
    */
-  renderTypeCountInputs(key, def, categoryKey = null) {
+  renderTypeCountInputs(key, def, categoryKey = "") {
     const types = def.types || [];
-    const values = categoryKey ? (this.config[categoryKey][key] || {}) : (this.config[key] || {});
+    const values = this.getConfigValue(categoryKey, key, {});
 
     const minusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>`;
     const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
@@ -2443,7 +2501,7 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
           def.hint
         }</div>
-        <div class="fu-config-builder-type-sliders" data-option="${key}" data-type="typeCountSlider">
+        <div class="fu-config-builder-type-sliders" data-option="${key}" data-category="${categoryKey}" data-type="typeCountSlider">
     `;
 
     for (const type of types) {
@@ -2496,7 +2554,7 @@ export default class ConfigBuilder {
   /**
    * Render MIME types selector (PHP validation only)
    */
-  renderMimeTypes(key, def) {
+  renderMimeTypes(key, def, categoryKey = "") {
     const allMimeTypes = {
       image: [
         "image/bmp",
@@ -2593,7 +2651,7 @@ export default class ConfigBuilder {
       "application/x-bzip2": "BZ2",
     };
 
-    const selected = this.config[key] || [];
+    const selected = this.getConfigValue(categoryKey, key, []);
 
     let html = `
       <div class="fu-config-builder-group">
@@ -2604,7 +2662,7 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-hint" style="margin-bottom: 12px;">${
           def.hint
         }</div>
-        <div data-option="${key}" data-type="mimeTypes">
+        <div data-option="${key}" data-category="${categoryKey}" data-type="mimeTypes">
     `;
 
     for (const [group, mimes] of Object.entries(allMimeTypes)) {
@@ -3182,7 +3240,11 @@ export default class ConfigBuilder {
 
           toggle.classList.toggle("active");
           const optionKey = toggle.dataset.option;
-          this.config[optionKey] = toggle.classList.contains("active");
+          const categoryKey = toggle.dataset.category;
+          const newValue = toggle.classList.contains("active");
+
+          // Set value in grouped config structure
+          this.setConfigValue(categoryKey, optionKey, newValue);
 
           // Update dependent options visibility
           this.updateDependentOptions(optionKey);
@@ -3196,7 +3258,9 @@ export default class ConfigBuilder {
       .querySelectorAll('.fu-config-builder-input[data-type="text"]')
       .forEach((input) => {
         input.addEventListener("input", () => {
-          this.config[input.dataset.option] = input.value;
+          const optionKey = input.dataset.option;
+          const categoryKey = input.dataset.category;
+          this.setConfigValue(categoryKey, optionKey, input.value);
           this.onConfigChange();
         });
       });
@@ -3206,7 +3270,9 @@ export default class ConfigBuilder {
       .querySelectorAll('.fu-config-builder-input[data-type="number"]')
       .forEach((input) => {
         input.addEventListener("input", () => {
-          this.config[input.dataset.option] = parseInt(input.value) || 0;
+          const optionKey = input.dataset.option;
+          const categoryKey = input.dataset.category;
+          this.setConfigValue(categoryKey, optionKey, parseInt(input.value) || 0);
           this.onConfigChange();
         });
       });
@@ -3275,6 +3341,7 @@ export default class ConfigBuilder {
       )
       .forEach((container) => {
         const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
         const slider = container.querySelector(
           ".fu-config-builder-slider-input"
         );
@@ -3331,13 +3398,13 @@ export default class ConfigBuilder {
           slider.value = value;
           valueInput.value = value;
 
-          // Update config (convert to bytes)
+          // Update config (convert to bytes) - use grouped structure
           const bytes = this.unitToBytes(value, unit);
-          this.config[optionKey] = bytes;
+          this.setConfigValue(categoryKey, optionKey, bytes);
 
           // Also set display value
           const displayKey = optionKey + "Display";
-          this.config[displayKey] = value + " " + unit;
+          this.setConfigValue(categoryKey, displayKey, value + " " + unit);
 
           this.onConfigChange();
         };
@@ -3345,7 +3412,7 @@ export default class ConfigBuilder {
         // Unit dropdown change
         unitDropdown.addEventListener("change", () => {
           const newUnit = unitDropdown.value;
-          const currentBytes = this.config[optionKey];
+          const currentBytes = this.getConfigValue(categoryKey, optionKey, 0);
           const newValue = this.bytesToUnit(currentBytes, newUnit);
 
           updateSliderRange(newUnit);
@@ -3398,6 +3465,7 @@ export default class ConfigBuilder {
       )
       .forEach((container) => {
         const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
         const slider = container.querySelector(
           ".fu-config-builder-slider-input"
         );
@@ -3419,7 +3487,7 @@ export default class ConfigBuilder {
 
           slider.value = value;
           valueInput.value = value;
-          this.config[optionKey] = value;
+          this.setConfigValue(categoryKey, optionKey, value);
           this.onConfigChange();
         };
 
@@ -3449,7 +3517,9 @@ export default class ConfigBuilder {
       .querySelectorAll('.fu-config-builder-select[data-type="select"]')
       .forEach((select) => {
         select.addEventListener("change", () => {
-          this.config[select.dataset.option] = select.value;
+          const optionKey = select.dataset.option;
+          const categoryKey = select.dataset.category;
+          this.setConfigValue(categoryKey, optionKey, select.value);
           this.onConfigChange();
         });
       });
@@ -3458,6 +3528,7 @@ export default class ConfigBuilder {
     this.element
       .querySelectorAll('.fu-config-builder-button-size-selector')
       .forEach((container) => {
+        const categoryKey = container.dataset.category;
         container.querySelectorAll('.fu-config-builder-size-option').forEach((option) => {
           option.addEventListener("click", () => {
             // Check if button sample is disabled (for button size)
@@ -3472,7 +3543,7 @@ export default class ConfigBuilder {
             const sizeValue = option.dataset.size;
 
             // Update config
-            this.config[optionKey] = sizeValue;
+            this.setConfigValue(categoryKey, optionKey, sizeValue);
 
             // Update UI - remove selected from all options in this container
             container.querySelectorAll('.fu-config-builder-size-option').forEach((opt) => {
@@ -3492,6 +3563,7 @@ export default class ConfigBuilder {
       .querySelectorAll('[data-type="selectWithInput"]')
       .forEach((container) => {
         const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
         const formatType = container.dataset.formatType;
         const presetSelect = container.querySelector('[data-role="preset"]');
         const customValueInput = container.querySelector(
@@ -3564,17 +3636,17 @@ export default class ConfigBuilder {
             }
             // Update config with custom value
             const unit = customUnitSelect ? customUnitSelect.value : "";
-            this.config[optionKey] = convertToBaseUnit(
+            this.setConfigValue(categoryKey, optionKey, convertToBaseUnit(
               customValueInput.value,
               unit
-            );
+            ));
           } else {
             // Disable custom inputs and reset them
             setCustomInputsEnabled(false);
             resetCustomInputs();
             // Handle null value
-            this.config[optionKey] =
-              selectedValue === "null" ? null : parseFloat(selectedValue);
+            this.setConfigValue(categoryKey, optionKey,
+              selectedValue === "null" ? null : parseFloat(selectedValue));
           }
           this.onConfigChange();
         });
@@ -3583,10 +3655,10 @@ export default class ConfigBuilder {
         if (customValueInput) {
           customValueInput.addEventListener("input", () => {
             const unit = customUnitSelect ? customUnitSelect.value : "";
-            this.config[optionKey] = convertToBaseUnit(
+            this.setConfigValue(categoryKey, optionKey, convertToBaseUnit(
               customValueInput.value,
               unit
-            );
+            ));
             this.onConfigChange();
           });
         }
@@ -3594,10 +3666,10 @@ export default class ConfigBuilder {
         // Handle custom unit change
         if (customUnitSelect) {
           customUnitSelect.addEventListener("change", () => {
-            this.config[optionKey] = convertToBaseUnit(
+            this.setConfigValue(categoryKey, optionKey, convertToBaseUnit(
               customValueInput.value,
               customUnitSelect.value
-            );
+            ));
             this.onConfigChange();
           });
         }
@@ -3607,6 +3679,8 @@ export default class ConfigBuilder {
     this.element
       .querySelectorAll('.fu-config-builder-tags[data-type="multiSelect"]')
       .forEach((container) => {
+        const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
         container.querySelectorAll(".fu-config-builder-tag").forEach((tag) => {
           tag.addEventListener("click", () => {
             // Don't allow clicking on disabled tags
@@ -3617,7 +3691,7 @@ export default class ConfigBuilder {
             const selected = Array.from(
               container.querySelectorAll(".fu-config-builder-tag.selected")
             ).map((t) => t.dataset.value);
-            this.config[container.dataset.option] = selected;
+            this.setConfigValue(categoryKey, optionKey, selected);
             this.onConfigChange();
           });
         });
@@ -3704,17 +3778,18 @@ export default class ConfigBuilder {
       .querySelectorAll('[data-type="keyValue"]')
       .forEach((container) => {
         const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
 
         // Add entry button
         const addBtn = container.querySelector(".fu-config-builder-keyvalue-add");
         if (addBtn) {
           addBtn.addEventListener("click", () => {
-            this.addKeyValueRow(container, optionKey);
+            this.addKeyValueRow(container, optionKey, categoryKey);
           });
         }
 
         // Setup existing rows
-        this.setupKeyValueRowEvents(container, optionKey);
+        this.setupKeyValueRowEvents(container, optionKey, categoryKey);
       });
 
     // Type size slider inputs with unit dropdown
@@ -3722,6 +3797,7 @@ export default class ConfigBuilder {
       .querySelectorAll('[data-type="typeSizeSlider"]')
       .forEach((container) => {
         const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
 
         container
           .querySelectorAll(".fu-config-builder-type-slider-block")
@@ -3780,32 +3856,35 @@ export default class ConfigBuilder {
               slider.value = value;
               valueInput.value = value || "";
 
-              // Initialize objects if needed
-              if (!this.config[optionKey]) {
-                this.config[optionKey] = {};
-              }
+              // Get current values using grouped structure
+              let currentValues = this.getConfigValue(categoryKey, optionKey, {});
+              if (typeof currentValues !== 'object') currentValues = {};
 
               // Get the corresponding display key
               const displayKey = optionKey + "Display";
-              if (!this.config[displayKey]) {
-                this.config[displayKey] = {};
-              }
+              let displayValues = this.getConfigValue(categoryKey, displayKey, {});
+              if (typeof displayValues !== 'object') displayValues = {};
 
               if (value > 0) {
                 const bytes = this.unitToBytes(value, unit);
-                this.config[optionKey][typeKey] = bytes;
-                this.config[displayKey][typeKey] = value + " " + unit;
+                currentValues[typeKey] = bytes;
+                displayValues[typeKey] = value + " " + unit;
               } else {
-                delete this.config[optionKey][typeKey];
-                delete this.config[displayKey][typeKey];
+                delete currentValues[typeKey];
+                delete displayValues[typeKey];
               }
+
+              // Set updated values
+              this.setConfigValue(categoryKey, optionKey, currentValues);
+              this.setConfigValue(categoryKey, displayKey, displayValues);
               this.onConfigChange();
             };
 
             // Unit dropdown change
             unitDropdown.addEventListener("change", () => {
               const newUnit = unitDropdown.value;
-              const currentBytes = this.config[optionKey]?.[typeKey] || 0;
+              const currentValues = this.getConfigValue(categoryKey, optionKey, {});
+              const currentBytes = currentValues[typeKey] || 0;
               const newValue =
                 currentBytes > 0 ? this.bytesToUnit(currentBytes, newUnit) : 0;
 
@@ -3861,6 +3940,7 @@ export default class ConfigBuilder {
       .querySelectorAll('[data-type="typeCountSlider"]')
       .forEach((container) => {
         const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
 
         container
           .querySelectorAll(".fu-config-builder-type-slider-block")
@@ -3883,15 +3963,17 @@ export default class ConfigBuilder {
               slider.value = value;
               valueInput.value = value || "";
 
-              if (!this.config[optionKey]) {
-                this.config[optionKey] = {};
-              }
+              // Get current values using grouped structure
+              let currentValues = this.getConfigValue(categoryKey, optionKey, {});
+              if (typeof currentValues !== 'object') currentValues = {};
 
               if (value > 0) {
-                this.config[optionKey][typeKey] = value;
+                currentValues[typeKey] = value;
               } else {
-                delete this.config[optionKey][typeKey];
+                delete currentValues[typeKey];
               }
+
+              this.setConfigValue(categoryKey, optionKey, currentValues);
               this.onConfigChange();
             };
 
@@ -4054,7 +4136,9 @@ export default class ConfigBuilder {
     const selected = Array.from(
       container.querySelectorAll(".fu-config-builder-ext.selected")
     ).map((e) => e.dataset.ext);
-    this.config[container.dataset.option] = selected;
+    const optionKey = container.dataset.option;
+    const categoryKey = container.dataset.category;
+    this.setConfigValue(categoryKey, optionKey, selected);
     this.onConfigChange();
   }
 
@@ -4065,14 +4149,16 @@ export default class ConfigBuilder {
     const selected = Array.from(
       container.querySelectorAll(".fu-config-builder-mime.selected")
     ).map((m) => m.dataset.mime);
-    this.config[container.dataset.option] = selected;
+    const optionKey = container.dataset.option;
+    const categoryKey = container.dataset.category;
+    this.setConfigValue(categoryKey, optionKey, selected);
     this.onConfigChange();
   }
 
   /**
    * Add a new key-value row to the container
    */
-  addKeyValueRow(container, optionKey) {
+  addKeyValueRow(container, optionKey, categoryKey = "") {
     const rowsContainer = container.querySelector(".fu-config-builder-keyvalue-rows");
     const trashIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>`;
 
@@ -4085,14 +4171,14 @@ export default class ConfigBuilder {
     `;
 
     rowsContainer.appendChild(row);
-    this.setupKeyValueRowEvents(container, optionKey);
+    this.setupKeyValueRowEvents(container, optionKey, categoryKey);
     row.querySelector(".fu-config-builder-keyvalue-key").focus();
   }
 
   /**
    * Setup event listeners for key-value rows
    */
-  setupKeyValueRowEvents(container, optionKey) {
+  setupKeyValueRowEvents(container, optionKey, categoryKey = "") {
     const rows = container.querySelectorAll(".fu-config-builder-keyvalue-row");
 
     rows.forEach((row) => {
@@ -4111,16 +4197,16 @@ export default class ConfigBuilder {
 
       // Add new listeners
       newKeyInput.addEventListener("input", () => {
-        this.updateKeyValueFromUI(container, optionKey);
+        this.updateKeyValueFromUI(container, optionKey, categoryKey);
       });
 
       newValueInput.addEventListener("input", () => {
-        this.updateKeyValueFromUI(container, optionKey);
+        this.updateKeyValueFromUI(container, optionKey, categoryKey);
       });
 
       newRemoveBtn.addEventListener("click", () => {
         row.remove();
-        this.updateKeyValueFromUI(container, optionKey);
+        this.updateKeyValueFromUI(container, optionKey, categoryKey);
       });
     });
   }
@@ -4128,7 +4214,7 @@ export default class ConfigBuilder {
   /**
    * Update key-value config from UI
    */
-  updateKeyValueFromUI(container, optionKey) {
+  updateKeyValueFromUI(container, optionKey, categoryKey = "") {
     const rows = container.querySelectorAll(".fu-config-builder-keyvalue-row");
     const result = {};
 
@@ -4141,7 +4227,7 @@ export default class ConfigBuilder {
       }
     });
 
-    this.config[optionKey] = result;
+    this.setConfigValue(categoryKey, optionKey, result);
     this.onConfigChange();
   }
 
@@ -6921,30 +7007,14 @@ export default class ConfigBuilder {
     const defaults = this.getDefaultConfig();
     const changedConfig = {};
 
-    // Server-relevant keys for PHP config
+    // Server-relevant keys for PHP config - use PHP_RELEVANT_KEYS from Constants
+    // Also include Display variants for size values
     const serverRelevantKeys = [
-      // File type validation
-      "allowedExtensions",
-      "allowedMimeTypes",
-      // File type category extensions (for per-type validation)
-      "imageExtensions",
-      "videoExtensions",
-      "audioExtensions",
-      "documentExtensions",
-      "archiveExtensions",
-      // Size limits
-      "perFileMaxSize",
+      ...PHP_RELEVANT_KEYS,
       "perFileMaxSizeDisplay",
-      "perFileMaxSizePerType",
       "perFileMaxSizePerTypeDisplay",
-      "perTypeMaxTotalSize",
       "perTypeMaxTotalSizeDisplay",
-      "perTypeMaxFileCount",
-      "totalMaxSize",
       "totalMaxSizeDisplay",
-      "maxFiles",
-      // Upload directory
-      "uploadDir",
     ];
 
     // Keys that are ConfigBuilder-only (not FileUploader options)
@@ -6982,6 +7052,37 @@ export default class ConfigBuilder {
     }
 
     return changedConfig;
+  }
+
+  /**
+   * Get all PHP-relevant config values (not just changed ones)
+   * For PHP config, we want to show all server-relevant options with their current values
+   * @param {Object} config - Current config object (nested structure with groups)
+   * @returns {Object} - Object with all PHP-relevant keys and their values (flat)
+   */
+  getPhpConfig(config) {
+    const phpConfig = {};
+
+    // Get all PHP-relevant keys from the config
+    // Config is nested: config.groupName.optionKey
+    // Exception: theme is a top-level string
+    for (const key of PHP_RELEVANT_KEYS) {
+      // Special case: theme is top-level
+      if (key === "theme") {
+        if (config.theme !== undefined) {
+          phpConfig.theme = config.theme;
+        }
+        continue;
+      }
+
+      // Get the group for this key from OPTION_TO_GROUP
+      const group = OPTION_TO_GROUP[key];
+      if (group && config[group] && config[group][key] !== undefined) {
+        phpConfig[key] = config[group][key];
+      }
+    }
+
+    return phpConfig;
   }
 
   /**
@@ -7121,6 +7222,8 @@ export default class ConfigBuilder {
 
   /**
    * Generate PHP configuration code for ALL uploaders (grouped format)
+   * Uses this.phpConfig as the base (initial values from PHP)
+   * and merges any UI changes from each uploader's config
    */
   generatePhpCode() {
     // Make sure active uploader's config is saved
@@ -7137,8 +7240,10 @@ export default class ConfigBuilder {
 
     uploaders.forEach(([id, data], uploaderIndex) => {
       const isActive = id === this.activeUploaderId;
-      const changedConfig = this.getChangedConfig(data.config, true); // server-only
-      const groupedConfig = this.groupChangedConfig(changedConfig);
+
+      // Start with PHP config as base, then merge UI changes
+      const mergedPhpConfig = this.getMergedPhpConfig(data.config);
+      const groupedConfig = this.groupChangedConfig(mergedPhpConfig);
 
       // Generate key name from uploader name
       const keyName =
@@ -7152,13 +7257,55 @@ export default class ConfigBuilder {
       code += `    // ${data.name}${marker}\n`;
       code += `    '${keyName}' => [\n`;
 
+      // Keys that should be output as top-level (not nested in groups)
+      const topLevelKeys = ["theme", "uniqueFilenames", "uploadDir"];
+      const topLevelEntries = [];
+
+      // Extract top-level keys from grouped config
+      for (const key of topLevelKeys) {
+        const group = OPTION_TO_GROUP[key];
+        if (groupedConfig[group] && groupedConfig[group][key] !== undefined) {
+          topLevelEntries.push({ key, value: groupedConfig[group][key] });
+          // Remove from grouped config to avoid duplication
+          delete groupedConfig[group][key];
+          // If group is now empty, remove it
+          if (Object.keys(groupedConfig[group]).length === 0) {
+            delete groupedConfig[group];
+          }
+        }
+      }
+
       // PHP only needs specific groups - use PHP_RELEVANT_GROUPS from Constants
       const groupKeys = PHP_RELEVANT_GROUPS.filter((g) => groupedConfig[g]);
 
-      if (groupKeys.length === 0) {
-        // No server-relevant options changed
+      const hasTopLevel = topLevelEntries.length > 0;
+      const hasGroups = groupKeys.length > 0;
+
+      if (!hasTopLevel && !hasGroups) {
+        // No server-relevant options
         code += `        // Using defaults\n`;
       } else {
+        // Output top-level keys first
+        if (hasTopLevel) {
+          topLevelEntries.forEach(({ key, value }, index) => {
+            const isLast = index === topLevelEntries.length - 1 && !hasGroups;
+            const phpValue = this.jsValueToPhp(value, key, false);
+            const comma = isLast ? "" : ",";
+            // Add comment for specific keys
+            let comment = "";
+            if (key === "theme") comment = " // Theme";
+            if (key === "uniqueFilenames") comment = " // Generate unique filenames";
+            if (key === "uploadDir") comment = " // Upload directory";
+            code += `        '${key}' => ${phpValue}${comma}${comment}\n`;
+          });
+
+          // Add spacing before groups
+          if (hasGroups) {
+            code += "\n";
+          }
+        }
+
+        // Output grouped options
         groupKeys.forEach((groupKey, groupIndex) => {
           const groupOptions = groupedConfig[groupKey];
           const groupTitle = PHP_GROUP_TITLES[groupKey] || groupKey;
@@ -7202,6 +7349,37 @@ export default class ConfigBuilder {
     code += `];\n`;
 
     return code;
+  }
+
+  /**
+   * Get merged PHP config - starts with this.phpConfig (from server)
+   * and merges any UI changes from the uploader's config
+   * @param {Object} uploaderConfig - The uploader's current config (nested structure)
+   * @returns {Object} - Flat object with all PHP-relevant keys
+   */
+  getMergedPhpConfig(uploaderConfig) {
+    // Start with a copy of the raw PHP config from server
+    const merged = { ...(this.phpConfig || {}) };
+
+    // Now overlay any UI changes from the uploader's config
+    // Only override if the value was actually changed in the UI
+    for (const key of PHP_RELEVANT_KEYS) {
+      // Special case: theme is top-level in uploaderConfig
+      if (key === "theme") {
+        if (uploaderConfig.theme !== undefined) {
+          merged.theme = uploaderConfig.theme;
+        }
+        continue;
+      }
+
+      // Get the group for this key
+      const group = OPTION_TO_GROUP[key];
+      if (group && uploaderConfig[group] && uploaderConfig[group][key] !== undefined) {
+        merged[key] = uploaderConfig[group][key];
+      }
+    }
+
+    return merged;
   }
 
   /**
