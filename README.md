@@ -128,6 +128,11 @@ const uploader = new FileUploader("#element", {
   multiple: true,
   autoFetchConfig: true, // Fetch config from server
 
+  // Pre-load existing files (for edit forms)
+  existingFiles: [
+    { name: "photo.jpg", url: "/uploads/photo.jpg", meta: { dbId: 123 } }
+  ],
+
   // Callbacks
   onUploadStart: (fileObj) => {},
   onUploadSuccess: (fileObj, result) => {},
@@ -184,9 +189,127 @@ const filesData = uploader.getUploadedFilesData();
 //     size: 54321,
 //     type: 'application/pdf',
 //     extension: 'pdf',
-//     url: 'uploads/abc123_1234567890.pdf'
+//     url: 'uploads/abc123_1234567890.pdf',
+//     isExisting: false
 //   }
 // ]
+```
+
+### loadExistingFiles(files)
+
+Load pre-uploaded/existing files into the uploader. Use this when editing a record to display files that are already stored on the server.
+
+```javascript
+uploader.loadExistingFiles([
+  {
+    name: "photo.jpg",                        // Required: Original filename
+    url: "/uploads/2024/photo_abc123.jpg",    // Required: URL to the file
+    size: 1024000,                            // Optional: File size in bytes
+    type: "image/jpeg",                       // Optional: MIME type (guessed from extension if not provided)
+    serverFilename: "photo_abc123.jpg",       // Optional: Server-side filename
+    meta: { dbId: 101 }                       // Optional: Custom data (returned in getFilesSummary)
+  },
+  {
+    name: "document.pdf",
+    url: "/uploads/2024/doc_xyz789.pdf",
+    size: 2048000,
+    serverFilename: "doc_xyz789.pdf",
+    meta: { dbId: 102, category: "invoice" }
+  },
+  {
+    name: "video.mp4",
+    url: "/uploads/2024/video_def456.mp4",
+    thumbnailUrl: "/uploads/2024/video_thumb.jpg",  // Optional: Thumbnail for videos
+    duration: 120,                                   // Optional: Duration in seconds
+    size: 5000000,
+    meta: { dbId: 103 }
+  }
+]);
+```
+
+**Data Structure for Existing Files:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | string | Yes | Original filename |
+| `url` | string | Yes | URL to the file (for preview and download) |
+| `size` | number | No | File size in bytes |
+| `type` | string | No | MIME type (auto-guessed from extension if not provided) |
+| `serverFilename` | string | No | Server-side filename (defaults to `name`) |
+| `id` | string | No | Unique ID (auto-generated if not provided) |
+| `thumbnailUrl` | string | No | Thumbnail URL for video files |
+| `duration` | number | No | Duration in seconds for audio/video files |
+| `serverData` | object | No | Additional server data to store |
+| `meta` | object | No | Custom metadata (e.g., database ID) - returned in `getFilesSummary()` |
+
+### getNewFiles()
+
+Returns only newly uploaded files (excluding pre-existing files loaded via `loadExistingFiles`).
+
+```javascript
+const newFiles = uploader.getNewFiles();
+```
+
+### getExistingFiles()
+
+Returns only pre-existing files that were loaded via `loadExistingFiles`.
+
+```javascript
+const existingFiles = uploader.getExistingFiles();
+```
+
+### getFilesSummary()
+
+Returns a structured summary for form submission with clear separation between new, existing, and deleted files.
+
+```javascript
+const summary = uploader.getFilesSummary();
+// Returns:
+// {
+//   newFiles: [
+//     { originalName: 'new_photo.jpg', serverFilename: 'abc123.jpg', size: 1024, ... }
+//   ],
+//   existingFiles: [
+//     { originalName: 'old_photo.jpg', serverFilename: 'xyz789.jpg', size: 2048, meta: { dbId: 101 }, ... }
+//   ],
+//   deletedExistingFiles: [
+//     { id: '...', name: 'removed.pdf', serverFilename: 'removed_123.pdf', url: '/uploads/...', meta: { dbId: 102 } }
+//   ]
+// }
+```
+
+**Use Case - Edit Form:**
+
+```javascript
+// 1. Initialize uploader
+const uploader = new FileUploader('#uploader');
+
+// 2. Load existing files from your database/API
+const existingFiles = await fetch('/api/record/123/files').then(r => r.json());
+uploader.loadExistingFiles(existingFiles);
+
+// 3. User can now:
+//    - View existing files
+//    - Delete existing files (tracked in deletedExistingFiles)
+//    - Upload new files
+
+// 4. On form submit, get the summary
+document.querySelector('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  uploader.disableCleanup(); // Prevent auto-cleanup
+
+  const filesSummary = uploader.getFilesSummary();
+
+  await fetch('/api/record/123/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      // Your form data...
+      files: filesSummary
+    })
+  });
+});
 ```
 
 ### clear()
@@ -203,6 +326,73 @@ Removes the uploader from the DOM.
 
 ```javascript
 uploader.destroy();
+```
+
+### disableCleanup()
+
+Disables automatic file cleanup on page unload and destroy. **Call this before form submission** to prevent uploaded files from being deleted when the page navigates away.
+
+```javascript
+// Before submitting form
+document.querySelector('form').addEventListener('submit', function(e) {
+  uploader.disableCleanup();
+});
+```
+
+### enableCleanup()
+
+Re-enables automatic file cleanup on page unload and destroy.
+
+```javascript
+uploader.enableCleanup();
+```
+
+### setBehavior(optionName, value)
+
+Set a behavior option at runtime. Useful for dynamically changing uploader behavior.
+
+```javascript
+// Disable specific cleanup options
+uploader.setBehavior('cleanupOnUnload', false);
+uploader.setBehavior('cleanupOnDestroy', false);
+
+// Enable/disable other behavior options
+uploader.setBehavior('preventDuplicates', true);
+uploader.setBehavior('multiple', false);
+```
+
+**Available behavior options:**
+- `multiple` - Allow multiple file uploads
+- `autoUpload` - Automatically upload files when added
+- `autoFetchConfig` - Fetch config from server on init
+- `preventDuplicates` - Prevent duplicate file uploads
+- `duplicateCheckBy` - How to check duplicates: "name", "size", or "name-size"
+- `cleanupOnUnload` - Delete files when page unloads
+- `cleanupOnDestroy` - Delete files when uploader is destroyed
+
+### getBehavior(optionName)
+
+Get the current value of a behavior option.
+
+```javascript
+const allowsMultiple = uploader.getBehavior('multiple');
+const preventsDuplicates = uploader.getBehavior('preventDuplicates');
+```
+
+### setTheme(theme)
+
+Set the uploader theme.
+
+```javascript
+uploader.setTheme('dark');  // 'auto', 'light', or 'dark'
+```
+
+### getTheme()
+
+Get the current theme.
+
+```javascript
+const currentTheme = uploader.getTheme();
 ```
 
 ## Build System

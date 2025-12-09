@@ -80,6 +80,7 @@ export default class FileUploader {
     // Initialize state
     this.files = [];
     this.selectedFiles = new Set();
+    this.deletedExistingFiles = []; // Track deleted existing files for form submission
     this.limitsViewMode = this.options.limitsDisplay.defaultLimitsView || "concise";
     this.limitsVisible = this.options.limitsDisplay.defaultLimitsVisible !== false;
     this.draggedFileObj = null;
@@ -151,6 +152,11 @@ export default class FileUploader {
 
     // Initialize carousel
     this.carouselManager.init();
+
+    // Load existing files if provided in options
+    if (this.options.existingFiles && Array.isArray(this.options.existingFiles) && this.options.existingFiles.length > 0) {
+      this.loadExistingFiles(this.options.existingFiles);
+    }
   }
 
   /**
@@ -161,7 +167,33 @@ export default class FileUploader {
       const response = await fetch(this.options.urls.configUrl);
       const config = await response.json();
 
-      // Merge config into grouped options structure
+      // Merge grouped config structure (e.g., config.limits.maxFiles)
+      if (config.urls) {
+        Object.assign(this.options.urls, config.urls);
+      }
+      if (config.limits) {
+        Object.assign(this.options.limits, config.limits);
+      }
+      if (config.perTypeLimits) {
+        Object.assign(this.options.perTypeLimits, config.perTypeLimits);
+      }
+      if (config.fileTypes) {
+        Object.assign(this.options.fileTypes, config.fileTypes);
+      }
+      if (config.behavior) {
+        Object.assign(this.options.behavior, config.behavior);
+      }
+      if (config.carousel) {
+        Object.assign(this.options.carousel, config.carousel);
+      }
+      if (config.theme !== undefined) {
+        this.options.theme = config.theme;
+      }
+      if (config.existingFiles !== undefined) {
+        this.options.existingFiles = config.existingFiles;
+      }
+
+      // Also support flat config structure for backwards compatibility
       if (config.perFileMaxSize !== undefined) {
         this.options.limits.perFileMaxSize = config.perFileMaxSize;
       }
@@ -204,6 +236,11 @@ export default class FileUploader {
 
       // Auto-generate Display properties from byte values
       this.generateDisplayProperties();
+
+      // Trigger callback if provided
+      if (typeof this.options.callbacks.onConfigFetched === "function") {
+        this.options.callbacks.onConfigFetched(config);
+      }
     } catch (error) {
       console.warn(
         "FileUploader: Could not fetch config from server, using default options"
@@ -548,7 +585,201 @@ export default class FileUploader {
         type: f.type,
         extension: f.extension,
         url: f.serverData?.url || `uploads/${f.serverFilename}`,
+        isExisting: f.isExisting || false,
       }));
+  }
+
+  /**
+   * Load existing/pre-uploaded files into the uploader
+   * Use this to display files that are already stored on the server (e.g., when editing)
+   *
+   * @param {Array<Object>} existingFiles - Array of existing file objects
+   * @param {string} existingFiles[].name - Original filename (required)
+   * @param {string} existingFiles[].url - URL to the file (required for preview)
+   * @param {number} [existingFiles[].size] - File size in bytes (optional)
+   * @param {string} [existingFiles[].type] - MIME type (optional, will be guessed from extension)
+   * @param {string} [existingFiles[].serverFilename] - Server-side filename (optional, defaults to name)
+   * @param {string} [existingFiles[].id] - Unique ID for the file (optional, will be auto-generated)
+   * @param {string} [existingFiles[].thumbnailUrl] - Thumbnail URL for video files (optional)
+   * @param {number} [existingFiles[].duration] - Duration in seconds for audio/video (optional)
+   * @param {Object} [existingFiles[].serverData] - Additional server data (optional)
+   * @param {Object} [existingFiles[].meta] - Custom metadata (e.g., database ID, record info) - returned in getFilesSummary()
+   *
+   * @example
+   * // Load existing files when editing a record
+   * uploader.loadExistingFiles([
+   *   {
+   *     name: "photo.jpg",
+   *     url: "/uploads/2024/photo_abc123.jpg",
+   *     size: 1024000,
+   *     type: "image/jpeg",
+   *     serverFilename: "photo_abc123.jpg",
+   *     meta: { dbId: 123, recordId: 456 }  // Custom data returned in getFilesSummary()
+   *   },
+   *   {
+   *     name: "document.pdf",
+   *     url: "/uploads/2024/doc_xyz789.pdf",
+   *     size: 2048000,
+   *     serverFilename: "doc_xyz789.pdf",
+   *     meta: { dbId: 124 }
+   *   },
+   *   {
+   *     name: "video.mp4",
+   *     url: "/uploads/2024/video_def456.mp4",
+   *     thumbnailUrl: "/uploads/2024/video_def456_thumb.jpg",
+   *     duration: 120,
+   *     size: 5000000
+   *   }
+   * ]);
+   *
+   * @returns {Array} Array of created file objects
+   */
+  loadExistingFiles(existingFiles) {
+    if (!Array.isArray(existingFiles) || existingFiles.length === 0) {
+      return [];
+    }
+
+    const createdFiles = [];
+
+    existingFiles.forEach((fileData) => {
+      // Validate required fields
+      if (!fileData.name || !fileData.url) {
+        console.warn("FileUploader: Skipping existing file - name and url are required", fileData);
+        return;
+      }
+
+      const extension = fileData.name.split(".").pop().toLowerCase();
+
+      // Guess MIME type from extension if not provided
+      const mimeType = fileData.type || this.guessMimeType(extension);
+
+      const fileObj = {
+        id: fileData.id || Date.now() + Math.random().toString(36).slice(2, 11),
+        file: null, // No File object for existing files
+        name: fileData.name,
+        size: parseInt(fileData.size, 10) || 0,
+        type: mimeType,
+        extension: extension,
+        uploaded: true, // Already uploaded
+        uploading: false,
+        serverFilename: fileData.serverFilename || fileData.name,
+        serverData: {
+          url: fileData.url,
+          thumbnailUrl: fileData.thumbnailUrl || null,
+          duration: fileData.duration || null,
+          ...fileData.serverData,
+        },
+        isExisting: true, // Mark as existing (not newly uploaded)
+        url: fileData.url, // Direct URL access
+        meta: fileData.meta || null, // Custom metadata (e.g., database ID, record info)
+      };
+
+      this.files.push(fileObj);
+      this.previewManager.createExistingFilePreview(fileObj);
+      createdFiles.push(fileObj);
+    });
+
+    // Update limits display if available
+    if (this.limitsManager) {
+      this.limitsManager.updateDisplay();
+    }
+
+    return createdFiles;
+  }
+
+  /**
+   * Get only newly uploaded files (excluding pre-existing files)
+   * @returns {Array} Array of new file objects
+   */
+  getNewFiles() {
+    return this.files.filter((f) => f.uploaded && !f.isExisting);
+  }
+
+  /**
+   * Get only pre-existing files (loaded via loadExistingFiles)
+   * @returns {Array} Array of existing file objects
+   */
+  getExistingFiles() {
+    return this.files.filter((f) => f.isExisting);
+  }
+
+  /**
+   * Get files summary for form submission
+   * Returns data structured for typical form submissions with clear separation
+   * @returns {Object} Object with newFiles, existingFiles, and deletedExistingFiles arrays
+   */
+  getFilesSummary() {
+    return {
+      newFiles: this.getNewFiles().map((f) => ({
+        originalName: f.name,
+        serverFilename: f.serverFilename,
+        size: f.size,
+        type: f.type,
+        extension: f.extension,
+        url: f.serverData?.url || `uploads/${f.serverFilename}`,
+      })),
+      existingFiles: this.getExistingFiles().map((f) => ({
+        originalName: f.name,
+        serverFilename: f.serverFilename,
+        size: f.size,
+        type: f.type,
+        extension: f.extension,
+        url: f.url || f.serverData?.url,
+        meta: f.meta || null,
+      })),
+      deletedExistingFiles: this.deletedExistingFiles || [],
+    };
+  }
+
+  /**
+   * Guess MIME type from file extension
+   * @param {string} extension - File extension (without dot)
+   * @returns {string} Guessed MIME type
+   */
+  guessMimeType(extension) {
+    const mimeTypes = {
+      // Images
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+      bmp: "image/bmp",
+      ico: "image/x-icon",
+      // Videos
+      mp4: "video/mp4",
+      webm: "video/webm",
+      mov: "video/quicktime",
+      avi: "video/x-msvideo",
+      mkv: "video/x-matroska",
+      mpeg: "video/mpeg",
+      // Audio
+      mp3: "audio/mpeg",
+      wav: "audio/wav",
+      ogg: "audio/ogg",
+      aac: "audio/aac",
+      m4a: "audio/mp4",
+      flac: "audio/flac",
+      // Documents
+      pdf: "application/pdf",
+      doc: "application/msword",
+      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      xls: "application/vnd.ms-excel",
+      xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ppt: "application/vnd.ms-powerpoint",
+      pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      txt: "text/plain",
+      csv: "text/csv",
+      // Archives
+      zip: "application/zip",
+      rar: "application/x-rar-compressed",
+      "7z": "application/x-7z-compressed",
+      tar: "application/x-tar",
+      gz: "application/gzip",
+    };
+
+    return mimeTypes[extension.toLowerCase()] || "application/octet-stream";
   }
 
   /**
@@ -621,6 +852,46 @@ export default class FileUploader {
    */
   getTheme() {
     return this.options.theme.theme || "auto";
+  }
+
+  /**
+   * Set a behavior option at runtime
+   * Useful for disabling cleanup before form submission
+   * @param {string} optionName - The behavior option name (e.g., "cleanupOnUnload", "cleanupOnDestroy")
+   * @param {any} value - The value to set
+   */
+  setBehavior(optionName, value) {
+    if (this.options.behavior.hasOwnProperty(optionName)) {
+      this.options.behavior[optionName] = value;
+    } else {
+      console.warn(`FileUploader: Unknown behavior option "${optionName}"`);
+    }
+  }
+
+  /**
+   * Get a behavior option value
+   * @param {string} optionName - The behavior option name
+   * @returns {any} The option value
+   */
+  getBehavior(optionName) {
+    return this.options.behavior[optionName];
+  }
+
+  /**
+   * Disable cleanup on page unload and destroy
+   * Call this before form submission to prevent files from being deleted
+   */
+  disableCleanup() {
+    this.options.behavior.cleanupOnUnload = false;
+    this.options.behavior.cleanupOnDestroy = false;
+  }
+
+  /**
+   * Enable cleanup on page unload and destroy
+   */
+  enableCleanup() {
+    this.options.behavior.cleanupOnUnload = true;
+    this.options.behavior.cleanupOnDestroy = true;
   }
 
   // ============================================================

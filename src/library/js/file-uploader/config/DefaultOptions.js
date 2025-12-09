@@ -107,6 +107,12 @@ export const DEFAULT_OPTIONS = {
   },
 
   // ============================================================================
+  // Existing Files
+  // Pre-load existing files on initialization (for edit forms)
+  // ============================================================================
+  existingFiles: [], // Array of existing file objects to load on init
+
+  // ============================================================================
   // Limits Display
   // Controls for limits visibility and display mode
   // ============================================================================
@@ -235,6 +241,11 @@ export const DEFAULT_OPTIONS = {
     onDeleteSuccess: null,
     onDeleteError: null,
     onDuplicateFile: null,
+    /**
+     * Called when config is successfully fetched from server
+     * @param {Object} config - The config object received from server
+     */
+    onConfigFetched: null,
     /**
      * Called before each request to allow dynamic data modification
      * @param {string} requestType - Type of request: 'upload', 'delete', 'download', 'copy', 'cleanup'
