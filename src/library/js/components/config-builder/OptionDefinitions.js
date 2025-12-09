@@ -271,6 +271,12 @@ export function getOptionDefinitions() {
           label: "Show Upload Progress",
           hint: "Show actual upload progress bar instead of spinner during file upload",
         },
+        uniqueFilenames: {
+          type: "boolean",
+          default: true,
+          label: "Unique Filenames",
+          hint: "Generate unique filenames on server to prevent overwrites (PHP-side option)",
+        },
       },
     },
 

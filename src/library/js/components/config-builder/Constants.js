@@ -48,6 +48,7 @@ export const OPTION_TO_GROUP = {
   cleanupOnUnload: "behavior",
   cleanupOnDestroy: "behavior",
   showUploadProgress: "behavior",
+  uniqueFilenames: "behavior",
   // Limits Display
   showLimits: "limitsDisplay",
   showProgressBar: "limitsDisplay",
@@ -164,6 +165,8 @@ export const PHP_GROUP_TITLES = {
   limits: "File Size Limits",
   perTypeLimits: "Per-Type Limits",
   fileTypes: "Allowed File Types & MIME Types",
+  theme: "Theme",
+  behavior: "Upload Behavior",
 };
 
 /**
@@ -242,12 +245,14 @@ export const PHP_RELEVANT_KEYS = [
   "uploadDir",
   // Theme
   "theme",
+  // Upload behavior (PHP-side)
+  "uniqueFilenames",
 ];
 
 /**
  * PHP-relevant groups (for server-side validation)
  */
-export const PHP_RELEVANT_GROUPS = ["limits", "perTypeLimits", "fileTypes", "urls", "theme"];
+export const PHP_RELEVANT_GROUPS = ["limits", "perTypeLimits", "fileTypes", "urls", "theme", "behavior"];
 
 /**
  * Group changed config options by their category

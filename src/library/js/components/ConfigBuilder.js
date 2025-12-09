@@ -343,6 +343,13 @@ export default class ConfigBuilder {
       if (this.phpConfig.theme !== undefined) {
         this.fileUploaderDefaults.theme = { theme: this.phpConfig.theme };
       }
+      // Upload behavior - uniqueFilenames
+      if (this.phpConfig.uniqueFilenames !== undefined) {
+        if (!this.fileUploaderDefaults.behavior) {
+          this.fileUploaderDefaults.behavior = {};
+        }
+        this.fileUploaderDefaults.behavior.uniqueFilenames = this.phpConfig.uniqueFilenames;
+      }
 
       console.log(
         "ConfigBuilder: fileUploaderDefaults merged with PHP config:",
@@ -5362,9 +5369,11 @@ export default class ConfigBuilder {
           const isChanged = changedKeys.includes(key);
           const marker = isChanged ? " // <- changed" : "";
           const needsComma = keyIndex < keysInGroup.length - 1;
+          // For size keys that are numbers, comma is handled inside jsValueToPhp (before the comment)
+          // For size keys that are objects, we need to add comma after the closing bracket
+          const isSizeNumber = this.isSizeKey(key) && typeof value === "number";
           const phpValue = this.jsValueToPhp(value, key, needsComma);
-          // Only add trailing comma if value doesn't include a comment (size values handle comma internally)
-          const trailingComma = (needsComma && !this.isSizeKey(key)) ? "," : "";
+          const trailingComma = (needsComma && !isSizeNumber) ? "," : "";
           code += `        '${key}' => ${phpValue}${trailingComma}${marker}\n`;
         });
 
@@ -6285,9 +6294,11 @@ export default class ConfigBuilder {
         const isChanged = changedKeys.includes(key);
         const marker = isChanged ? " // <- changed" : "";
         const needsComma = keyIndex < keysInGroup.length - 1;
+        // For size keys that are numbers, comma is handled inside jsValueToPhp (before the comment)
+        // For size keys that are objects, we need to add comma after the closing bracket
+        const isSizeNumber = this.isSizeKey(key) && typeof value === "number";
         const phpValue = this.jsValueToPhp(value, key, needsComma);
-        // Only add trailing comma if value doesn't include a comment (size values handle comma internally)
-        const trailingComma = (needsComma && !this.isSizeKey(key)) ? "," : "";
+        const trailingComma = (needsComma && !isSizeNumber) ? "," : "";
         code += `        '${key}' => ${phpValue}${trailingComma}${marker}\n`;
       });
 
@@ -7141,9 +7152,8 @@ export default class ConfigBuilder {
       code += `    // ${data.name}${marker}\n`;
       code += `    '${keyName}' => [\n`;
 
-      // PHP only needs specific groups: urls, limits, perTypeLimits, fileTypes
-      const phpGroups = ["urls", "limits", "perTypeLimits", "fileTypes"];
-      const groupKeys = phpGroups.filter((g) => groupedConfig[g]);
+      // PHP only needs specific groups - use PHP_RELEVANT_GROUPS from Constants
+      const groupKeys = PHP_RELEVANT_GROUPS.filter((g) => groupedConfig[g]);
 
       if (groupKeys.length === 0) {
         // No server-relevant options changed
@@ -7162,9 +7172,11 @@ export default class ConfigBuilder {
           entries.forEach(([key, value], index) => {
             const isLastEntry = index === entries.length - 1;
             const needsComma = !isLastEntry;
+            // For size keys that are numbers, comma is handled inside jsValueToPhp (before the comment)
+            // For size keys that are objects, we need to add comma after the closing bracket
+            const isSizeNumber = this.isSizeKey(key) && typeof value === "number";
             const phpValue = this.jsValueToPhp(value, key, needsComma);
-            // Only add trailing comma if value doesn't include a comment (size values handle comma internally)
-            const trailingComma = (needsComma && !this.isSizeKey(key)) ? "," : "";
+            const trailingComma = (needsComma && !isSizeNumber) ? "," : "";
             code += `            '${key}' => ${phpValue}${trailingComma}\n`;
           });
 
