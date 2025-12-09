@@ -273,6 +273,26 @@ export default class FileUploader {
         return;
       }
 
+      // Check for duplicates if enabled
+      if (this.options.behavior.preventDuplicates) {
+        const duplicate = this.fileValidator.checkDuplicate(file);
+        if (duplicate) {
+          // Fire the onDuplicateFile callback
+          if (this.options.callbacks.onDuplicateFile) {
+            this.options.callbacks.onDuplicateFile(file, duplicate);
+          }
+          this.showError({
+            filename: file.name,
+            error: "Duplicate file",
+            details: this.fileValidator.formatAlertDetails(
+              "Already uploaded:",
+              duplicate.name
+            ),
+          });
+          return;
+        }
+      }
+
       const fileObj = {
         id: Date.now() + Math.random().toString(36).slice(2, 11),
         file: file,
