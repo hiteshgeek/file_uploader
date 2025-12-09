@@ -240,12 +240,14 @@ export const PHP_RELEVANT_KEYS = [
   "maxFiles",
   // Upload directory
   "uploadDir",
+  // Theme
+  "theme",
 ];
 
 /**
  * PHP-relevant groups (for server-side validation)
  */
-export const PHP_RELEVANT_GROUPS = ["limits", "perTypeLimits", "fileTypes", "urls"];
+export const PHP_RELEVANT_GROUPS = ["limits", "perTypeLimits", "fileTypes", "urls", "theme"];
 
 /**
  * Group changed config options by their category

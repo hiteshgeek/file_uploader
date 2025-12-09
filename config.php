@@ -40,7 +40,7 @@ return [
     // Upload directory (relative to this file)
     'upload_dir' => __DIR__ . '/uploads/',
 
-    'theme' => 'dark',
+    'theme' => 'light',
 
     // Allowed file types (MIME types)
     'allowed_types' => [

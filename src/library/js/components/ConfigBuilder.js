@@ -339,6 +339,10 @@ export default class ConfigBuilder {
       if (this.phpConfig.archiveExtensions !== undefined) {
         this.fileUploaderDefaults.fileTypes.archiveExtensions = this.phpConfig.archiveExtensions;
       }
+      // Theme setting
+      if (this.phpConfig.theme !== undefined) {
+        this.fileUploaderDefaults.theme = { theme: this.phpConfig.theme };
+      }
 
       console.log(
         "ConfigBuilder: fileUploaderDefaults merged with PHP config:",
@@ -5357,9 +5361,11 @@ export default class ConfigBuilder {
 
           const isChanged = changedKeys.includes(key);
           const marker = isChanged ? " // <- changed" : "";
-          const comma = keyIndex < keysInGroup.length - 1 ? "," : "";
-          const phpValue = this.jsValueToPhp(value, key);
-          code += `        '${key}' => ${phpValue}${comma}${marker}\n`;
+          const needsComma = keyIndex < keysInGroup.length - 1;
+          const phpValue = this.jsValueToPhp(value, key, needsComma);
+          // Only add trailing comma if value doesn't include a comment (size values handle comma internally)
+          const trailingComma = (needsComma && !this.isSizeKey(key)) ? "," : "";
+          code += `        '${key}' => ${phpValue}${trailingComma}${marker}\n`;
         });
 
         code += `    ]${isLastGroup ? "" : ","}\n`;
@@ -6278,9 +6284,11 @@ export default class ConfigBuilder {
 
         const isChanged = changedKeys.includes(key);
         const marker = isChanged ? " // <- changed" : "";
-        const comma = keyIndex < keysInGroup.length - 1 ? "," : "";
-        const phpValue = this.jsValueToPhp(value, key);
-        code += `        '${key}' => ${phpValue}${comma}${marker}\n`;
+        const needsComma = keyIndex < keysInGroup.length - 1;
+        const phpValue = this.jsValueToPhp(value, key, needsComma);
+        // Only add trailing comma if value doesn't include a comment (size values handle comma internally)
+        const trailingComma = (needsComma && !this.isSizeKey(key)) ? "," : "";
+        code += `        '${key}' => ${phpValue}${trailingComma}${marker}\n`;
       });
 
       code += `    ]${isLastGroup ? "" : ","}\n`;
@@ -7153,9 +7161,11 @@ export default class ConfigBuilder {
           const entries = Object.entries(groupOptions);
           entries.forEach(([key, value], index) => {
             const isLastEntry = index === entries.length - 1;
-            const comma = isLastEntry ? "" : ",";
-            const phpValue = this.jsValueToPhp(value, key);
-            code += `            '${key}' => ${phpValue}${comma}\n`;
+            const needsComma = !isLastEntry;
+            const phpValue = this.jsValueToPhp(value, key, needsComma);
+            // Only add trailing comma if value doesn't include a comment (size values handle comma internally)
+            const trailingComma = (needsComma && !this.isSizeKey(key)) ? "," : "";
+            code += `            '${key}' => ${phpValue}${trailingComma}\n`;
           });
 
           const groupComma = isLastGroup ? "" : ",";
@@ -7340,7 +7350,7 @@ export default class ConfigBuilder {
    * @param {any} value - The value to convert
    * @param {string} key - Optional key name for context (to detect size values)
    */
-  jsValueToPhp(value, key = "") {
+  jsValueToPhp(value, key = "", needsComma = false) {
     if (value === null) return "null";
     if (value === true) return "true";
     if (value === false) return "false";
@@ -7348,7 +7358,8 @@ export default class ConfigBuilder {
       // Check if this is a size value
       if (key && this.isSizeKey(key)) {
         const formatted = this.formatSizeExpression(value);
-        return `${formatted.expression} ${formatted.comment}`;
+        const comma = needsComma ? "," : "";
+        return `${formatted.expression}${comma} ${formatted.comment}`;
       }
       return String(value);
     }
@@ -7367,9 +7378,10 @@ export default class ConfigBuilder {
       // Check if this is a size object
       if (key && this.isSizeKey(key)) {
         const items = entries
-          .map(([k, v]) => {
+          .map(([k, v], idx) => {
             const formatted = this.formatSizeExpression(v);
-            return `'${k}' => ${formatted.expression}, ${formatted.comment}`;
+            const comma = idx < entries.length - 1 ? "," : "";
+            return `'${k}' => ${formatted.expression}${comma} ${formatted.comment}`;
           })
           .join("\n            ");
         return `[\n            ${items}\n        ]`;

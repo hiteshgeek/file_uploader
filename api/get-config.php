@@ -22,7 +22,9 @@ $jsConfig = [
     'videoExtensions' => $config['video_extensions'],
     'audioExtensions' => $config['audio_extensions'],
     'documentExtensions' => $config['document_extensions'],
-    'archiveExtensions' => $config['archive_extensions']
+    'archiveExtensions' => $config['archive_extensions'],
+    // Theme setting
+    'theme' => $config['theme'] ?? 'auto',
     // Note: URL options (uploadUrl, deleteUrl, etc.) are NOT included here
     // because they should be set by the user based on their project structure
     // Display values (*Display) are NOT included - they are auto-generated in JavaScript
