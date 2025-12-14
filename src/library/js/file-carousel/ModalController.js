@@ -236,6 +236,8 @@ export class ModalController {
   close() {
     const modal = this.options.container.querySelector("[data-fc-modal]");
 
+    if (!modal) return;
+
     // Pause any playing media
     const video = modal.querySelector("video");
     const audio = modal.querySelector("audio");
@@ -285,7 +287,7 @@ export class ModalController {
     const contentEl = modal.querySelector("[data-fc-modal-content]");
 
     fileNameEl.textContent = file.name;
-    fileTypeEl.textContent = file.carouselType.toUpperCase();
+    fileTypeEl.textContent = (file.carouselType || file.type || 'file').toUpperCase();
 
     this.renderer.render(file, this.currentIndex, contentEl);
   }

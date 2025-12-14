@@ -55,7 +55,7 @@ export default class FileCarousel {
     // ------------------------------------------------------------
     this.options = {
       container: options.container || document.body,
-      files: options.files || [],
+      files: this.normalizeFiles(options.files || []),
       autoPreload: options.autoPreload !== undefined ? options.autoPreload : true,
       enableManualLoading:
         options.enableManualLoading !== undefined
@@ -108,6 +108,36 @@ export default class FileCarousel {
     );
 
     this.init();
+  }
+
+  // ============================================================
+  // FILE NORMALIZATION
+  // ============================================================
+
+  /**
+   * Normalize files to ensure they have required properties
+   * Converts 'type' to 'carouselType' for backward compatibility
+   * @private
+   * @param {Array} files - Array of file objects
+   * @returns {Array} Normalized files
+   */
+  normalizeFiles(files) {
+    return files.map((file) => {
+      // If carouselType is already set, return as-is
+      if (file.carouselType) {
+        return file;
+      }
+
+      // Copy file to avoid mutating original
+      const normalized = { ...file };
+
+      // Convert 'type' to 'carouselType'
+      if (file.type && !file.carouselType) {
+        normalized.carouselType = file.type;
+      }
+
+      return normalized;
+    });
   }
 
   // ============================================================
@@ -189,7 +219,14 @@ export default class FileCarousel {
    */
   render() {
     const container = this.options.container;
-    container.innerHTML = this.generateHTML();
+
+    // Create a wrapper element to hold the carousel modal
+    this.modalWrapper = document.createElement("div");
+    this.modalWrapper.className = "fc-wrapper";
+    this.modalWrapper.innerHTML = this.generateHTML();
+
+    // Append to container instead of replacing content
+    container.appendChild(this.modalWrapper);
   }
 
   /**
@@ -353,7 +390,11 @@ export default class FileCarousel {
     document.removeEventListener("keydown", this.keyboardHandler);
     this.preloader.cleanup();
     this.modal.destroy();
-    this.options.container.innerHTML = "";
+
+    // Remove only the carousel wrapper, not entire container content
+    if (this.modalWrapper && this.modalWrapper.parentNode) {
+      this.modalWrapper.parentNode.removeChild(this.modalWrapper);
+    }
   }
 
   /**
@@ -371,11 +412,11 @@ export default class FileCarousel {
     // Cleanup existing preloaded media
     this.preloader.cleanup();
 
-    // Update files
-    this.options.files = files;
+    // Update files (normalize to ensure carouselType exists)
+    this.options.files = this.normalizeFiles(files);
 
     // Reset the thumbnail strip when files change
-    const strip = this.options.container.querySelector("[data-fc-thumbnail-strip]");
+    const strip = this.modalWrapper?.querySelector("[data-fc-thumbnail-strip]");
     if (strip) {
       strip.innerHTML = "";
     }

@@ -290,9 +290,9 @@ include_once __DIR__ . '/../../../includes/functions.php';
             mediaCapture = new MediaCapture({
                 showRecordingUI: true,
                 videoRecorderOptions: {
-                    includeSystemAudio,
-                    includeMicrophone,
-                    maxDuration: 300, // 5 minutes
+                    systemAudioConstraints: includeSystemAudio,
+                    microphoneAudioConstraints: includeMicrophone,
+                    maxDuration: 300000, // 5 minutes (in milliseconds)
                 },
                 onRecordingStart: () => {
                     isRecording = true;

@@ -11,14 +11,52 @@ import { getIcon } from "../../shared/icons.js";
 import TooltipManager from "../../utils/TooltipManager.js";
 
 export default class RecordingUI {
-  constructor(fileUploader) {
-    this.uploader = fileUploader;
+  /**
+   * @param {Object|FileUploader} uploaderOrOptions - FileUploader instance or options object
+   *
+   * When passed a FileUploader instance (legacy mode):
+   *   - this.uploader references the FileUploader
+   *   - this.standaloneMode = false
+   *
+   * When passed an options object (standalone mode for MediaCapture):
+   *   - this.options contains the options
+   *   - this.standaloneMode = true
+   *   - Callbacks: onPause, onResume, onStop
+   */
+  constructor(uploaderOrOptions) {
+    // Detect if we're in standalone mode (options object) or uploader mode
+    this.standaloneMode = !uploaderOrOptions ||
+      typeof uploaderOrOptions.uploadFile !== 'function';
+
+    if (this.standaloneMode) {
+      // Standalone mode - options object passed (from MediaCapture)
+      this.uploader = null;
+      this.standaloneOptions = uploaderOrOptions || {};
+    } else {
+      // Legacy mode - FileUploader instance passed
+      this.uploader = uploaderOrOptions;
+      this.standaloneOptions = null;
+    }
+
     this.recordingToolbar = null;
     this.recordingToolbarButtons = null;
     this.recordingTimerInterval = null;
     this.recordingType = null; // 'video' or 'audio'
     this.externalContainerButtons = null; // Original buttons in external container to hide during recording
     this.externalRecordingIndicator = null; // Recording indicator for external container
+    this.standaloneContainer = null; // Container for standalone mode UI
+    this.standaloneIndicator = null; // Recording indicator for standalone mode
+  }
+
+  /**
+   * Get options - works in both modes
+   * @private
+   */
+  getOptions() {
+    if (this.standaloneMode) {
+      return this.standaloneOptions || {};
+    }
+    return this.uploader?.options || {};
   }
 
   /**
@@ -26,7 +64,7 @@ export default class RecordingUI {
    * @returns {string} Size class or empty string for default (md)
    */
   getButtonSizeClass() {
-    const size = this.uploader.options.buttonSize;
+    const size = this.getOptions().buttonSize;
     if (size && size !== "md") {
       return `media-hub-capture-btn-${size}`;
     }
@@ -38,7 +76,7 @@ export default class RecordingUI {
    * @returns {string} Size class or empty string for default (md)
    */
   getTimerSizeClass() {
-    const size = this.uploader.options.timerSize;
+    const size = this.getOptions().timerSize;
     if (size && size !== "md") {
       return `timer-${size}`;
     }
@@ -51,7 +89,8 @@ export default class RecordingUI {
    * @returns {HTMLElement|null}
    */
   getToolbarContainer() {
-    const externalContainer = this.uploader.options.externalRecordingToolbarContainer;
+    const options = this.getOptions();
+    const externalContainer = options.externalRecordingToolbarContainer;
     if (externalContainer) {
       // Support both string selector and element reference
       if (typeof externalContainer === 'string') {
@@ -62,7 +101,13 @@ export default class RecordingUI {
         return externalContainer;
       }
     }
-    return this.uploader.captureButtonContainer;
+
+    // In standalone mode, return the standalone container or null
+    if (this.standaloneMode) {
+      return this.standaloneContainer;
+    }
+
+    return this.uploader?.captureButtonContainer;
   }
 
   /**
@@ -70,7 +115,7 @@ export default class RecordingUI {
    * @returns {boolean}
    */
   isUsingExternalContainer() {
-    return !!this.uploader.options.externalRecordingToolbarContainer;
+    return !!this.getOptions().externalRecordingToolbarContainer;
   }
 
   /**
@@ -181,15 +226,16 @@ export default class RecordingUI {
     });
 
     // Create system audio button if enabled (only for internal toolbar)
+    const options = this.getOptions();
     let systemAudioBtn = null;
-    if (!isExternal && this.uploader.options.enableSystemAudio) {
+    if (!isExternal && options.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
       systemAudioBtn.className = btnClass;
       systemAudioBtn.setAttribute("data-action", "system-audio");
 
       // Check if system audio is available
-      const hasSystemAudio = this.uploader.videoRecorder && this.uploader.videoRecorder.systemAudioStream;
+      const hasSystemAudio = this.uploader?.videoRecorder?.systemAudioStream;
       if (!hasSystemAudio) {
         systemAudioBtn.disabled = true;
         systemAudioBtn.classList.add("muted");
@@ -210,14 +256,14 @@ export default class RecordingUI {
 
     // Create microphone button if enabled (only for internal toolbar)
     let micBtn = null;
-    if (!isExternal && this.uploader.options.enableMicrophoneAudio) {
+    if (!isExternal && options.enableMicrophoneAudio) {
       micBtn = document.createElement("button");
       micBtn.type = "button";
       micBtn.className = btnClass;
       micBtn.setAttribute("data-action", "microphone");
 
       // Check if microphone is available
-      const hasMic = this.uploader.videoRecorder && this.uploader.videoRecorder.microphoneStream;
+      const hasMic = this.uploader?.videoRecorder?.microphoneStream;
       if (!hasMic) {
         micBtn.disabled = true;
         micBtn.classList.add("muted");
@@ -246,7 +292,7 @@ export default class RecordingUI {
     stopBtn.innerHTML = getIcon("stop");
     stopBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      this.uploader.stopVideoRecording();
+      this.uploader?.stopVideoRecording();
     });
 
     // Append buttons to capture button container in order
@@ -297,15 +343,16 @@ export default class RecordingUI {
     });
 
     // Create system audio button if enabled (only for internal toolbar)
+    const options = this.getOptions();
     let systemAudioBtn = null;
-    if (!isExternal && this.uploader.options.enableSystemAudio) {
+    if (!isExternal && options.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
       systemAudioBtn.className = btnClass;
       systemAudioBtn.setAttribute("data-action", "system-audio");
 
       // Check if system audio is available
-      const hasSystemAudio = this.uploader.audioRecorder && this.uploader.audioRecorder.systemAudioStream;
+      const hasSystemAudio = this.uploader?.audioRecorder?.systemAudioStream;
       if (!hasSystemAudio) {
         systemAudioBtn.disabled = true;
         systemAudioBtn.classList.add("muted");
@@ -334,7 +381,7 @@ export default class RecordingUI {
     stopBtn.innerHTML = getIcon("stop");
     stopBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      this.uploader.stopAudioRecording();
+      this.uploader?.stopAudioRecording();
     });
 
     // Append buttons to capture button container in order
@@ -368,7 +415,7 @@ export default class RecordingUI {
    * Toggle pause/resume video recording
    */
   togglePauseRecording() {
-    if (!this.uploader.videoRecorder) return;
+    if (!this.uploader?.videoRecorder) return;
 
     const status = this.uploader.videoRecorder.getRecordingStatus();
     const pauseBtn = this.getToolbarContainer()?.querySelector('[data-action="pause"]');
@@ -398,7 +445,7 @@ export default class RecordingUI {
    * Toggle pause/resume audio recording
    */
   togglePauseAudioRecording() {
-    if (!this.uploader.audioRecorder) return;
+    if (!this.uploader?.audioRecorder) return;
 
     const status = this.uploader.audioRecorder.getRecordingStatus();
     const pauseBtn = this.getToolbarContainer()?.querySelector('[data-action="pause"]');
@@ -429,8 +476,16 @@ export default class RecordingUI {
    * @param {boolean} isPaused - Whether recording is paused
    */
   setRecordingIndicatorPausedState(isPaused) {
-    // Internal recording indicator
-    if (this.uploader.recordingIndicator) {
+    // Standalone recording indicator
+    if (this.standaloneIndicator) {
+      const dot = this.standaloneIndicator.querySelector(".media-hub-recording-dot");
+      if (dot) {
+        dot.classList.toggle("paused", isPaused);
+      }
+    }
+
+    // Internal recording indicator (uploader mode)
+    if (this.uploader?.recordingIndicator) {
       const dot = this.uploader.recordingIndicator.querySelector(".media-hub-recording-dot");
       if (dot) {
         dot.classList.toggle("paused", isPaused);
@@ -450,7 +505,7 @@ export default class RecordingUI {
    * Toggle system audio for video recording
    */
   toggleSystemAudio() {
-    if (!this.uploader.videoRecorder) return;
+    if (!this.uploader?.videoRecorder) return;
 
     const enabled = this.uploader.videoRecorder.toggleSystemAudio();
     const btn = this.getToolbarContainer()?.querySelector('[data-action="system-audio"]');
@@ -467,7 +522,7 @@ export default class RecordingUI {
    * Toggle system audio for audio recording
    */
   toggleAudioSystemAudio() {
-    if (!this.uploader.audioRecorder) return;
+    if (!this.uploader?.audioRecorder) return;
 
     const enabled = this.uploader.audioRecorder.toggleSystemAudio();
     const btn = this.getToolbarContainer()?.querySelector('[data-action="system-audio"]');
@@ -484,7 +539,7 @@ export default class RecordingUI {
    * Toggle microphone for video recording
    */
   toggleMicrophone() {
-    if (!this.uploader.videoRecorder) return;
+    if (!this.uploader?.videoRecorder) return;
 
     const enabled = this.uploader.videoRecorder.toggleMicrophoneAudio();
     const btn = this.getToolbarContainer()?.querySelector('[data-action="microphone"]');
@@ -516,7 +571,7 @@ export default class RecordingUI {
    * @returns {string} Formatted time display text
    */
   buildTimeDisplayText(elapsed, maxSeconds, showRemaining) {
-    const options = this.uploader.options;
+    const options = this.getOptions();
     const showTime = options.showRecordingTime !== false;
     const showLimit = options.showRecordingLimit !== false;
 
@@ -539,70 +594,92 @@ export default class RecordingUI {
    * Start recording timer display
    */
   startRecordingTimer() {
+    // Initialize start time for standalone mode
+    if (this.standaloneMode) {
+      this.recordingStartTime = Date.now();
+    }
+
     this.recordingTimerInterval = setInterval(() => {
-      const recorder = this.recordingType === 'audio' ? this.uploader.audioRecorder : this.uploader.videoRecorder;
+      let elapsed = 0;
+      let maxSeconds = 0;
+      let sizeStatus = null;
+      const options = this.getOptions();
 
-      if (recorder) {
-        const elapsed = recorder.getRecordingDuration();
-        const maxSeconds = this.recordingType === 'audio'
-          ? Math.floor(this.uploader.options.maxAudioRecordingDuration)
-          : Math.floor(this.uploader.options.maxVideoRecordingDuration);
+      if (this.standaloneMode) {
+        // Standalone mode: calculate elapsed from start time
+        elapsed = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+        maxSeconds = this.recordingType === 'audio'
+          ? Math.floor(options.maxAudioRecordingDuration || 300)
+          : Math.floor(options.maxVideoRecordingDuration || 300);
+      } else {
+        // Uploader mode: get from recorder
+        const recorder = this.recordingType === 'audio' ? this.uploader?.audioRecorder : this.uploader?.videoRecorder;
 
-        // Get size status if available
-        let sizeStatus = null;
-        if (typeof recorder.getSizeStatus === 'function') {
-          sizeStatus = recorder.getSizeStatus();
+        if (recorder) {
+          elapsed = recorder.getRecordingDuration();
+          maxSeconds = this.recordingType === 'audio'
+            ? Math.floor(options.maxAudioRecordingDuration || 300)
+            : Math.floor(options.maxVideoRecordingDuration || 300);
+
+          // Get size status if available
+          if (typeof recorder.getSizeStatus === 'function') {
+            sizeStatus = recorder.getSizeStatus();
+          }
         }
+      }
 
-        // Update time on all recording indicators (internal and external)
-        const timeElements = [];
+      // Update time on all recording indicators (internal, external, and standalone)
+      const timeElements = [];
 
-        // Internal recording indicator
-        const internalTimeEl = this.uploader.recordingIndicator?.querySelector(".media-hub-recording-time");
-        if (internalTimeEl) timeElements.push(internalTimeEl);
+      // Standalone recording indicator
+      const standaloneTimeEl = this.standaloneIndicator?.querySelector(".media-hub-recording-time");
+      if (standaloneTimeEl) timeElements.push(standaloneTimeEl);
 
-        // External recording indicator
-        const externalTimeEl = this.externalRecordingIndicator?.querySelector(".media-hub-recording-time");
-        if (externalTimeEl) timeElements.push(externalTimeEl);
+      // Internal recording indicator (uploader mode)
+      const internalTimeEl = this.uploader?.recordingIndicator?.querySelector(".media-hub-recording-time");
+      if (internalTimeEl) timeElements.push(internalTimeEl);
 
-        timeElements.forEach(timeElement => {
-          // Check if this is minimal view (external/modal) - only show elapsed time
-          const isMinimal = timeElement.dataset.minimal === "true";
-          if (isMinimal) {
-            // Minimal view: only elapsed time (MM:SS)
-            timeElement.textContent = this.formatTime(elapsed);
-          } else {
-            // Full view: check if we should show remaining time or elapsed/total
-            const showRemaining = timeElement.dataset.showRemaining === "true";
-            const timeText = this.buildTimeDisplayText(elapsed, maxSeconds, showRemaining);
-            timeElement.textContent = timeText;
+      // External recording indicator
+      const externalTimeEl = this.externalRecordingIndicator?.querySelector(".media-hub-recording-time");
+      if (externalTimeEl) timeElements.push(externalTimeEl);
+
+      timeElements.forEach(timeElement => {
+        // Check if this is minimal view (external/modal/standalone) - only show elapsed time
+        const isMinimal = timeElement.dataset.minimal === "true";
+        if (isMinimal) {
+          // Minimal view: only elapsed time (MM:SS)
+          timeElement.textContent = this.formatTime(elapsed);
+        } else {
+          // Full view: check if we should show remaining time or elapsed/total
+          const showRemaining = timeElement.dataset.showRemaining === "true";
+          const timeText = this.buildTimeDisplayText(elapsed, maxSeconds, showRemaining);
+          timeElement.textContent = timeText;
+        }
+      });
+
+      // Update size display on all recording indicators (only in uploader mode)
+      if (sizeStatus && options.showRecordingSize !== false) {
+        const sizeElements = [];
+
+        // Internal size element
+        const internalSizeEl = this.uploader?.recordingIndicator?.querySelector(".media-hub-recording-size");
+        if (internalSizeEl) sizeElements.push(internalSizeEl);
+
+        // External size element
+        const externalSizeEl = this.externalRecordingIndicator?.querySelector(".media-hub-recording-size");
+        if (externalSizeEl) sizeElements.push(externalSizeEl);
+
+        sizeElements.forEach(sizeElement => {
+          // Add approximation symbol (~) to indicate estimated size
+          sizeElement.textContent = `~${sizeStatus.formattedSize}`;
+          // Add warning class if approaching limit
+          if (sizeStatus.isWarning) {
+            sizeElement.classList.add('warning');
+          }
+          if (sizeStatus.isNearLimit) {
+            sizeElement.classList.add('danger');
           }
         });
-
-        // Update size display on all recording indicators
-        if (sizeStatus && this.uploader.options.showRecordingSize !== false) {
-          const sizeElements = [];
-
-          // Internal size element
-          const internalSizeEl = this.uploader.recordingIndicator?.querySelector(".media-hub-recording-size");
-          if (internalSizeEl) sizeElements.push(internalSizeEl);
-
-          // External size element
-          const externalSizeEl = this.externalRecordingIndicator?.querySelector(".media-hub-recording-size");
-          if (externalSizeEl) sizeElements.push(externalSizeEl);
-
-          sizeElements.forEach(sizeElement => {
-            // Add approximation symbol (~) to indicate estimated size
-            sizeElement.textContent = `~${sizeStatus.formattedSize}`;
-            // Add warning class if approaching limit
-            if (sizeStatus.isWarning) {
-              sizeElement.classList.add('warning');
-            }
-            if (sizeStatus.isNearLimit) {
-              sizeElement.classList.add('danger');
-            }
-          });
-        }
       }
     }, 1000);
   }
@@ -621,20 +698,23 @@ export default class RecordingUI {
    * Setup handler for when user stops screen sharing from system button
    */
   setupStreamEndedHandler() {
+    // Skip in standalone mode - MediaCapture handles this directly
+    if (this.standaloneMode) return;
+
     if (this.recordingType === 'video') {
-      if (!this.uploader.videoRecorder || !this.uploader.videoRecorder.stream) return;
+      if (!this.uploader?.videoRecorder?.stream) return;
 
       // Listen for when user clicks "Stop sharing" from browser/system
       this.uploader.videoRecorder.stream.getTracks().forEach((track) => {
         track.onended = async () => {
           // Check if recording is still in progress before stopping
-          if (this.uploader.videoRecorder && this.uploader.videoRecorder.isRecording) {
+          if (this.uploader?.videoRecorder?.isRecording) {
             // User stopped sharing from system button, gracefully stop recording
             try {
               await this.uploader.stopVideoRecording();
             } catch (error) {
               // Ignore "no recording in progress" errors
-              if (!error.message.includes('No recording in progress')) {
+              if (!error.message?.includes('No recording in progress')) {
                 console.error('Error stopping video recording:', error);
               }
             }
@@ -643,7 +723,7 @@ export default class RecordingUI {
       });
     } else if (this.recordingType === 'audio') {
       // For audio recording, setup handlers for both mic and system audio streams
-      const audioRecorder = this.uploader.audioRecorder;
+      const audioRecorder = this.uploader?.audioRecorder;
       if (!audioRecorder) return;
 
       const setupTrackEndHandler = (stream, stopFn) => {
@@ -657,7 +737,7 @@ export default class RecordingUI {
                 await stopFn();
               } catch (error) {
                 // Ignore "no recording in progress" errors
-                if (!error.message.includes('No recording in progress')) {
+                if (!error.message?.includes('No recording in progress')) {
                   console.error('Error stopping audio recording:', error);
                 }
               }
@@ -667,10 +747,10 @@ export default class RecordingUI {
       };
 
       if (audioRecorder.microphoneStream) {
-        setupTrackEndHandler(audioRecorder.microphoneStream, () => this.uploader.stopAudioRecording());
+        setupTrackEndHandler(audioRecorder.microphoneStream, () => this.uploader?.stopAudioRecording());
       }
       if (audioRecorder.systemAudioStream) {
-        setupTrackEndHandler(audioRecorder.systemAudioStream, () => this.uploader.stopAudioRecording());
+        setupTrackEndHandler(audioRecorder.systemAudioStream, () => this.uploader?.stopAudioRecording());
       }
     }
   }
@@ -713,7 +793,7 @@ export default class RecordingUI {
       this.externalRecordingIndicator.remove();
     }
 
-    const options = this.uploader.options;
+    const options = this.getOptions();
     const showTime = options.showRecordingTime !== false;
     // External/modal view is minimal - elapsed time only, no limit, no size
 
@@ -753,7 +833,7 @@ export default class RecordingUI {
       if (container) {
         this.createExternalRecordingIndicator(container);
       }
-    } else if (this.uploader.recordingIndicator) {
+    } else if (this.uploader?.recordingIndicator) {
       // Add/update recording type icon for internal indicator
       this.updateInternalRecordingTypeIcon();
       this.uploader.recordingIndicator.style.display = "flex";
@@ -765,7 +845,7 @@ export default class RecordingUI {
    * Update/add recording type icon to internal recording indicator
    */
   updateInternalRecordingTypeIcon() {
-    if (!this.uploader.recordingIndicator) return;
+    if (!this.uploader?.recordingIndicator) return;
 
     const typeIcon = this.getRecordingTypeIcon(this.recordingType);
     const typeTooltip = this.getRecordingTypeTooltip(this.recordingType);
@@ -799,7 +879,7 @@ export default class RecordingUI {
     }
 
     // Hide internal recording indicator
-    if (this.uploader.recordingIndicator) {
+    if (this.uploader?.recordingIndicator) {
       this.uploader.recordingIndicator.style.display = "none";
 
       // Reset timer display to initial state
@@ -808,9 +888,10 @@ export default class RecordingUI {
       );
       if (timeElement) {
         // Reset to 00:00 / max duration format
+        const options = this.getOptions();
         const maxSeconds = this.recordingType === 'audio'
-          ? Math.floor(this.uploader.options.maxAudioRecordingDuration)
-          : Math.floor(this.uploader.options.maxVideoRecordingDuration);
+          ? Math.floor(options.maxAudioRecordingDuration || 300)
+          : Math.floor(options.maxVideoRecordingDuration || 300);
 
         const totalMinutes = Math.floor(maxSeconds / 60);
         const totalSeconds = maxSeconds % 60;
@@ -828,5 +909,196 @@ export default class RecordingUI {
   cleanup() {
     this.removeRecordingToolbar();
     this.hideRecordingIndicator();
+  }
+
+  /**
+   * Show recording UI (called by MediaCapture)
+   * @param {string} type - Recording type ('video' or 'audio')
+   */
+  show(type) {
+    this.recordingType = type;
+
+    if (this.standaloneMode) {
+      // In standalone mode, create a floating recording indicator
+      this.createStandaloneRecordingUI(type);
+    } else {
+      this.setupStreamEndedHandler();
+
+      if (type === "video") {
+        this.createRecordingToolbar();
+      } else if (type === "audio") {
+        this.createAudioRecordingToolbar();
+      }
+
+      this.showRecordingIndicator();
+    }
+
+    this.startRecordingTimer();
+  }
+
+  /**
+   * Create standalone recording UI for MediaCapture
+   * Creates a floating toolbar at the top of the screen
+   * @param {string} type - Recording type ('video' or 'audio')
+   * @private
+   */
+  createStandaloneRecordingUI(type) {
+    // Remove existing standalone UI if any
+    this.removeStandaloneUI();
+
+    const options = this.getOptions();
+    const sizeClass = this.getButtonSizeClass();
+    const timerSizeClass = this.getTimerSizeClass();
+    const btnClass = `media-hub-capture-btn${sizeClass ? ` ${sizeClass}` : ""}`;
+
+    // Create floating container
+    this.standaloneContainer = document.createElement("div");
+    this.standaloneContainer.className = "media-hub-standalone-recording-bar";
+    this.standaloneContainer.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 999999;
+      backdrop-filter: blur(10px);
+    `;
+
+    // Recording indicator
+    this.standaloneIndicator = document.createElement("div");
+    this.standaloneIndicator.className = `media-hub-recording-indicator media-hub-recording-indicator--minimal${timerSizeClass ? ` ${timerSizeClass}` : ""}`;
+    this.standaloneIndicator.style.cssText = "display: flex; align-items: center; gap: 8px; color: white;";
+
+    const typeIcon = this.getRecordingTypeIcon(type);
+    this.standaloneIndicator.innerHTML = `
+      <span class="media-hub-recording-type" style="color: white;">${getIcon(typeIcon)}</span>
+      <span class="media-hub-recording-dot"></span>
+      <span class="media-hub-recording-time" data-minimal="true" style="color: white; font-family: monospace;">00:00</span>
+    `;
+    this.standaloneContainer.appendChild(this.standaloneIndicator);
+
+    // Button container
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.cssText = "display: flex; gap: 8px;";
+
+    // Pause button
+    const pauseBtn = document.createElement("button");
+    pauseBtn.type = "button";
+    pauseBtn.className = btnClass;
+    pauseBtn.id = "mc-pause-btn";
+    pauseBtn.setAttribute("data-action", "pause");
+    pauseBtn.setAttribute("data-tooltip", "Pause Recording");
+    pauseBtn.setAttribute("data-tooltip-position", "bottom");
+    pauseBtn.innerHTML = getIcon("pause");
+    pauseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (options.onPause) {
+        options.onPause();
+      }
+    });
+    buttonContainer.appendChild(pauseBtn);
+
+    // Stop button
+    const stopBtn = document.createElement("button");
+    stopBtn.type = "button";
+    stopBtn.className = `${btnClass} media-hub-capture-btn-stop`;
+    stopBtn.setAttribute("data-action", "stop");
+    stopBtn.setAttribute("data-tooltip", "Stop Recording");
+    stopBtn.setAttribute("data-tooltip-position", "bottom");
+    stopBtn.innerHTML = getIcon("stop");
+    stopBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (options.onStop) {
+        options.onStop();
+      }
+    });
+    buttonContainer.appendChild(stopBtn);
+
+    this.standaloneContainer.appendChild(buttonContainer);
+
+    // Store buttons for cleanup
+    this.recordingToolbarButtons = [pauseBtn, stopBtn];
+
+    // Add to document
+    document.body.appendChild(this.standaloneContainer);
+
+    // Initialize tooltips
+    TooltipManager.init(this.standaloneContainer);
+  }
+
+  /**
+   * Remove standalone recording UI
+   * @private
+   */
+  removeStandaloneUI() {
+    if (this.standaloneContainer) {
+      this.standaloneContainer.remove();
+      this.standaloneContainer = null;
+    }
+    if (this.standaloneIndicator) {
+      this.standaloneIndicator = null;
+    }
+  }
+
+  /**
+   * Hide recording UI (called by MediaCapture)
+   */
+  hide() {
+    if (this.standaloneMode) {
+      this.removeStandaloneUI();
+    } else {
+      this.cleanup();
+    }
+    this.stopRecordingTimer();
+  }
+
+  /**
+   * Set paused state for recording indicator (called by MediaCapture)
+   * @param {boolean} isPaused - Whether recording is paused
+   */
+  setPaused(isPaused) {
+    this.setRecordingIndicatorPausedState(isPaused);
+
+    // Update pause button in toolbar (standalone mode)
+    const pauseBtn = document.getElementById("mc-pause-btn");
+    if (pauseBtn) {
+      pauseBtn.innerHTML = isPaused ? getIcon("play") : getIcon("pause");
+      pauseBtn.setAttribute("data-tooltip", isPaused ? "Resume Recording" : "Pause Recording");
+
+      // Update click handler to call appropriate callback
+      const options = this.getOptions();
+      pauseBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (isPaused && options.onResume) {
+          options.onResume();
+        } else if (!isPaused && options.onPause) {
+          options.onPause();
+        }
+      };
+    }
+  }
+
+  /**
+   * Destroy the UI and cleanup
+   */
+  destroy() {
+    if (this.standaloneMode) {
+      this.removeStandaloneUI();
+    } else {
+      this.cleanup();
+    }
+    this.stopRecordingTimer();
+    this.recordingToolbar = null;
+    this.recordingToolbarButtons = null;
+    this.externalContainerButtons = null;
+    this.externalRecordingIndicator = null;
+    this.standaloneContainer = null;
+    this.standaloneIndicator = null;
   }
 }
