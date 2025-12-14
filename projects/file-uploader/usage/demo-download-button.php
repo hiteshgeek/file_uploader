@@ -359,80 +359,104 @@ new FileUploader('#uploader-icon', {
 
         // Common options
         const commonOptions = {
-            maxFiles: 5,
-            maxFileSize: 5 * 1024 * 1024,
+            limits: {
+                maxFiles: 5,
+                perFileMaxSize: 5 * 1024 * 1024
+            }
         };
 
         // Standalone demos
         const uploader1 = new FileUploader('#uploader1', {
             ...commonOptions,
-            showDownloadAllButton: true,
-            downloadAllButtonText: '📥 Download All Files'
+            buttons: {
+                showDownloadAllButton: true,
+                downloadAllButtonText: '📥 Download All Files'
+            }
         });
 
         const uploader2 = new FileUploader('#uploader2', {
             ...commonOptions,
-            showDownloadAllButton: true,
-            downloadAllButtonText: 'Get Files',
-            downloadAllButtonClasses: ['custom-btn', 'btn-large']
+            buttons: {
+                showDownloadAllButton: true,
+                downloadAllButtonText: 'Get Files',
+                downloadAllButtonClasses: ['custom-btn', 'btn-large']
+            }
         });
 
         // Bootstrap 3 demos
         const uploaderBs3 = new FileUploader('#uploader-bs3', {
             ...commonOptions,
-            downloadAllButtonText: 'Download All',
-            downloadAllButtonClasses: ['btn', 'btn-primary']
+            buttons: {
+                downloadAllButtonText: 'Download All',
+                downloadAllButtonClasses: ['btn', 'btn-primary']
+            }
         });
 
         const uploaderBs3Block = new FileUploader('#uploader-bs3-block', {
             ...commonOptions,
-            downloadAllButtonText: 'Download All Files',
-            downloadAllButtonClasses: ['btn', 'btn-success', 'btn-block', 'btn-lg']
+            buttons: {
+                downloadAllButtonText: 'Download All Files',
+                downloadAllButtonClasses: ['btn', 'btn-success', 'btn-block', 'btn-lg']
+            }
         });
 
         // Bootstrap 4 demos
         const uploaderBs4 = new FileUploader('#uploader-bs4', {
             ...commonOptions,
-            downloadAllButtonText: 'Download Package',
-            downloadAllButtonClasses: ['btn', 'btn-info', 'btn-lg']
+            buttons: {
+                downloadAllButtonText: 'Download Package',
+                downloadAllButtonClasses: ['btn', 'btn-info', 'btn-lg']
+            }
         });
 
         const uploaderBs4Outline = new FileUploader('#uploader-bs4-outline', {
             ...commonOptions,
-            downloadAllButtonText: '⬇️ Get All Files',
-            downloadAllButtonClasses: ['btn', 'btn-outline-primary', 'btn-block']
+            buttons: {
+                downloadAllButtonText: '⬇️ Get All Files',
+                downloadAllButtonClasses: ['btn', 'btn-outline-primary', 'btn-block']
+            }
         });
 
         // Bootstrap 5 demos
         const uploaderBs5 = new FileUploader('#uploader-bs5', {
             ...commonOptions,
-            downloadAllButtonText: 'Download All Files',
-            downloadAllButtonClasses: ['btn', 'btn-primary', 'w-100']
+            buttons: {
+                downloadAllButtonText: 'Download All Files',
+                downloadAllButtonClasses: ['btn', 'btn-primary', 'w-100']
+            }
         });
 
         const uploaderBs5Gradient = new FileUploader('#uploader-bs5-gradient', {
             ...commonOptions,
-            downloadAllButtonText: 'Download Collection',
-            downloadAllButtonClasses: ['btn', 'btn-lg', 'w-100', 'shadow-sm', 'bg-gradient', 'text-white']
+            buttons: {
+                downloadAllButtonText: 'Download Collection',
+                downloadAllButtonClasses: ['btn', 'btn-lg', 'w-100', 'shadow-sm', 'bg-gradient', 'text-white']
+            }
         });
 
         // External button demos
         const uploaderExternal = new FileUploader('#uploader-external', {
             ...commonOptions,
-            showDownloadAllButton: false,
-            downloadAllButtonElement: '#downloadBtn1'
+            buttons: {
+                showDownloadAllButton: false,
+                downloadAllButtonElement: '#downloadBtn1'
+            }
         });
 
         const uploaderToolbar = new FileUploader('#uploader-toolbar', {
             ...commonOptions,
-            showDownloadAllButton: false,
-            downloadAllButtonElement: '#downloadBtn2'
+            buttons: {
+                showDownloadAllButton: false,
+                downloadAllButtonElement: '#downloadBtn2'
+            }
         });
 
         const uploaderIcon = new FileUploader('#uploader-icon', {
             ...commonOptions,
-            showDownloadAllButton: false,
-            downloadAllButtonElement: '#downloadBtn3'
+            buttons: {
+                showDownloadAllButton: false,
+                downloadAllButtonElement: '#downloadBtn3'
+            }
         });
 
         // Clear button handler

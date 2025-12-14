@@ -163,26 +163,38 @@ include_once __DIR__ . '/../../../includes/functions.php';
 
         // Resume uploader - documents only
         const resumeUploader = new FileUploader('#resume', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-documents.php',
-            multiple: false,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            allowLimitsViewToggle: false
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-documents.php'
+            },
+            behavior: {
+                multiple: false
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise',
+                allowLimitsViewToggle: false
+            }
         });
 
         // Portfolio uploader - multiple file types
         const portfolioUploader = new FileUploader('#portfolio', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            allowLimitsViewToggle: true
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config.php'
+            },
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise',
+                allowLimitsViewToggle: true
+            }
         });
 
         // Bootstrap 5 form validation

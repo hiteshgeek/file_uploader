@@ -171,26 +171,38 @@ include_once __DIR__ . '/../../../includes/functions.php';
 
         // Project Images uploader
         const imagesUploader = new FileUploader('#projectImages', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-profile.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            allowLimitsViewToggle: true
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-profile.php'
+            },
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise',
+                allowLimitsViewToggle: true
+            }
         });
 
         // Additional Files uploader
         const filesUploader = new FileUploader('#additionalFiles', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            allowLimitsViewToggle: true
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config.php'
+            },
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise',
+                allowLimitsViewToggle: true
+            }
         });
 
         document.getElementById('submissionForm').addEventListener('submit', (e) => {

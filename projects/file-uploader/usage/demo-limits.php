@@ -217,22 +217,30 @@ include_once __DIR__ . '/../../../includes/functions.php';
         import { FileUploader } from '<?= asset('media-hub.js') ?>';
 
         const uploader = new FileUploader('#fileUploader', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            cleanupZipUrl: '../../../api/cleanup-zip.php',
-            configUrl: '../../../api/get-config.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'detailed',
-            allowLimitsViewToggle: true,
-            onUploadSuccess: (fileObj, result) => {
-                console.log('✅ Uploaded:', fileObj.name);
-                console.log('Current total size:', uploader.getTotalSize(), 'bytes');
-                console.log('Files uploaded:', uploader.getUploadedFiles().length);
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                cleanupZipUrl: '../../../api/cleanup-zip.php',
+                configUrl: '../../../api/get-config.php'
             },
-            onUploadError: (fileObj, error) => {
-                console.error('❌ Upload failed:', fileObj.name, error);
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'detailed',
+                allowLimitsViewToggle: true
+            },
+            callbacks: {
+                onUploadSuccess: (fileObj, result) => {
+                    console.log('✅ Uploaded:', fileObj.name);
+                    console.log('Current total size:', uploader.getTotalSize(), 'bytes');
+                    console.log('Files uploaded:', uploader.getUploadedFiles().length);
+                },
+                onUploadError: (fileObj, error) => {
+                    console.error('❌ Upload failed:', fileObj.name, error);
+                }
             }
         });
 

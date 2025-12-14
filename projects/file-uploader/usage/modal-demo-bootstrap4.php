@@ -296,19 +296,27 @@ $basePath = get_base_path();
 
             const basePath = "<?= $basePath ?>";
             const uploader = new window.FileUploader('#modalFileUploader', {
-                multiple: true,
-                uploadUrl: basePath + "/api/upload.php",
-                deleteUrl: basePath + "/api/delete.php",
-                downloadAllUrl: basePath + "/api/download-all.php",
-                cleanupZipUrl: basePath + "/api/cleanup-zip.php",
-                configUrl: basePath + "/api/get-config.php",
-                showLimits: true,
-                showLimitsToggle: true,
-                defaultLimitsVisible: false,
-                preventDuplicates: true,
-                enableCarouselPreview: true,
-                carouselAutoPreload: true,
-                carouselEnableManualLoading: false
+                urls: {
+                    uploadUrl: basePath + "/api/upload.php",
+                    deleteUrl: basePath + "/api/delete.php",
+                    downloadAllUrl: basePath + "/api/download-all.php",
+                    cleanupZipUrl: basePath + "/api/cleanup-zip.php",
+                    configUrl: basePath + "/api/get-config.php"
+                },
+                behavior: {
+                    multiple: true,
+                    preventDuplicates: true
+                },
+                limitsDisplay: {
+                    showLimits: true,
+                    showLimitsToggle: true,
+                    defaultLimitsVisible: false
+                },
+                carousel: {
+                    enableCarouselPreview: true,
+                    carouselAutoPreload: true,
+                    carouselEnableManualLoading: false
+                }
             });
 
             // Update summary when modal is hidden (Bootstrap 4 event)

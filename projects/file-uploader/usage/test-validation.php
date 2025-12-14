@@ -141,25 +141,35 @@ include_once __DIR__ . '/../../../includes/functions.php';
 
         // Initialize uploader with ONLY images allowed
         const uploader = new FileUploader('#fileUploader', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-profile.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            // Override to allow only images
-            allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Upload success:', fileObj.name);
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-profile.php'
             },
-            onUploadError: (fileObj, error) => {
-                console.error('Upload error:', fileObj.name, error);
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise'
+            },
+            fileTypes: {
+                // Override to allow only images
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
+            },
+            callbacks: {
+                onUploadSuccess: (fileObj, result) => {
+                    console.log('Upload success:', fileObj.name);
+                },
+                onUploadError: (fileObj, error) => {
+                    console.error('Upload error:', fileObj.name, error);
+                }
             }
         });
 
         console.log('%cValidation Test Mode Active', 'color: #319795; font-weight: bold; font-size: 14px;');
-        console.log('Allowed extensions:', uploader.options.allowedExtensions);
+        console.log('Allowed extensions:', uploader.options.fileTypes.allowedExtensions);
     </script>
 </body>
 </html>

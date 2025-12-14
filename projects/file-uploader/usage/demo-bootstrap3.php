@@ -178,26 +178,38 @@ include_once __DIR__ . '/../../../includes/functions.php';
 
         // Profile Picture uploader - single image only
         const profileUploader = new FileUploader('#profilePicture', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-profile.php',
-            multiple: false,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            allowLimitsViewToggle: false
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-profile.php'
+            },
+            behavior: {
+                multiple: false
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise',
+                allowLimitsViewToggle: false
+            }
         });
 
         // Documents uploader - multiple files
         const documentsUploader = new FileUploader('#documents', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-documents.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            allowLimitsViewToggle: true
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-documents.php'
+            },
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise',
+                allowLimitsViewToggle: true
+            }
         });
 
         // Form submission

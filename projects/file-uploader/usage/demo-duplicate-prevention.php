@@ -424,39 +424,46 @@ include_once __DIR__ . '/../../../includes/functions.php';
             }
 
             uploader = new FileUploader('#fileUploader', {
-                uploadUrl: '../../../api/upload.php',
-                deleteUrl: '../../../api/delete.php',
-                downloadAllUrl: '../../../api/download-all.php',
-                cleanupZipUrl: '../../../api/cleanup-zip.php',
-                configUrl: '../../../api/get-config.php',
-                multiple: true,
-                showLimits: true,
-                defaultLimitsView: 'concise',
-                preventDuplicates: preventDuplicates,
-                duplicateCheckBy: duplicateCheckBy,
-
-                onUploadStart: (fileObj) => {
-                    log('info', `Upload started: ${fileObj.name} (${formatBytes(fileObj.size)})`);
+                urls: {
+                    uploadUrl: '../../../api/upload.php',
+                    deleteUrl: '../../../api/delete.php',
+                    downloadAllUrl: '../../../api/download-all.php',
+                    cleanupZipUrl: '../../../api/cleanup-zip.php',
+                    configUrl: '../../../api/get-config.php'
                 },
-
-                onUploadSuccess: (fileObj, result) => {
-                    log('success', `Upload successful: ${fileObj.name}`);
+                behavior: {
+                    multiple: true,
+                    preventDuplicates: preventDuplicates,
+                    duplicateCheckBy: duplicateCheckBy
                 },
-
-                onUploadError: (fileObj, error) => {
-                    log('error', `Upload failed: ${fileObj.name} - ${error.message}`);
+                limitsDisplay: {
+                    showLimits: true,
+                    defaultLimitsView: 'concise'
                 },
+                callbacks: {
+                    onUploadStart: (fileObj) => {
+                        log('info', `Upload started: ${fileObj.name} (${formatBytes(fileObj.size)})`);
+                    },
 
-                onDuplicateFile: (file, duplicate) => {
-                    log('warn', `DUPLICATE DETECTED: "${file.name}" (${formatBytes(file.size)}) matches existing file "${duplicate.name}"`);
-                    console.log('Duplicate file details:', {
-                        newFile: file,
-                        existingFile: duplicate
-                    });
-                },
+                    onUploadSuccess: (fileObj, result) => {
+                        log('success', `Upload successful: ${fileObj.name}`);
+                    },
 
-                onDeleteSuccess: (fileObj, result) => {
-                    log('info', `File deleted: ${fileObj.name}`);
+                    onUploadError: (fileObj, error) => {
+                        log('error', `Upload failed: ${fileObj.name} - ${error.message}`);
+                    },
+
+                    onDuplicateFile: (file, duplicate) => {
+                        log('warn', `DUPLICATE DETECTED: "${file.name}" (${formatBytes(file.size)}) matches existing file "${duplicate.name}"`);
+                        console.log('Duplicate file details:', {
+                            newFile: file,
+                            existingFile: duplicate
+                        });
+                    },
+
+                    onDeleteSuccess: (fileObj, result) => {
+                        log('info', `File deleted: ${fileObj.name}`);
+                    }
                 }
             });
 

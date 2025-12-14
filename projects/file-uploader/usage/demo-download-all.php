@@ -291,16 +291,24 @@ include_once __DIR__ . '/../../../includes/functions.php';
         import { FileUploader } from '<?= asset('media-hub.js') ?>';
 
         const uploader = new FileUploader('#fileUploader', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            cleanupZipUrl: '../../../api/cleanup-zip.php',
-            configUrl: '../../../api/get-config.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            onUploadSuccess: (fileObj, result) => {
-                console.log('✅ Uploaded:', fileObj.name);
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                cleanupZipUrl: '../../../api/cleanup-zip.php',
+                configUrl: '../../../api/get-config.php'
+            },
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise'
+            },
+            callbacks: {
+                onUploadSuccess: (fileObj, result) => {
+                    console.log('✅ Uploaded:', fileObj.name);
+                }
             }
         });
 

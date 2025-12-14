@@ -520,16 +520,24 @@ import { MediaCapture } from 'file-uploader/media-capture';</code></pre>
         let uploader = null;
         try {
             uploader = new FileUploader('#fileUploader', {
-                uploadUrl: '../../../api/upload.php',
-                deleteUrl: '../../../api/delete.php',
-                downloadAllUrl: '../../../api/download-all.php',
-                cleanupZipUrl: '../../../api/cleanup-zip.php',
-                configUrl: '../../../api/get-config.php',
-                multiple: true,
-                showLimits: true,
-                defaultLimitsView: 'concise',
-                onUploadSuccess: (fileObj, result) => {
-                    console.log('FileUploader: Uploaded', fileObj.name);
+                urls: {
+                    uploadUrl: '../../../api/upload.php',
+                    deleteUrl: '../../../api/delete.php',
+                    downloadAllUrl: '../../../api/download-all.php',
+                    cleanupZipUrl: '../../../api/cleanup-zip.php',
+                    configUrl: '../../../api/get-config.php'
+                },
+                behavior: {
+                    multiple: true
+                },
+                limitsDisplay: {
+                    showLimits: true,
+                    defaultLimitsView: 'concise'
+                },
+                callbacks: {
+                    onUploadSuccess: (fileObj, result) => {
+                        console.log('FileUploader: Uploaded', fileObj.name);
+                    }
                 }
             });
             console.log('FileUploader initialized successfully');

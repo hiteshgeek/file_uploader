@@ -171,36 +171,52 @@ include_once __DIR__ . '/../../../includes/functions.php';
 
         // Initialize uploaders
         const profileUploader = new FileUploader('#profilePicture', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-profile.php',
-            multiple: false,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Profile picture uploaded:', result.file.filename);
-                updatePreview();
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-profile.php'
             },
-            onDeleteSuccess: () => {
-                updatePreview();
+            behavior: {
+                multiple: false
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise'
+            },
+            callbacks: {
+                onUploadSuccess: (fileObj, result) => {
+                    console.log('Profile picture uploaded:', result.file.filename);
+                    updatePreview();
+                },
+                onDeleteSuccess: () => {
+                    updatePreview();
+                }
             }
         });
 
         const documentsUploader = new FileUploader('#documents', {
-            uploadUrl: '../../../api/upload.php',
-            deleteUrl: '../../../api/delete.php',
-            downloadAllUrl: '../../../api/download-all.php',
-            configUrl: '../../../api/get-config-documents.php',
-            multiple: true,
-            showLimits: true,
-            defaultLimitsView: 'concise',
-            onUploadSuccess: (fileObj, result) => {
-                console.log('Document uploaded:', result.file.filename);
-                updatePreview();
+            urls: {
+                uploadUrl: '../../../api/upload.php',
+                deleteUrl: '../../../api/delete.php',
+                downloadAllUrl: '../../../api/download-all.php',
+                configUrl: '../../../api/get-config-documents.php'
             },
-            onDeleteSuccess: () => {
-                updatePreview();
+            behavior: {
+                multiple: true
+            },
+            limitsDisplay: {
+                showLimits: true,
+                defaultLimitsView: 'concise'
+            },
+            callbacks: {
+                onUploadSuccess: (fileObj, result) => {
+                    console.log('Document uploaded:', result.file.filename);
+                    updatePreview();
+                },
+                onDeleteSuccess: () => {
+                    updatePreview();
+                }
             }
         });
 
