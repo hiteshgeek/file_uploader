@@ -25,15 +25,19 @@ export default class RecordingUI {
    */
   constructor(uploaderOrOptions) {
     // Detect if we're in standalone mode (options object) or uploader mode
-    this.standaloneMode = !uploaderOrOptions ||
-      typeof uploaderOrOptions.uploadFile !== 'function';
+    // FileUploader instances have instanceId starting with 'media-hub-' (set before RecordingUI is created)
+    const isFileUploader = uploaderOrOptions &&
+      typeof uploaderOrOptions.instanceId === 'string' &&
+      uploaderOrOptions.instanceId.startsWith('media-hub-');
+
+    this.standaloneMode = !isFileUploader;
 
     if (this.standaloneMode) {
       // Standalone mode - options object passed (from MediaCapture)
       this.uploader = null;
       this.standaloneOptions = uploaderOrOptions || {};
     } else {
-      // Legacy mode - FileUploader instance passed
+      // FileUploader mode - FileUploader instance passed
       this.uploader = uploaderOrOptions;
       this.standaloneOptions = null;
     }
@@ -60,11 +64,25 @@ export default class RecordingUI {
   }
 
   /**
+   * Get media capture specific options
+   * Handles both nested (FileUploader: options.mediaCapture) and flat (standalone) paths
+   * @private
+   */
+  getMediaCaptureOptions() {
+    const options = this.getOptions();
+    // In FileUploader mode, mediaCapture options are nested
+    // In standalone mode, they're passed flat
+    return options.mediaCapture || options;
+  }
+
+  /**
    * Get the CSS class for button size
    * @returns {string} Size class or empty string for default (md)
    */
   getButtonSizeClass() {
-    const size = this.getOptions().buttonSize;
+    const options = this.getOptions();
+    // Support both nested (FileUploader: buttons.buttonSize) and flat (standalone: buttonSize) paths
+    const size = options.buttons?.buttonSize || options.buttonSize;
     if (size && size !== "md") {
       return `media-hub-capture-btn-${size}`;
     }
@@ -76,7 +94,9 @@ export default class RecordingUI {
    * @returns {string} Size class or empty string for default (md)
    */
   getTimerSizeClass() {
-    const size = this.getOptions().timerSize;
+    const options = this.getOptions();
+    // Support both nested (FileUploader: buttons.timerSize) and flat (standalone: timerSize) paths
+    const size = options.buttons?.timerSize || options.timerSize;
     if (size && size !== "md") {
       return `timer-${size}`;
     }
@@ -90,7 +110,9 @@ export default class RecordingUI {
    */
   getToolbarContainer() {
     const options = this.getOptions();
-    const externalContainer = options.externalRecordingToolbarContainer;
+    // Support both nested (FileUploader: mediaCapture.externalRecordingToolbarContainer)
+    // and flat (standalone: externalRecordingToolbarContainer) option paths
+    const externalContainer = options.mediaCapture?.externalRecordingToolbarContainer || options.externalRecordingToolbarContainer;
     if (externalContainer) {
       // Support both string selector and element reference
       if (typeof externalContainer === 'string') {
@@ -115,7 +137,8 @@ export default class RecordingUI {
    * @returns {boolean}
    */
   isUsingExternalContainer() {
-    return !!this.getOptions().externalRecordingToolbarContainer;
+    const options = this.getOptions();
+    return !!(options.mediaCapture?.externalRecordingToolbarContainer || options.externalRecordingToolbarContainer);
   }
 
   /**
@@ -226,9 +249,9 @@ export default class RecordingUI {
     });
 
     // Create system audio button if enabled (only for internal toolbar)
-    const options = this.getOptions();
+    const mediaCaptureOptions = this.getMediaCaptureOptions();
     let systemAudioBtn = null;
-    if (!isExternal && options.enableSystemAudio) {
+    if (!isExternal && mediaCaptureOptions.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
       systemAudioBtn.className = btnClass;
@@ -256,7 +279,7 @@ export default class RecordingUI {
 
     // Create microphone button if enabled (only for internal toolbar)
     let micBtn = null;
-    if (!isExternal && options.enableMicrophoneAudio) {
+    if (!isExternal && mediaCaptureOptions.enableMicrophoneAudio) {
       micBtn = document.createElement("button");
       micBtn.type = "button";
       micBtn.className = btnClass;
@@ -343,9 +366,9 @@ export default class RecordingUI {
     });
 
     // Create system audio button if enabled (only for internal toolbar)
-    const options = this.getOptions();
+    const mediaCaptureOptions = this.getMediaCaptureOptions();
     let systemAudioBtn = null;
-    if (!isExternal && options.enableSystemAudio) {
+    if (!isExternal && mediaCaptureOptions.enableSystemAudio) {
       systemAudioBtn = document.createElement("button");
       systemAudioBtn.type = "button";
       systemAudioBtn.className = btnClass;
@@ -571,9 +594,9 @@ export default class RecordingUI {
    * @returns {string} Formatted time display text
    */
   buildTimeDisplayText(elapsed, maxSeconds, showRemaining) {
-    const options = this.getOptions();
-    const showTime = options.showRecordingTime !== false;
-    const showLimit = options.showRecordingLimit !== false;
+    const mediaCaptureOptions = this.getMediaCaptureOptions();
+    const showTime = mediaCaptureOptions.showRecordingTime !== false;
+    const showLimit = mediaCaptureOptions.showRecordingLimit !== false;
 
     if (!showTime) return "";
 
@@ -603,14 +626,14 @@ export default class RecordingUI {
       let elapsed = 0;
       let maxSeconds = 0;
       let sizeStatus = null;
-      const options = this.getOptions();
+      const mediaCaptureOptions = this.getMediaCaptureOptions();
 
       if (this.standaloneMode) {
         // Standalone mode: calculate elapsed from start time
         elapsed = Math.floor((Date.now() - this.recordingStartTime) / 1000);
         maxSeconds = this.recordingType === 'audio'
-          ? Math.floor(options.maxAudioRecordingDuration || 300)
-          : Math.floor(options.maxVideoRecordingDuration || 300);
+          ? Math.floor(mediaCaptureOptions.maxAudioRecordingDuration || 300)
+          : Math.floor(mediaCaptureOptions.maxVideoRecordingDuration || 300);
       } else {
         // Uploader mode: get from recorder
         const recorder = this.recordingType === 'audio' ? this.uploader?.audioRecorder : this.uploader?.videoRecorder;
@@ -618,8 +641,8 @@ export default class RecordingUI {
         if (recorder) {
           elapsed = recorder.getRecordingDuration();
           maxSeconds = this.recordingType === 'audio'
-            ? Math.floor(options.maxAudioRecordingDuration || 300)
-            : Math.floor(options.maxVideoRecordingDuration || 300);
+            ? Math.floor(mediaCaptureOptions.maxAudioRecordingDuration || 300)
+            : Math.floor(mediaCaptureOptions.maxVideoRecordingDuration || 300);
 
           // Get size status if available
           if (typeof recorder.getSizeStatus === 'function') {
@@ -658,7 +681,7 @@ export default class RecordingUI {
       });
 
       // Update size display on all recording indicators (only in uploader mode)
-      if (sizeStatus && options.showRecordingSize !== false) {
+      if (sizeStatus && mediaCaptureOptions.showRecordingSize !== false) {
         const sizeElements = [];
 
         // Internal size element
@@ -793,8 +816,8 @@ export default class RecordingUI {
       this.externalRecordingIndicator.remove();
     }
 
-    const options = this.getOptions();
-    const showTime = options.showRecordingTime !== false;
+    const mediaCaptureOptions = this.getMediaCaptureOptions();
+    const showTime = mediaCaptureOptions.showRecordingTime !== false;
     // External/modal view is minimal - elapsed time only, no limit, no size
 
     this.externalRecordingIndicator = document.createElement("div");
@@ -888,10 +911,10 @@ export default class RecordingUI {
       );
       if (timeElement) {
         // Reset to 00:00 / max duration format
-        const options = this.getOptions();
+        const mediaCaptureOptions = this.getMediaCaptureOptions();
         const maxSeconds = this.recordingType === 'audio'
-          ? Math.floor(options.maxAudioRecordingDuration || 300)
-          : Math.floor(options.maxVideoRecordingDuration || 300);
+          ? Math.floor(mediaCaptureOptions.maxAudioRecordingDuration || 300)
+          : Math.floor(mediaCaptureOptions.maxVideoRecordingDuration || 300);
 
         const totalMinutes = Math.floor(maxSeconds / 60);
         const totalSeconds = maxSeconds % 60;
