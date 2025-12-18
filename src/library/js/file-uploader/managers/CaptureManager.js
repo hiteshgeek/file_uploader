@@ -403,15 +403,13 @@ export class CaptureManager {
       limits.push(this.uploader.options.mediaCapture.maxAudioRecordingFileSize);
     }
 
-    if (this.uploader.options.limits.perFileMaxSize) {
+    // Check per-type limit first, fall back to general perFileMaxSize only if no per-type limit exists
+    const perTypeLimit = this.uploader.options.perTypeLimits.perFileMaxSizePerType?.[recordingType];
+    if (perTypeLimit) {
+      limits.push(perTypeLimit);
+    } else if (this.uploader.options.limits.perFileMaxSize) {
+      // Only use general perFileMaxSize if no specific per-type limit is set
       limits.push(this.uploader.options.limits.perFileMaxSize);
-    }
-
-    if (this.uploader.options.perTypeLimits.perFileMaxSizePerType) {
-      const perTypeLimit = this.uploader.options.perTypeLimits.perFileMaxSizePerType[recordingType];
-      if (perTypeLimit) {
-        limits.push(perTypeLimit);
-      }
     }
 
     if (this.uploader.options.limits.totalMaxSize) {
