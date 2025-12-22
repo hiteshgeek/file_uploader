@@ -1,9 +1,9 @@
 <?php
+
 /**
  * File Upload Handler
  * Handles AJAX file uploads with validation
  */
-
 header('Content-Type: application/json');
 
 // Load configuration and functions
@@ -188,6 +188,36 @@ if (!move_uploaded_file($file['tmp_name'], $destination)) {
     exit;
 }
 
+// Handle thumbnail if provided (base64 data URL)
+$thumbnailUrl = null;
+$thumbnailData = isset($_POST['thumbnail']) ? $_POST['thumbnail'] : null;
+
+if ($thumbnailData) {
+    // Validate it's a base64 data URL
+    if (preg_match('/^data:image\/(jpeg|png|gif|webp);base64,/', $thumbnailData, $matches)) {
+        // Create thumbnails directory if it doesn't exist
+        $thumbnailDir = $uploadDir . 'thumbnails/';
+        if (!is_dir($thumbnailDir)) {
+            mkdir($thumbnailDir, 0755, true);
+        }
+
+        // Extract base64 data
+        $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $thumbnailData);
+        $thumbnailContent = base64_decode($base64Data);
+
+        if ($thumbnailContent !== false) {
+            // Generate thumbnail filename (same name as original but with .jpg extension)
+            $thumbnailFilename = pathinfo($filename, PATHINFO_FILENAME) . '.jpg';
+            $thumbnailPath = $thumbnailDir . $thumbnailFilename;
+
+            // Save thumbnail
+            if (file_put_contents($thumbnailPath, $thumbnailContent)) {
+                $thumbnailUrl = $basePath . $uploadUrlPath . 'thumbnails/' . $thumbnailFilename;
+            }
+        }
+    }
+}
+
 // Determine file type for preview
 $fileType = 'other';
 if (in_array($extension, $config['image_extensions'])) {
@@ -196,8 +226,8 @@ if (in_array($extension, $config['image_extensions'])) {
     $fileType = 'video';
 }
 
-// Return success response
-echo json_encode([
+// Build response
+$response = [
     'success' => true,
     'file' => [
         'name' => $originalName,
@@ -209,4 +239,12 @@ echo json_encode([
         'url' => $basePath . $uploadUrlPath . $filename,
         'path' => $destination
     ]
-]);
+];
+
+// Include thumbnail URL if generated
+if ($thumbnailUrl) {
+    $response['file']['thumbnail'] = $thumbnailUrl;
+}
+
+// Return success response
+echo json_encode($response);

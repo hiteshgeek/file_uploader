@@ -19,6 +19,7 @@
 @use "config-builder/preview";
 @use "config-builder/uploaders";
 @use "config-builder/css-vars";
+@use "config-builder/get-files";
 @use "config-builder/styles-editor";
 @use "config-builder/modal";
 @use "config-builder/tooltips";

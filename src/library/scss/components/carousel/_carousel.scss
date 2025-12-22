@@ -706,7 +706,7 @@ $fc-modal-border: rgba(71, 85, 105, 0.5);
 .#{$fc-prefix}-type-icon {
   width: 32px;
   height: 32px;
-  color: var(--fu-gray-400);
+  fill: var(--fu-gray-400);
 }
 
 // ============================================================================
@@ -840,4 +840,206 @@ $fc-modal-border: rgba(71, 85, 105, 0.5);
 .#{$fc-prefix}-strip-thumbnail.#{$fc-prefix}-loaded
   .#{$fc-prefix}-preload-indicator {
   display: none !important;
+}
+
+// ============================================================================
+// File Grid Component
+// Rendered by FileCarousel when renderGrid: true
+// ============================================================================
+
+.#{$fc-prefix}-file-grid {
+  width: 100%;
+}
+
+.#{$fc-prefix}-grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--fu-spacing-lg);
+  padding: var(--fu-spacing-md);
+}
+
+.#{$fc-prefix}-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--fu-spacing-lg);
+  border: 1px solid var(--fu-gray-200);
+  border-radius: $fc-border-radius-sm;
+  cursor: pointer;
+  transition: all $fc-transition-fast;
+  background: white;
+
+  &:hover {
+    border-color: var(--fu-color-primary);
+    box-shadow: 0 4px 12px rgba(var(--fu-color-primary-rgb), 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.#{$fc-prefix}-grid-visual {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--fu-spacing-md);
+  position: relative;
+  border-radius: $fc-border-radius-sm;
+  overflow: hidden;
+  background: var(--fu-gray-100);
+}
+
+.#{$fc-prefix}-grid-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.#{$fc-prefix}-grid-play-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  transition: background $fc-transition-fast;
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  .#{$fc-prefix}-grid-item:hover & {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.#{$fc-prefix}-grid-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.#{$fc-prefix}-grid-type-icon {
+  width: 48px;
+  height: 48px;
+  fill: var(--fu-gray-500);
+  transition: fill $fc-transition-fast;
+
+  .#{$fc-prefix}-grid-item:hover & {
+    fill: var(--fu-color-primary);
+  }
+}
+
+.#{$fc-prefix}-grid-name {
+  font-size: var(--fu-font-size-xs);
+  color: var(--fu-gray-600);
+  text-align: center;
+  word-break: break-word;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+// Theme mixin for grid dark styles
+@mixin fc-grid-dark-theme {
+  .#{$fc-prefix}-grid-item {
+    background: var(--fu-gray-800);
+    border-color: var(--fu-gray-700);
+
+    &:hover {
+      border-color: var(--fu-color-primary);
+    }
+  }
+
+  .#{$fc-prefix}-grid-visual {
+    background: var(--fu-gray-700);
+  }
+
+  .#{$fc-prefix}-grid-type-icon {
+    fill: var(--fu-gray-400);
+  }
+
+  .#{$fc-prefix}-grid-name {
+    color: var(--fu-gray-300);
+  }
+}
+
+// Theme mixin for grid light styles
+@mixin fc-grid-light-theme {
+  .#{$fc-prefix}-grid-item {
+    background: white;
+    border-color: var(--fu-gray-200);
+
+    &:hover {
+      border-color: var(--fu-color-primary);
+    }
+  }
+
+  .#{$fc-prefix}-grid-visual {
+    background: var(--fu-gray-100);
+  }
+
+  .#{$fc-prefix}-grid-type-icon {
+    fill: var(--fu-gray-500);
+  }
+
+  .#{$fc-prefix}-grid-name {
+    color: var(--fu-gray-600);
+  }
+}
+
+// Explicit theme classes (override system preference)
+.#{$fc-prefix}-theme-dark {
+  @include fc-grid-dark-theme;
+}
+
+.#{$fc-prefix}-theme-light {
+  @include fc-grid-light-theme;
+}
+
+// System theme (uses prefers-color-scheme when no explicit theme class)
+.#{$fc-prefix}-file-grid:not(.#{$fc-prefix}-theme-light):not(.#{$fc-prefix}-theme-dark) {
+  @media (prefers-color-scheme: dark) {
+    @include fc-grid-dark-theme;
+  }
+}
+
+// Responsive grid
+@media (max-width: 768px) {
+  .#{$fc-prefix}-grid-wrapper {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--fu-spacing-md);
+    padding: var(--fu-spacing-sm);
+  }
+
+  .#{$fc-prefix}-grid-item {
+    padding: var(--fu-spacing-md);
+  }
+
+  .#{$fc-prefix}-grid-visual {
+    width: 60px;
+    height: 60px;
+  }
+
+  .#{$fc-prefix}-grid-type-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .#{$fc-prefix}-grid-play-icon svg {
+    width: 24px;
+    height: 24px;
+  }
 }

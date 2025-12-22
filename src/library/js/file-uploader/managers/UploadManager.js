@@ -125,6 +125,19 @@ export class UploadManager {
       formData.append("uploadDir", this.uploader.options.urls.uploadDir);
     }
 
+    // Generate and include thumbnail if saveThumbnails is enabled
+    const saveThumbnails = this.uploader.options.thumbnails?.saveThumbnails;
+    if (saveThumbnails) {
+      try {
+        const thumbnail = await this.generateThumbnailForUpload(fileObj);
+        if (thumbnail) {
+          formData.append("thumbnail", thumbnail);
+        }
+      } catch (err) {
+        console.warn("Thumbnail generation failed:", err);
+      }
+    }
+
     // Add additional data to upload request (global + uploadData + onBeforeRequest)
     this.appendRequestDataToFormData(formData, "upload", { fileObj });
 
@@ -604,5 +617,152 @@ export class UploadManager {
         keepalive: true,
       }).catch(() => {});
     }
+  }
+
+  // ============================================================
+  // THUMBNAIL GENERATION FOR UPLOAD
+  // ============================================================
+
+  /**
+   * Generate thumbnail for upload (images and videos only)
+   * @param {Object} fileObj - File object
+   * @returns {Promise<string|null>} - Base64 thumbnail data or null
+   */
+  async generateThumbnailForUpload(fileObj) {
+    const fileType = this.uploader.getFileTypeCategory(fileObj.extension);
+
+    // Only generate thumbnails for images and videos
+    if (fileType !== "image" && fileType !== "video") {
+      return null;
+    }
+
+    const options = this.uploader.options.thumbnails;
+    const thumbOptions = {
+      width: options.thumbnailWidth,
+      height: options.thumbnailHeight,
+      quality: options.thumbnailQuality,
+      videoSeekPercent: options.videoThumbnailSeekPercent,
+    };
+
+    try {
+      if (fileType === "image") {
+        return await this.generateImageThumbnail(fileObj, thumbOptions);
+      } else if (fileType === "video") {
+        return await this.generateVideoThumbnail(fileObj, thumbOptions);
+      }
+    } catch (error) {
+      console.warn("Failed to generate thumbnail for upload:", error);
+      return null;
+    }
+
+    return null;
+  }
+
+  /**
+   * Generate thumbnail from image file
+   * @param {Object} fileObj - File object
+   * @param {Object} options - Thumbnail options
+   * @returns {Promise<string>} - Base64 data URL
+   */
+  async generateImageThumbnail(fileObj, options) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const { width, height } = this.calculateThumbnailSize(
+            img.width,
+            img.height,
+            options.width,
+            options.height
+          );
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL("image/jpeg", options.quality);
+          URL.revokeObjectURL(img.src);
+          resolve(dataUrl);
+        } catch (error) {
+          URL.revokeObjectURL(img.src);
+          reject(error);
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(img.src);
+        reject(new Error("Failed to load image"));
+      };
+      img.src = URL.createObjectURL(fileObj.file);
+    });
+  }
+
+  /**
+   * Generate thumbnail from video file
+   * @param {Object} fileObj - File object
+   * @param {Object} options - Thumbnail options
+   * @returns {Promise<string>} - Base64 data URL
+   */
+  async generateVideoThumbnail(fileObj, options) {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.muted = true;
+      video.playsInline = true;
+
+      video.onloadedmetadata = () => {
+        // Seek to specified percentage of video duration
+        const seekTime = video.duration * options.videoSeekPercent;
+        video.currentTime = seekTime;
+      };
+
+      video.onseeked = () => {
+        try {
+          const { width, height } = this.calculateThumbnailSize(
+            video.videoWidth,
+            video.videoHeight,
+            options.width,
+            options.height
+          );
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL("image/jpeg", options.quality);
+          URL.revokeObjectURL(video.src);
+          resolve(dataUrl);
+        } catch (error) {
+          URL.revokeObjectURL(video.src);
+          reject(error);
+        }
+      };
+
+      video.onerror = () => {
+        URL.revokeObjectURL(video.src);
+        reject(new Error("Failed to load video"));
+      };
+
+      video.src = URL.createObjectURL(fileObj.file);
+    });
+  }
+
+  /**
+   * Calculate thumbnail dimensions maintaining aspect ratio
+   * @param {number} srcWidth - Source width
+   * @param {number} srcHeight - Source height
+   * @param {number} maxWidth - Max thumbnail width
+   * @param {number} maxHeight - Max thumbnail height
+   * @returns {Object} - { width, height }
+   */
+  calculateThumbnailSize(srcWidth, srcHeight, maxWidth, maxHeight) {
+    const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+    return {
+      width: Math.round(srcWidth * ratio),
+      height: Math.round(srcHeight * ratio),
+    };
   }
 }

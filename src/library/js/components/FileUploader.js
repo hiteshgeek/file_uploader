@@ -732,6 +732,189 @@ export default class FileUploader {
   }
 
   /**
+   * Get uploaded files with generated thumbnails for images and videos
+   * Returns a promise that resolves to an array of file data objects with thumbnail URLs
+   *
+   * @param {Object} options - Optional override for thumbnail settings
+   * @param {number} options.width - Max thumbnail width (default from config)
+   * @param {number} options.height - Max thumbnail height (default from config)
+   * @param {number} options.quality - JPEG quality 0-1 (default from config)
+   * @returns {Promise<Array>} Array of file objects with thumbnail property
+   *
+   * @example
+   * const files = await uploader.getFilesWithThumbnails({ width: 200, height: 200 });
+   * // Returns: [{ name, url, carouselType, thumbnail, size, ... }, ...]
+   */
+  async getFilesWithThumbnails(options = {}) {
+    const thumbOptions = {
+      width: options.width || this.options.thumbnails.thumbnailWidth,
+      height: options.height || this.options.thumbnails.thumbnailHeight,
+      quality: options.quality || this.options.thumbnails.thumbnailQuality,
+      videoSeekPercent: options.videoSeekPercent || this.options.thumbnails.videoThumbnailSeekPercent,
+    };
+
+    const uploadedFiles = this.files.filter((f) => f.uploaded);
+    const results = [];
+
+    for (const fileObj of uploadedFiles) {
+      const fileType = this.getFileTypeCategory(fileObj.extension);
+      const fileData = {
+        name: fileObj.name,
+        url: fileObj.url || fileObj.serverData?.url || `uploads/${fileObj.serverFilename}`,
+        carouselType: fileType,
+        size: fileObj.size,
+        type: fileObj.type,
+        extension: fileObj.extension,
+        serverFilename: fileObj.serverFilename,
+        isExisting: fileObj.isExisting || false,
+        meta: fileObj.meta || null,
+        thumbnail: null,
+      };
+
+      // Generate thumbnail for images and videos
+      if (fileType === "image" || fileType === "video") {
+        try {
+          fileData.thumbnail = await this.generateThumbnail(fileObj, fileType, thumbOptions);
+        } catch (error) {
+          console.warn(`Failed to generate thumbnail for ${fileObj.name}:`, error);
+        }
+      }
+
+      results.push(fileData);
+    }
+
+    return results;
+  }
+
+  /**
+   * Generate thumbnail for a file
+   * @private
+   * @param {Object} fileObj - File object
+   * @param {string} fileType - File type (image/video)
+   * @param {Object} options - Thumbnail options
+   * @returns {Promise<string>} Data URL of thumbnail
+   */
+  async generateThumbnail(fileObj, fileType, options) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (fileType === "image") {
+        // For images, load and resize
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+
+        img.onload = () => {
+          const { width, height } = this.calculateThumbnailSize(
+            img.naturalWidth,
+            img.naturalHeight,
+            options.width,
+            options.height
+          );
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL("image/jpeg", options.quality);
+          resolve(dataUrl);
+        };
+
+        img.onerror = () => reject(new Error("Failed to load image"));
+
+        // Use object URL if file blob exists, otherwise use URL
+        if (fileObj.file) {
+          img.src = URL.createObjectURL(fileObj.file);
+        } else {
+          img.src = fileObj.url || fileObj.serverData?.url;
+        }
+      } else if (fileType === "video") {
+        // For videos, extract frame
+        const video = document.createElement("video");
+        video.crossOrigin = "anonymous";
+        video.muted = true;
+
+        video.onloadedmetadata = () => {
+          // Seek to specified percent of video
+          const seekTime = Math.min(1, video.duration * options.videoSeekPercent);
+          video.currentTime = seekTime;
+        };
+
+        video.onseeked = () => {
+          const { width, height } = this.calculateThumbnailSize(
+            video.videoWidth,
+            video.videoHeight,
+            options.width,
+            options.height
+          );
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(video, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL("image/jpeg", options.quality);
+
+          // Clean up object URL if we created one
+          if (fileObj.file) {
+            URL.revokeObjectURL(video.src);
+          }
+
+          resolve(dataUrl);
+        };
+
+        video.onerror = () => reject(new Error("Failed to load video"));
+
+        // Use object URL if file blob exists, otherwise use URL
+        if (fileObj.file) {
+          video.src = URL.createObjectURL(fileObj.file);
+        } else {
+          video.src = fileObj.url || fileObj.serverData?.url;
+        }
+      } else {
+        reject(new Error("Unsupported file type for thumbnail"));
+      }
+    });
+  }
+
+  /**
+   * Calculate thumbnail dimensions maintaining aspect ratio
+   * @private
+   * @param {number} srcWidth - Source width
+   * @param {number} srcHeight - Source height
+   * @param {number} maxWidth - Maximum width
+   * @param {number} maxHeight - Maximum height
+   * @returns {Object} { width, height }
+   */
+  calculateThumbnailSize(srcWidth, srcHeight, maxWidth, maxHeight) {
+    const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+    return {
+      width: Math.round(srcWidth * ratio),
+      height: Math.round(srcHeight * ratio),
+    };
+  }
+
+  /**
+   * Get file type category from extension
+   * @private
+   * @param {string} extension - File extension
+   * @returns {string} File type category
+   */
+  getFileTypeCategory(extension) {
+    const ext = extension.toLowerCase();
+    const { fileTypes } = this.options;
+
+    if (fileTypes.imageExtensions.includes(ext)) return "image";
+    if (fileTypes.videoExtensions.includes(ext)) return "video";
+    if (fileTypes.audioExtensions.includes(ext)) return "audio";
+    if (["pdf"].includes(ext)) return "pdf";
+    if (["xls", "xlsx"].includes(ext)) return "excel";
+    if (["csv"].includes(ext)) return "csv";
+    if (["txt", "log"].includes(ext)) return "text";
+    if (fileTypes.archiveExtensions.includes(ext)) return "archive";
+    return "document";
+  }
+
+  /**
    * Guess MIME type from file extension
    * @param {string} extension - File extension (without dot)
    * @returns {string} Guessed MIME type

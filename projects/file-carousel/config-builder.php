@@ -183,6 +183,12 @@ include_once __DIR__ . '/../../includes/functions.php';
             margin-bottom: 6px;
         }
 
+        .config-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: -8px 0 12px 0;
+        }
+
         .config-row input[type="text"],
         .config-row input[type="number"],
         .config-row select {
@@ -308,44 +314,7 @@ include_once __DIR__ . '/../../includes/functions.php';
             justify-content: center;
         }
 
-        .sample-files {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
-            width: 100%;
-        }
-
-        .sample-file {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 16px 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .sample-file:hover {
-            border-color: #11998e;
-            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .sample-file svg {
-            width: 32px;
-            height: 32px;
-            margin-bottom: 8px;
-            fill: #64748b;
-        }
-
-        .sample-file span {
-            display: block;
-            font-size: 11px;
-            color: #64748b;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        /* File grid styles are provided by media-hub.css (fc-grid-*) */
 
         .code-output {
             background: #1e293b;
@@ -369,6 +338,26 @@ include_once __DIR__ . '/../../includes/functions.php';
         .code-output .boolean { color: #ff9cac; }
         .code-output .number { color: #f78c6c; }
         .code-output .comment { color: #676e95; }
+        .code-output .tag { color: #f07178; }
+        .code-output .attr-name { color: #ffcb6b; }
+        .code-output .attr-value { color: #c3e88d; }
+
+        .code-section {
+            margin-bottom: 16px;
+        }
+
+        .code-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .code-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         .copy-btn {
             position: absolute;
@@ -467,8 +456,20 @@ include_once __DIR__ . '/../../includes/functions.php';
                             <label for="preload-video">Videos</label>
                         </div>
                         <div class="checkbox-row">
+                            <input type="checkbox" id="preload-audio" value="audio">
+                            <label for="preload-audio">Audio</label>
+                        </div>
+                        <div class="checkbox-row">
                             <input type="checkbox" id="preload-pdf" value="pdf">
                             <label for="preload-pdf">PDFs</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="preload-excel" value="excel">
+                            <label for="preload-excel">Excel</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="preload-csv" value="csv">
+                            <label for="preload-csv">CSV</label>
                         </div>
                         <div class="checkbox-row">
                             <input type="checkbox" id="preload-text" value="text">
@@ -494,6 +495,7 @@ include_once __DIR__ . '/../../includes/functions.php';
             <!-- Visible File Types -->
             <div class="config-section">
                 <h3>Visible Types</h3>
+                <p class="config-hint">File types shown in carousel thumbnail strip</p>
                 <div class="checkbox-group">
                     <div class="checkbox-row">
                         <input type="checkbox" id="visible-image" value="image" checked>
@@ -526,6 +528,42 @@ include_once __DIR__ . '/../../includes/functions.php';
                 </div>
             </div>
 
+            <!-- Previewable File Types -->
+            <div class="config-section">
+                <h3>Previewable Types</h3>
+                <p class="config-hint">File types that can show inline preview</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-image" value="image" checked>
+                        <label for="previewable-image">Images</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-video" value="video" checked>
+                        <label for="previewable-video">Videos</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-audio" value="audio" checked>
+                        <label for="previewable-audio">Audio</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-pdf" value="pdf" checked>
+                        <label for="previewable-pdf">PDFs</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-excel" value="excel" checked>
+                        <label for="previewable-excel">Excel</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-csv" value="csv" checked>
+                        <label for="previewable-csv">CSV</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="previewable-text" value="text" checked>
+                        <label for="previewable-text">Text</label>
+                    </div>
+                </div>
+            </div>
+
             <!-- Preview Limits -->
             <div class="config-section">
                 <h3>Preview Limits</h3>
@@ -552,15 +590,28 @@ include_once __DIR__ . '/../../includes/functions.php';
             <div class="preview-content">
                 <div class="preview-area">
                     <p style="color: #64748b; margin-bottom: 20px;">Click on any file below to open the carousel:</p>
-                    <div class="sample-files" id="sampleFiles">
-                        <!-- Sample files will be rendered here -->
+                    <div id="sampleFiles">
+                        <!-- Grid rendered by FileCarousel with renderGrid: true -->
                     </div>
                 </div>
 
-                <div class="code-wrapper">
-                    <button class="copy-btn" onclick="copyCode()">Copy</button>
-                    <div class="code-output">
-                        <pre id="codeOutput"></pre>
+                <div class="code-section">
+                    <h3 class="code-section-title">HTML</h3>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyHtmlCode()">Copy</button>
+                        <div class="code-output">
+                            <pre id="htmlCodeOutput"></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h3 class="code-section-title">JavaScript</h3>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyJsCode()">Copy</button>
+                        <div class="code-output">
+                            <pre id="codeOutput"></pre>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -573,12 +624,14 @@ include_once __DIR__ . '/../../includes/functions.php';
 
         // Sample files for demo
         const sampleFiles = [
-            { name: 'photo.jpg', url: 'https://picsum.photos/800/600?random=1', type: 'image', mime: 'image/jpeg' },
-            { name: 'landscape.png', url: 'https://picsum.photos/1200/800?random=2', type: 'image', mime: 'image/png' },
-            { name: 'portrait.jpg', url: 'https://picsum.photos/600/900?random=3', type: 'image', mime: 'image/jpeg' },
-            { name: 'video.mp4', url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'video', mime: 'video/mp4' },
-            { name: 'document.pdf', url: '/sample.pdf', type: 'pdf', mime: 'application/pdf' },
-            { name: 'data.csv', url: '/sample.csv', type: 'csv', mime: 'text/csv' },
+            { name: 'photo.jpg', url: 'https://picsum.photos/800/600?random=1', carouselType: 'image', thumbnail: 'https://picsum.photos/150/150?random=1' },
+            { name: 'landscape.png', url: 'https://picsum.photos/1200/800?random=2', carouselType: 'image', thumbnail: 'https://picsum.photos/150/150?random=2' },
+            { name: 'video.mp4', url: 'https://www.w3schools.com/html/mov_bbb.mp4', carouselType: 'video', thumbnail: 'https://picsum.photos/150/150?random=3' },
+            { name: 'audio.mp3', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', carouselType: 'audio' },
+            { name: 'document.pdf', url: 'https://pdfobject.com/pdf/sample.pdf', carouselType: 'pdf' },
+            { name: 'spreadsheet.xlsx', url: '/sample.xlsx', carouselType: 'excel' },
+            { name: 'data.csv', url: '/sample.csv', carouselType: 'csv' },
+            { name: 'readme.txt', url: '/readme.txt', carouselType: 'text' },
         ];
 
         let carousel = null;
@@ -604,22 +657,56 @@ include_once __DIR__ . '/../../includes/functions.php';
                 visibleTypes.push(cb.value);
             });
 
+            const previewableTypes = [];
+            document.querySelectorAll('[id^="previewable-"]:checked').forEach(cb => {
+                previewableTypes.push(cb.value);
+            });
+
             return {
                 autoPreload,
                 enableManualLoading: document.getElementById('enableManualLoading').checked,
                 showDownloadButton: document.getElementById('showDownloadButton').checked,
                 visibleTypes,
+                previewableTypes,
                 maxPreviewRows: parseInt(document.getElementById('maxPreviewRows').value) || 100,
                 maxTextPreviewChars: parseInt(document.getElementById('maxTextPreviewChars').value) || 50000,
             };
         }
 
+        function generateHtmlCode() {
+            let html = `<span class="comment">&lt;!-- CSS (includes grid styles) --&gt;</span>\n`;
+            html += `<span class="tag">&lt;link</span> <span class="attr-name">rel</span>=<span class="attr-value">"stylesheet"</span> <span class="attr-name">href</span>=<span class="attr-value">"path/to/media-hub.css"</span><span class="tag">&gt;</span>\n\n`;
+
+            html += `<span class="comment">&lt;!-- Container for carousel modal AND file grid --&gt;</span>\n`;
+            html += `<span class="tag">&lt;div</span> <span class="attr-name">id</span>=<span class="attr-value">"my-carousel"</span><span class="tag">&gt;&lt;/div&gt;</span>\n\n`;
+
+            html += `<span class="comment">&lt;!-- Or use separate containers for grid and modal --&gt;</span>\n`;
+            html += `<span class="tag">&lt;div</span> <span class="attr-name">id</span>=<span class="attr-value">"file-grid"</span><span class="tag">&gt;&lt;/div&gt;</span> <span class="comment">&lt;!-- gridContainer --&gt;</span>\n`;
+            html += `<span class="tag">&lt;div</span> <span class="attr-name">id</span>=<span class="attr-value">"carousel-modal"</span><span class="tag">&gt;&lt;/div&gt;</span> <span class="comment">&lt;!-- container --&gt;</span>\n\n`;
+
+            html += `<span class="comment">&lt;!-- JavaScript --&gt;</span>\n`;
+            html += `<span class="tag">&lt;script</span> <span class="attr-name">src</span>=<span class="attr-value">"path/to/media-hub.js"</span><span class="tag">&gt;&lt;/script&gt;</span>`;
+
+            document.getElementById('htmlCodeOutput').innerHTML = html;
+        }
+
         function generateCode() {
             const config = getConfig();
-            let code = `<span class="keyword">import</span> { FileCarousel } <span class="keyword">from</span> <span class="string">'file-uploader'</span>;\n\n`;
+            let code = `<span class="comment">// Define your files array</span>\n`;
+            code += `<span class="keyword">const</span> myFiles = [\n`;
+            code += `  { <span class="property">name</span>: <span class="string">'image.jpg'</span>, <span class="property">url</span>: <span class="string">'/path/to/image.jpg'</span>, <span class="property">carouselType</span>: <span class="string">'image'</span>, <span class="property">thumbnail</span>: <span class="string">'/path/to/thumb.jpg'</span> },\n`;
+            code += `  { <span class="property">name</span>: <span class="string">'video.mp4'</span>, <span class="property">url</span>: <span class="string">'/path/to/video.mp4'</span>, <span class="property">carouselType</span>: <span class="string">'video'</span>, <span class="property">thumbnail</span>: <span class="string">'/path/to/thumb.jpg'</span> },\n`;
+            code += `  { <span class="property">name</span>: <span class="string">'doc.pdf'</span>, <span class="property">url</span>: <span class="string">'/path/to/doc.pdf'</span>, <span class="property">carouselType</span>: <span class="string">'pdf'</span> },\n`;
+            code += `  <span class="comment">// ... more files</span>\n`;
+            code += `];\n\n`;
+
+            code += `<span class="comment">// Initialize FileCarousel with renderGrid: true</span>\n`;
             code += `<span class="keyword">const</span> carousel = <span class="keyword">new</span> FileCarousel({\n`;
             code += `  <span class="property">container</span>: document.getElementById(<span class="string">'my-carousel'</span>),\n`;
             code += `  <span class="property">files</span>: myFiles,\n`;
+            code += `  <span class="property">renderGrid</span>: <span class="boolean">true</span>, <span class="comment">// Auto-generates file grid</span>\n`;
+            code += `  <span class="property">theme</span>: <span class="string">'${currentTheme}'</span>, <span class="comment">// 'light', 'dark', or 'system'</span>\n`;
+            code += `  <span class="comment">// gridContainer: '#file-grid', // Optional: separate container for grid</span>\n`;
 
             // autoPreload
             if (Array.isArray(config.autoPreload)) {
@@ -631,70 +718,76 @@ include_once __DIR__ . '/../../includes/functions.php';
             code += `  <span class="property">enableManualLoading</span>: <span class="boolean">${config.enableManualLoading}</span>,\n`;
             code += `  <span class="property">showDownloadButton</span>: <span class="boolean">${config.showDownloadButton}</span>,\n`;
             code += `  <span class="property">visibleTypes</span>: [${config.visibleTypes.map(t => `<span class="string">'${t}'</span>`).join(', ')}],\n`;
+            code += `  <span class="property">previewableTypes</span>: [${config.previewableTypes.map(t => `<span class="string">'${t}'</span>`).join(', ')}],\n`;
             code += `  <span class="property">maxPreviewRows</span>: <span class="number">${config.maxPreviewRows}</span>,\n`;
             code += `  <span class="property">maxTextPreviewChars</span>: <span class="number">${config.maxTextPreviewChars}</span>,\n`;
             code += `});\n\n`;
-            code += `<span class="comment">// Open carousel at specific index</span>\n`;
-            code += `carousel.open(<span class="number">0</span>);`;
+            code += `<span class="comment">// Grid is auto-rendered and click handlers are attached automatically!</span>\n`;
+            code += `<span class="comment">// Use carousel.open(index) to programmatically open at specific index</span>\n`;
+            code += `<span class="comment">// Use carousel.setTheme('dark'|'light'|'system') to change theme dynamically</span>`;
 
             document.getElementById('codeOutput').innerHTML = code;
         }
 
-        function renderSampleFiles() {
-            const container = document.getElementById('sampleFiles');
-            container.innerHTML = sampleFiles.map((file, index) => `
-                <div class="sample-file" onclick="window.openCarouselAt(${index})">
-                    ${getFileIcon(file.type)}
-                    <span>${file.name}</span>
-                </div>
-            `).join('');
-        }
-
-        function getFileIcon(type) {
-            const icons = {
-                image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
-                video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><polygon points="10 8 16 12 10 16 10 8"/></svg>',
-                pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
-                csv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>',
-            };
-            return icons[type] || icons.image;
-        }
-
-        window.openCarouselAt = function(index) {
+        // Initialize carousel with renderGrid on page load
+        function initCarousel() {
             const config = getConfig();
             if (carousel) {
                 carousel.destroy();
             }
             carousel = new FileCarousel({
                 container: document.body,
+                gridContainer: '#sampleFiles',
                 files: sampleFiles,
+                renderGrid: true,
+                theme: currentTheme,
                 ...config
             });
-            carousel.open(index);
-        };
+        }
+
+        function renderSampleFiles() {
+            // Now handled by FileCarousel's renderGrid option
+            initCarousel();
+        }
 
         window.testCarousel = function() {
-            window.openCarouselAt(0);
+            if (carousel) {
+                carousel.open(0);
+            }
         };
 
-        window.copyCode = function() {
-            const code = document.getElementById('codeOutput').innerText;
+        window.copyHtmlCode = function() {
+            const code = document.getElementById('htmlCodeOutput').innerText;
             navigator.clipboard.writeText(code).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = 'Copy', 2000);
+                const btns = document.querySelectorAll('.copy-btn');
+                btns[0].textContent = 'Copied!';
+                setTimeout(() => btns[0].textContent = 'Copy', 2000);
             });
         };
+
+        window.copyJsCode = function() {
+            const code = document.getElementById('codeOutput').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const btns = document.querySelectorAll('.copy-btn');
+                btns[1].textContent = 'Copied!';
+                setTimeout(() => btns[1].textContent = 'Copy', 2000);
+            });
+        };
+
+        function generateAllCode() {
+            generateHtmlCode();
+            generateCode();
+        }
 
         // Event listeners
         document.getElementById('autoPreload').addEventListener('change', function() {
             document.getElementById('selectiveTypes').style.display =
                 this.value === 'selective' ? 'block' : 'none';
-            generateCode();
+            generateAllCode();
         });
 
         document.querySelectorAll('input, select').forEach(el => {
-            el.addEventListener('change', generateCode);
+            el.addEventListener('change', generateAllCode);
         });
 
         // Theme Switcher
@@ -716,6 +809,14 @@ include_once __DIR__ . '/../../includes/functions.php';
                 effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
             document.body.dataset.theme = effectiveTheme;
+
+            // Update carousel grid theme
+            if (carousel) {
+                carousel.setTheme(theme);
+            }
+
+            // Update generated code
+            generateAllCode();
         }
 
         themeSwitcher.querySelectorAll('.theme-btn').forEach(btn => {
@@ -727,7 +828,7 @@ include_once __DIR__ . '/../../includes/functions.php';
 
         // Initialize
         renderSampleFiles();
-        generateCode();
+        generateAllCode();
     </script>
 </body>
 </html>

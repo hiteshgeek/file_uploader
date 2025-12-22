@@ -328,4 +328,117 @@ gulp.task("with-config-builder", (done) => {
   }
 });
 
+// ============================================================
+// NON-VERSIONED BUILD TASKS
+// Creates files without hash versioning (e.g., media-hub.css instead of media-hub-abc123.css)
+// ============================================================
+
+function addAllStylesNoVersion() {
+  const includeConfigBuilder = process.env.INCLUDE_CONFIG_BUILDER === "true";
+  const entries = getStyleEntries(includeConfigBuilder).map(
+    ([srcArr, outName]) =>
+      gulp
+        .src(srcArr)
+        .pipe(plugins.plumber({ errorHandler: onError }))
+        .pipe(useSourceMaps() ? plugins.sourcemaps.init() : noop())
+        .pipe(sass())
+        .pipe(plugins.concat(outName))
+        .pipe(isProduction() ? plugins.cleanCss() : noop())
+        .pipe(useSourceMaps() ? plugins.sourcemaps.write(".") : noop())
+        .pipe(gulp.dest(config.cssOutDir))
+  );
+  return require("merge-stream")(...entries);
+}
+
+function addAllScriptsESMNoVersion() {
+  const includeConfigBuilder = process.env.INCLUDE_CONFIG_BUILDER === "true";
+  const entries = getScriptEntries(includeConfigBuilder).map(
+    ([srcArr, outName]) =>
+      gulp
+        .src(srcArr)
+        .pipe(plugins.plumber({ errorHandler: onError }))
+        .pipe(useSourceMaps() ? plugins.sourcemaps.init() : noop())
+        .pipe(
+          rollup(
+            {
+              plugins: [
+                rollupResolve({ browser: true }),
+                rollupCommonjs(),
+                rollupBabel({
+                  babelHelpers: "bundled",
+                  babelrc: false,
+                  exclude: "node_modules/**",
+                }),
+              ],
+            },
+            {
+              format: "esm",
+              inlineDynamicImports: true,
+            }
+          )
+        )
+        .pipe(plugins.concat(outName))
+        .pipe(isProduction() ? uglify() : noop())
+        .pipe(isProduction() ? javascriptObfuscator() : noop())
+        .pipe(useSourceMaps() ? plugins.sourcemaps.write(".") : noop())
+        .pipe(gulp.dest(config.jsOutDir))
+  );
+  return require("merge-stream")(...entries);
+}
+
+function addAllScriptsIIFENoVersion() {
+  const includeConfigBuilder = process.env.INCLUDE_CONFIG_BUILDER === "true";
+  const entries = getScriptEntries(includeConfigBuilder).map(
+    ([srcArr, outName]) =>
+      gulp
+        .src(srcArr)
+        .pipe(plugins.plumber({ errorHandler: onError }))
+        .pipe(useSourceMaps() ? plugins.sourcemaps.init() : noop())
+        .pipe(
+          rollup(
+            {
+              plugins: [
+                rollupResolve({ browser: true }),
+                rollupCommonjs(),
+                rollupBabel({
+                  babelHelpers: "bundled",
+                  babelrc: false,
+                  exclude: "node_modules/**",
+                }),
+              ],
+            },
+            {
+              format: "iife",
+              name: iifeNames[outName] || undefined,
+              inlineDynamicImports: true,
+            }
+          )
+        )
+        .pipe(plugins.concat(outName.replace(/\.js$/, ".iife.js")))
+        .pipe(isProduction() ? uglify() : noop())
+        .pipe(isProduction() ? javascriptObfuscator() : noop())
+        .pipe(useSourceMaps() ? plugins.sourcemaps.write(".") : noop())
+        .pipe(gulp.dest(config.jsOutDir))
+  );
+  return require("merge-stream")(...entries);
+}
+
+gulp.task("styles-noversion", gulp.series("clean-css", addAllStylesNoVersion));
+gulp.task(
+  "scripts-noversion",
+  gulp.series("clean-js", addAllScriptsESMNoVersion, addAllScriptsIIFENoVersion)
+);
+
+// Dev build without versioning (for easy debugging/testing with static filenames)
+gulp.task(
+  "dev-noversion",
+  gulp.series("clean", "styles-noversion", "scripts-noversion")
+);
+
+// Prod build without versioning
+gulp.task(
+  "prod-noversion",
+  gulp.series(setProdEnv, "clean", "styles-noversion", "scripts-noversion")
+);
+
 gulp.task("default", gulp.series("dev"));

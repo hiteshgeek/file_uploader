@@ -1236,4 +1236,118 @@ $builder-prefix: "fu-config-builder" !default;
   .#{$builder-prefix}-section-desc {
     color: #9ca3af;
   }
+
+  // Get Files Panel dark mode
+  .#{$builder-prefix}-get-files-toggle {
+    background: #2d3748;
+  }
+
+  .#{$builder-prefix}-get-files-btn {
+    background: #1a202c;
+    border-color: #4a5568;
+    color: #a0aec0;
+
+    &:hover {
+      background: #2d3748;
+      border-color: #4a5568;
+      color: #e2e8f0;
+    }
+
+    &.active {
+      background: #064e3b;
+      border-color: #10b981;
+      color: #34d399;
+    }
+  }
+
+  .#{$builder-prefix}-get-files-panel {
+    background: #1a202c;
+    border-top-color: #4a5568;
+  }
+
+  .#{$builder-prefix}-get-files-method-btn {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+
+    &:hover {
+      background: #312e81;
+      border-color: #6366f1;
+      color: #818cf8;
+    }
+  }
+
+  .#{$builder-prefix}-get-files-result {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+
+  .#{$builder-prefix}-get-files-placeholder {
+    color: #718096;
+  }
+
+  .#{$builder-prefix}-get-files-loading {
+    color: #818cf8;
+  }
+
+  .#{$builder-prefix}-get-files-error {
+    background: #4a2c2c;
+    color: #fca5a5;
+  }
+
+  .#{$builder-prefix}-get-files-json {
+    .json-header {
+      background: #1a202c;
+      border-bottom-color: #4a5568;
+    }
+
+    .method-name {
+      color: #818cf8;
+    }
+
+    .result-count {
+      background: #4a5568;
+      color: #a0aec0;
+    }
+
+    .copy-btn {
+      background: #2d3748;
+      border-color: #4a5568;
+      color: #a0aec0;
+
+      &:hover {
+        background: #374151;
+        color: #e2e8f0;
+      }
+    }
+
+    pre {
+      background: #2d3748;
+    }
+
+    code {
+      color: #e2e8f0;
+    }
+  }
+
+  .#{$builder-prefix}-get-files-thumbnails {
+    border-bottom-color: #4a5568;
+  }
+
+  .#{$builder-prefix}-thumbnail-item {
+    img {
+      border-color: #4a5568;
+      background: #1a202c;
+    }
+
+    .thumbnail-name {
+      color: #a0aec0;
+    }
+  }
+
+  .#{$builder-prefix}-thumbnails-grid {
+    .no-thumbnails {
+      color: #718096;
+    }
+  }
 }

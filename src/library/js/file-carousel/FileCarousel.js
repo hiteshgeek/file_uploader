@@ -13,6 +13,7 @@
 import { MediaPreloader } from "./MediaPreloader.js";
 import { MediaRenderer } from "./MediaRenderer.js";
 import { ModalController } from "./ModalController.js";
+import { getIcon } from "../shared/icons.js";
 
 // ============================================================
 // FILE CAROUSEL CLASS
@@ -35,6 +36,9 @@ import { ModalController } from "./ModalController.js";
  * @param {Function} options.onFileDownload - Custom download handler
  * @param {number} options.maxPreviewRows - Max rows for CSV/Excel preview
  * @param {number} options.maxTextPreviewChars - Max characters for text preview
+ * @param {HTMLElement|string} options.gridContainer - Container for file grid (element or selector)
+ * @param {boolean} options.renderGrid - Whether to render file grid (default: false)
+ * @param {string} options.theme - Theme for grid: 'light', 'dark', or 'system' (default: 'system')
  *
  * @example
  * const carousel = new FileCarousel({
@@ -87,6 +91,11 @@ export default class FileCarousel {
       onFileDownload: options.onFileDownload || null,
       maxPreviewRows: options.maxPreviewRows || 100,
       maxTextPreviewChars: options.maxTextPreviewChars || 50000,
+      // Grid options
+      renderGrid: options.renderGrid || false,
+      gridContainer: options.gridContainer || null,
+      // Theme option: 'light', 'dark', or 'system' (default)
+      theme: options.theme || "system",
     };
 
     // ------------------------------------------------------------
@@ -150,6 +159,11 @@ export default class FileCarousel {
    */
   init() {
     this.render();
+
+    // Render file grid if enabled
+    if (this.options.renderGrid) {
+      this.renderGrid();
+    }
 
     // Start preloading if enabled
     if (this.shouldAutoPreload()) {
@@ -382,6 +396,190 @@ export default class FileCarousel {
     }
   }
 
+  // ============================================================
+  // FILE GRID RENDERING
+  // ============================================================
+
+  /**
+   * Render file grid into the grid container
+   * Creates clickable file items that open the carousel
+   */
+  renderGrid() {
+    const container = this.getGridContainer();
+    if (!container) return;
+
+    // Check if grid container is same as modal container
+    const isSameAsModalContainer = container === this.options.container;
+
+    // Remove existing grid wrapper if present (instead of clearing all content)
+    if (this.gridWrapper && this.gridWrapper.parentNode) {
+      this.gridWrapper.parentNode.removeChild(this.gridWrapper);
+    }
+
+    // Only clear container if it's a separate grid container (not the modal container)
+    if (!isSameAsModalContainer) {
+      container.innerHTML = "";
+    }
+
+    // Add grid class and theme
+    container.classList.add("fc-file-grid");
+    this.applyTheme(container);
+
+    // Create grid wrapper
+    this.gridWrapper = document.createElement("div");
+    this.gridWrapper.className = "fc-grid-wrapper";
+
+    // Render each file
+    this.options.files.forEach((file, index) => {
+      const item = this.createGridItem(file, index);
+      this.gridWrapper.appendChild(item);
+    });
+
+    container.appendChild(this.gridWrapper);
+  }
+
+  /**
+   * Apply theme to the grid container
+   * @private
+   * @param {HTMLElement} container - Grid container element
+   */
+  applyTheme(container) {
+    // Remove existing theme classes
+    container.classList.remove("fc-theme-light", "fc-theme-dark");
+
+    const theme = this.options.theme;
+
+    if (theme === "light") {
+      container.classList.add("fc-theme-light");
+    } else if (theme === "dark") {
+      container.classList.add("fc-theme-dark");
+    }
+    // 'system' uses CSS prefers-color-scheme (no class needed)
+  }
+
+  /**
+   * Set theme dynamically
+   * @param {string} theme - 'light', 'dark', or 'system'
+   */
+  setTheme(theme) {
+    this.options.theme = theme;
+    const container = this.getGridContainer();
+    if (container) {
+      this.applyTheme(container);
+    }
+  }
+
+  /**
+   * Get the grid container element
+   * @private
+   * @returns {HTMLElement|null}
+   */
+  getGridContainer() {
+    const { gridContainer } = this.options;
+
+    if (!gridContainer) {
+      return this.options.container;
+    }
+
+    if (typeof gridContainer === "string") {
+      return document.querySelector(gridContainer);
+    }
+
+    return gridContainer;
+  }
+
+  /**
+   * Create a grid item element for a file
+   * @private
+   * @param {Object} file - File object
+   * @param {number} index - File index
+   * @returns {HTMLElement}
+   */
+  createGridItem(file, index) {
+    const item = document.createElement("div");
+    item.className = "fc-grid-item";
+    item.dataset.index = index;
+    item.dataset.type = file.carouselType;
+
+    // Create thumbnail/icon
+    const visual = document.createElement("div");
+    visual.className = "fc-grid-visual";
+
+    if (file.thumbnail && (file.carouselType === "image" || file.carouselType === "video")) {
+      // Use thumbnail for images/videos
+      const img = document.createElement("img");
+      img.src = file.thumbnail;
+      img.alt = file.name;
+      img.className = "fc-grid-thumbnail";
+      visual.appendChild(img);
+
+      // Add video play icon overlay
+      if (file.carouselType === "video") {
+        const playIcon = document.createElement("div");
+        playIcon.className = "fc-grid-play-icon";
+        playIcon.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+        visual.appendChild(playIcon);
+      }
+    } else {
+      // Use icon for other types
+      const iconWrapper = document.createElement("div");
+      iconWrapper.className = "fc-grid-icon";
+      iconWrapper.innerHTML = this.getFileTypeIcon(file.carouselType);
+      visual.appendChild(iconWrapper);
+    }
+
+    item.appendChild(visual);
+
+    // Create file name
+    const name = document.createElement("span");
+    name.className = "fc-grid-name";
+    name.textContent = file.name;
+    name.title = file.name;
+    item.appendChild(name);
+
+    // Click handler
+    item.addEventListener("click", () => {
+      if (this.options.onFileClick) {
+        this.options.onFileClick(file, index);
+      }
+      this.open(index);
+    });
+
+    return item;
+  }
+
+  /**
+   * Get icon HTML for file type
+   * @private
+   * @param {string} type - File type
+   * @returns {string} SVG HTML string
+   */
+  getFileTypeIcon(type) {
+    const iconMap = {
+      audio: "audio",
+      pdf: "pdf_file",
+      excel: "excel",
+      csv: "csv_file",
+      text: "text_file",
+      document: "document",
+      archive: "zip_file",
+      image: "image",
+      video: "video",
+    };
+
+    const iconName = iconMap[type] || "text_file";
+    return getIcon(iconName, { class: "fc-grid-type-icon" });
+  }
+
+  /**
+   * Refresh the file grid (call after updateFiles)
+   */
+  refreshGrid() {
+    if (this.options.renderGrid) {
+      this.renderGrid();
+    }
+  }
+
   /**
    * Cleanup and destroy the carousel
    * Removes event listeners and clears preloaded media
@@ -394,6 +592,11 @@ export default class FileCarousel {
     // Remove only the carousel wrapper, not entire container content
     if (this.modalWrapper && this.modalWrapper.parentNode) {
       this.modalWrapper.parentNode.removeChild(this.modalWrapper);
+    }
+
+    // Remove grid wrapper if exists
+    if (this.gridWrapper && this.gridWrapper.parentNode) {
+      this.gridWrapper.parentNode.removeChild(this.gridWrapper);
     }
   }
 

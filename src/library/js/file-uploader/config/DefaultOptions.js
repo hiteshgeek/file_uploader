@@ -222,6 +222,18 @@ export const DEFAULT_OPTIONS = {
   },
 
   // ============================================================================
+  // Thumbnail Generation
+  // Settings for generating thumbnails in getFilesWithThumbnails()
+  // ============================================================================
+  thumbnails: {
+    thumbnailWidth: 150, // Max width for generated thumbnails
+    thumbnailHeight: 150, // Max height for generated thumbnails
+    thumbnailQuality: 0.8, // JPEG quality (0-1)
+    videoThumbnailSeekPercent: 0.1, // Seek to 10% of video for thumbnail
+    saveThumbnails: false, // Auto-save thumbnails to server on upload (images/videos)
+  },
+
+  // ============================================================================
   // Cross-Uploader & External Drop Zone
   // Drag-drop between uploaders and external drop targets
   // ============================================================================

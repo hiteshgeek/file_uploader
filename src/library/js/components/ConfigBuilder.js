@@ -1491,7 +1491,17 @@ export default class ConfigBuilder {
   isDependencySatisfied(def) {
     // Only check dependsOn for disabled state (not showWhen)
     if (def.dependsOn) {
-      const depValue = this.config[def.dependsOn];
+      // Find the category for the dependency option by looking it up in option definitions
+      const optionDefs = this.getOptionDefinitions();
+      let depValue = this.config[def.dependsOn]; // Fallback to top-level
+
+      for (const [categoryKey, category] of Object.entries(optionDefs)) {
+        if (category.options && category.options[def.dependsOn]) {
+          depValue = this.getConfigValue(categoryKey, def.dependsOn, false);
+          break;
+        }
+      }
+
       // For boolean dependencies, check if true
       if (typeof depValue === "boolean") {
         return depValue === true;
@@ -1533,6 +1543,15 @@ export default class ConfigBuilder {
         break;
       case "number":
         content = this.renderNumberInput(
+          key,
+          def,
+          isDisabled,
+          dependencyIndicator,
+          categoryKey
+        );
+        break;
+      case "slider":
+        content = this.renderSlider(
           key,
           def,
           isDisabled,
@@ -1852,6 +1871,66 @@ export default class ConfigBuilder {
           <div class="fu-config-builder-slider-labels">
             <span class="fu-config-builder-slider-label">${min}</span>
             <span class="fu-config-builder-slider-label">${max}</span>
+          </div>
+        </div>
+        <div class="fu-config-builder-hint">${def.hint}</div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render generic slider input (for thumbnail dimensions, quality, etc.)
+   */
+  renderSlider(key, def, isDisabled = false, dependencyIndicator = "", categoryKey = null) {
+    const value = categoryKey ? (this.config[categoryKey]?.[key] ?? def.default ?? 0) : (this.config[key] ?? def.default ?? 0);
+    const min = def.min ?? 0;
+    const max = def.max ?? 100;
+    const step = def.step ?? 1;
+    const unit = def.unit || "";
+
+    const minusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>`;
+    const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>`;
+
+    return `
+      <div class="fu-config-builder-group ${isDisabled ? "disabled" : ""}">
+        <label class="fu-config-builder-label">
+          ${def.label}
+          ${dependencyIndicator}
+          ${this.renderOptionKey(key)}
+        </label>
+        <div class="fu-config-builder-count-slider" data-option="${key}" data-category="${categoryKey || ""}" data-type="slider">
+          <div class="fu-config-builder-slider-row">
+            <button type="button" class="fu-config-builder-slider-btn" data-action="decrease" ${
+              isDisabled ? "disabled" : ""
+            }>
+              ${minusIcon}
+            </button>
+            <input type="range"
+                   class="fu-config-builder-slider-input"
+                   data-slider-for="${key}"
+                   value="${value}"
+                   min="${min}"
+                   max="${max}"
+                   step="${step}"
+                   ${isDisabled ? "disabled" : ""}>
+            <button type="button" class="fu-config-builder-slider-btn" data-action="increase" ${
+              isDisabled ? "disabled" : ""
+            }>
+              ${plusIcon}
+            </button>
+            <input type="number"
+                   class="fu-config-builder-slider-value-input"
+                   data-value-for="${key}"
+                   value="${value}"
+                   min="${min}"
+                   max="${max}"
+                   step="${step}"
+                   ${isDisabled ? "disabled" : ""}>
+            ${unit ? `<span class="fu-config-builder-slider-value-label">${unit}</span>` : ""}
+          </div>
+          <div class="fu-config-builder-slider-labels">
+            <span class="fu-config-builder-slider-label">${min}${unit}</span>
+            <span class="fu-config-builder-slider-label">${max}${unit}</span>
           </div>
         </div>
         <div class="fu-config-builder-hint">${def.hint}</div>
@@ -3512,6 +3591,67 @@ export default class ConfigBuilder {
           e.preventDefault();
           e.stopPropagation();
           updateValue((parseInt(valueInput.value) || 1) + 1);
+        });
+      });
+
+    // Generic slider inputs (for thumbnail dimensions, quality, etc.)
+    const sliders = this.element.querySelectorAll('.fu-config-builder-count-slider[data-type="slider"]');
+    console.log("[ConfigBuilder] Found generic sliders:", sliders.length);
+    sliders.forEach((container) => {
+        const optionKey = container.dataset.option;
+        const categoryKey = container.dataset.category;
+        console.log("[ConfigBuilder] Attaching slider events for:", optionKey, "category:", categoryKey);
+        const slider = container.querySelector(
+          ".fu-config-builder-slider-input"
+        );
+        const valueInput = container.querySelector(
+          ".fu-config-builder-slider-value-input"
+        );
+        const decreaseBtn = container.querySelector('[data-action="decrease"]');
+        const increaseBtn = container.querySelector('[data-action="increase"]');
+
+        if (!slider || !valueInput || !decreaseBtn || !increaseBtn) {
+          console.warn("Slider elements not found for:", optionKey);
+          return;
+        }
+
+        const step = parseFloat(slider.step) || 1;
+        const isFloat = step < 1;
+
+        const updateValue = (value) => {
+          const min = parseFloat(slider.min) || 0;
+          const max = parseFloat(slider.max) || 100;
+          value = Math.max(min, Math.min(max, value));
+          // Round to step precision for float values
+          if (isFloat) {
+            value = Math.round(value / step) * step;
+            value = parseFloat(value.toFixed(2));
+          }
+
+          slider.value = value;
+          valueInput.value = value;
+          this.setConfigValue(categoryKey, optionKey, value);
+          this.onConfigChange();
+        };
+
+        slider.addEventListener("input", () => {
+          updateValue(parseFloat(slider.value) || 0);
+        });
+
+        valueInput.addEventListener("input", () => {
+          updateValue(parseFloat(valueInput.value) || 0);
+        });
+
+        decreaseBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          updateValue((parseFloat(valueInput.value) || 0) - step);
+        });
+
+        increaseBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          updateValue((parseFloat(valueInput.value) || 0) + step);
         });
       });
 
@@ -7986,6 +8126,24 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-css-vars-panel" data-vars-panel="${id}" style="display: none;">
           ${this.renderUsedCssVariables(containerId)}
         </div>
+        <div class="fu-config-builder-get-files-toggle">
+          <button class="fu-config-builder-get-files-btn" data-uploader-id="${id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Get Files Methods</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="fu-config-builder-get-files-panel" data-get-files-panel="${id}" style="display: none;">
+          <div class="fu-config-builder-get-files-buttons">
+            <button class="fu-config-builder-get-files-method-btn" data-method="getFiles" data-uploader-id="${id}">getFiles()</button>
+            <button class="fu-config-builder-get-files-method-btn" data-method="getFilesWithThumbnails" data-uploader-id="${id}">getFilesWithThumbnails()</button>
+            <button class="fu-config-builder-get-files-method-btn" data-method="getUploadedFiles" data-uploader-id="${id}">getUploadedFiles()</button>
+            <button class="fu-config-builder-get-files-method-btn" data-method="getFilesSummary" data-uploader-id="${id}">getFilesSummary()</button>
+          </div>
+          <div class="fu-config-builder-get-files-result" data-get-files-result="${id}">
+            <div class="fu-config-builder-get-files-placeholder">Click a method button to see the result</div>
+          </div>
+        </div>
       `;
 
       previewEl.appendChild(wrapper);
@@ -8111,6 +8269,24 @@ export default class ConfigBuilder {
         <div class="fu-config-builder-css-vars-panel" data-vars-panel="${id}" style="display: none;">
           ${this.renderUsedCssVariables(containerId)}
         </div>
+        <div class="fu-config-builder-get-files-toggle">
+          <button class="fu-config-builder-get-files-btn" data-uploader-id="${id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Get Files Methods</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="fu-config-builder-get-files-panel" data-get-files-panel="${id}" style="display: none;">
+          <div class="fu-config-builder-get-files-buttons">
+            <button class="fu-config-builder-get-files-method-btn" data-method="getFiles" data-uploader-id="${id}">getFiles()</button>
+            <button class="fu-config-builder-get-files-method-btn" data-method="getFilesWithThumbnails" data-uploader-id="${id}">getFilesWithThumbnails()</button>
+            <button class="fu-config-builder-get-files-method-btn" data-method="getUploadedFiles" data-uploader-id="${id}">getUploadedFiles()</button>
+            <button class="fu-config-builder-get-files-method-btn" data-method="getFilesSummary" data-uploader-id="${id}">getFilesSummary()</button>
+          </div>
+          <div class="fu-config-builder-get-files-result" data-get-files-result="${id}">
+            <div class="fu-config-builder-get-files-placeholder">Click a method button to see the result</div>
+          </div>
+        </div>
       `;
 
       previewEl.appendChild(wrapper);
@@ -8158,6 +8334,26 @@ export default class ConfigBuilder {
     if (cssVarsPanel) {
       this.attachCssVarsPanelEvents(cssVarsPanel);
     }
+
+    // Add click handler for Get Files toggle button
+    const getFilesBtn = wrapper.querySelector(".fu-config-builder-get-files-btn");
+    if (getFilesBtn) {
+      getFilesBtn.addEventListener("click", () => {
+        this.toggleGetFilesPanel(id);
+      });
+    }
+
+    // Attach Get Files method button handlers
+    const getFilesMethodBtns = wrapper.querySelectorAll(
+      ".fu-config-builder-get-files-method-btn"
+    );
+    getFilesMethodBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const method = btn.dataset.method;
+        const uploaderId = btn.dataset.uploaderId;
+        this.executeGetFilesMethod(uploaderId, method);
+      });
+    });
 
     // Apply current theme to the new uploader container
     const effectiveTheme = this.getEffectiveThemeMode();
@@ -8213,6 +8409,156 @@ export default class ConfigBuilder {
         }
       }
     }
+  }
+
+  /**
+   * Toggle Get Files panel visibility
+   */
+  toggleGetFilesPanel(uploaderId) {
+    const wrapper = this.element.querySelector(
+      `[data-uploader-wrapper="${uploaderId}"]`
+    );
+    if (!wrapper) return;
+
+    const panel = wrapper.querySelector(`[data-get-files-panel="${uploaderId}"]`);
+    const btn = wrapper.querySelector(".fu-config-builder-get-files-btn");
+
+    if (panel && btn) {
+      const isVisible = panel.style.display !== "none";
+      panel.style.display = isVisible ? "none" : "block";
+      btn.classList.toggle("active", !isVisible);
+
+      // Update button text
+      const btnText = btn.querySelector("span");
+      if (btnText) {
+        btnText.textContent = isVisible
+          ? "Get Files Methods"
+          : "Hide Get Files Methods";
+      }
+    }
+  }
+
+  /**
+   * Execute a get files method and display the result
+   */
+  async executeGetFilesMethod(uploaderId, method) {
+    const uploaderData = this.uploaderInstances[uploaderId];
+    if (!uploaderData?.instance) {
+      console.warn(`No uploader instance found for ${uploaderId}`);
+      return;
+    }
+
+    const wrapper = this.element.querySelector(
+      `[data-uploader-wrapper="${uploaderId}"]`
+    );
+    if (!wrapper) return;
+
+    const resultContainer = wrapper.querySelector(
+      `[data-get-files-result="${uploaderId}"]`
+    );
+    if (!resultContainer) return;
+
+    // Show loading state
+    resultContainer.innerHTML = `<div class="fu-config-builder-get-files-loading">Loading...</div>`;
+
+    try {
+      const instance = uploaderData.instance;
+      let result;
+
+      switch (method) {
+        case "getFiles":
+          result = instance.getFiles();
+          break;
+        case "getFilesWithThumbnails":
+          result = await instance.getFilesWithThumbnails();
+          break;
+        case "getUploadedFiles":
+          result = instance.getUploadedFiles();
+          break;
+        case "getFilesSummary":
+          result = instance.getFilesSummary();
+          break;
+        default:
+          result = { error: `Unknown method: ${method}` };
+      }
+
+      // Display the result
+      this.displayGetFilesResult(resultContainer, method, result);
+    } catch (error) {
+      resultContainer.innerHTML = `<div class="fu-config-builder-get-files-error">Error: ${error.message}</div>`;
+    }
+  }
+
+  /**
+   * Display the result of a get files method
+   */
+  displayGetFilesResult(container, method, result) {
+    // For getFilesWithThumbnails, show thumbnail previews
+    if (method === "getFilesWithThumbnails" && Array.isArray(result) && result.length > 0) {
+      const thumbnailsHtml = result
+        .filter((file) => file.thumbnail)
+        .map(
+          (file) => `
+          <div class="fu-config-builder-thumbnail-item">
+            <img src="${file.thumbnail}" alt="${file.name}" />
+            <span class="thumbnail-name">${file.name}</span>
+          </div>
+        `
+        )
+        .join("");
+
+      const jsonOutput = JSON.stringify(result, (key, value) => {
+        // Truncate thumbnail data URLs for readability
+        if (key === "thumbnail" && typeof value === "string" && value.startsWith("data:")) {
+          return value.substring(0, 50) + "...[truncated]";
+        }
+        return value;
+      }, 2);
+
+      container.innerHTML = `
+        <div class="fu-config-builder-get-files-thumbnails">
+          <div class="fu-config-builder-thumbnails-grid">
+            ${thumbnailsHtml || '<div class="no-thumbnails">No thumbnails generated (no images/videos)</div>'}
+          </div>
+        </div>
+        <div class="fu-config-builder-get-files-json">
+          <div class="json-header">
+            <span class="method-name">${method}()</span>
+            <span class="result-count">${result.length} file${result.length !== 1 ? "s" : ""}</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(result).replace(/"/g, '\\"')}, null, 2))">Copy</button>
+          </div>
+          <pre><code>${this.escapeHtml(jsonOutput)}</code></pre>
+        </div>
+      `;
+    } else {
+      // Standard JSON output
+      const jsonOutput = JSON.stringify(result, null, 2);
+      const resultCount = Array.isArray(result)
+        ? `${result.length} file${result.length !== 1 ? "s" : ""}`
+        : typeof result === "object"
+        ? "Object"
+        : String(result);
+
+      container.innerHTML = `
+        <div class="fu-config-builder-get-files-json">
+          <div class="json-header">
+            <span class="method-name">${method}()</span>
+            <span class="result-count">${resultCount}</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(\`${jsonOutput.replace(/`/g, "\\`").replace(/\\/g, "\\\\")}\`)">Copy</button>
+          </div>
+          <pre><code>${this.escapeHtml(jsonOutput)}</code></pre>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Escape HTML for safe display
+   */
+  escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   /**

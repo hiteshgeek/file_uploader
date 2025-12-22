@@ -9,6 +9,8 @@
  * @requires MediaRenderer - For content rendering
  */
 
+import { getIcon } from "../shared/icons.js";
+
 // ============================================================
 // MODAL CONTROLLER CLASS
 // Manages the carousel modal UI and interactions
@@ -357,8 +359,8 @@ export class ModalController {
    * @returns {string} HTML string
    */
   getFileThumbnail(file) {
-    // Use thumbnail image if available
-    if (file.thumbnail) {
+    // For images and videos, use thumbnail image if available
+    if (file.thumbnail && (file.carouselType === "image" || file.carouselType === "video")) {
       const isVideo = file.carouselType === "video";
       const videoIcon = isVideo
         ? '<div class="fc-video-icon-wrapper"><svg class="fc-video-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>'
@@ -366,45 +368,33 @@ export class ModalController {
       return `${videoIcon}<img src="${file.thumbnail}" class="fc-thumbnail-image" />`;
     }
 
-    // Fallback to type icon
+    // For all other types (pdf, excel, csv, text, audio, etc.), use icons
     return this.getFileTypeIcon(file.carouselType);
   }
 
   /**
    * Get icon HTML for file type
+   * Uses the same icons as FileUploader for consistency
    * @private
    * @param {string} type - File type
    * @returns {string} HTML string
    */
   getFileTypeIcon(type) {
-    const icons = {
-      audio: `<svg class="fc-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-      </svg>`,
-      pdf: `<svg class="fc-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-      </svg>`,
-      excel: `<svg class="fc-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-      </svg>`,
-      csv: `<svg class="fc-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-      </svg>`,
-      text: `<svg class="fc-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-      </svg>`,
-      default: `<svg class="fc-type-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-      </svg>`,
+    // Map carousel types to icon names from shared icons
+    const iconMap = {
+      audio: "audio",
+      pdf: "pdf_file",
+      excel: "excel",
+      csv: "csv_file",
+      text: "text_file",
+      document: "document",
+      archive: "zip_file",
+      image: "image",
+      video: "video",
     };
 
-    return `<div class="fc-type-icon-wrapper">${icons[type] || icons.default}</div>`;
+    const iconName = iconMap[type] || "text_file";
+    return `<div class="fc-type-icon-wrapper">${getIcon(iconName, { class: "fc-type-icon" })}</div>`;
   }
 
   // ============================================================

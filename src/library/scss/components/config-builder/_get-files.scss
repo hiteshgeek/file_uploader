@@ -1,0 +1,252 @@
+/**
+ * Config Builder - Get Files Panel
+ * Buttons and result display for get files methods
+ */
+
+$builder-prefix: "fu-config-builder" !default;
+
+// ============================================================================
+// Get Files Toggle Button
+// ============================================================================
+
+.#{$builder-prefix}-get-files-toggle {
+  padding: 0 14px 14px;
+  background: #ffffff;
+}
+
+.#{$builder-prefix}-get-files-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    flex-shrink: 0;
+  }
+
+  svg.chevron {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+  }
+
+  &.active {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #059669;
+
+    svg.chevron {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+// ============================================================================
+// Get Files Panel
+// ============================================================================
+
+.#{$builder-prefix}-get-files-panel {
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  padding: 14px;
+}
+
+// ============================================================================
+// Method Buttons
+// ============================================================================
+
+.#{$builder-prefix}-get-files-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.#{$builder-prefix}-get-files-method-btn {
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: "SF Mono", Monaco, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #6366f1;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ============================================================================
+// Result Display
+// ============================================================================
+
+.#{$builder-prefix}-get-files-result {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.#{$builder-prefix}-get-files-placeholder {
+  padding: 24px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.#{$builder-prefix}-get-files-loading {
+  padding: 24px;
+  text-align: center;
+  color: #6366f1;
+  font-size: 13px;
+}
+
+.#{$builder-prefix}-get-files-error {
+  padding: 16px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+// ============================================================================
+// JSON Output
+// ============================================================================
+
+.#{$builder-prefix}-get-files-json {
+  .json-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .method-name {
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6366f1;
+  }
+
+  .result-count {
+    font-size: 11px;
+    color: #6b7280;
+    padding: 2px 8px;
+    background: #e5e7eb;
+    border-radius: 10px;
+  }
+
+  .copy-btn {
+    margin-left: auto;
+    padding: 4px 10px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+  }
+
+  pre {
+    margin: 0;
+    padding: 14px;
+    max-height: 300px;
+    overflow: auto;
+    background: #ffffff;
+  }
+
+  code {
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #374151;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+// ============================================================================
+// Thumbnails Grid
+// ============================================================================
+
+.#{$builder-prefix}-get-files-thumbnails {
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.#{$builder-prefix}-thumbnails-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+
+  .no-thumbnails {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 12px;
+    font-style: italic;
+    padding: 12px;
+  }
+}
+
+.#{$builder-prefix}-thumbnail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .thumbnail-name {
+    font-size: 10px;
+    color: #6b7280;
+    text-align: center;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

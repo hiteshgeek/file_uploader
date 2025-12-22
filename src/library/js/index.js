@@ -47,6 +47,12 @@ import { MediaCapture } from "./media-capture/index.js";
 import TooltipManager from "./utils/TooltipManager.js";
 
 // ============================================================
+// SHARED ICONS
+// Icon utilities for consistent file type icons
+// ============================================================
+import { getIcon, icons } from "./shared/icons.js";
+
+// ============================================================
 // EXPORTS
 // ============================================================
 
@@ -56,6 +62,8 @@ export {
   FileCarousel,
   MediaCapture,
   TooltipManager,
+  getIcon,
+  icons,
 };
 
 // Expose classes globally for IIFE build
@@ -64,4 +72,6 @@ if (typeof window !== "undefined") {
   window.FileCarousel = FileCarousel;
   window.MediaCapture = MediaCapture;
   window.TooltipManager = TooltipManager;
+  window.getIcon = getIcon;
+  window.icons = icons;
 }

@@ -35,6 +35,8 @@
   "scripts": {
     "dev": "gulp dev",
     "prod": "NODE_ENV=production gulp prod",
+    "dev-noversion": "gulp dev-noversion",
+    "prod-noversion": "NODE_ENV=production gulp prod-noversion",
     "clean": "gulp clean",
     "with-config-builder": "gulp with-config-builder",
     "with-config-builder:prod": "NODE_ENV=production gulp with-config-builder"

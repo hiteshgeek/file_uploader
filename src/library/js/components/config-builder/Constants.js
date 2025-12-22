@@ -98,6 +98,11 @@ export const OPTION_TO_GROUP = {
   regionCaptureShowDimensions: "mediaCapture",
   regionCaptureDimensionsPosition: "mediaCapture",
   regionCaptureImmediateCapture: "mediaCapture",
+  // Thumbnails
+  saveThumbnails: "thumbnails",
+  thumbnailWidth: "thumbnails",
+  thumbnailHeight: "thumbnails",
+  thumbnailQuality: "thumbnails",
   // Carousel
   enableCarouselPreview: "carousel",
   carouselAutoPreload: "carousel",
@@ -134,6 +139,7 @@ export const GROUP_TITLES = {
   alerts: "Alert Notifications",
   buttons: "Buttons",
   mediaCapture: "Media Capture",
+  thumbnails: "Thumbnails",
   carousel: "Carousel Preview",
   dragDrop: "Drag & Drop",
   callbacks: "Callbacks",
@@ -153,6 +159,7 @@ export const GROUP_ORDER = [
   "alerts",
   "buttons",
   "mediaCapture",
+  "thumbnails",
   "carousel",
   "dragDrop",
   "callbacks",

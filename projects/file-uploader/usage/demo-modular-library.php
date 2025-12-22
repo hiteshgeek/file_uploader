@@ -241,7 +241,12 @@ include_once __DIR__ . '/../../../includes/functions.php';
             align-items: center;
             justify-content: center;
             background: #edf2f7;
-            font-size: 32px;
+        }
+
+        .carousel-file .file-icon .carousel-demo-icon {
+            width: 40px;
+            height: 40px;
+            fill: #718096;
         }
 
         .carousel-file .file-name {
@@ -601,6 +606,19 @@ import { MediaCapture } from 'file-uploader/media-capture';</code></pre>
             }
         ];
 
+        // Map carousel types to icon names
+        const carouselIconMap = {
+            audio: 'audio',
+            pdf: 'pdf_file',
+            excel: 'excel',
+            csv: 'csv_file',
+            text: 'text_file',
+            document: 'document',
+            archive: 'zip_file',
+            image: 'image',
+            video: 'video'
+        };
+
         // Render carousel file thumbnails
         const carouselFilesContainer = document.getElementById('carouselFiles');
         carouselDemoFiles.forEach((file, index) => {
@@ -608,14 +626,16 @@ import { MediaCapture } from 'file-uploader/media-capture';</code></pre>
             div.className = 'carousel-file';
             div.onclick = () => openCarousel(index);
 
-            if (file.thumbnail) {
+            // For images and videos, show thumbnail; for others, show icons
+            if (file.thumbnail && (file.carouselType === 'image' || file.carouselType === 'video')) {
                 div.innerHTML = `
                     <img src="${file.thumbnail}" alt="${file.name}">
                     <span class="file-name">${file.name}</span>
                 `;
             } else {
+                const iconName = carouselIconMap[file.carouselType] || 'text_file';
                 div.innerHTML = `
-                    <div class="file-icon">${file.carouselType === 'video' ? '🎬' : '📄'}</div>
+                    <div class="file-icon">${getIcon(iconName, { class: 'carousel-demo-icon' })}</div>
                     <span class="file-name">${file.name}</span>
                 `;
             }

@@ -875,6 +875,57 @@ export function getOptionDefinitions() {
       },
     },
 
+    // Thumbnails
+    thumbnails: {
+      title: "Thumbnails",
+      icon: "image",
+      options: {
+        saveThumbnails: {
+          type: "boolean",
+          default: false,
+          label: "Auto-Save Thumbnails",
+          hint: "Automatically generate and save thumbnails for images/videos on upload",
+          affectsOptions: [
+            "thumbnailWidth",
+            "thumbnailHeight",
+            "thumbnailQuality",
+          ],
+        },
+        thumbnailWidth: {
+          type: "slider",
+          default: 150,
+          label: "Thumbnail Width",
+          hint: "Maximum width for generated thumbnails (px)",
+          min: 50,
+          max: 500,
+          step: 10,
+          unit: "px",
+          dependsOn: "saveThumbnails",
+        },
+        thumbnailHeight: {
+          type: "slider",
+          default: 150,
+          label: "Thumbnail Height",
+          hint: "Maximum height for generated thumbnails (px)",
+          min: 50,
+          max: 500,
+          step: 10,
+          unit: "px",
+          dependsOn: "saveThumbnails",
+        },
+        thumbnailQuality: {
+          type: "slider",
+          default: 0.8,
+          label: "Thumbnail Quality",
+          hint: "JPEG quality for thumbnails (0.1-1.0)",
+          min: 0.1,
+          max: 1,
+          step: 0.1,
+          dependsOn: "saveThumbnails",
+        },
+      },
+    },
+
     // Display Mode
     displayMode: {
       title: "Display Mode",
